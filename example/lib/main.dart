@@ -68,23 +68,19 @@ class _HomePageState extends State<HomePage> {
           EasyTableColumn(
               name: 'Name',
               initialWidth: 150,
-              cellBuilder: (context, character, rowIndex) =>
-                  EasyTableCell(value: character.name)),
+              valueMapper: (character, rowIndex) => character.name),
           EasyTableColumn(
               name: 'Race',
               initialWidth: 100,
-              cellBuilder: (context, character, rowIndex) =>
-                  EasyTableCell(value: character.race)),
+              valueMapper: (character, rowIndex) => character.race),
           EasyTableColumn(
               name: 'Class',
               initialWidth: 130,
-              cellBuilder: (context, character, rowIndex) =>
-                  EasyTableCell(value: character.cls)),
+              valueMapper: (character, rowIndex) => character.cls),
           EasyTableColumn(
               name: 'Level',
               initialWidth: 80,
-              cellBuilder: (context, character, rowIndex) =>
-                  EasyTableCell.int(value: character.level)),
+              valueMapper: (character, rowIndex) => character.level),
           EasyTableColumn(
               name: 'Skills',
               initialWidth: 100,
@@ -93,34 +89,27 @@ class _HomePageState extends State<HomePage> {
           EasyTableColumn(
               name: 'Strength',
               initialWidth: 80,
-              cellBuilder: (context, character, rowIndex) =>
-                  EasyTableCell.int(value: character.strength)),
+              valueMapper: (character, rowIndex) => character.strength),
           EasyTableColumn(
               name: 'Dexterity',
               initialWidth: 80,
-              cellBuilder: (context, character, rowIndex) =>
-                  EasyTableCell.int(value: character.dexterity)),
+              valueMapper: (character, rowIndex) => character.dexterity),
           EasyTableColumn(
               name: 'Intelligence',
               initialWidth: 100,
-              cellBuilder: (context, character, rowIndex) =>
-                  EasyTableCell.int(value: character.intelligence)),
+              valueMapper: (character, rowIndex) => character.intelligence),
           EasyTableColumn(
               name: 'Life',
               initialWidth: 80,
-              cellBuilder: (context, character, rowIndex) =>
-                  EasyTableCell.int(value: character.life)),
+              valueMapper: (character, rowIndex) => character.life),
           EasyTableColumn(
               name: 'Mana',
               initialWidth: 80,
-              cellBuilder: (context, character, rowIndex) =>
-                  EasyTableCell.int(value: character.mana)),
+              valueMapper: (character, rowIndex) => character.mana),
           EasyTableColumn(
               name: 'Gold',
               initialWidth: 130,
-              cellBuilder: (context, character, rowIndex) =>
-                  EasyTableCell.double(
-                      value: character.gold, fractionDigits: 2)),
+              valueMapper: (character, rowIndex) => character.gold),
         ],
         rowColor: RowColors.evenOdd());
   }
