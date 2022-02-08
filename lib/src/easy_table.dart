@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 import 'package:easy_table/src/easy_table_column.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 typedef EasyTableRowColor = Color? Function(int rowIndex);
 

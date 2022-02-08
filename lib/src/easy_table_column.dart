@@ -1,13 +1,6 @@
+import 'package:easy_table/src/easy_table_cell_builder.dart';
+import 'package:easy_table/src/easy_table_header_builder.dart';
 import 'package:flutter/widgets.dart';
-
-/// Signature for a function that creates a widget for a given column and row.
-///
-/// Used by [EasyTable].
-typedef EasyTableCellBuilder<ROW_VALUE> = Widget Function(
-    BuildContext context, ROW_VALUE rowValue, int rowIndex);
-
-typedef EasyTableHeaderBuilder = Widget Function(
-    BuildContext context, EasyTableColumn column, int columnIndex);
 
 class EasyTableColumn<ROW_VALUE> {
   EasyTableColumn(
