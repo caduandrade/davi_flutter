@@ -12,7 +12,8 @@ class ExampleApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      title: 'EasyTable example',
+      debugShowCheckedModeBanner: false,
+      title: 'EasyTable Example',
       home: HomePage(),
     );
   }
@@ -49,9 +50,14 @@ class _HomePageState extends State<HomePage> {
 
     return Scaffold(
         appBar: AppBar(
-          title: const Text('EasyTable example'),
+          title: const Text('EasyTable Example'),
         ),
-        body: body);
+        body: Padding(
+            child: Container(
+                child: body,
+                decoration:
+                    BoxDecoration(border: Border.all(color: Colors.grey))),
+            padding: const EdgeInsets.all(32)));
   }
 
   Widget _table() {
@@ -61,43 +67,54 @@ class _HomePageState extends State<HomePage> {
           EasyTableColumn(
               name: 'Name',
               initialWidth: 150,
-              cellBuilder: (context, user, rowIndex) =>
-                  EasyTableCell(value: user.name)),
+              cellBuilder: (context, character, rowIndex) =>
+                  EasyTableCell(value: character.name)),
           EasyTableColumn(
               name: 'Race',
               initialWidth: 100,
-              cellBuilder: (context, user, rowIndex) =>
-                  EasyTableCell(value: user.race)),
+              cellBuilder: (context, character, rowIndex) =>
+                  EasyTableCell(value: character.race)),
           EasyTableColumn(
               name: 'Class',
               initialWidth: 130,
-              cellBuilder: (context, user, rowIndex) =>
-                  EasyTableCell(value: user.cls)),
+              cellBuilder: (context, character, rowIndex) =>
+                  EasyTableCell(value: character.cls)),
           EasyTableColumn(
               name: 'Level',
               initialWidth: 80,
-              cellBuilder: (context, user, rowIndex) =>
-                  EasyTableCell.int(value: user.level)),
+              cellBuilder: (context, character, rowIndex) =>
+                  EasyTableCell.int(value: character.level)),
           EasyTableColumn(
               name: 'Strength',
               initialWidth: 80,
-              cellBuilder: (context, user, rowIndex) =>
-                  EasyTableCell.int(value: user.strength)),
+              cellBuilder: (context, character, rowIndex) =>
+                  EasyTableCell.int(value: character.strength)),
           EasyTableColumn(
               name: 'Dexterity',
               initialWidth: 80,
-              cellBuilder: (context, user, rowIndex) =>
-                  EasyTableCell.int(value: user.dexterity)),
+              cellBuilder: (context, character, rowIndex) =>
+                  EasyTableCell.int(value: character.dexterity)),
           EasyTableColumn(
               name: 'Intelligence',
               initialWidth: 100,
-              cellBuilder: (context, user, rowIndex) =>
-                  EasyTableCell.int(value: user.intelligence)),
+              cellBuilder: (context, character, rowIndex) =>
+                  EasyTableCell.int(value: character.intelligence)),
+          EasyTableColumn(
+              name: 'Life',
+              initialWidth: 80,
+              cellBuilder: (context, character, rowIndex) =>
+                  EasyTableCell.int(value: character.life)),
+          EasyTableColumn(
+              name: 'Mana',
+              initialWidth: 80,
+              cellBuilder: (context, character, rowIndex) =>
+                  EasyTableCell.int(value: character.mana)),
           EasyTableColumn(
               name: 'Gold',
-              initialWidth: 150,
-              cellBuilder: (context, user, rowIndex) =>
-                  EasyTableCell.double(value: user.gold, fractionDigits: 2)),
+              initialWidth: 130,
+              cellBuilder: (context, character, rowIndex) =>
+                  EasyTableCell.double(
+                      value: character.gold, fractionDigits: 2)),
         ],
         rowColor: RowColors.evenOdd());
   }
