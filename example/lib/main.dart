@@ -1,5 +1,6 @@
 import 'package:easy_table/easy_table.dart';
 import 'package:easy_table_example/character.dart';
+import 'package:easy_table_example/skills_widget.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -84,6 +85,11 @@ class _HomePageState extends State<HomePage> {
               initialWidth: 80,
               cellBuilder: (context, character, rowIndex) =>
                   EasyTableCell.int(value: character.level)),
+          EasyTableColumn(
+              name: 'Skills',
+              initialWidth: 100,
+              cellBuilder: (context, character, rowIndex) =>
+                  SkillsWidget(skills: character.skills)),
           EasyTableColumn(
               name: 'Strength',
               initialWidth: 80,

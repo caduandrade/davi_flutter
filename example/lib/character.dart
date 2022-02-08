@@ -3,6 +3,22 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'dart:async';
 import 'dart:convert';
 
+enum Skill {
+  favorite,
+  grade,
+  pets,
+  science,
+  shield,
+  wb_sunny,
+  flash_on,
+  adjust,
+  flare,
+  filter_vintage,
+  workspaces,
+  cloud,
+  ac_unit
+}
+
 class Character {
   Character(
       {required this.name,
@@ -16,7 +32,8 @@ class Character {
       required this.intelligence,
       required this.dexterity,
       required this.life,
-      required this.mana});
+      required this.mana,
+      required this.skills});
 
   final String name;
   final bool male;
@@ -30,6 +47,7 @@ class Character {
   final int dexterity;
   final int mana;
   final int life;
+  final List<Skill> skills;
 
   static const List<String> _races = [
     'Dwarf',
@@ -95,6 +113,14 @@ class Character {
         math.max(level + random.nextInt(100) - random.nextInt(20), 10);
     int mana = level + random.nextInt(500);
     int life = level + random.nextInt(5000);
+
+    Set<Skill> uniqueSkills = {};
+    int skillsCount = random.nextInt(4);
+    for (int i = 0; i < skillsCount; i++) {
+      uniqueSkills.add(Skill.values[random.nextInt(Skill.values.length)]);
+    }
+    List<Skill> skills = uniqueSkills.toList();
+
     return Character(
         cls: cls,
         name: name,
@@ -107,6 +133,7 @@ class Character {
         intelligence: intelligence,
         dexterity: dexterity,
         life: life,
-        mana: mana);
+        mana: mana,
+        skills: skills);
   }
 }
