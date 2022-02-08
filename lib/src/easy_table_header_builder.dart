@@ -5,8 +5,8 @@ import 'package:flutter/widgets.dart';
 typedef EasyTableHeaderBuilder = Widget Function(
     BuildContext context, EasyTableColumn column, int columnIndex);
 
-class HeaderBuilders {
-  static Widget defaultHeaderBuilder(
+class HeaderCellBuilders {
+  static Widget defaultHeaderCellBuilder(
       BuildContext context, EasyTableColumn column, int columnIndex) {
     return EasyTableCell(value: column.name);
   }

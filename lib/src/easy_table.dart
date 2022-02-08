@@ -225,8 +225,9 @@ class EasyTableState<ROW_VALUE> extends State<EasyTable<ROW_VALUE>> {
       required double columnGap}) {
     double width = columnWidth;
     Widget? headerCellWidget;
-    if (column.headerBuilder != null) {
-      headerCellWidget = column.headerBuilder!(context, column, columnIndex);
+    if (column.headerCellBuilder != null) {
+      headerCellWidget =
+          column.headerCellBuilder!(context, column, columnIndex);
     }
     EdgeInsetsGeometry? padding;
     if (columnGap > 0) {

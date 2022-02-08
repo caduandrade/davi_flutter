@@ -6,10 +6,10 @@ class EasyTableColumn<ROW_VALUE> {
       {required this.cellBuilder,
       this.initialWidth = 100,
       this.name,
-      this.headerBuilder = HeaderBuilders.defaultHeaderBuilder});
+      this.headerCellBuilder = HeaderCellBuilders.defaultHeaderCellBuilder});
 
   final String? name;
   final double initialWidth;
   final EasyTableCellBuilder<ROW_VALUE> cellBuilder;
-  final EasyTableHeaderBuilder? headerBuilder;
+  final EasyTableHeaderBuilder? headerCellBuilder;
 }
