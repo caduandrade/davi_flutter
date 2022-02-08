@@ -10,6 +10,7 @@ class EasyTableColumn<ROW_VALUE> {
       this.initialWidth = 100,
       this.valueMapper,
       this.name,
+      this.fractionDigits,
       this.headerCellBuilder = HeaderCellBuilders.defaultHeaderCellBuilder});
 
   final String? name;
@@ -17,19 +18,21 @@ class EasyTableColumn<ROW_VALUE> {
   final EasyTableValueMapper<ROW_VALUE>? valueMapper;
   final EasyTableCellBuilder<ROW_VALUE>? cellBuilder;
   final EasyTableHeaderCellBuilder? headerCellBuilder;
+  final int? fractionDigits;
 
-  Widget? build(BuildContext context, ROW_VALUE rowValue, int rowIndex) {
+  Widget? buildCellWidget(BuildContext context, ROW_VALUE rowValue) {
     if (cellBuilder != null) {
-      return cellBuilder!(context, rowValue, rowIndex);
+      return cellBuilder!(context, rowValue);
     }
     if (valueMapper != null) {
-      dynamic cellValue = valueMapper!(rowValue, rowIndex);
+      dynamic cellValue = valueMapper!(rowValue);
       if (cellValue is String) {
         return EasyTableCell(value: cellValue);
       } else if (cellValue is int) {
         return EasyTableCell.int(value: cellValue);
       } else if (cellValue is double) {
-        return EasyTableCell.double(value: cellValue);
+        return EasyTableCell.double(
+            value: cellValue, fractionDigits: fractionDigits);
       } else if (cellValue == null) {
         return const EasyTableCell();
       }

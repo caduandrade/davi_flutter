@@ -68,48 +68,49 @@ class _HomePageState extends State<HomePage> {
           EasyTableColumn(
               name: 'Name',
               initialWidth: 150,
-              valueMapper: (character, rowIndex) => character.name),
+              valueMapper: (character) => character.name),
           EasyTableColumn(
               name: 'Race',
               initialWidth: 100,
-              valueMapper: (character, rowIndex) => character.race),
+              valueMapper: (character) => character.race),
           EasyTableColumn(
               name: 'Class',
               initialWidth: 130,
-              valueMapper: (character, rowIndex) => character.cls),
+              valueMapper: (character) => character.cls),
           EasyTableColumn(
               name: 'Level',
               initialWidth: 80,
-              valueMapper: (character, rowIndex) => character.level),
+              valueMapper: (character) => character.level),
           EasyTableColumn(
               name: 'Skills',
               initialWidth: 100,
-              cellBuilder: (context, character, rowIndex) =>
+              cellBuilder: (context, character) =>
                   SkillsWidget(skills: character.skills)),
           EasyTableColumn(
               name: 'Strength',
               initialWidth: 80,
-              valueMapper: (character, rowIndex) => character.strength),
+              valueMapper: (character) => character.strength),
           EasyTableColumn(
               name: 'Dexterity',
               initialWidth: 80,
-              valueMapper: (character, rowIndex) => character.dexterity),
+              valueMapper: (character) => character.dexterity),
           EasyTableColumn(
               name: 'Intelligence',
               initialWidth: 100,
-              valueMapper: (character, rowIndex) => character.intelligence),
+              valueMapper: (character) => character.intelligence),
           EasyTableColumn(
               name: 'Life',
               initialWidth: 80,
-              valueMapper: (character, rowIndex) => character.life),
+              valueMapper: (character) => character.life),
           EasyTableColumn(
               name: 'Mana',
               initialWidth: 80,
-              valueMapper: (character, rowIndex) => character.mana),
+              valueMapper: (character) => character.mana),
           EasyTableColumn(
               name: 'Gold',
               initialWidth: 130,
-              valueMapper: (character, rowIndex) => character.gold),
+              fractionDigits: 2,
+              valueMapper: (character) => character.gold),
         ],
         rowColor: RowColors.evenOdd());
   }

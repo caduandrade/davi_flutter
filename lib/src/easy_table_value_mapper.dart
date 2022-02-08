@@ -1,2 +1,2 @@
 typedef EasyTableValueMapper<ROW_VALUE> = dynamic Function(
-    ROW_VALUE rowValue, int rowIndex);
+    ROW_VALUE rowValue);
