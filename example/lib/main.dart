@@ -65,52 +65,30 @@ class _HomePageState extends State<HomePage> {
     return EasyTable<Character>(
         rows: rows,
         columns: [
-          EasyTableColumn(
-              name: 'Name',
-              initialWidth: 150,
-              valueMapper: (character) => character.name),
-          EasyTableColumn(
-              name: 'Race',
-              initialWidth: 100,
-              valueMapper: (character) => character.race),
-          EasyTableColumn(
-              name: 'Class',
-              initialWidth: 130,
-              valueMapper: (character) => character.cls),
-          EasyTableColumn(
-              name: 'Level',
-              initialWidth: 80,
-              valueMapper: (character) => character.level),
-          EasyTableColumn(
+          EasyTableColumn.auto((character) => character.name,
+              name: 'Name', initialWidth: 150),
+          EasyTableColumn.auto((character) => character.race,
+              name: 'Race', initialWidth: 100),
+          EasyTableColumn.auto((character) => character.cls,
+              name: 'Class', initialWidth: 130),
+          EasyTableColumn.auto((character) => character.level,
+              name: 'Level', initialWidth: 80),
+          EasyTableColumn.builder(
+              (context, character) => SkillsWidget(skills: character.skills),
               name: 'Skills',
-              initialWidth: 100,
-              cellBuilder: (context, character) =>
-                  SkillsWidget(skills: character.skills)),
-          EasyTableColumn(
-              name: 'Strength',
-              initialWidth: 80,
-              valueMapper: (character) => character.strength),
-          EasyTableColumn(
-              name: 'Dexterity',
-              initialWidth: 80,
-              valueMapper: (character) => character.dexterity),
-          EasyTableColumn(
-              name: 'Intelligence',
-              initialWidth: 100,
-              valueMapper: (character) => character.intelligence),
-          EasyTableColumn(
-              name: 'Life',
-              initialWidth: 80,
-              valueMapper: (character) => character.life),
-          EasyTableColumn(
-              name: 'Mana',
-              initialWidth: 80,
-              valueMapper: (character) => character.mana),
-          EasyTableColumn(
-              name: 'Gold',
-              initialWidth: 130,
-              fractionDigits: 2,
-              valueMapper: (character) => character.gold),
+              initialWidth: 100),
+          EasyTableColumn.auto((character) => character.strength,
+              name: 'Strength', initialWidth: 80),
+          EasyTableColumn.auto((character) => character.dexterity,
+              name: 'Dexterity', initialWidth: 80),
+          EasyTableColumn.auto((character) => character.intelligence,
+              name: 'Intelligence', initialWidth: 100),
+          EasyTableColumn.auto((character) => character.life,
+              name: 'Life', initialWidth: 80),
+          EasyTableColumn.auto((character) => character.mana,
+              name: 'Mana', initialWidth: 80),
+          EasyTableColumn.auto((character) => character.gold,
+              name: 'Gold', initialWidth: 130, fractionDigits: 2),
         ],
         rowColor: RowColors.evenOdd());
   }
