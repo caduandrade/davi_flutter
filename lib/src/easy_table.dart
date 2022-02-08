@@ -48,7 +48,10 @@ class EasyTableState<ROW_VALUE> extends State<EasyTable<ROW_VALUE>> {
 
   @override
   Widget build(BuildContext context) {
-    return _content(context: context);
+    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+      _header(context: context),
+      Expanded(child: _content(context: context))
+    ]);
   }
 
   Widget _header({required BuildContext context}) {
@@ -57,12 +60,13 @@ class EasyTableState<ROW_VALUE> extends State<EasyTable<ROW_VALUE>> {
         columnIndex < widget.columns.length;
         columnIndex++) {
       EasyTableColumn<ROW_VALUE> column = widget.columns[columnIndex];
+      double width = _columnWidths[columnIndex];
+      Widget? header;
       if (column.headerBuilder != null) {
-        double width = _columnWidths[columnIndex];
-        Widget header = column.headerBuilder!(context, column, columnIndex);
-        children.add(ConstrainedBox(
-            constraints: BoxConstraints.tightFor(width: width), child: header));
+        header = column.headerBuilder!(context, column, columnIndex);
       }
+      children.add(ConstrainedBox(
+          constraints: BoxConstraints.tightFor(width: width), child: header));
     }
     return Row(children: children);
   }
