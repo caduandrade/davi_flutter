@@ -1,8 +1,7 @@
 import 'dart:math' as math;
 import 'package:easy_table/src/easy_table_column.dart';
+import 'package:easy_table/src/easy_table_row_color.dart';
 import 'package:flutter/widgets.dart';
-
-typedef EasyTableRowColor = Color? Function(int rowIndex);
 
 class EasyTable<ROW_VALUE> extends StatefulWidget {
 //TODO handle negative values
@@ -35,19 +34,40 @@ class EasyTable<ROW_VALUE> extends StatefulWidget {
 class EasyTableState<ROW_VALUE> extends State<EasyTable<ROW_VALUE>> {
   late ScrollController _verticalScrollController;
 
+  final List<double> _columnWidths = [];
+
   @override
   void initState() {
     super.initState();
+    for (EasyTableColumn<ROW_VALUE> column in widget.columns) {
+      _columnWidths.add(column.initialWidth);
+    }
     _verticalScrollController =
         widget.verticalScrollController ?? ScrollController();
   }
 
   @override
   Widget build(BuildContext context) {
-    return _tableContent(context: context);
+    return _content(context: context);
   }
 
-  Widget _tableContent({required BuildContext context}) {
+  Widget _header({required BuildContext context}) {
+    List<Widget> children = [];
+    for (int columnIndex = 0;
+        columnIndex < widget.columns.length;
+        columnIndex++) {
+      EasyTableColumn<ROW_VALUE> column = widget.columns[columnIndex];
+      if (column.headerBuilder != null) {
+        double width = _columnWidths[columnIndex];
+        Widget header = column.headerBuilder!(context, column, columnIndex);
+        children.add(ConstrainedBox(
+            constraints: BoxConstraints.tightFor(width: width), child: header));
+      }
+    }
+    return Row(children: children);
+  }
+
+  Widget _content({required BuildContext context}) {
     return ListView.builder(
         controller: _verticalScrollController,
         itemExtent: widget.rowHeight + widget.rowGap,
@@ -60,13 +80,16 @@ class EasyTableState<ROW_VALUE> extends State<EasyTable<ROW_VALUE>> {
   Widget _rowWidget({required BuildContext context, required int rowIndex}) {
     ROW_VALUE row = widget.rows[rowIndex];
     List<Widget> children = [];
-    for (EasyTableColumn<ROW_VALUE> column in widget.columns) {
+    for (int columnIndex = 0;
+        columnIndex < widget.columns.length;
+        columnIndex++) {
+      EasyTableColumn<ROW_VALUE> column = widget.columns[columnIndex];
       children.add(column.buildCellWidget(
           context: context,
           rowValue: row,
           rowIndex: rowIndex,
           rowHeight: widget.rowHeight,
-          columnWidth: column.initialWidth,
+          columnWidth: _columnWidths[columnIndex],
           columnGap: widget.columnGap));
     }
     Widget rowWidget = Row(children: children);

@@ -7,7 +7,7 @@ class EasyTableColumn<ROW_VALUE> {
       {required this.cellBuilder,
       this.initialWidth = 100,
       this.name,
-      this.headerBuilder});
+      this.headerBuilder = HeaderBuilders.defaultHeaderBuilder});
 
   final String? name;
   final double initialWidth;

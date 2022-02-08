@@ -40,7 +40,7 @@ class _HomePageState extends State<HomePage> {
       rows.add(User(name: 'Name $i', age: i));
     }
 
-    EasyTable table = EasyTable<User>(
+     EasyTable table = EasyTable<User>(
         rows: rows,
         columns: [
           EasyTableColumn(
