@@ -19,6 +19,10 @@ enum Skill {
   ac_unit
 }
 
+extension on Skill {
+  int compareTo(Skill other) => this.index.compareTo(other.index);
+}
+
 class Character {
   Character(
       {required this.name,
@@ -120,6 +124,7 @@ class Character {
       uniqueSkills.add(Skill.values[random.nextInt(Skill.values.length)]);
     }
     List<Skill> skills = uniqueSkills.toList();
+    skills.sort((a, b) => a.compareTo(b));
 
     return Character(
         cls: cls,
