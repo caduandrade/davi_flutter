@@ -16,7 +16,7 @@ class EasyTable<ROW_VALUE> extends StatefulWidget {
       this.horizontalScrollController,
       this.verticalScrollController,
       this.cellPadding = const EdgeInsets.only(left: 4, right: 4),
-      this.headerPadding = const EdgeInsets.all(4),
+      this.headerCellPadding = const EdgeInsets.all(4),
       this.rowColor})
       : super(key: key);
 
@@ -24,7 +24,7 @@ class EasyTable<ROW_VALUE> extends StatefulWidget {
   final double rowGap;
   final double cellHeight;
   final EdgeInsetsGeometry? cellPadding;
-  final EdgeInsetsGeometry? headerPadding;
+  final EdgeInsetsGeometry? headerCellPadding;
   final List<EasyTableColumn<ROW_VALUE>> columns;
   final List<ROW_VALUE> rows;
   final ScrollController? horizontalScrollController;
@@ -120,8 +120,7 @@ class EasyTableState<ROW_VALUE> extends State<EasyTable<ROW_VALUE>> {
           column: column,
           columnIndex: columnIndex,
           columnWidth: _columnWidths[columnIndex],
-          columnGap: widget.columnGap,
-          headerPadding: widget.headerPadding));
+          columnGap: widget.columnGap));
     }
     return SizedBox(child: Row(children: children), width: maxWidth);
   }
@@ -164,8 +163,7 @@ class EasyTableState<ROW_VALUE> extends State<EasyTable<ROW_VALUE>> {
           rowIndex: rowIndex,
           rowHeight: widget.rowHeight,
           columnWidth: _columnWidths[columnIndex],
-          columnGap: widget.columnGap,
-          cellPadding: widget.cellPadding));
+          columnGap: widget.columnGap));
     }
     Widget rowWidget = Row(children: children);
 
@@ -188,21 +186,27 @@ class EasyTableState<ROW_VALUE> extends State<EasyTable<ROW_VALUE>> {
       required int rowIndex,
       required double rowHeight,
       required double columnWidth,
-      required double columnGap,
-      required EdgeInsetsGeometry? cellPadding}) {
+      required double columnGap}) {
     double width = columnWidth;
-    Widget widget = column.cellBuilder(context, rowValue, rowIndex);
+    Widget cellWidget = column.cellBuilder(context, rowValue, rowIndex);
+    EdgeInsetsGeometry? padding;
     if (columnGap > 0) {
-      EdgeInsets padding = EdgeInsets.only(right: columnGap);
-      cellPadding = cellPadding != null ? cellPadding.add(padding) : padding;
-    }
-    if (cellPadding != null) {
-      widget = Padding(padding: cellPadding, child: widget);
       width += columnGap;
+      padding = EdgeInsets.only(right: columnGap);
+    }
+    if (widget.cellPadding != null) {
+      if (padding != null) {
+        padding = widget.cellPadding!.add(padding);
+      } else {
+        padding = widget.cellPadding!;
+      }
+    }
+    if (padding != null) {
+      cellWidget = Padding(padding: padding, child: cellWidget);
     }
     return ConstrainedBox(
         constraints: BoxConstraints.tightFor(width: width, height: rowHeight),
-        child: widget);
+        child: cellWidget);
   }
 
   Widget _headerCell(
@@ -210,23 +214,29 @@ class EasyTableState<ROW_VALUE> extends State<EasyTable<ROW_VALUE>> {
       required EasyTableColumn column,
       required int columnIndex,
       required double columnWidth,
-      required double columnGap,
-      required EdgeInsetsGeometry? headerPadding}) {
+      required double columnGap}) {
     double width = columnWidth;
-    Widget? widget;
+    Widget? headerCellWidget;
     if (column.headerBuilder != null) {
-      widget = column.headerBuilder!(context, column, columnIndex);
+      headerCellWidget = column.headerBuilder!(context, column, columnIndex);
     }
+    EdgeInsetsGeometry? padding;
     if (columnGap > 0) {
-      EdgeInsets padding = EdgeInsets.only(right: columnGap);
-      headerPadding =
-          headerPadding != null ? headerPadding.add(padding) : padding;
-    }
-    if (headerPadding != null) {
-      widget = Padding(padding: headerPadding, child: widget);
       width += columnGap;
+      padding = EdgeInsets.only(right: columnGap);
+    }
+    if (widget.headerCellPadding != null) {
+      if (padding != null) {
+        padding = widget.headerCellPadding!.add(padding);
+      } else {
+        padding = widget.headerCellPadding!;
+      }
+    }
+    if (padding != null) {
+      headerCellWidget = Padding(padding: padding, child: headerCellWidget);
     }
     return ConstrainedBox(
-        constraints: BoxConstraints.tightFor(width: width), child: widget);
+        constraints: BoxConstraints.tightFor(width: width),
+        child: headerCellWidget);
   }
 }

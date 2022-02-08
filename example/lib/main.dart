@@ -122,10 +122,12 @@ class _HomePageState extends State<HomePage> {
                   EasyTableCell(value: user.id)),
           EasyTableColumn(
               name: 'Name',
+              initialWidth: 150,
               cellBuilder: (context, user, rowIndex) =>
                   EasyTableCell(value: user.name)),
           EasyTableColumn(
               name: 'Age',
+              initialWidth: 80,
               cellBuilder: (context, user, rowIndex) =>
                   EasyTableCell.int(value: user.age)),
           EasyTableColumn(
@@ -135,7 +137,7 @@ class _HomePageState extends State<HomePage> {
                   value: user.accountBalance, fractionDigits: 2)),
           EasyTableColumn(
               name: 'Mobile',
-              initialWidth: 150,
+              initialWidth: 200,
               cellBuilder: (context, user, rowIndex) =>
                   EasyTableCell(value: user.mobile)),
         ],
