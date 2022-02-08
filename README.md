@@ -14,6 +14,7 @@
 * Row selection
 * Cell edition
 * Column reorder
+* Column resize
 * Pinned column
 * Sort
 * Theme

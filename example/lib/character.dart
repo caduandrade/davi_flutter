@@ -1,0 +1,89 @@
+import 'dart:math' as math;
+import 'package:flutter/services.dart' show rootBundle;
+import 'dart:async';
+import 'dart:convert';
+
+class Character {
+  Character(
+      {required this.name,
+      required this.male,
+      required this.age,
+      required this.race,
+      required this.gold,
+      required this.cls,
+      required this.level});
+
+  final String name;
+  final bool male;
+  final int age;
+  final String race;
+  final String cls;
+  final double gold;
+  final int level;
+
+  static const List<String> _races = [
+    'Dwarf',
+    'Elf',
+    'Hobbit',
+    'Human',
+    'Goblin',
+    'Golem',
+    'Orc',
+    'Troll',
+    'Angel',
+    'Elemental',
+    'Undead'
+  ];
+
+  static const List<String> _classes = [
+    'Warrior',
+    'Assassin',
+    'Mage',
+    'Ranger',
+    'Berserker',
+    'Cleric',
+    'Necromancer',
+    'Summoner',
+    'Bard',
+    'Monk',
+    'Paladin',
+    'Druid'
+  ];
+
+  static Future<List<Character>> loadCharacters() async {
+    math.Random random = math.Random();
+    List<Character> list = [];
+
+    for (String name in await _readNames('data/females.txt')) {
+      list.add(_character(name: name, male: false, random: random));
+    }
+    for (String name in await _readNames('data/males.txt')) {
+      list.add(_character(name: name, male: true, random: random));
+    }
+    list.shuffle();
+    return list;
+  }
+
+  static Future<List<String>> _readNames(String filePath) async {
+    String names = await rootBundle.loadString(filePath);
+    LineSplitter ls = const LineSplitter();
+    return ls.convert(names);
+  }
+
+  static Character _character(
+      {required String name, required bool male, required math.Random random}) {
+    String race = _races[random.nextInt(_races.length)];
+    int age = 20 + random.nextInt(80);
+    String cls = _classes[random.nextInt(_classes.length)];
+    double gold = random.nextInt(500000) * random.nextDouble();
+    int level = 1 + (random.nextInt(100) * random.nextDouble()).round();
+    return Character(
+        cls: cls,
+        name: name,
+        race: race,
+        age: age,
+        male: male,
+        gold: gold,
+        level: level);
+  }
+}

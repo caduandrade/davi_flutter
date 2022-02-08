@@ -9,7 +9,7 @@ class EasyTable<ROW_VALUE> extends StatefulWidget {
   const EasyTable(
       {Key? key,
       required this.columns,
-      required this.rows,
+      this.rows,
       this.cellHeight = 32,
       this.columnGap = 4,
       this.rowGap = 0,
@@ -27,7 +27,7 @@ class EasyTable<ROW_VALUE> extends StatefulWidget {
   final EdgeInsetsGeometry? cellPadding;
   final EdgeInsetsGeometry? headerCellPadding;
   final List<EasyTableColumn<ROW_VALUE>> columns;
-  final List<ROW_VALUE> rows;
+  final List<ROW_VALUE>? rows;
   final ScrollController? horizontalScrollController;
   final ScrollController? verticalScrollController;
   final EasyTableRowColor? rowColor;
@@ -35,6 +35,8 @@ class EasyTable<ROW_VALUE> extends StatefulWidget {
 
   double get rowHeight =>
       cellPadding != null ? cellHeight + cellPadding!.vertical : cellHeight;
+
+  int get length => rows != null ? rows!.length : 0;
 
   @override
   State<StatefulWidget> createState() => EasyTableState<ROW_VALUE>();
@@ -149,12 +151,12 @@ class EasyTableState<ROW_VALUE> extends State<EasyTable<ROW_VALUE>> {
                         itemBuilder: (context, index) {
                           return _row(context: context, rowIndex: index);
                         },
-                        itemCount: widget.rows.length)),
+                        itemCount: widget.length)),
                 width: maxWidth)));
   }
 
   Widget _row({required BuildContext context, required int rowIndex}) {
-    ROW_VALUE row = widget.rows[rowIndex];
+    ROW_VALUE row = widget.rows![rowIndex];
     List<Widget> children = [];
     for (int columnIndex = 0;
         columnIndex < widget.columns.length;
