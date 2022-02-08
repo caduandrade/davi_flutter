@@ -11,5 +11,5 @@ class EasyTableColumn<ROW_VALUE> {
   final String? name;
   final double initialWidth;
   final EasyTableCellBuilder<ROW_VALUE> cellBuilder;
-  final EasyTableHeaderBuilder? headerCellBuilder;
+  final EasyTableHeaderCellBuilder? headerCellBuilder;
 }
