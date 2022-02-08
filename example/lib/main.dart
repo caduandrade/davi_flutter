@@ -36,23 +36,22 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     List<User> rows = [];
-    for (int i = 1; i < 500; i++) {
+    for (int i = 1; i < 5000; i++) {
       rows.add(User(name: 'Name $i', age: i));
     }
 
-    EasyTable<User> table = EasyTable<User>(
+    EasyTable table = EasyTable<User>(
         rows: rows,
         columns: [
-          EasyTableColumn<User>(
+          EasyTableColumn(
+              name: 'Name',
+              cellBuilder: (context, user, rowIndex) => _cellWidget(user.name)),
+          EasyTableColumn(
+              name: 'Age',
               cellBuilder: (context, user, rowIndex) =>
-                  _cellWidget(user.name, rowIndex.isOdd)),
-          EasyTableColumn<User>(
-              cellBuilder: (context, user, rowIndex) =>
-                  _cellWidget(user.age.toString(), rowIndex.isOdd))
+                  _cellWidget(user.age.toString()))
         ],
-        easyTableRowColor: (rowIndex) {
-          return rowIndex.isOdd ? Colors.white : Colors.grey[200];
-        });
+        rowColor: RowColors.evenOdd());
 
     return Scaffold(
         appBar: AppBar(
@@ -61,7 +60,7 @@ class _HomePageState extends State<HomePage> {
         body: table);
   }
 
-  Widget _cellWidget(String value, bool odd) {
-    return Text(value);
+  Widget _cellWidget(String value) {
+    return Center(child: Text(value));
   }
 }

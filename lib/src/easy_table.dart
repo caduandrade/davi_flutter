@@ -1,33 +1,38 @@
+import 'dart:math' as math;
 import 'package:easy_table/src/easy_table_column.dart';
 import 'package:flutter/material.dart';
 
 typedef EasyTableRowColor = Color? Function(int rowIndex);
 
-class EasyTable<ROW> extends StatefulWidget {
+class EasyTable<ROW_VALUE> extends StatefulWidget {
+//TODO handle negative values
+//TODO allow null and use defaults?
   const EasyTable(
       {Key? key,
       required this.columns,
       required this.rows,
-      this.rowHeight = 50,
+      this.rowHeight = 28,
+      this.columnGap = 4,
+      this.rowGap = 0,
       this.horizontalScrollController,
       this.verticalScrollController,
-      this.easyTableRowColor})
+      this.rowColor})
       : super(key: key);
 
-  final double columnGap = 5;
-  final double rowGap = 5;
+  final double columnGap;
+  final double rowGap;
   final double rowHeight;
-  final List<EasyTableColumn<ROW>> columns;
-  final List<ROW> rows;
+  final List<EasyTableColumn<ROW_VALUE>> columns;
+  final List<ROW_VALUE> rows;
   final ScrollController? horizontalScrollController;
   final ScrollController? verticalScrollController;
-  final EasyTableRowColor? easyTableRowColor;
+  final EasyTableRowColor? rowColor;
 
   @override
-  State<StatefulWidget> createState() => EasyTableState<ROW>();
+  State<StatefulWidget> createState() => EasyTableState<ROW_VALUE>();
 }
 
-class EasyTableState<ROW> extends State<EasyTable<ROW>> {
+class EasyTableState<ROW_VALUE> extends State<EasyTable<ROW_VALUE>> {
   late ScrollController _verticalScrollController;
 
   @override
@@ -45,7 +50,7 @@ class EasyTableState<ROW> extends State<EasyTable<ROW>> {
   Widget _tableContent({required BuildContext context}) {
     return ListView.builder(
         controller: _verticalScrollController,
-        itemExtent: widget.rowHeight,
+        itemExtent: widget.rowHeight + widget.rowGap,
         itemBuilder: (context, index) {
           return _rowWidget(context: context, rowIndex: index);
         },
@@ -53,26 +58,28 @@ class EasyTableState<ROW> extends State<EasyTable<ROW>> {
   }
 
   Widget _rowWidget({required BuildContext context, required int rowIndex}) {
-    Color? rowColor;
-    if (widget.easyTableRowColor != null) {
-      rowColor = widget.easyTableRowColor!(rowIndex);
-    }
-    ROW row = widget.rows[rowIndex];
+    ROW_VALUE row = widget.rows[rowIndex];
     List<Widget> children = [];
-    for (EasyTableColumn<ROW> column in widget.columns) {
+    for (EasyTableColumn<ROW_VALUE> column in widget.columns) {
       children.add(column.buildCellWidget(
           context: context,
-          row: row,
+          rowValue: row,
           rowIndex: rowIndex,
           rowHeight: widget.rowHeight,
           columnWidth: column.initialWidth,
-          columnGap: widget.columnGap,
-          rowGap: widget.rowGap));
+          columnGap: widget.columnGap));
     }
     Widget rowWidget = Row(children: children);
-    if (rowColor != null) {
-      rowWidget = Container(child: rowWidget, color: rowColor);
+
+    if (widget.rowColor != null) {
+      rowWidget =
+          Container(child: rowWidget, color: widget.rowColor!(rowIndex));
     }
+    if (widget.rowGap > 0) {
+      rowWidget = Padding(
+          child: rowWidget, padding: EdgeInsets.only(bottom: widget.rowGap));
+    }
+
     return rowWidget;
   }
 }

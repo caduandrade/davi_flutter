@@ -3,35 +3,40 @@ import 'package:flutter/widgets.dart';
 /// Signature for a function that creates a widget for a given column and row.
 ///
 /// Used by [EasyTable].
-typedef EasyTableCellWidgetBuilder<ROW> = Widget Function(
-    BuildContext context, ROW row, int rowIndex);
+typedef EasyTableCellBuilder<ROW_VALUE> = Widget Function(
+    BuildContext context, ROW_VALUE rowValue, int rowIndex);
 
-class EasyTableColumn<ROW> {
-  EasyTableColumn({required this.cellBuilder, this.initialWidth = 100});
+typedef EasyTableHeaderBuilder = Widget Function(
+    BuildContext context, EasyTableColumn column, int columnIndex);
 
+class EasyTableColumn<ROW_VALUE> {
+  EasyTableColumn(
+      {required this.cellBuilder,
+      this.initialWidth = 100,
+      this.name,
+      this.headerBuilder});
+
+  final String? name;
   final double initialWidth;
-  final EasyTableCellWidgetBuilder<ROW> cellBuilder;
+  final EasyTableCellBuilder<ROW_VALUE> cellBuilder;
+  final EasyTableHeaderBuilder? headerBuilder;
 
   Widget buildCellWidget(
       {required BuildContext context,
-      required ROW row,
+      required ROW_VALUE rowValue,
       required int rowIndex,
       required double rowHeight,
       required double columnWidth,
-      required double columnGap,
-      required double rowGap}) {
+      required double columnGap}) {
     double width = columnWidth;
-    double height = rowHeight;
-    Widget widget = cellBuilder(context, row, rowIndex);
-    if (columnGap > 0 || rowGap > 0) {
-      widget = Padding(
-          padding: EdgeInsets.only(right: columnGap, bottom: rowGap),
-          child: widget);
+    Widget widget = cellBuilder(context, rowValue, rowIndex);
+    if (columnGap > 0) {
+      widget =
+          Padding(padding: EdgeInsets.only(right: columnGap), child: widget);
       width += columnGap;
-      height += rowGap;
     }
     return ConstrainedBox(
-        constraints: BoxConstraints.tightFor(width: width, height: height),
+        constraints: BoxConstraints.tightFor(width: width, height: rowHeight),
         child: widget);
   }
 }
