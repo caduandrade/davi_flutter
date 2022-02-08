@@ -2,4 +2,7 @@
 
 # Easy Table
 
-Complete table which builds the cells on demand.
+* Customized
+* Building cells on demand
+* Focused on Web/Desktop Applications
+* Bidirectional scroll bars

@@ -40,16 +40,28 @@ class _HomePageState extends State<HomePage> {
       rows.add(User(name: 'Name $i', age: i));
     }
 
-    EasyTable<User> table = EasyTable<User>(rows: rows, columns: [
-      EasyTableColumn<User>(cellBuilder: (context, user) => Text(user.name)),
-      EasyTableColumn<User>(
-          cellBuilder: (context, user) => Text(user.age.toString()))
-    ]);
+    EasyTable<User> table = EasyTable<User>(
+        rows: rows,
+        columns: [
+          EasyTableColumn<User>(
+              cellBuilder: (context, user, rowIndex) =>
+                  _cellWidget(user.name, rowIndex.isOdd)),
+          EasyTableColumn<User>(
+              cellBuilder: (context, user, rowIndex) =>
+                  _cellWidget(user.age.toString(), rowIndex.isOdd))
+        ],
+        easyTableRowColor: (rowIndex) {
+          return rowIndex.isOdd ? Colors.white : Colors.grey[200];
+        });
 
     return Scaffold(
         appBar: AppBar(
           title: const Text('EasyTable example'),
         ),
         body: table);
+  }
+
+  Widget _cellWidget(String value, bool odd) {
+    return Text(value);
   }
 }
