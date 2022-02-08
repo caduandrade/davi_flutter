@@ -10,13 +10,14 @@ class EasyTable<ROW_VALUE> extends StatefulWidget {
       {Key? key,
       required this.columns,
       required this.rows,
-      this.cellHeight = 28,
+      this.cellHeight = 32,
       this.columnGap = 4,
       this.rowGap = 0,
       this.horizontalScrollController,
       this.verticalScrollController,
-      this.cellPadding = const EdgeInsets.only(left: 4, right: 4),
-      this.headerCellPadding = const EdgeInsets.all(4),
+      this.cellPadding = const EdgeInsets.only(left: 8, right: 8),
+      this.headerCellPadding = const EdgeInsets.all(8),
+      this.headerBackground,
       this.rowColor})
       : super(key: key);
 
@@ -30,6 +31,7 @@ class EasyTable<ROW_VALUE> extends StatefulWidget {
   final ScrollController? horizontalScrollController;
   final ScrollController? verticalScrollController;
   final EasyTableRowColor? rowColor;
+  final Color? headerBackground;
 
   double get rowHeight =>
       cellPadding != null ? cellHeight + cellPadding!.vertical : cellHeight;
@@ -122,7 +124,9 @@ class EasyTableState<ROW_VALUE> extends State<EasyTable<ROW_VALUE>> {
           columnWidth: _columnWidths[columnIndex],
           columnGap: widget.columnGap));
     }
-    return SizedBox(child: Row(children: children), width: maxWidth);
+    Color? color = widget.headerBackground;
+    return Container(
+        child: Row(children: children), width: maxWidth, color: color);
   }
 
   Widget _rows({required BuildContext context, required double maxWidth}) {

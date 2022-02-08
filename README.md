@@ -16,4 +16,5 @@
 * Column reorder
 * Pinned column
 * Sort
+* Theme
 * And everything else, the sky is the limit
