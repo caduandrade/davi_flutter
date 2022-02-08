@@ -13,23 +13,4 @@ class EasyTableColumn<ROW_VALUE> {
   final double initialWidth;
   final EasyTableCellBuilder<ROW_VALUE> cellBuilder;
   final EasyTableHeaderBuilder? headerBuilder;
-
-  Widget buildCellWidget(
-      {required BuildContext context,
-      required ROW_VALUE rowValue,
-      required int rowIndex,
-      required double rowHeight,
-      required double columnWidth,
-      required double columnGap}) {
-    double width = columnWidth;
-    Widget widget = cellBuilder(context, rowValue, rowIndex);
-    if (columnGap > 0) {
-      widget =
-          Padding(padding: EdgeInsets.only(right: columnGap), child: widget);
-      width += columnGap;
-    }
-    return ConstrainedBox(
-        constraints: BoxConstraints.tightFor(width: width, height: rowHeight),
-        child: widget);
-  }
 }

@@ -6,3 +6,14 @@
 * Building cells on demand
 * Focused on Web/Desktop Applications
 * Bidirectional scroll bars
+
+## TODO
+
+* Collapsed rows
+* Header grouping
+* Row selection
+* Cell edition
+* Column reorder
+* Pinned column
+* Sort
+* And everything else, the sky is the limit

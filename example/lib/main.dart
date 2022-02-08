@@ -1,10 +1,8 @@
 import 'dart:math' as math;
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:easy_table/easy_table.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'dart:io';
 import 'dart:convert';
 
 void main() {
@@ -143,6 +141,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _cellWidget(String value) {
-    return Text(value, overflow: TextOverflow.ellipsis);
+    return Align(
+        child: Text(value, overflow: TextOverflow.ellipsis),
+        alignment: Alignment.centerLeft);
   }
 }
