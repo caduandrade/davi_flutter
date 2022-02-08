@@ -25,40 +25,31 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class Row {
-  Row(this.name, this.value);
+class User {
+  User({required this.name, required this.age});
 
   final String name;
-  final String value;
+  final int age;
 }
 
 class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
-    List<Row> rows = [];
-    math.Random random = math.Random();
+    List<User> rows = [];
     for (int i = 1; i < 500; i++) {
-      int value = random.nextInt(90000);
-      rows.add(Row('Name $i', value.toString()));
+      rows.add(User(name: 'Name $i', age: i));
     }
 
-    EasyTable<int, Row> table = EasyTable<int, Row>(
-      cellBuilder: _cellBuilder,
-      rows: rows,
-      columns: [1, 2],
-    );
+    EasyTable<User> table = EasyTable<User>(rows: rows, columns: [
+      EasyTableColumn<User>(cellBuilder: (context, user) => Text(user.name)),
+      EasyTableColumn<User>(
+          cellBuilder: (context, user) => Text(user.age.toString()))
+    ]);
 
     return Scaffold(
         appBar: AppBar(
           title: const Text('EasyTable example'),
         ),
-        body: Center(child: table));
-  }
-
-  Widget _cellBuilder(BuildContext context, int column, Row row) {
-    if (column == 1) {
-      return Text(row.name);
-    }
-    return Text(row.value);
+        body: table);
   }
 }
