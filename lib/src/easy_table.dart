@@ -177,7 +177,7 @@ class EasyTableState<ROW_VALUE> extends State<EasyTable<ROW_VALUE>> {
 
     if (widget.rowColor != null) {
       rowWidget =
-          Container(child: rowWidget, color: widget.rowColor!(rowIndex));
+          Container(child: rowWidget, color: widget.rowColor!(row, rowIndex));
     }
     if (widget.rowGap > 0) {
       rowWidget = Padding(
