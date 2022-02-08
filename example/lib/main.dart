@@ -79,6 +79,21 @@ class _HomePageState extends State<HomePage> {
               cellBuilder: (context, user, rowIndex) =>
                   EasyTableCell.int(value: user.level)),
           EasyTableColumn(
+              name: 'Strength',
+              initialWidth: 80,
+              cellBuilder: (context, user, rowIndex) =>
+                  EasyTableCell.int(value: user.strength)),
+          EasyTableColumn(
+              name: 'Dexterity',
+              initialWidth: 80,
+              cellBuilder: (context, user, rowIndex) =>
+                  EasyTableCell.int(value: user.dexterity)),
+          EasyTableColumn(
+              name: 'Intelligence',
+              initialWidth: 100,
+              cellBuilder: (context, user, rowIndex) =>
+                  EasyTableCell.int(value: user.intelligence)),
+          EasyTableColumn(
               name: 'Gold',
               initialWidth: 150,
               cellBuilder: (context, user, rowIndex) =>

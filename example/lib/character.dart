@@ -4,14 +4,18 @@ import 'dart:async';
 import 'dart:convert';
 
 class Character {
-  Character(
-      {required this.name,
-      required this.male,
-      required this.age,
-      required this.race,
-      required this.gold,
-      required this.cls,
-      required this.level});
+  Character({
+    required this.name,
+    required this.male,
+    required this.age,
+    required this.race,
+    required this.gold,
+    required this.cls,
+    required this.level,
+    required this.strength,
+    required this.intelligence,
+    required this.dexterity,
+  });
 
   final String name;
   final bool male;
@@ -20,6 +24,9 @@ class Character {
   final String cls;
   final double gold;
   final int level;
+  final int strength;
+  final int intelligence;
+  final int dexterity;
 
   static const List<String> _races = [
     'Dwarf',
@@ -77,6 +84,12 @@ class Character {
     String cls = _classes[random.nextInt(_classes.length)];
     double gold = random.nextInt(500000) * random.nextDouble();
     int level = 1 + (random.nextInt(100) * random.nextDouble()).round();
+    int strength =
+        math.max(level + random.nextInt(100) - random.nextInt(20), 10);
+    int intelligence =
+        math.max(level + random.nextInt(100) - random.nextInt(20), 10);
+    int dexterity =
+        math.max(level + random.nextInt(100) - random.nextInt(20), 10);
     return Character(
         cls: cls,
         name: name,
@@ -84,6 +97,9 @@ class Character {
         age: age,
         male: male,
         gold: gold,
-        level: level);
+        level: level,
+        strength: strength,
+        intelligence: intelligence,
+        dexterity: dexterity);
   }
 }
