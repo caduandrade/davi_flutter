@@ -1,6 +1,5 @@
 import 'package:easy_table/src/easy_table_cell_builder.dart';
 import 'package:easy_table/src/easy_table_header_builder.dart';
-import 'package:flutter/widgets.dart';
 
 class EasyTableColumn<ROW_VALUE> {
   EasyTableColumn(

@@ -118,31 +118,27 @@ class _HomePageState extends State<HomePage> {
           EasyTableColumn(
               name: 'Id',
               initialWidth: 150,
-              cellBuilder: (context, user, rowIndex) => _cellWidget(user.id)),
+              cellBuilder: (context, user, rowIndex) =>
+                  EasyTableCell(value: user.id)),
           EasyTableColumn(
               name: 'Name',
-              cellBuilder: (context, user, rowIndex) => _cellWidget(user.name)),
+              cellBuilder: (context, user, rowIndex) =>
+                  EasyTableCell(value: user.name)),
           EasyTableColumn(
               name: 'Age',
               cellBuilder: (context, user, rowIndex) =>
-                  _cellWidget(user.age.toString())),
+                  EasyTableCell.int(value: user.age)),
           EasyTableColumn(
               name: 'Account balance',
               initialWidth: 150,
-              cellBuilder: (context, user, rowIndex) =>
-                  _cellWidget(user.accountBalance.toStringAsFixed(2))),
+              cellBuilder: (context, user, rowIndex) => EasyTableCell.double(
+                  value: user.accountBalance, fractionDigits: 2)),
           EasyTableColumn(
               name: 'Mobile',
               initialWidth: 150,
               cellBuilder: (context, user, rowIndex) =>
-                  _cellWidget(user.mobile)),
+                  EasyTableCell(value: user.mobile)),
         ],
         rowColor: RowColors.evenOdd());
-  }
-
-  Widget _cellWidget(String value) {
-    return Align(
-        child: Text(value, overflow: TextOverflow.ellipsis),
-        alignment: Alignment.centerLeft);
   }
 }
