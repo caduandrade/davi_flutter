@@ -1,4 +1,4 @@
-import 'package:easy_table/src/easy_table_theme_data.dart';
+import 'package:easy_table/src/theme/easy_table_theme_data.dart';
 import 'package:flutter/widgets.dart';
 
 /// Applies a [EasyTable] theme to descendant widgets.

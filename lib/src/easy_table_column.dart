@@ -1,8 +1,8 @@
 import 'package:easy_table/src/easy_table_cell.dart';
 import 'package:easy_table/src/easy_table_cell_builder.dart';
 import 'package:easy_table/src/easy_table_header_cell_builder.dart';
-import 'package:easy_table/src/easy_table_theme.dart';
-import 'package:easy_table/src/easy_table_theme_data.dart';
+import 'package:easy_table/src/theme/easy_table_theme.dart';
+import 'package:easy_table/src/theme/easy_table_theme_data.dart';
 import 'package:easy_table/src/easy_table_value_mapper.dart';
 import 'package:flutter/widgets.dart';
 
@@ -93,20 +93,19 @@ class _EasyTableColumnAuto<ROW> extends EasyTableColumn<ROW> {
   Widget? buildCellWidget(BuildContext context, ROW row) {
     dynamic cellValue = valueMapper(row);
     EasyTableThemeData theme = EasyTableTheme.of(context);
+    final TextStyle? textStyle = theme.cell.textStyle;
     if (cellValue is String) {
-      return EasyTableCell(value: cellValue, textStyle: theme.cellTextStyle);
+      return EasyTableCell(value: cellValue, textStyle: textStyle);
     } else if (cellValue is int) {
-      return EasyTableCell.int(
-          value: cellValue, textStyle: theme.cellTextStyle);
+      return EasyTableCell.int(value: cellValue, textStyle: textStyle);
     } else if (cellValue is double) {
       return EasyTableCell.double(
           value: cellValue,
           fractionDigits: fractionDigits,
-          textStyle: theme.cellTextStyle);
+          textStyle: textStyle);
     } else if (cellValue == null) {
-      return EasyTableCell(textStyle: theme.cellTextStyle);
+      return EasyTableCell(textStyle: textStyle);
     }
-    return EasyTableCell(
-        value: cellValue.toString(), textStyle: theme.cellTextStyle);
+    return EasyTableCell(value: cellValue.toString(), textStyle: textStyle);
   }
 }

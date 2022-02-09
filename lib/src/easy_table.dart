@@ -1,6 +1,9 @@
 import 'dart:math' as math;
 import 'package:easy_table/src/easy_table_column.dart';
 import 'package:easy_table/src/easy_table_row_color.dart';
+import 'package:easy_table/src/theme/easy_table_theme.dart';
+import 'package:easy_table/src/theme/easy_table_theme_data.dart';
+import 'package:easy_table/src/theme/header_theme_data.dart';
 import 'package:flutter/material.dart';
 
 /// Table view designed for a large number of data.
@@ -18,16 +21,8 @@ class EasyTable<ROW> extends StatefulWidget {
       this.rowGap = 0,
       this.horizontalScrollController,
       this.verticalScrollController,
-      this.decoration = const BoxDecoration(
-          border: Border(
-              bottom: BorderSide(color: Colors.grey),
-              top: BorderSide(color: Colors.grey),
-              left: BorderSide(color: Colors.grey),
-              right: BorderSide(color: Colors.grey))),
       this.cellPadding = const EdgeInsets.only(left: 8, right: 8),
       this.headerCellPadding = const EdgeInsets.all(8),
-      this.headerDecoration = const BoxDecoration(
-          border: Border(bottom: BorderSide(color: Colors.grey))),
       this.rowColor})
       : super(key: key);
 
@@ -41,8 +36,6 @@ class EasyTable<ROW> extends StatefulWidget {
   final ScrollController? horizontalScrollController;
   final ScrollController? verticalScrollController;
   final EasyTableRowColor? rowColor;
-  final BoxDecoration? headerDecoration;
-  final BoxDecoration? decoration;
 
   double get rowHeight =>
       cellPadding != null ? cellHeight + cellPadding!.vertical : cellHeight;
@@ -130,8 +123,9 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
                 child: _rows(context: context, maxWidth: maxWidth)))
       ]);
     });
-    if (widget.decoration != null) {
-      table = Container(child: table, decoration: widget.decoration);
+    EasyTableThemeData theme = EasyTableTheme.of(context);
+    if (theme.tableDecoration != null) {
+      table = Container(child: table, decoration: theme.tableDecoration);
     }
     return table;
   }
@@ -150,10 +144,16 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
           columnWidth: _columnWidths[columnIndex],
           columnGap: widget.columnGap));
     }
+    HeaderThemeData headerTheme = EasyTableTheme.of(context).header;
+    BoxDecoration? decoration;
+    if (headerTheme.bottomBorder != null) {
+      decoration =
+          BoxDecoration(border: Border(bottom: headerTheme.bottomBorder!));
+    }
     return Container(
         child: Row(children: children),
         width: maxWidth,
-        decoration: widget.headerDecoration);
+        decoration: decoration);
   }
 
   /// Builds the table content.
