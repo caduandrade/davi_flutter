@@ -1,18 +1,22 @@
 import 'package:easy_table/easy_table.dart';
-import 'package:easy_table/src/theme/cell_theme_data.dart';
 import 'package:flutter/material.dart';
 
+//TODO handle negative values
 /// The [EasyTable] theme.
 /// Defines the configuration of the overall visual [EasyTableThemeData] for a widget subtree within the app.
 class EasyTableThemeData {
   /// Builds a theme data.
   const EasyTableThemeData(
-      {this.tableDecoration = EasyTableThemeDataDefaults.tableDecoration,
+      {this.columnGap = EasyTableThemeDataDefaults.columnGap,
+      this.rowGap = EasyTableThemeDataDefaults.rowGap,
+      this.decoration = EasyTableThemeDataDefaults.tableDecoration,
       this.cell = const CellThemeData(),
       this.header = const HeaderThemeData(),
       this.cellHeader = const CellHeaderThemeData()});
 
-  final BoxDecoration? tableDecoration;
+  final double columnGap;
+  final double rowGap;
+  final BoxDecoration? decoration;
 
   final CellThemeData cell;
   final HeaderThemeData header;
@@ -23,20 +27,26 @@ class EasyTableThemeData {
       identical(this, other) ||
       other is EasyTableThemeData &&
           runtimeType == other.runtimeType &&
-          tableDecoration == other.tableDecoration &&
+          columnGap == other.columnGap &&
+          rowGap == other.rowGap &&
+          decoration == other.decoration &&
           cell == other.cell &&
           header == other.header &&
           cellHeader == other.cellHeader;
 
   @override
   int get hashCode =>
-      tableDecoration.hashCode ^
+      columnGap.hashCode ^
+      rowGap.hashCode ^
+      decoration.hashCode ^
       cell.hashCode ^
       header.hashCode ^
       cellHeader.hashCode;
 }
 
 class EasyTableThemeDataDefaults {
+  static const double columnGap = 4;
+  static const double rowGap = 0;
   static const BoxDecoration tableDecoration = BoxDecoration(
       border: Border(
           bottom: BorderSide(color: Colors.grey),

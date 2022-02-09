@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'package:easy_table/src/easy_table_column.dart';
 import 'package:easy_table/src/easy_table_row_color.dart';
+import 'package:easy_table/src/private/layout/horizontal_layout.dart';
 import 'package:easy_table/src/theme/easy_table_theme.dart';
 import 'package:easy_table/src/theme/easy_table_theme_data.dart';
 import 'package:easy_table/src/theme/header_theme_data.dart';
@@ -17,8 +18,6 @@ class EasyTable<ROW> extends StatefulWidget {
       required this.columns,
       this.rows,
       this.cellHeight = 32,
-      this.columnGap = 4,
-      this.rowGap = 0,
       this.horizontalScrollController,
       this.verticalScrollController,
       this.cellPadding = const EdgeInsets.only(left: 8, right: 8),
@@ -26,8 +25,6 @@ class EasyTable<ROW> extends StatefulWidget {
       this.rowColor})
       : super(key: key);
 
-  final double columnGap;
-  final double rowGap;
   final double cellHeight;
   final EdgeInsetsGeometry? cellPadding;
   final EdgeInsetsGeometry? headerCellPadding;
@@ -55,15 +52,12 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
 
   final List<double> _columnWidths = [];
 
-  double _requiredWidth = 0;
-
   @override
   void initState() {
     super.initState();
     for (EasyTableColumn<ROW> column in widget.columns) {
       _columnWidths.add(column.initialWidth);
     }
-    _calculateRequiredWidth();
     _horizontalScrollController =
         widget.horizontalScrollController ?? ScrollController();
     _verticalScrollController =
@@ -96,36 +90,32 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
         .jumpTo(_horizontalScrollController.offset);
   }
 
-  void _calculateRequiredWidth() {
-    _requiredWidth = 0;
-    for (double width in _columnWidths) {
-      _requiredWidth += width;
-    }
-    _requiredWidth += (widget.columns.length) * widget.columnGap;
-  }
-
   @override
   Widget build(BuildContext context) {
     Widget table = LayoutBuilder(builder: (context, constraints) {
-      double maxWidth = math.max(constraints.maxWidth, _requiredWidth);
-      return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-        ScrollConfiguration(
-            behavior:
-                ScrollConfiguration.of(context).copyWith(scrollbars: false),
-            child: SingleChildScrollView(
-                controller: _headerHorizontalScrollController,
-                scrollDirection: Axis.horizontal,
-                child: _header(context: context, maxWidth: maxWidth))),
-        Expanded(
-            child: Scrollbar(
-                isAlwaysShown: true,
-                controller: _horizontalScrollController,
-                child: _rows(context: context, maxWidth: maxWidth)))
-      ]);
+      EasyTableThemeData theme = EasyTableTheme.of(context);
+      double requiredWidth = 0;
+      for (double width in _columnWidths) {
+        requiredWidth += width;
+      }
+      requiredWidth += (widget.columns.length) * theme.columnGap;
+      double maxWidth = math.max(constraints.maxWidth, requiredWidth);
+      return HorizontalLayout(
+          top: ScrollConfiguration(
+              behavior:
+                  ScrollConfiguration.of(context).copyWith(scrollbars: false),
+              child: SingleChildScrollView(
+                  controller: _headerHorizontalScrollController,
+                  scrollDirection: Axis.horizontal,
+                  child: _header(context: context, maxWidth: maxWidth))),
+          center: Scrollbar(
+              isAlwaysShown: true,
+              controller: _horizontalScrollController,
+              child: _rows(context: context, maxWidth: maxWidth)));
     });
     EasyTableThemeData theme = EasyTableTheme.of(context);
-    if (theme.tableDecoration != null) {
-      table = Container(child: table, decoration: theme.tableDecoration);
+    if (theme.decoration != null) {
+      table = Container(child: table, decoration: theme.decoration);
     }
     return table;
   }
@@ -141,8 +131,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
           context: context,
           column: column,
           columnIndex: columnIndex,
-          columnWidth: _columnWidths[columnIndex],
-          columnGap: widget.columnGap));
+          columnWidth: _columnWidths[columnIndex]));
     }
     HeaderThemeData headerTheme = EasyTableTheme.of(context).header;
     BoxDecoration? decoration;
@@ -158,6 +147,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
 
   /// Builds the table content.
   Widget _rows({required BuildContext context, required double maxWidth}) {
+    EasyTableThemeData theme = EasyTableTheme.of(context);
     return Scrollbar(
         isAlwaysShown: true,
         controller: _verticalScrollController,
@@ -173,7 +163,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
                         .copyWith(scrollbars: false),
                     child: ListView.builder(
                         controller: _verticalScrollController,
-                        itemExtent: widget.rowHeight + widget.rowGap,
+                        itemExtent: widget.rowHeight + theme.rowGap,
                         itemBuilder: (context, index) {
                           return _row(context: context, rowIndex: index);
                         },
@@ -183,6 +173,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
 
   /// Builds a single table row.
   Widget _row({required BuildContext context, required int rowIndex}) {
+    EasyTableThemeData theme = EasyTableTheme.of(context);
     ROW row = widget.rows![rowIndex];
     List<Widget> children = [];
     for (int columnIndex = 0;
@@ -195,8 +186,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
           column: column,
           rowIndex: rowIndex,
           rowHeight: widget.rowHeight,
-          columnWidth: _columnWidths[columnIndex],
-          columnGap: widget.columnGap));
+          columnWidth: _columnWidths[columnIndex]));
     }
     Widget rowWidget = Row(children: children);
 
@@ -204,9 +194,9 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
       rowWidget =
           Container(child: rowWidget, color: widget.rowColor!(row, rowIndex));
     }
-    if (widget.rowGap > 0) {
+    if (theme.rowGap > 0) {
       rowWidget = Padding(
-          child: rowWidget, padding: EdgeInsets.only(bottom: widget.rowGap));
+          child: rowWidget, padding: EdgeInsets.only(bottom: theme.rowGap));
     }
 
     return rowWidget;
@@ -219,15 +209,15 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
       required EasyTableColumn<ROW> column,
       required int rowIndex,
       required double rowHeight,
-      required double columnWidth,
-      required double columnGap}) {
+      required double columnWidth}) {
+    EasyTableThemeData theme = EasyTableTheme.of(context);
     double width = columnWidth;
 
     Widget? cellWidget = column.buildCellWidget(context, row);
     EdgeInsetsGeometry? padding;
-    if (columnGap > 0) {
-      width += columnGap;
-      padding = EdgeInsets.only(right: columnGap);
+    if (theme.columnGap > 0) {
+      width += theme.columnGap;
+      padding = EdgeInsets.only(right: theme.columnGap);
     }
     if (widget.cellPadding != null) {
       if (padding != null) {
@@ -249,8 +239,8 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
       {required BuildContext context,
       required EasyTableColumn column,
       required int columnIndex,
-      required double columnWidth,
-      required double columnGap}) {
+      required double columnWidth}) {
+    EasyTableThemeData theme = EasyTableTheme.of(context);
     double width = columnWidth;
     Widget? headerCellWidget;
     if (column.headerCellBuilder != null) {
@@ -258,9 +248,9 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
           column.headerCellBuilder!(context, column, columnIndex);
     }
     EdgeInsetsGeometry? padding;
-    if (columnGap > 0) {
-      width += columnGap;
-      padding = EdgeInsets.only(right: columnGap);
+    if (theme.columnGap > 0) {
+      width += theme.columnGap;
+      padding = EdgeInsets.only(right: theme.columnGap);
     }
     if (widget.headerCellPadding != null) {
       if (padding != null) {
