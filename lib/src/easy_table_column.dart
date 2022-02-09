@@ -1,6 +1,8 @@
 import 'package:easy_table/src/easy_table_cell.dart';
 import 'package:easy_table/src/easy_table_cell_builder.dart';
 import 'package:easy_table/src/easy_table_header_cell_builder.dart';
+import 'package:easy_table/src/easy_table_theme.dart';
+import 'package:easy_table/src/easy_table_theme_data.dart';
 import 'package:easy_table/src/easy_table_value_mapper.dart';
 import 'package:flutter/widgets.dart';
 
@@ -90,16 +92,21 @@ class _EasyTableColumnAuto<ROW> extends EasyTableColumn<ROW> {
   @override
   Widget? buildCellWidget(BuildContext context, ROW row) {
     dynamic cellValue = valueMapper(row);
+    EasyTableThemeData theme = EasyTableTheme.of(context);
     if (cellValue is String) {
-      return EasyTableCell(value: cellValue);
+      return EasyTableCell(value: cellValue, textStyle: theme.cellTextStyle);
     } else if (cellValue is int) {
-      return EasyTableCell.int(value: cellValue);
+      return EasyTableCell.int(
+          value: cellValue, textStyle: theme.cellTextStyle);
     } else if (cellValue is double) {
       return EasyTableCell.double(
-          value: cellValue, fractionDigits: fractionDigits);
+          value: cellValue,
+          fractionDigits: fractionDigits,
+          textStyle: theme.cellTextStyle);
     } else if (cellValue == null) {
-      return const EasyTableCell();
+      return EasyTableCell(textStyle: theme.cellTextStyle);
     }
-    return EasyTableCell(value: cellValue.toString());
+    return EasyTableCell(
+        value: cellValue.toString(), textStyle: theme.cellTextStyle);
   }
 }

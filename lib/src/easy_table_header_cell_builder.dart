@@ -1,5 +1,7 @@
 import 'package:easy_table/src/easy_table_cell.dart';
 import 'package:easy_table/src/easy_table_column.dart';
+import 'package:easy_table/src/easy_table_theme.dart';
+import 'package:easy_table/src/easy_table_theme_data.dart';
 import 'package:flutter/widgets.dart';
 
 /// Signature for a function that builds a widget for a column header.
@@ -12,8 +14,8 @@ typedef EasyTableHeaderCellBuilder = Widget Function(
 class HeaderCellBuilders {
   static Widget defaultHeaderCellBuilder(
       BuildContext context, EasyTableColumn column, int columnIndex) {
+    EasyTableThemeData theme = EasyTableTheme.of(context);
     return EasyTableCell(
-        value: column.name,
-        textStyle: const TextStyle(fontWeight: FontWeight.bold));
+        value: column.name, textStyle: theme.cellHeaderTextStyle);
   }
 }

@@ -14,7 +14,7 @@
 * [Get started](#get-started)
 * [Custom cell](#custom-cell)
 
-### Get started
+## Get started
 
 ```dart
 List<Person>? _rows;
@@ -43,7 +43,7 @@ Widget build(BuildContext context) {
 
 ![](https://caduandrade.github.io/easy_table_flutter/get_started_v1.png)
 
-### Custom cell
+## Custom cell
 
 ```dart
 List<Person>? _rows;

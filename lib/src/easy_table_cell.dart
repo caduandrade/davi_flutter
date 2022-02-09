@@ -6,19 +6,24 @@ class EasyTableCell extends StatelessWidget {
 
   /// Builds a cell that maps the value to a [double].
   factory EasyTableCell.double(
-      {Key? key, required double value, int? fractionDigits}) {
+      {Key? key,
+      required double value,
+      int? fractionDigits,
+      TextStyle? textStyle}) {
     String? str;
     if (fractionDigits != null) {
       str = value.toStringAsFixed(fractionDigits);
     } else {
       str = value.toString();
     }
-    return EasyTableCell(key: key, value: str);
+    return EasyTableCell(key: key, value: str, textStyle: textStyle);
   }
 
   /// Builds a cell that maps the value to a [int].
-  factory EasyTableCell.int({Key? key, required int value}) {
-    return EasyTableCell(key: key, value: value.toString());
+  factory EasyTableCell.int(
+      {Key? key, required int value, TextStyle? textStyle}) {
+    return EasyTableCell(
+        key: key, value: value.toString(), textStyle: textStyle);
   }
 
   final String? value;
