@@ -12,6 +12,7 @@
 ## Usage
 
 * [Get started](#get-started)
+* [Custom cell](#custom-cell)
 
 ### Get started
 
@@ -41,6 +42,36 @@ Widget build(BuildContext context) {
 ```
 
 ![](https://caduandrade.github.io/easy_table_flutter/get_started_v1.png)
+
+### Custom cell
+
+```dart
+List<Person>? _rows;
+
+@override
+void initState() {
+  super.initState();
+  _rows = [
+    Person('Landon', 1),
+    Person('Sari', 0),
+    Person('Julian', 2),
+    Person('Carey', 4),
+    Person('Cadu', 5),
+    Person('Delmar', 2)
+  ];
+}
+
+@override
+Widget build(BuildContext context) {
+  return EasyTable<Person>(rows: _rows, columns: [
+    EasyTableColumn.auto((row) => row.name, name: 'Name'),
+    EasyTableColumn.builder((context, row) => StarsWidget(stars: row.stars),
+        name: 'Rate', initialWidth: 150)
+  ]);
+}
+```
+
+![](https://caduandrade.github.io/easy_table_flutter/custom_cell_v1.png)
 
 ## TODO
 

@@ -60,37 +60,37 @@ class _HomePageState extends State<HomePage> {
     return EasyTable<Character>(
         rows: rows,
         columns: [
-          EasyTableColumn.auto((character) => character.name,
-              name: 'Name', initialWidth: 130),
+          EasyTableColumn.auto((row) => row.name,
+              name: 'Name', initialWidth: 140),
           EasyTableColumn.builder(
-              (context, character) => Align(
-                  child: character.male
+              (context, row) => Align(
+                  child: row.male
                       ? const Icon(Icons.male)
                       : const Icon(Icons.female),
                   alignment: Alignment.centerLeft),
               name: 'Gender',
               initialWidth: 70),
-          EasyTableColumn.auto((character) => character.race,
+          EasyTableColumn.auto((row) => row.race,
               name: 'Race', initialWidth: 100),
-          EasyTableColumn.auto((character) => character.cls,
+          EasyTableColumn.auto((row) => row.cls,
               name: 'Class', initialWidth: 110),
-          EasyTableColumn.auto((character) => character.level,
+          EasyTableColumn.auto((row) => row.level,
               name: 'Level', initialWidth: 80),
           EasyTableColumn.builder(
-              (context, character) => SkillsWidget(skills: character.skills),
+              (context, row) => SkillsWidget(skills: row.skills),
               name: 'Skills',
               initialWidth: 100),
-          EasyTableColumn.auto((character) => character.strength,
+          EasyTableColumn.auto((row) => row.strength,
               name: 'Strength', initialWidth: 80),
-          EasyTableColumn.auto((character) => character.dexterity,
+          EasyTableColumn.auto((row) => row.dexterity,
               name: 'Dexterity', initialWidth: 80),
-          EasyTableColumn.auto((character) => character.intelligence,
+          EasyTableColumn.auto((row) => row.intelligence,
               name: 'Intelligence', initialWidth: 90),
-          EasyTableColumn.auto((character) => character.life,
+          EasyTableColumn.auto((row) => row.life,
               name: 'Life', initialWidth: 80),
-          EasyTableColumn.auto((character) => character.mana,
+          EasyTableColumn.auto((row) => row.mana,
               name: 'Mana', initialWidth: 70),
-          EasyTableColumn.auto((character) => character.gold,
+          EasyTableColumn.auto((row) => row.gold,
               name: 'Gold', initialWidth: 110, fractionDigits: 2)
         ],
         rowColor: RowColors.evenOdd());

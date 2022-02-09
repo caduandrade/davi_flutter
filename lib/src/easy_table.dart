@@ -3,7 +3,7 @@ import 'package:easy_table/src/easy_table_column.dart';
 import 'package:easy_table/src/easy_table_row_color.dart';
 import 'package:flutter/material.dart';
 
-class EasyTable<ROW_VALUE> extends StatefulWidget {
+class EasyTable<ROW> extends StatefulWidget {
 //TODO handle negative values
 //TODO allow null and use defaults?
   const EasyTable(
@@ -33,8 +33,8 @@ class EasyTable<ROW_VALUE> extends StatefulWidget {
   final double cellHeight;
   final EdgeInsetsGeometry? cellPadding;
   final EdgeInsetsGeometry? headerCellPadding;
-  final List<EasyTableColumn<ROW_VALUE>> columns;
-  final List<ROW_VALUE>? rows;
+  final List<EasyTableColumn<ROW>> columns;
+  final List<ROW>? rows;
   final ScrollController? horizontalScrollController;
   final ScrollController? verticalScrollController;
   final EasyTableRowColor? rowColor;
@@ -47,10 +47,10 @@ class EasyTable<ROW_VALUE> extends StatefulWidget {
   int get length => rows != null ? rows!.length : 0;
 
   @override
-  State<StatefulWidget> createState() => EasyTableState<ROW_VALUE>();
+  State<StatefulWidget> createState() => EasyTableState<ROW>();
 }
 
-class EasyTableState<ROW_VALUE> extends State<EasyTable<ROW_VALUE>> {
+class EasyTableState<ROW> extends State<EasyTable<ROW>> {
   late ScrollController _verticalScrollController;
   late ScrollController _horizontalScrollController;
 
@@ -63,7 +63,7 @@ class EasyTableState<ROW_VALUE> extends State<EasyTable<ROW_VALUE>> {
   @override
   void initState() {
     super.initState();
-    for (EasyTableColumn<ROW_VALUE> column in widget.columns) {
+    for (EasyTableColumn<ROW> column in widget.columns) {
       _columnWidths.add(column.initialWidth);
     }
     _calculateRequiredWidth();
@@ -87,7 +87,7 @@ class EasyTableState<ROW_VALUE> extends State<EasyTable<ROW_VALUE>> {
   }
 
   @override
-  void didUpdateWidget(covariant EasyTable<ROW_VALUE> oldWidget) {
+  void didUpdateWidget(covariant EasyTable<ROW> oldWidget) {
     super.didUpdateWidget(oldWidget);
     //TODO update values and listeners
   }
@@ -130,7 +130,7 @@ class EasyTableState<ROW_VALUE> extends State<EasyTable<ROW_VALUE>> {
     for (int columnIndex = 0;
         columnIndex < widget.columns.length;
         columnIndex++) {
-      EasyTableColumn<ROW_VALUE> column = widget.columns[columnIndex];
+      EasyTableColumn<ROW> column = widget.columns[columnIndex];
       children.add(_headerCell(
           context: context,
           column: column,
@@ -169,15 +169,15 @@ class EasyTableState<ROW_VALUE> extends State<EasyTable<ROW_VALUE>> {
   }
 
   Widget _row({required BuildContext context, required int rowIndex}) {
-    ROW_VALUE row = widget.rows![rowIndex];
+    ROW row = widget.rows![rowIndex];
     List<Widget> children = [];
     for (int columnIndex = 0;
         columnIndex < widget.columns.length;
         columnIndex++) {
-      EasyTableColumn<ROW_VALUE> column = widget.columns[columnIndex];
+      EasyTableColumn<ROW> column = widget.columns[columnIndex];
       children.add(_cell(
           context: context,
-          rowValue: row,
+          row: row,
           column: column,
           rowIndex: rowIndex,
           rowHeight: widget.rowHeight,
@@ -200,15 +200,15 @@ class EasyTableState<ROW_VALUE> extends State<EasyTable<ROW_VALUE>> {
 
   Widget _cell(
       {required BuildContext context,
-      required ROW_VALUE rowValue,
-      required EasyTableColumn<ROW_VALUE> column,
+      required ROW row,
+      required EasyTableColumn<ROW> column,
       required int rowIndex,
       required double rowHeight,
       required double columnWidth,
       required double columnGap}) {
     double width = columnWidth;
 
-    Widget? cellWidget = column.buildCellWidget(context, rowValue);
+    Widget? cellWidget = column.buildCellWidget(context, row);
     EdgeInsetsGeometry? padding;
     if (columnGap > 0) {
       width += columnGap;
