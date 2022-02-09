@@ -66,11 +66,19 @@ class _HomePageState extends State<HomePage> {
         rows: rows,
         columns: [
           EasyTableColumn.auto((character) => character.name,
-              name: 'Name', initialWidth: 150),
+              name: 'Name', initialWidth: 130),
+          EasyTableColumn.builder(
+              (context, character) => Align(
+                  child: character.male
+                      ? const Icon(Icons.male)
+                      : const Icon(Icons.female),
+                  alignment: Alignment.centerLeft),
+              name: 'Gender',
+              initialWidth: 70),
           EasyTableColumn.auto((character) => character.race,
               name: 'Race', initialWidth: 100),
           EasyTableColumn.auto((character) => character.cls,
-              name: 'Class', initialWidth: 130),
+              name: 'Class', initialWidth: 110),
           EasyTableColumn.auto((character) => character.level,
               name: 'Level', initialWidth: 80),
           EasyTableColumn.builder(
@@ -82,13 +90,13 @@ class _HomePageState extends State<HomePage> {
           EasyTableColumn.auto((character) => character.dexterity,
               name: 'Dexterity', initialWidth: 80),
           EasyTableColumn.auto((character) => character.intelligence,
-              name: 'Intelligence', initialWidth: 100),
+              name: 'Intelligence', initialWidth: 90),
           EasyTableColumn.auto((character) => character.life,
               name: 'Life', initialWidth: 80),
           EasyTableColumn.auto((character) => character.mana,
-              name: 'Mana', initialWidth: 80),
+              name: 'Mana', initialWidth: 70),
           EasyTableColumn.auto((character) => character.gold,
-              name: 'Gold', initialWidth: 130, fractionDigits: 2),
+              name: 'Gold', initialWidth: 110, fractionDigits: 2)
         ],
         rowColor: RowColors.evenOdd());
   }

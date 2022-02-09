@@ -7,23 +7,27 @@ import 'package:flutter/widgets.dart';
 abstract class EasyTableColumn<ROW_VALUE> {
   factory EasyTableColumn.builder(EasyTableCellBuilder<ROW_VALUE> cellBuilder,
       {String? name,
+      dynamic id,
       double initialWidth = 100,
       EasyTableHeaderCellBuilder? headerCellBuilder =
           HeaderCellBuilders.defaultHeaderCellBuilder}) {
     return _EasyTableColumnBuilder(
         cellBuilder: cellBuilder,
         name: name,
+        id: id,
         initialWidth: initialWidth,
         headerCellBuilder: headerCellBuilder);
   }
   factory EasyTableColumn.auto(EasyTableValueMapper<ROW_VALUE> valueMapper,
       {int? fractionDigits,
+      dynamic id,
       String? name,
       double initialWidth = 100,
       EasyTableHeaderCellBuilder? headerCellBuilder =
           HeaderCellBuilders.defaultHeaderCellBuilder}) {
     return _EasyTableColumnAuto(
         valueMapper: valueMapper,
+        id: id,
         name: name,
         initialWidth: initialWidth,
         fractionDigits: fractionDigits,
@@ -31,8 +35,9 @@ abstract class EasyTableColumn<ROW_VALUE> {
   }
 
   EasyTableColumn(
-      {required this.initialWidth, this.name, this.headerCellBuilder});
+      {this.id, required this.initialWidth, this.name, this.headerCellBuilder});
 
+  final dynamic id;
   final String? name;
   final double initialWidth;
   final EasyTableHeaderCellBuilder? headerCellBuilder;
@@ -43,10 +48,12 @@ abstract class EasyTableColumn<ROW_VALUE> {
 class _EasyTableColumnBuilder<ROW_VALUE> extends EasyTableColumn<ROW_VALUE> {
   _EasyTableColumnBuilder(
       {required this.cellBuilder,
+      dynamic id,
       String? name,
       required double initialWidth,
       EasyTableHeaderCellBuilder? headerCellBuilder})
       : super(
+            id: id,
             name: name,
             initialWidth: initialWidth,
             headerCellBuilder: headerCellBuilder);
@@ -62,11 +69,13 @@ class _EasyTableColumnBuilder<ROW_VALUE> extends EasyTableColumn<ROW_VALUE> {
 class _EasyTableColumnAuto<ROW_VALUE> extends EasyTableColumn<ROW_VALUE> {
   _EasyTableColumnAuto(
       {required this.valueMapper,
+      dynamic id,
       this.fractionDigits,
       String? name,
       required double initialWidth,
       EasyTableHeaderCellBuilder? headerCellBuilder})
       : super(
+            id: id,
             name: name,
             initialWidth: initialWidth,
             headerCellBuilder: headerCellBuilder);

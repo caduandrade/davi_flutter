@@ -53,6 +53,8 @@ class Character {
   final int life;
   final List<Skill> skills;
 
+  bool get female => !male;
+
   static const List<String> _races = [
     'Dwarf',
     'Elf',

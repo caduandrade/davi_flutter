@@ -2,16 +2,17 @@
 
 # Easy Table
 
-* Customized
-* Building cells on demand
-* Focused on Web/Desktop Applications
-* Bidirectional scroll bars
+* Ready for a large number of data. Building cells on demand.
+* Focused on Web/Desktop Applications.
+* Bidirectional scroll bars (always visible).
+* Highly customized.
 
 ## TODO
 
 * Collapsed rows
 * Header grouping
 * Row selection
+* Custom headers
 * Cell edition
 * Column reorder
 * Column resize
