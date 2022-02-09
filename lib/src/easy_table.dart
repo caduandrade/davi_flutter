@@ -3,6 +3,9 @@ import 'package:easy_table/src/easy_table_column.dart';
 import 'package:easy_table/src/easy_table_row_color.dart';
 import 'package:flutter/material.dart';
 
+/// Table view designed for a large number of data.
+///
+/// The type [ROW] represents the data of each row.
 class EasyTable<ROW> extends StatefulWidget {
 //TODO handle negative values
 //TODO allow null and use defaults?
@@ -47,10 +50,11 @@ class EasyTable<ROW> extends StatefulWidget {
   int get length => rows != null ? rows!.length : 0;
 
   @override
-  State<StatefulWidget> createState() => EasyTableState<ROW>();
+  State<StatefulWidget> createState() => _EasyTableState<ROW>();
 }
 
-class EasyTableState<ROW> extends State<EasyTable<ROW>> {
+/// The [EasyTable] state.
+class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
   late ScrollController _verticalScrollController;
   late ScrollController _horizontalScrollController;
 
@@ -81,15 +85,22 @@ class EasyTableState<ROW> extends State<EasyTable<ROW>> {
     super.dispose();
   }
 
-  void _syncHorizontalScroll() {
-    _headerHorizontalScrollController
-        .jumpTo(_horizontalScrollController.offset);
-  }
-
   @override
   void didUpdateWidget(covariant EasyTable<ROW> oldWidget) {
     super.didUpdateWidget(oldWidget);
-    //TODO update values and listeners
+    if (widget.horizontalScrollController != null) {
+      _horizontalScrollController.removeListener(_syncHorizontalScroll);
+      _horizontalScrollController = widget.horizontalScrollController!;
+      _horizontalScrollController.addListener(_syncHorizontalScroll);
+    }
+    if (widget.verticalScrollController != null) {
+      _verticalScrollController = widget.verticalScrollController!;
+    }
+  }
+
+  void _syncHorizontalScroll() {
+    _headerHorizontalScrollController
+        .jumpTo(_horizontalScrollController.offset);
   }
 
   void _calculateRequiredWidth() {
@@ -125,6 +136,7 @@ class EasyTableState<ROW> extends State<EasyTable<ROW>> {
     return table;
   }
 
+  /// Builds a headers
   Widget _header({required BuildContext context, required double maxWidth}) {
     List<Widget> children = [];
     for (int columnIndex = 0;
@@ -144,6 +156,7 @@ class EasyTableState<ROW> extends State<EasyTable<ROW>> {
         decoration: widget.headerDecoration);
   }
 
+  /// Builds the table content.
   Widget _rows({required BuildContext context, required double maxWidth}) {
     return Scrollbar(
         isAlwaysShown: true,
@@ -168,6 +181,7 @@ class EasyTableState<ROW> extends State<EasyTable<ROW>> {
                 width: maxWidth)));
   }
 
+  /// Builds a single table row.
   Widget _row({required BuildContext context, required int rowIndex}) {
     ROW row = widget.rows![rowIndex];
     List<Widget> children = [];
@@ -198,6 +212,7 @@ class EasyTableState<ROW> extends State<EasyTable<ROW>> {
     return rowWidget;
   }
 
+  /// Builds a table cell.
   Widget _cell(
       {required BuildContext context,
       required ROW row,
@@ -229,6 +244,7 @@ class EasyTableState<ROW> extends State<EasyTable<ROW>> {
         child: cellWidget);
   }
 
+  /// Builds a table header cell.
   Widget _headerCell(
       {required BuildContext context,
       required EasyTableColumn column,

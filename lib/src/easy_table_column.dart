@@ -4,7 +4,9 @@ import 'package:easy_table/src/easy_table_header_cell_builder.dart';
 import 'package:easy_table/src/easy_table_value_mapper.dart';
 import 'package:flutter/widgets.dart';
 
+/// The [EasyTable] column.
 abstract class EasyTableColumn<ROW> {
+  /// Builds a column by defining the Widget.
   factory EasyTableColumn.builder(EasyTableCellBuilder<ROW> cellBuilder,
       {String? name,
       dynamic id,
@@ -18,6 +20,8 @@ abstract class EasyTableColumn<ROW> {
         initialWidth: initialWidth,
         headerCellBuilder: headerCellBuilder);
   }
+
+  /// Builds a column by mapping the value of a row.
   factory EasyTableColumn.auto(EasyTableValueMapper<ROW> valueMapper,
       {int? fractionDigits,
       dynamic id,
