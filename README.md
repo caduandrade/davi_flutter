@@ -2,10 +2,45 @@
 
 # Easy Table
 
+![](https://caduandrade.github.io/easy_table_flutter/easy_table_v1.png)
+
 * Ready for a large number of data. Building cells on demand.
 * Focused on Web/Desktop Applications.
 * Bidirectional scroll bars (always visible).
 * Highly customized.
+
+## Usage
+
+* [Get started](#get-started)
+
+### Get started
+
+```dart
+List<Person>? _rows;
+
+@override
+void initState() {
+  super.initState();
+  _rows = [
+    Person('Landon', 19),
+    Person('Sari', 22),
+    Person('Julian', 37),
+    Person('Carey', 39),
+    Person('Cadu', 43),
+    Person('Delmar', 72)
+  ];
+}
+
+@override
+Widget build(BuildContext context) {
+  return EasyTable<Person>(rows: _rows, columns: [
+    EasyTableColumn.auto((row) => row.name, name: 'Name'),
+    EasyTableColumn.auto((row) => row.age, name: 'Age')
+  ]);
+}
+```
+
+![](https://caduandrade.github.io/easy_table_flutter/get_started_v1.png)
 
 ## TODO
 

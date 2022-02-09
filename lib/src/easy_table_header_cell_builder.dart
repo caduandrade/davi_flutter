@@ -8,6 +8,8 @@ typedef EasyTableHeaderCellBuilder = Widget Function(
 class HeaderCellBuilders {
   static Widget defaultHeaderCellBuilder(
       BuildContext context, EasyTableColumn column, int columnIndex) {
-    return EasyTableCell(value: column.name);
+    return EasyTableCell(
+        value: column.name,
+        textStyle: const TextStyle(fontWeight: FontWeight.bold));
   }
 }
