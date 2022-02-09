@@ -15,6 +15,12 @@ class EasyTable<ROW_VALUE> extends StatefulWidget {
       this.rowGap = 0,
       this.horizontalScrollController,
       this.verticalScrollController,
+      this.decoration = const BoxDecoration(
+          border: Border(
+              bottom: BorderSide(color: Colors.grey),
+              top: BorderSide(color: Colors.grey),
+              left: BorderSide(color: Colors.grey),
+              right: BorderSide(color: Colors.grey))),
       this.cellPadding = const EdgeInsets.only(left: 8, right: 8),
       this.headerCellPadding = const EdgeInsets.all(8),
       this.headerDecoration = const BoxDecoration(
@@ -33,6 +39,7 @@ class EasyTable<ROW_VALUE> extends StatefulWidget {
   final ScrollController? verticalScrollController;
   final EasyTableRowColor? rowColor;
   final BoxDecoration? headerDecoration;
+  final BoxDecoration? decoration;
 
   double get rowHeight =>
       cellPadding != null ? cellHeight + cellPadding!.vertical : cellHeight;
@@ -95,7 +102,7 @@ class EasyTableState<ROW_VALUE> extends State<EasyTable<ROW_VALUE>> {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, constraints) {
+    Widget table = LayoutBuilder(builder: (context, constraints) {
       double maxWidth = math.max(constraints.maxWidth, _requiredWidth);
       return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         ScrollConfiguration(
@@ -112,6 +119,10 @@ class EasyTableState<ROW_VALUE> extends State<EasyTable<ROW_VALUE>> {
                 child: _rows(context: context, maxWidth: maxWidth)))
       ]);
     });
+    if (widget.decoration != null) {
+      table = Container(child: table, decoration: widget.decoration);
+    }
+    return table;
   }
 
   Widget _header({required BuildContext context, required double maxWidth}) {

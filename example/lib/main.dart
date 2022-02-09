@@ -53,12 +53,7 @@ class _HomePageState extends State<HomePage> {
         appBar: AppBar(
           title: const Text('EasyTable Example'),
         ),
-        body: Padding(
-            child: Container(
-                child: body,
-                decoration:
-                    BoxDecoration(border: Border.all(color: Colors.grey))),
-            padding: const EdgeInsets.all(32)));
+        body: Padding(child: body, padding: const EdgeInsets.all(32)));
   }
 
   Widget _table() {
