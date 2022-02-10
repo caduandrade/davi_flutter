@@ -15,12 +15,10 @@ class EasyTable<ROW> extends StatefulWidget {
       this.rows,
       this.horizontalScrollController,
       this.verticalScrollController,
-      this.cellPadding = const EdgeInsets.only(left: 8, right: 8),
       this.headerCellPadding = const EdgeInsets.all(8),
       this.rowColor})
       : super(key: key);
 
-  final EdgeInsetsGeometry? cellPadding;
   final EdgeInsetsGeometry? headerCellPadding;
   final List<EasyTableColumn<ROW>> columns;
   final List<ROW>? rows;
@@ -87,8 +85,8 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
       EasyTableThemeData theme = EasyTableTheme.of(context);
 
       double rowHeight = theme.cell.contentHeight;
-      if (widget.cellPadding != null) {
-        rowHeight += widget.cellPadding!.vertical;
+      if (theme.cell.padding != null) {
+        rowHeight += theme.cell.padding!.vertical;
       }
 
       double requiredWidth = 0;
@@ -226,11 +224,11 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
       width += theme.columnGap;
       padding = EdgeInsets.only(right: theme.columnGap);
     }
-    if (widget.cellPadding != null) {
+    if (theme.cell.padding != null) {
       if (padding != null) {
-        padding = widget.cellPadding!.add(padding);
+        padding = theme.cell.padding!.add(padding);
       } else {
-        padding = widget.cellPadding!;
+        padding = theme.cell.padding!;
       }
     }
     if (padding != null) {
