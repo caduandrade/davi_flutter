@@ -14,6 +14,7 @@ class EasyTableThemeData {
       this.rowGap = EasyTableThemeDataDefaults.rowGap,
       this.decoration = EasyTableThemeDataDefaults.tableDecoration,
       this.rowColor,
+      this.hoveredRowColor,
       this.cell = const CellThemeData(),
       this.header = const HeaderThemeData(),
       this.headerCell = const HeaderCellThemeData()});
@@ -22,6 +23,7 @@ class EasyTableThemeData {
   final double rowGap;
   final BoxDecoration? decoration;
   final EasyTableRowColor? rowColor;
+  final EasyTableRowColor? hoveredRowColor;
 
   final CellThemeData cell;
   final HeaderThemeData header;

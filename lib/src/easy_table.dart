@@ -40,7 +40,9 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
   int? _hoveredRowIndex;
   void _setHoveredRowIndex(int? value) {
     if (_hoveredRowIndex != value) {
-      _hoveredRowIndex = value;
+      setState(() {
+        _hoveredRowIndex = value;
+      });
       if (widget.onHoverListener != null) {
         widget.onHoverListener!(_hoveredRowIndex);
       }
@@ -219,7 +221,10 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
     }
     Widget rowWidget = Row(children: children);
 
-    if (theme.rowColor != null) {
+    if (_hoveredRowIndex == rowIndex && theme.hoveredRowColor != null) {
+      rowWidget =
+          Container(child: rowWidget, color: theme.hoveredRowColor!(rowIndex));
+    } else if (theme.rowColor != null) {
       rowWidget = Container(child: rowWidget, color: theme.rowColor!(rowIndex));
     }
 
