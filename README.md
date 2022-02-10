@@ -84,5 +84,5 @@ Widget build(BuildContext context) {
 * Column resize
 * Pinned column
 * Sort
-* Theme
+* More theming options
 * And everything else, the sky is the limit
