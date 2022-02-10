@@ -17,58 +17,50 @@
 ## Get started
 
 ```dart
-List<Person>? _rows;
+EasyTableModel<Person>? _model;
 
 @override
 void initState() {
   super.initState();
-  _rows = [
+
+  _model = EasyTableModel<Person>(rows: [
     Person('Landon', 19),
     Person('Sari', 22),
     Person('Julian', 37),
     Person('Carey', 39),
     Person('Cadu', 43),
     Person('Delmar', 72)
-  ];
+  ], columns: [
+    EasyTableColumn.valueMapper((row) => row.name, name: 'Name'),
+    EasyTableColumn.valueMapper((row) => row.age, name: 'Age')
+  ]);
 }
 
 @override
 Widget build(BuildContext context) {
-  return EasyTable<Person>(rows: _rows, columns: [
-    EasyTableColumn.auto((row) => row.name, name: 'Name'),
-    EasyTableColumn.auto((row) => row.age, name: 'Age')
-  ]);
+  return EasyTable<Person>(_model);
 }
 ```
 
 ![](https://caduandrade.github.io/easy_table_flutter/get_started_v1.png)
 
+Another way to initialize the columns:
+
+```dart
+_model = EasyTableModel<Person>(rows: rows);
+_model!.columnAppender()
+  ..valueMapper((row) => row.name, name: 'Name')
+  ..valueMapper((row) => row.age, name: 'Age');
+```
+
 ## Custom cell
 
 ```dart
-List<Person>? _rows;
-
-@override
-void initState() {
-  super.initState();
-  _rows = [
-    Person('Landon', 1),
-    Person('Sari', 0),
-    Person('Julian', 2),
-    Person('Carey', 4),
-    Person('Cadu', 5),
-    Person('Delmar', 2)
-  ];
-}
-
-@override
-Widget build(BuildContext context) {
-  return EasyTable<Person>(rows: _rows, columns: [
-    EasyTableColumn.auto((row) => row.name, name: 'Name'),
-    EasyTableColumn.builder((context, row) => StarsWidget(stars: row.stars),
-        name: 'Rate', initialWidth: 150)
-  ]);
-}
+  _model = EasyTableModel<Person>(rows: rows);
+  _model!.columnAppender()
+    ..valueMapper((row) => row.name, name: 'Name')
+    ..cellBuilder((context, row) => StarsWidget(stars: row.stars),
+        name: 'Rate', width: 150);
 ```
 
 ![](https://caduandrade.github.io/easy_table_flutter/custom_cell_v1.png)
