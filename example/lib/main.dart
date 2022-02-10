@@ -82,7 +82,7 @@ class _HomePageState extends State<HomePage> {
         body: Column(children: [
           _buttons(),
           Expanded(
-              child: Padding(child: body, padding: const EdgeInsets.all(32)))
+              child: Padding(child: body, padding: const EdgeInsets.all(16)))
         ], crossAxisAlignment: CrossAxisAlignment.stretch));
   }
 
@@ -103,7 +103,7 @@ class _HomePageState extends State<HomePage> {
                   onPressed: _removeFirstColumn,
                   child: const Text('Remove first column'))
             ]),
-            padding: const EdgeInsets.fromLTRB(32, 16, 32, 0)));
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0)));
   }
 
   void _removeFirstRow() {

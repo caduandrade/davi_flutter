@@ -9,8 +9,8 @@ import 'package:flutter/widgets.dart';
 /// The type [ROW] represents the data of each row.
 class EasyTableModel<ROW> extends ChangeNotifier {
   factory EasyTableModel(
-      {List<EasyTableColumn<ROW>> columns = const [],
-      List<ROW> rows = const []}) {
+      {List<ROW> rows = const [],
+      List<EasyTableColumn<ROW>> columns = const []}) {
     EasyTableModel<ROW> model = EasyTableModel._(rows);
     for (EasyTableColumn<ROW> column in columns) {
       model.addColumn(column);

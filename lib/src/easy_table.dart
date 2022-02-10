@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'package:easy_table/src/easy_table_column.dart';
 import 'package:easy_table/src/easy_table_model.dart';
 import 'package:easy_table/src/private/layout/horizontal_layout.dart';
+import 'package:easy_table/src/row_hover_listener.dart';
 import 'package:easy_table/src/theme/easy_table_theme.dart';
 import 'package:easy_table/src/theme/easy_table_theme_data.dart';
 import 'package:easy_table/src/theme/header_theme_data.dart';
@@ -16,12 +17,14 @@ class EasyTable<ROW> extends StatefulWidget {
   const EasyTable(this.model,
       {Key? key,
       this.horizontalScrollController,
-      this.verticalScrollController})
+      this.verticalScrollController,
+      this.onHoverListener})
       : super(key: key);
 
   final EasyTableModel<ROW>? model;
   final ScrollController? horizontalScrollController;
   final ScrollController? verticalScrollController;
+  final OnRowHoverListener? onHoverListener;
 
   @override
   State<StatefulWidget> createState() => _EasyTableState<ROW>();
@@ -33,6 +36,16 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
   late ScrollController _horizontalScrollController;
 
   final ScrollController _headerHorizontalScrollController = ScrollController();
+
+  int? _hoveredRowIndex;
+  void _setHoveredRowIndex(int? value) {
+    if (_hoveredRowIndex != value) {
+      _hoveredRowIndex = value;
+      if (widget.onHoverListener != null) {
+        widget.onHoverListener!(_hoveredRowIndex);
+      }
+    }
+  }
 
   @override
   void initState() {
@@ -168,17 +181,19 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
                 child: ScrollConfiguration(
                     behavior: ScrollConfiguration.of(context)
                         .copyWith(scrollbars: false),
-                    child: ListView.builder(
-                        controller: _verticalScrollController,
-                        itemExtent: rowHeight + theme.rowGap,
-                        itemBuilder: (context, index) {
-                          return _row(
-                              context: context,
-                              model: model,
-                              rowIndex: index,
-                              rowHeight: rowHeight);
-                        },
-                        itemCount: model.rowsLength)),
+                    child: MouseRegion(
+                        child: ListView.builder(
+                            controller: _verticalScrollController,
+                            itemExtent: rowHeight + theme.rowGap,
+                            itemBuilder: (context, index) {
+                              return _row(
+                                  context: context,
+                                  model: model,
+                                  rowIndex: index,
+                                  rowHeight: rowHeight);
+                            },
+                            itemCount: model.rowsLength),
+                        onExit: (event) => _setHoveredRowIndex(null))),
                 width: maxWidth)));
   }
 
@@ -207,6 +222,10 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
     if (theme.rowColor != null) {
       rowWidget = Container(child: rowWidget, color: theme.rowColor!(rowIndex));
     }
+
+    rowWidget = MouseRegion(
+        child: rowWidget, onEnter: (event) => _setHoveredRowIndex(rowIndex));
+
     if (theme.rowGap > 0) {
       rowWidget = Padding(
           child: rowWidget, padding: EdgeInsets.only(bottom: theme.rowGap));
