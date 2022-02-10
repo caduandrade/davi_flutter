@@ -1,10 +1,6 @@
 import 'dart:math' as math;
-import 'package:easy_table/src/easy_table_column.dart';
-import 'package:easy_table/src/easy_table_row_color.dart';
+import 'package:easy_table/easy_table.dart';
 import 'package:easy_table/src/private/layout/horizontal_layout.dart';
-import 'package:easy_table/src/theme/easy_table_theme.dart';
-import 'package:easy_table/src/theme/easy_table_theme_data.dart';
-import 'package:easy_table/src/theme/header_theme_data.dart';
 import 'package:flutter/material.dart';
 
 /// Table view designed for a large number of data.
@@ -17,7 +13,6 @@ class EasyTable<ROW> extends StatefulWidget {
       {Key? key,
       required this.columns,
       this.rows,
-      this.cellHeight = 32,
       this.horizontalScrollController,
       this.verticalScrollController,
       this.cellPadding = const EdgeInsets.only(left: 8, right: 8),
@@ -25,7 +20,6 @@ class EasyTable<ROW> extends StatefulWidget {
       this.rowColor})
       : super(key: key);
 
-  final double cellHeight;
   final EdgeInsetsGeometry? cellPadding;
   final EdgeInsetsGeometry? headerCellPadding;
   final List<EasyTableColumn<ROW>> columns;
@@ -33,9 +27,6 @@ class EasyTable<ROW> extends StatefulWidget {
   final ScrollController? horizontalScrollController;
   final ScrollController? verticalScrollController;
   final EasyTableRowColor? rowColor;
-
-  double get rowHeight =>
-      cellPadding != null ? cellHeight + cellPadding!.vertical : cellHeight;
 
   int get length => rows != null ? rows!.length : 0;
 
@@ -94,6 +85,12 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
   Widget build(BuildContext context) {
     Widget table = LayoutBuilder(builder: (context, constraints) {
       EasyTableThemeData theme = EasyTableTheme.of(context);
+
+      double rowHeight = theme.cell.contentHeight;
+      if (widget.cellPadding != null) {
+        rowHeight += widget.cellPadding!.vertical;
+      }
+
       double requiredWidth = 0;
       for (double width in _columnWidths) {
         requiredWidth += width;
@@ -111,7 +108,8 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
           center: Scrollbar(
               isAlwaysShown: true,
               controller: _horizontalScrollController,
-              child: _rows(context: context, maxWidth: maxWidth)));
+              child: _rows(
+                  context: context, maxWidth: maxWidth, rowHeight: rowHeight)));
     });
     EasyTableThemeData theme = EasyTableTheme.of(context);
     if (theme.decoration != null) {
@@ -146,7 +144,10 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
   }
 
   /// Builds the table content.
-  Widget _rows({required BuildContext context, required double maxWidth}) {
+  Widget _rows(
+      {required BuildContext context,
+      required double maxWidth,
+      required double rowHeight}) {
     EasyTableThemeData theme = EasyTableTheme.of(context);
     return Scrollbar(
         isAlwaysShown: true,
@@ -163,16 +164,22 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
                         .copyWith(scrollbars: false),
                     child: ListView.builder(
                         controller: _verticalScrollController,
-                        itemExtent: widget.rowHeight + theme.rowGap,
+                        itemExtent: rowHeight + theme.rowGap,
                         itemBuilder: (context, index) {
-                          return _row(context: context, rowIndex: index);
+                          return _row(
+                              context: context,
+                              rowIndex: index,
+                              rowHeight: rowHeight);
                         },
                         itemCount: widget.length)),
                 width: maxWidth)));
   }
 
   /// Builds a single table row.
-  Widget _row({required BuildContext context, required int rowIndex}) {
+  Widget _row(
+      {required BuildContext context,
+      required int rowIndex,
+      required double rowHeight}) {
     EasyTableThemeData theme = EasyTableTheme.of(context);
     ROW row = widget.rows![rowIndex];
     List<Widget> children = [];
@@ -185,7 +192,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
           row: row,
           column: column,
           rowIndex: rowIndex,
-          rowHeight: widget.rowHeight,
+          rowHeight: rowHeight,
           columnWidth: _columnWidths[columnIndex]));
     }
     Widget rowWidget = Row(children: children);

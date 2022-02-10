@@ -5,18 +5,29 @@ import 'package:flutter/material.dart';
 /// Defines the configuration of the overall visual [CellThemeData] for a widget subtree within the app.
 class CellThemeData {
   /// Builds a theme data.
-  const CellThemeData({this.textStyle});
+  const CellThemeData(
+      {this.textStyle,
+      this.contentHeight = CellThemeDataDefaults.contentHeight});
 
   /// Defines the text style.
   final TextStyle? textStyle;
+
+  /// The cell content height.
+  /// The default value is defined by [CellThemeDataDefaults.contentHeight].
+  final double contentHeight;
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is CellThemeData &&
           runtimeType == other.runtimeType &&
-          textStyle == other.textStyle;
+          textStyle == other.textStyle &&
+          contentHeight == other.contentHeight;
 
   @override
-  int get hashCode => textStyle.hashCode;
+  int get hashCode => textStyle.hashCode ^ contentHeight.hashCode;
+}
+
+class CellThemeDataDefaults {
+  static const double contentHeight = 32;
 }
