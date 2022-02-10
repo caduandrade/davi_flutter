@@ -1,4 +1,3 @@
-import 'package:easy_table/easy_table.dart';
 import 'package:flutter/material.dart';
 
 /// The [EasyTable] header theme.

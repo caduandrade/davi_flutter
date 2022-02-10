@@ -1,4 +1,3 @@
-import 'package:easy_table/easy_table.dart';
 import 'package:flutter/material.dart';
 
 /// The [EasyTable] cell header theme.
@@ -19,10 +18,11 @@ class HeaderCellThemeData {
       identical(this, other) ||
       other is HeaderCellThemeData &&
           runtimeType == other.runtimeType &&
-          textStyle == other.textStyle;
+          textStyle == other.textStyle &&
+          padding == other.padding;
 
   @override
-  int get hashCode => textStyle.hashCode;
+  int get hashCode => textStyle.hashCode ^ padding.hashCode;
 }
 
 class HeaderCellThemeDataDefaults {

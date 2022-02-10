@@ -1,4 +1,7 @@
-import 'package:easy_table/easy_table.dart';
+import 'package:easy_table/src/easy_table_row_color.dart';
+import 'package:easy_table/src/theme/cell_theme_data.dart';
+import 'package:easy_table/src/theme/header_cell_theme_data.dart';
+import 'package:easy_table/src/theme/header_theme_data.dart';
 import 'package:flutter/material.dart';
 
 //TODO handle negative values
@@ -10,6 +13,7 @@ class EasyTableThemeData {
       {this.columnGap = EasyTableThemeDataDefaults.columnGap,
       this.rowGap = EasyTableThemeDataDefaults.rowGap,
       this.decoration = EasyTableThemeDataDefaults.tableDecoration,
+      this.rowColor,
       this.cell = const CellThemeData(),
       this.header = const HeaderThemeData(),
       this.headerCell = const HeaderCellThemeData()});
@@ -17,34 +21,26 @@ class EasyTableThemeData {
   final double columnGap;
   final double rowGap;
   final BoxDecoration? decoration;
+  final EasyTableRowColor? rowColor;
 
   final CellThemeData cell;
   final HeaderThemeData header;
   final HeaderCellThemeData headerCell;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is EasyTableThemeData &&
-          runtimeType == other.runtimeType &&
-          columnGap == other.columnGap &&
-          rowGap == other.rowGap &&
-          decoration == other.decoration &&
-          cell == other.cell &&
-          header == other.header &&
-          headerCell == other.headerCell;
-
-  @override
-  int get hashCode =>
-      columnGap.hashCode ^
-      rowGap.hashCode ^
-      decoration.hashCode ^
-      cell.hashCode ^
-      header.hashCode ^
-      headerCell.hashCode;
 }
 
 class EasyTableThemeDataDefaults {
+  static EasyTableRowColor rowZebraColor({Color? evenColor, Color? oddColor}) {
+    return (rowIndex) {
+      return rowIndex.isOdd ? evenColor : oddColor;
+    };
+  }
+
+  static Color? _rowWhiteGreyColor(int rowIndex) {
+    return rowIndex.isOdd ? Colors.white : Colors.grey[100];
+  }
+
+  static const EasyTableRowColor rowWhiteGreyColor = _rowWhiteGreyColor;
+
   static const double columnGap = 4;
   static const double rowGap = 0;
   static const BoxDecoration tableDecoration = BoxDecoration(

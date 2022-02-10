@@ -1,6 +1,9 @@
 import 'dart:math' as math;
-import 'package:easy_table/easy_table.dart';
+import 'package:easy_table/src/easy_table_column.dart';
 import 'package:easy_table/src/private/layout/horizontal_layout.dart';
+import 'package:easy_table/src/theme/easy_table_theme.dart';
+import 'package:easy_table/src/theme/easy_table_theme_data.dart';
+import 'package:easy_table/src/theme/header_theme_data.dart';
 import 'package:flutter/material.dart';
 
 /// Table view designed for a large number of data.
@@ -14,15 +17,13 @@ class EasyTable<ROW> extends StatefulWidget {
       required this.columns,
       this.rows,
       this.horizontalScrollController,
-      this.verticalScrollController,
-      this.rowColor})
+      this.verticalScrollController})
       : super(key: key);
 
   final List<EasyTableColumn<ROW>> columns;
   final List<ROW>? rows;
   final ScrollController? horizontalScrollController;
   final ScrollController? verticalScrollController;
-  final EasyTableRowColor? rowColor;
 
   int get length => rows != null ? rows!.length : 0;
 
@@ -193,9 +194,8 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
     }
     Widget rowWidget = Row(children: children);
 
-    if (widget.rowColor != null) {
-      rowWidget =
-          Container(child: rowWidget, color: widget.rowColor!(row, rowIndex));
+    if (theme.rowColor != null) {
+      rowWidget = Container(child: rowWidget, color: theme.rowColor!(rowIndex));
     }
     if (theme.rowGap > 0) {
       rowWidget = Padding(
