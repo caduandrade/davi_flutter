@@ -1,7 +1,7 @@
 ## 0.2.0
 
-* [EasyTableTheme] widget to applies a theme to descendant widgets.
-  * More theming options will be added to [EasyTableThemeData].
+* `EasyTableTheme` widget to applies a theme to descendant widgets.
+  * More theming options will be added to `EasyTableThemeData`.
 
 ## 0.1.0
 

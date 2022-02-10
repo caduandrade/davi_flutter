@@ -7,19 +7,19 @@ import 'package:easy_table/src/easy_table_value_mapper.dart';
 import 'package:flutter/widgets.dart';
 
 /// The [EasyTable] column.
-abstract class EasyTableColumn<ROW> {
+abstract class EasyTableColumn<ROW> extends ChangeNotifier {
   /// Builds a column by defining the Widget.
   factory EasyTableColumn.builder(EasyTableCellBuilder<ROW> cellBuilder,
       {String? name,
       dynamic id,
-      double initialWidth = 100,
+      double width = 100,
       EasyTableHeaderCellBuilder? headerCellBuilder =
           HeaderCellBuilders.defaultHeaderCellBuilder}) {
     return _EasyTableColumnBuilder(
         cellBuilder: cellBuilder,
         name: name,
         id: id,
-        initialWidth: initialWidth,
+        width: width,
         headerCellBuilder: headerCellBuilder);
   }
 
@@ -28,25 +28,33 @@ abstract class EasyTableColumn<ROW> {
       {int? fractionDigits,
       dynamic id,
       String? name,
-      double initialWidth = 100,
+      double width = 100,
       EasyTableHeaderCellBuilder? headerCellBuilder =
           HeaderCellBuilders.defaultHeaderCellBuilder}) {
     return _EasyTableColumnAuto(
         valueMapper: valueMapper,
         id: id,
         name: name,
-        initialWidth: initialWidth,
+        width: width,
         fractionDigits: fractionDigits,
         headerCellBuilder: headerCellBuilder);
   }
 
   EasyTableColumn(
-      {this.id, required this.initialWidth, this.name, this.headerCellBuilder});
+      {this.id, required double width, this.name, this.headerCellBuilder})
+      : _width = width;
 
   final dynamic id;
   final String? name;
-  final double initialWidth;
+  double _width;
   final EasyTableHeaderCellBuilder? headerCellBuilder;
+
+  double get width => _width;
+  set width(double value) {
+    //TODO negative check
+    _width = value;
+    notifyListeners();
+  }
 
   Widget? buildCellWidget(BuildContext context, ROW row);
 }
@@ -56,12 +64,12 @@ class _EasyTableColumnBuilder<ROW> extends EasyTableColumn<ROW> {
       {required this.cellBuilder,
       dynamic id,
       String? name,
-      required double initialWidth,
+      required double width,
       EasyTableHeaderCellBuilder? headerCellBuilder})
       : super(
             id: id,
             name: name,
-            initialWidth: initialWidth,
+            width: width,
             headerCellBuilder: headerCellBuilder);
 
   final EasyTableCellBuilder<ROW> cellBuilder;
@@ -78,12 +86,12 @@ class _EasyTableColumnAuto<ROW> extends EasyTableColumn<ROW> {
       dynamic id,
       this.fractionDigits,
       String? name,
-      required double initialWidth,
+      required double width,
       EasyTableHeaderCellBuilder? headerCellBuilder})
       : super(
             id: id,
             name: name,
-            initialWidth: initialWidth,
+            width: width,
             headerCellBuilder: headerCellBuilder);
 
   final EasyTableValueMapper<ROW> valueMapper;

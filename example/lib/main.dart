@@ -28,14 +28,41 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<Character>? rows;
+  EasyTableModel<Character>? _model;
 
   @override
   void initState() {
     super.initState();
     Character.loadCharacters().then((characters) {
       setState(() {
-        rows = characters;
+        _model = EasyTableModel(rows: characters, columns: [
+          EasyTableColumn.auto((row) => row.name, name: 'Name', width: 140),
+          EasyTableColumn.builder(
+              (context, row) => Align(
+                  child: row.male
+                      ? const Icon(Icons.male)
+                      : const Icon(Icons.female),
+                  alignment: Alignment.centerLeft),
+              name: 'Gender',
+              width: 70),
+          EasyTableColumn.auto((row) => row.race, name: 'Race', width: 100),
+          EasyTableColumn.auto((row) => row.cls, name: 'Class', width: 110),
+          EasyTableColumn.auto((row) => row.level, name: 'Level', width: 80),
+          EasyTableColumn.builder(
+              (context, row) => SkillsWidget(skills: row.skills),
+              name: 'Skills',
+              width: 100),
+          EasyTableColumn.auto((row) => row.strength,
+              name: 'Strength', width: 80),
+          EasyTableColumn.auto((row) => row.dexterity,
+              name: 'Dexterity', width: 80),
+          EasyTableColumn.auto((row) => row.intelligence,
+              name: 'Intelligence', width: 90),
+          EasyTableColumn.auto((row) => row.life, name: 'Life', width: 80),
+          EasyTableColumn.auto((row) => row.mana, name: 'Mana', width: 70),
+          EasyTableColumn.auto((row) => row.gold,
+              name: 'Gold', width: 110, fractionDigits: 2)
+        ]);
       });
     });
   }
@@ -43,7 +70,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     Widget? body;
-    if (rows == null) {
+    if (_model == null) {
       body = const Center(child: CircularProgressIndicator());
     } else {
       // body = EasyTableTheme(child: _table(), data: EasyTableThemeData());
@@ -54,36 +81,31 @@ class _HomePageState extends State<HomePage> {
         appBar: AppBar(
           title: const Text('EasyTable Example'),
         ),
-        body: Padding(child: body, padding: const EdgeInsets.all(32)));
+        body: Column(children: [
+          _buttons(),
+          Expanded(
+              child: Padding(child: body, padding: const EdgeInsets.all(32)))
+        ], crossAxisAlignment: CrossAxisAlignment.stretch));
   }
 
   Widget _table() {
-    return EasyTable<Character>(rows: rows, columns: [
-      EasyTableColumn.auto((row) => row.name, name: 'Name', initialWidth: 140),
-      EasyTableColumn.builder(
-          (context, row) => Align(
-              child:
-                  row.male ? const Icon(Icons.male) : const Icon(Icons.female),
-              alignment: Alignment.centerLeft),
-          name: 'Gender',
-          initialWidth: 70),
-      EasyTableColumn.auto((row) => row.race, name: 'Race', initialWidth: 100),
-      EasyTableColumn.auto((row) => row.cls, name: 'Class', initialWidth: 110),
-      EasyTableColumn.auto((row) => row.level, name: 'Level', initialWidth: 80),
-      EasyTableColumn.builder(
-          (context, row) => SkillsWidget(skills: row.skills),
-          name: 'Skills',
-          initialWidth: 100),
-      EasyTableColumn.auto((row) => row.strength,
-          name: 'Strength', initialWidth: 80),
-      EasyTableColumn.auto((row) => row.dexterity,
-          name: 'Dexterity', initialWidth: 80),
-      EasyTableColumn.auto((row) => row.intelligence,
-          name: 'Intelligence', initialWidth: 90),
-      EasyTableColumn.auto((row) => row.life, name: 'Life', initialWidth: 80),
-      EasyTableColumn.auto((row) => row.mana, name: 'Mana', initialWidth: 70),
-      EasyTableColumn.auto((row) => row.gold,
-          name: 'Gold', initialWidth: 110, fractionDigits: 2)
-    ]);
+    return EasyTable<Character>(model: _model!);
+  }
+
+  Widget _buttons() {
+    return SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Padding(
+            child: Row(children: [
+              ElevatedButton(
+                  onPressed: _removeFirst, child: const Text('Remove first'))
+            ]),
+            padding: const EdgeInsets.fromLTRB(32, 16, 32, 0)));
+  }
+
+  void _removeFirst() {
+    if (_model != null && _model!.isRowsNotEmpty) {
+      _model!.removeRowAt(0);
+    }
   }
 }

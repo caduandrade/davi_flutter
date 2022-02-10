@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 import 'package:easy_table/src/easy_table_column.dart';
+import 'package:easy_table/src/easy_table_model.dart';
 import 'package:easy_table/src/private/layout/horizontal_layout.dart';
 import 'package:easy_table/src/theme/easy_table_theme.dart';
 import 'package:easy_table/src/theme/easy_table_theme_data.dart';
@@ -14,18 +15,14 @@ class EasyTable<ROW> extends StatefulWidget {
 //TODO allow null and use defaults?
   const EasyTable(
       {Key? key,
-      required this.columns,
-      this.rows,
+      required this.model,
       this.horizontalScrollController,
       this.verticalScrollController})
       : super(key: key);
 
-  final List<EasyTableColumn<ROW>> columns;
-  final List<ROW>? rows;
+  final EasyTableModel<ROW> model;
   final ScrollController? horizontalScrollController;
   final ScrollController? verticalScrollController;
-
-  int get length => rows != null ? rows!.length : 0;
 
   @override
   State<StatefulWidget> createState() => _EasyTableState<ROW>();
@@ -38,14 +35,12 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
 
   final ScrollController _headerHorizontalScrollController = ScrollController();
 
-  final List<double> _columnWidths = [];
-
   @override
   void initState() {
     super.initState();
-    for (EasyTableColumn<ROW> column in widget.columns) {
-      _columnWidths.add(column.initialWidth);
-    }
+
+    widget.model.addListener(_rebuild);
+
     _horizontalScrollController =
         widget.horizontalScrollController ?? ScrollController();
     _verticalScrollController =
@@ -56,6 +51,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
 
   @override
   void dispose() {
+    widget.model.removeListener(_rebuild);
     _horizontalScrollController.removeListener(_syncHorizontalScroll);
     super.dispose();
   }
@@ -63,6 +59,10 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
   @override
   void didUpdateWidget(covariant EasyTable<ROW> oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (widget.model != oldWidget.model) {
+      oldWidget.model.removeListener(_rebuild);
+      widget.model.addListener(_rebuild);
+    }
     if (widget.horizontalScrollController != null) {
       _horizontalScrollController.removeListener(_syncHorizontalScroll);
       _horizontalScrollController = widget.horizontalScrollController!;
@@ -71,6 +71,10 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
     if (widget.verticalScrollController != null) {
       _verticalScrollController = widget.verticalScrollController!;
     }
+  }
+
+  void _rebuild() {
+    setState(() {});
   }
 
   void _syncHorizontalScroll() {
@@ -88,11 +92,8 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
         rowHeight += theme.cell.padding!.vertical;
       }
 
-      double requiredWidth = 0;
-      for (double width in _columnWidths) {
-        requiredWidth += width;
-      }
-      requiredWidth += (widget.columns.length) * theme.columnGap;
+      double requiredWidth = widget.model.columnsWidth;
+      requiredWidth += (widget.model.columnsLength) * theme.columnGap;
       double maxWidth = math.max(constraints.maxWidth, requiredWidth);
       return HorizontalLayout(
           top: ScrollConfiguration(
@@ -119,14 +120,11 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
   Widget _header({required BuildContext context, required double maxWidth}) {
     List<Widget> children = [];
     for (int columnIndex = 0;
-        columnIndex < widget.columns.length;
+        columnIndex < widget.model.columnsLength;
         columnIndex++) {
-      EasyTableColumn<ROW> column = widget.columns[columnIndex];
+      EasyTableColumn<ROW> column = widget.model.columnAt(columnIndex);
       children.add(_headerCell(
-          context: context,
-          column: column,
-          columnIndex: columnIndex,
-          columnWidth: _columnWidths[columnIndex]));
+          context: context, column: column, columnIndex: columnIndex));
     }
     HeaderThemeData headerTheme = EasyTableTheme.of(context).header;
     BoxDecoration? decoration;
@@ -168,7 +166,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
                               rowIndex: index,
                               rowHeight: rowHeight);
                         },
-                        itemCount: widget.length)),
+                        itemCount: widget.model.rowsLength)),
                 width: maxWidth)));
   }
 
@@ -178,19 +176,18 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
       required int rowIndex,
       required double rowHeight}) {
     EasyTableThemeData theme = EasyTableTheme.of(context);
-    ROW row = widget.rows![rowIndex];
+    ROW row = widget.model.rowAt(rowIndex);
     List<Widget> children = [];
     for (int columnIndex = 0;
-        columnIndex < widget.columns.length;
+        columnIndex < widget.model.columnsLength;
         columnIndex++) {
-      EasyTableColumn<ROW> column = widget.columns[columnIndex];
+      EasyTableColumn<ROW> column = widget.model.columnAt(columnIndex);
       children.add(_cell(
           context: context,
           row: row,
           column: column,
           rowIndex: rowIndex,
-          rowHeight: rowHeight,
-          columnWidth: _columnWidths[columnIndex]));
+          rowHeight: rowHeight));
     }
     Widget rowWidget = Row(children: children);
 
@@ -211,10 +208,9 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
       required ROW row,
       required EasyTableColumn<ROW> column,
       required int rowIndex,
-      required double rowHeight,
-      required double columnWidth}) {
+      required double rowHeight}) {
     EasyTableThemeData theme = EasyTableTheme.of(context);
-    double width = columnWidth;
+    double width = column.width;
 
     Widget? cellWidget = column.buildCellWidget(context, row);
     EdgeInsetsGeometry? padding;
@@ -241,10 +237,9 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
   Widget _headerCell(
       {required BuildContext context,
       required EasyTableColumn column,
-      required int columnIndex,
-      required double columnWidth}) {
+      required int columnIndex}) {
     EasyTableThemeData theme = EasyTableTheme.of(context);
-    double width = columnWidth;
+    double width = column.width;
     Widget? headerCellWidget;
     if (column.headerCellBuilder != null) {
       headerCellWidget =
