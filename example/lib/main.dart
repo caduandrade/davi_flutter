@@ -33,36 +33,34 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+
     Character.loadCharacters().then((characters) {
+      EasyTableModel<Character> model = EasyTableModel(rows: characters);
+      model.columnAppender()
+        ..valueMapper((row) => row.name, name: 'Name', width: 140)
+        ..cellBuilder(
+            (context, row) => Align(
+                child: row.male
+                    ? const Icon(Icons.male)
+                    : const Icon(Icons.female),
+                alignment: Alignment.centerLeft),
+            name: 'Gender',
+            width: 70)
+        ..valueMapper((row) => row.race, name: 'Race', width: 100)
+        ..valueMapper((row) => row.cls, name: 'Class', width: 110)
+        ..valueMapper((row) => row.level, name: 'Level', width: 80)
+        ..cellBuilder((context, row) => SkillsWidget(skills: row.skills),
+            name: 'Skills', width: 100)
+        ..valueMapper((row) => row.strength, name: 'Strength', width: 80)
+        ..valueMapper((row) => row.dexterity, name: 'Dexterity', width: 80)
+        ..valueMapper((row) => row.intelligence,
+            name: 'Intelligence', width: 90)
+        ..valueMapper((row) => row.life, name: 'Life', width: 80)
+        ..valueMapper((row) => row.mana, name: 'Mana', width: 70)
+        ..valueMapper((row) => row.gold,
+            name: 'Gold', width: 110, fractionDigits: 2);
       setState(() {
-        _model = EasyTableModel(rows: characters, columns: [
-          EasyTableColumn.auto((row) => row.name, name: 'Name', width: 140),
-          EasyTableColumn.builder(
-              (context, row) => Align(
-                  child: row.male
-                      ? const Icon(Icons.male)
-                      : const Icon(Icons.female),
-                  alignment: Alignment.centerLeft),
-              name: 'Gender',
-              width: 70),
-          EasyTableColumn.auto((row) => row.race, name: 'Race', width: 100),
-          EasyTableColumn.auto((row) => row.cls, name: 'Class', width: 110),
-          EasyTableColumn.auto((row) => row.level, name: 'Level', width: 80),
-          EasyTableColumn.builder(
-              (context, row) => SkillsWidget(skills: row.skills),
-              name: 'Skills',
-              width: 100),
-          EasyTableColumn.auto((row) => row.strength,
-              name: 'Strength', width: 80),
-          EasyTableColumn.auto((row) => row.dexterity,
-              name: 'Dexterity', width: 80),
-          EasyTableColumn.auto((row) => row.intelligence,
-              name: 'Intelligence', width: 90),
-          EasyTableColumn.auto((row) => row.life, name: 'Life', width: 80),
-          EasyTableColumn.auto((row) => row.mana, name: 'Mana', width: 70),
-          EasyTableColumn.auto((row) => row.gold,
-              name: 'Gold', width: 110, fractionDigits: 2)
-        ]);
+        _model = model;
       });
     });
   }
@@ -98,14 +96,25 @@ class _HomePageState extends State<HomePage> {
         child: Padding(
             child: Row(children: [
               ElevatedButton(
-                  onPressed: _removeFirst, child: const Text('Remove first'))
+                  onPressed: _removeFirstRow,
+                  child: const Text('Remove first row')),
+              const SizedBox(width: 16),
+              ElevatedButton(
+                  onPressed: _removeFirstColumn,
+                  child: const Text('Remove first column'))
             ]),
             padding: const EdgeInsets.fromLTRB(32, 16, 32, 0)));
   }
 
-  void _removeFirst() {
+  void _removeFirstRow() {
     if (_model != null && _model!.isRowsNotEmpty) {
       _model!.removeRowAt(0);
+    }
+  }
+
+  void _removeFirstColumn() {
+    if (_model != null && _model!.isColumnsNotEmpty) {
+      _model!.removeColumnAt(0);
     }
   }
 }

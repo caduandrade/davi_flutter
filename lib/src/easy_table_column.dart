@@ -9,13 +9,13 @@ import 'package:flutter/widgets.dart';
 /// The [EasyTable] column.
 abstract class EasyTableColumn<ROW> extends ChangeNotifier {
   /// Builds a column by defining the Widget.
-  factory EasyTableColumn.builder(EasyTableCellBuilder<ROW> cellBuilder,
+  factory EasyTableColumn.cellBuilder(EasyTableCellBuilder<ROW> cellBuilder,
       {String? name,
       dynamic id,
       double width = 100,
       EasyTableHeaderCellBuilder? headerCellBuilder =
           HeaderCellBuilders.defaultHeaderCellBuilder}) {
-    return _EasyTableColumnBuilder(
+    return _CellBuilder(
         cellBuilder: cellBuilder,
         name: name,
         id: id,
@@ -24,14 +24,14 @@ abstract class EasyTableColumn<ROW> extends ChangeNotifier {
   }
 
   /// Builds a column by mapping the value of a row.
-  factory EasyTableColumn.auto(EasyTableValueMapper<ROW> valueMapper,
+  factory EasyTableColumn.valueMapper(EasyTableValueMapper<ROW> valueMapper,
       {int? fractionDigits,
       dynamic id,
       String? name,
       double width = 100,
       EasyTableHeaderCellBuilder? headerCellBuilder =
           HeaderCellBuilders.defaultHeaderCellBuilder}) {
-    return _EasyTableColumnAuto(
+    return _ValueMapper(
         valueMapper: valueMapper,
         id: id,
         name: name,
@@ -59,8 +59,8 @@ abstract class EasyTableColumn<ROW> extends ChangeNotifier {
   Widget? buildCellWidget(BuildContext context, ROW row);
 }
 
-class _EasyTableColumnBuilder<ROW> extends EasyTableColumn<ROW> {
-  _EasyTableColumnBuilder(
+class _CellBuilder<ROW> extends EasyTableColumn<ROW> {
+  _CellBuilder(
       {required this.cellBuilder,
       dynamic id,
       String? name,
@@ -80,8 +80,8 @@ class _EasyTableColumnBuilder<ROW> extends EasyTableColumn<ROW> {
   }
 }
 
-class _EasyTableColumnAuto<ROW> extends EasyTableColumn<ROW> {
-  _EasyTableColumnAuto(
+class _ValueMapper<ROW> extends EasyTableColumn<ROW> {
+  _ValueMapper(
       {required this.valueMapper,
       dynamic id,
       this.fractionDigits,
