@@ -16,6 +16,6 @@ class HeaderCellBuilders {
       BuildContext context, EasyTableColumn column, int columnIndex) {
     EasyTableThemeData theme = EasyTableTheme.of(context);
     return EasyTableCell(
-        value: column.name, textStyle: theme.cellHeader.textStyle);
+        value: column.name, textStyle: theme.headerCell.textStyle);
   }
 }

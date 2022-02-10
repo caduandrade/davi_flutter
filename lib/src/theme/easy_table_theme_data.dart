@@ -12,7 +12,7 @@ class EasyTableThemeData {
       this.decoration = EasyTableThemeDataDefaults.tableDecoration,
       this.cell = const CellThemeData(),
       this.header = const HeaderThemeData(),
-      this.cellHeader = const CellHeaderThemeData()});
+      this.headerCell = const HeaderCellThemeData()});
 
   final double columnGap;
   final double rowGap;
@@ -20,7 +20,7 @@ class EasyTableThemeData {
 
   final CellThemeData cell;
   final HeaderThemeData header;
-  final CellHeaderThemeData cellHeader;
+  final HeaderCellThemeData headerCell;
 
   @override
   bool operator ==(Object other) =>
@@ -32,7 +32,7 @@ class EasyTableThemeData {
           decoration == other.decoration &&
           cell == other.cell &&
           header == other.header &&
-          cellHeader == other.cellHeader;
+          headerCell == other.headerCell;
 
   @override
   int get hashCode =>
@@ -41,7 +41,7 @@ class EasyTableThemeData {
       decoration.hashCode ^
       cell.hashCode ^
       header.hashCode ^
-      cellHeader.hashCode;
+      headerCell.hashCode;
 }
 
 class EasyTableThemeDataDefaults {

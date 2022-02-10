@@ -2,19 +2,22 @@ import 'package:easy_table/easy_table.dart';
 import 'package:flutter/material.dart';
 
 /// The [EasyTable] cell header theme.
-/// Defines the configuration of the overall visual [CellHeaderThemeData] for a widget subtree within the app.
-class CellHeaderThemeData {
+/// Defines the configuration of the overall visual [HeaderCellThemeData] for a widget subtree within the app.
+class HeaderCellThemeData {
   /// Builds a theme data.
-  const CellHeaderThemeData(
-      {this.textStyle = CellHeaderThemeDataDefaults.textStyle});
+  const HeaderCellThemeData(
+      {this.textStyle = HeaderCellThemeDataDefaults.textStyle,
+      this.padding = HeaderCellThemeDataDefaults.padding});
 
   /// Defines the text style.
   final TextStyle? textStyle;
 
+  final EdgeInsetsGeometry? padding;
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is CellHeaderThemeData &&
+      other is HeaderCellThemeData &&
           runtimeType == other.runtimeType &&
           textStyle == other.textStyle;
 
@@ -22,6 +25,7 @@ class CellHeaderThemeData {
   int get hashCode => textStyle.hashCode;
 }
 
-class CellHeaderThemeDataDefaults {
+class HeaderCellThemeDataDefaults {
   static const TextStyle textStyle = TextStyle(fontWeight: FontWeight.bold);
+  static const EdgeInsetsGeometry? padding = EdgeInsets.all(8);
 }

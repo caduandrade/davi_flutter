@@ -15,11 +15,9 @@ class EasyTable<ROW> extends StatefulWidget {
       this.rows,
       this.horizontalScrollController,
       this.verticalScrollController,
-      this.headerCellPadding = const EdgeInsets.all(8),
       this.rowColor})
       : super(key: key);
 
-  final EdgeInsetsGeometry? headerCellPadding;
   final List<EasyTableColumn<ROW>> columns;
   final List<ROW>? rows;
   final ScrollController? horizontalScrollController;
@@ -257,11 +255,11 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
       width += theme.columnGap;
       padding = EdgeInsets.only(right: theme.columnGap);
     }
-    if (widget.headerCellPadding != null) {
+    if (theme.headerCell.padding != null) {
       if (padding != null) {
-        padding = widget.headerCellPadding!.add(padding);
+        padding = theme.headerCell.padding!.add(padding);
       } else {
-        padding = widget.headerCellPadding!;
+        padding = theme.headerCell.padding!;
       }
     }
     if (padding != null) {

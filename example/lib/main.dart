@@ -46,8 +46,7 @@ class _HomePageState extends State<HomePage> {
     if (rows == null) {
       body = const Center(child: CircularProgressIndicator());
     } else {
-      body = EasyTableTheme(
-          child: _table(), data: EasyTableThemeData(cell: CellThemeData()));
+      body = EasyTableTheme(child: _table(), data: const EasyTableThemeData());
     }
 
     return Scaffold(
