@@ -6,7 +6,7 @@ class CellThemeData {
   /// Builds a theme data.
   const CellThemeData(
       {this.textStyle,
-      this.alignment = Alignment.centerLeft,
+      this.alignment = CellThemeDataDefaults.alignment,
       this.padding = CellThemeDataDefaults.padding,
       this.contentHeight = CellThemeDataDefaults.contentHeight});
 
@@ -39,5 +39,6 @@ class CellThemeData {
 
 class CellThemeDataDefaults {
   static const double contentHeight = 32;
-  static const EdgeInsetsGeometry? padding = EdgeInsets.only(left: 8, right: 8);
+  static const EdgeInsetsGeometry padding = EdgeInsets.only(left: 8, right: 8);
+  static const AlignmentGeometry alignment = Alignment.centerLeft;
 }

@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 import 'package:easy_table/src/easy_table_column.dart';
+import 'package:easy_table/src/easy_table_header_cell.dart';
 import 'package:easy_table/src/easy_table_model.dart';
 import 'package:easy_table/src/easy_table_sort.dart';
 import 'package:easy_table/src/private/layout/horizontal_layout.dart';
@@ -272,15 +273,8 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
       required int columnIndex}) {
     EasyTableThemeData theme = EasyTableTheme.of(context);
     double width = column.width;
-    Widget? headerCellWidget;
-    if (column.headerCellBuilder != null) {
-      headerCellWidget =
-          column.headerCellBuilder!(context, column, columnIndex);
-    }
-    if (theme.headerCell.padding != null) {
-      headerCellWidget =
-          Padding(padding: theme.headerCell.padding!, child: headerCellWidget);
-    }
+    Widget headerCellWidget = EasyTableHeaderCell(value: column.name);
+
     headerCellWidget = GestureDetector(
         child: headerCellWidget,
         onTap: () => _onHeaderPressed(

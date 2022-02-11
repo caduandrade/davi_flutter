@@ -1,6 +1,5 @@
 import 'package:easy_table/src/easy_table_cell.dart';
 import 'package:easy_table/src/easy_table_cell_builder.dart';
-import 'package:easy_table/src/easy_table_header_cell_builder.dart';
 import 'package:easy_table/src/theme/easy_table_theme.dart';
 import 'package:easy_table/src/theme/easy_table_theme_data.dart';
 import 'package:easy_table/src/easy_table_value_mapper.dart';
@@ -17,8 +16,6 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
       String? name,
       int? fractionDigits,
       EasyTableCellBuilder<ROW>? cellBuilder,
-      EasyTableHeaderCellBuilder? headerCellBuilder =
-          HeaderCellBuilders.defaultHeaderCellBuilder,
       EasyTableColumnSortFunction<ROW>? sortFunction,
       EasyTableIntValueMapper<ROW>? intValue,
       EasyTableDoubleValueMapper<ROW>? doubleValue,
@@ -47,7 +44,6 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
         name: name,
         fractionDigits: fractionDigits,
         cellBuilder: cellBuilder,
-        headerCellBuilder: headerCellBuilder,
         sortFunction: sortFunction,
         stringValueMapper: stringValue,
         intValueMapper: intValue,
@@ -61,7 +57,6 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
       this.name,
       this.fractionDigits,
       this.cellBuilder,
-      this.headerCellBuilder,
       this.sortFunction,
       this.stringValueMapper,
       this.intValueMapper,
@@ -73,7 +68,6 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
   final String? name;
   final int? fractionDigits;
   final EasyTableCellBuilder<ROW>? cellBuilder;
-  final EasyTableHeaderCellBuilder? headerCellBuilder;
   final EasyTableColumnSortFunction<ROW>? sortFunction;
   final EasyTableIntValueMapper<ROW>? intValueMapper;
   final EasyTableDoubleValueMapper<ROW>? doubleValueMapper;
