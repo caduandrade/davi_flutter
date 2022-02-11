@@ -20,7 +20,7 @@ enum Skill {
 }
 
 extension on Skill {
-  int compareTo(Skill other) => this.index.compareTo(other.index);
+  int compareTo(Skill other) => index.compareTo(other.index);
 }
 
 class Character {

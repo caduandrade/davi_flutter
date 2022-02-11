@@ -1,6 +1,9 @@
+import 'dart:collection';
+
 import 'package:easy_table/src/easy_table_cell_builder.dart';
 import 'package:easy_table/src/easy_table_column.dart';
 import 'package:easy_table/src/easy_table_header_cell_builder.dart';
+import 'package:easy_table/src/easy_table_sort.dart';
 import 'package:easy_table/src/easy_table_value_mapper.dart';
 import 'package:flutter/widgets.dart';
 
@@ -11,52 +14,82 @@ class EasyTableModel<ROW> extends ChangeNotifier {
   factory EasyTableModel(
       {List<ROW> rows = const [],
       List<EasyTableColumn<ROW>> columns = const []}) {
-    EasyTableModel<ROW> model = EasyTableModel._(rows);
+    EasyTableModel<ROW> model =
+        EasyTableModel._(rows, UnmodifiableListView(rows));
     for (EasyTableColumn<ROW> column in columns) {
       model.addColumn(column);
     }
     return model;
   }
 
-  EasyTableModel._(this._rows);
+  EasyTableModel._(this._originalRows, this._visibleRows);
 
   final List<EasyTableColumn<ROW>> _columns = [];
-  final List<ROW> _rows;
+  final List<ROW> _originalRows;
 
-  int get rowsLength => _rows.length;
-  bool get isRowsEmpty => _rows.isEmpty;
-  bool get isRowsNotEmpty => _rows.isNotEmpty;
+  List<ROW> _visibleRows;
+  _ColumnSort<ROW>? _columnSort;
 
-  ROW rowAt(int index) => _rows[index];
+  EasyTableColumn<ROW>? get sortedColumn =>
+      _columnSort != null ? _columnSort!.column : null;
+  EasyTableSortType? get sortType =>
+      _columnSort != null ? _columnSort!.sortType : null;
 
-  void addRow(ROW row) {
-    _rows.add(row);
-    notifyListeners();
-  }
+  bool get _visibleRowsModifiable => _visibleRows is! UnmodifiableListView;
 
-  void addRows(List<ROW> rows) {
-    _rows.addAll(rows);
-    notifyListeners();
-  }
-
-  void removeRows() {
-    _rows.clear();
-    notifyListeners();
-  }
-
-  void removeRowAt(int index) {
-    _rows.removeAt(index);
-    notifyListeners();
-  }
-
-  void removeRow(ROW row) {
-    _rows.remove(row);
-    notifyListeners();
-  }
+  int get rowsLength => _originalRows.length;
+  bool get isRowsEmpty => _originalRows.isEmpty;
+  bool get isRowsNotEmpty => _originalRows.isNotEmpty;
 
   int get columnsLength => _columns.length;
   bool get isColumnsEmpty => _columns.isEmpty;
   bool get isColumnsNotEmpty => _columns.isNotEmpty;
+
+  ROW visibleRowAt(int index) => _visibleRows[index];
+
+  void addRow(ROW row) {
+    _originalRows.add(row);
+    if (_visibleRowsModifiable) {
+      _visibleRows.add(row);
+      _resort();
+    }
+    notifyListeners();
+  }
+
+  void addRows(List<ROW> rows) {
+    _originalRows.addAll(rows);
+    if (_visibleRowsModifiable) {
+      _visibleRows.addAll(rows);
+      _resort();
+    }
+    notifyListeners();
+  }
+
+  void removeRows() {
+    _originalRows.clear();
+    if (_visibleRowsModifiable) {
+      _visibleRows.clear();
+    }
+    notifyListeners();
+  }
+
+  void removeVisibleRowAt(int index) {
+    if (_visibleRowsModifiable) {
+      ROW row = _visibleRows.removeAt(index);
+      _originalRows.remove(row);
+    } else {
+      _originalRows.removeAt(index);
+    }
+    notifyListeners();
+  }
+
+  void removeRow(ROW row) {
+    _originalRows.remove(row);
+    if (_visibleRowsModifiable) {
+      _visibleRows.remove(row);
+    }
+    notifyListeners();
+  }
 
   EasyTableColumn<ROW> columnAt(int index) => _columns[index];
 
@@ -76,16 +109,25 @@ class EasyTableModel<ROW> extends ChangeNotifier {
 
   void removeColumns() {
     _columns.clear();
+    _columnSort = null;
     notifyListeners();
   }
 
   void removeColumnAt(int index) {
-    _columns.removeAt(index);
+    EasyTableColumn<ROW> column = _columns.removeAt(index);
+    if (_columnSort?.column == column) {
+      _columnSort = null;
+      _visibleRows = UnmodifiableListView(_originalRows);
+    }
     notifyListeners();
   }
 
   void removeColumn(EasyTableColumn<ROW> column) {
     _columns.remove(column);
+    if (_columnSort?.column == column) {
+      _columnSort = null;
+      _visibleRows = UnmodifiableListView(_originalRows);
+    }
     column.removeListener(notifyListeners);
     notifyListeners();
   }
@@ -96,6 +138,37 @@ class EasyTableModel<ROW> extends ChangeNotifier {
       w += column.width;
     }
     return w;
+  }
+
+  /// Revert to original sort order
+  void removeColumnSort() {
+    if (_columnSort != null) {
+      _columnSort = null;
+      _visibleRows = UnmodifiableListView(_originalRows);
+      notifyListeners();
+    }
+  }
+
+  void sortByColumn(
+      {required EasyTableColumn<ROW> column,
+      required EasyTableSortType sortType}) {
+    _columnSort = _ColumnSort(column, sortType);
+    _resort();
+  }
+
+  void _resort() {
+    print('_resort _columnSort: $_columnSort');
+    if (_columnSort != null && _columnSort!.column.sortFunction != null) {
+      List<ROW> list = List.from(_originalRows);
+      SortFunction<ROW> sortFunction = _columnSort!.column.sortFunction!;
+      if (sortType == EasyTableSortType.descending) {
+        list.sort((a, b) => sortFunction(b, a));
+      } else {
+        list.sort(sortFunction);
+      }
+      _visibleRows = list;
+      notifyListeners();
+    }
   }
 
   ColumnAppender<ROW> columnAppender() {
@@ -114,13 +187,15 @@ class ColumnAppender<ROW> {
       String? name,
       double width = 100,
       EasyTableHeaderCellBuilder? headerCellBuilder =
-          HeaderCellBuilders.defaultHeaderCellBuilder}) {
+          HeaderCellBuilders.defaultHeaderCellBuilder,
+      SortFunction<ROW>? sortFunction}) {
     EasyTableColumn<ROW> column = EasyTableColumn.valueMapper(valueMapper,
         fractionDigits: fractionDigits,
         id: id,
         name: name,
         width: width,
-        headerCellBuilder: headerCellBuilder);
+        headerCellBuilder: headerCellBuilder,
+        sortFunction: sortFunction);
     _model.addColumn(column);
     return column;
   }
@@ -130,10 +205,27 @@ class ColumnAppender<ROW> {
       dynamic id,
       double width = 100,
       EasyTableHeaderCellBuilder? headerCellBuilder =
-          HeaderCellBuilders.defaultHeaderCellBuilder}) {
+          HeaderCellBuilders.defaultHeaderCellBuilder,
+      SortFunction<ROW>? sortFunction}) {
     EasyTableColumn<ROW> column = EasyTableColumn.cellBuilder(cellBuilder,
-        name: name, id: id, width: width, headerCellBuilder: headerCellBuilder);
+        name: name,
+        id: id,
+        width: width,
+        headerCellBuilder: headerCellBuilder,
+        sortFunction: sortFunction);
     _model.addColumn(column);
     return column;
+  }
+}
+
+class _ColumnSort<ROW> {
+  _ColumnSort(this.column, this.sortType);
+
+  final EasyTableColumn<ROW> column;
+  final EasyTableSortType sortType;
+
+  @override
+  String toString() {
+    return '_ColumnSort{column: $column, sortType: $sortType}';
   }
 }

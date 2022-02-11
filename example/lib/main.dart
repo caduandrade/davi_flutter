@@ -37,7 +37,10 @@ class _HomePageState extends State<HomePage> {
     Character.loadCharacters().then((characters) {
       EasyTableModel<Character> model = EasyTableModel(rows: characters);
       model.columnAppender()
-        ..valueMapper((row) => row.name, name: 'Name', width: 140)
+        ..valueMapper((row) => row.name,
+            name: 'Name',
+            width: 140,
+            sortFunction: (a, b) => a.name.compareTo(b.name))
         ..cellBuilder(
             (context, row) => Align(
                 child: row.male
@@ -108,7 +111,7 @@ class _HomePageState extends State<HomePage> {
 
   void _removeFirstRow() {
     if (_model != null && _model!.isRowsNotEmpty) {
-      _model!.removeRowAt(0);
+      _model!.removeVisibleRowAt(0);
     }
   }
 

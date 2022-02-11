@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'package:easy_table/src/easy_table_column.dart';
 import 'package:easy_table/src/easy_table_model.dart';
+import 'package:easy_table/src/easy_table_sort.dart';
 import 'package:easy_table/src/private/layout/horizontal_layout.dart';
 import 'package:easy_table/src/row_hover_listener.dart';
 import 'package:easy_table/src/theme/easy_table_theme.dart';
@@ -149,7 +150,10 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
         columnIndex++) {
       EasyTableColumn<ROW> column = model.columnAt(columnIndex);
       children.add(_headerCell(
-          context: context, column: column, columnIndex: columnIndex));
+          context: context,
+          model: model,
+          column: column,
+          columnIndex: columnIndex));
     }
     HeaderThemeData headerTheme = EasyTableTheme.of(context).header;
     BoxDecoration? decoration;
@@ -206,7 +210,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
       required int rowIndex,
       required double rowHeight}) {
     EasyTableThemeData theme = EasyTableTheme.of(context);
-    ROW row = model.rowAt(rowIndex);
+    ROW row = model.visibleRowAt(rowIndex);
     List<Widget> children = [];
     for (int columnIndex = 0;
         columnIndex < model.columnsLength;
@@ -273,7 +277,8 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
   /// Builds a table header cell.
   Widget _headerCell(
       {required BuildContext context,
-      required EasyTableColumn column,
+      required EasyTableModel<ROW> model,
+      required EasyTableColumn<ROW> column,
       required int columnIndex}) {
     EasyTableThemeData theme = EasyTableTheme.of(context);
     double width = column.width;
@@ -282,23 +287,44 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
       headerCellWidget =
           column.headerCellBuilder!(context, column, columnIndex);
     }
-    EdgeInsetsGeometry? padding;
+    if (theme.headerCell.padding != null) {
+      headerCellWidget =
+          Padding(padding: theme.headerCell.padding!, child: headerCellWidget);
+    }
+    headerCellWidget = GestureDetector(
+        child: headerCellWidget,
+        onTap: () => _onHeaderPressed(
+            model: model, column: column, columnIndex: columnIndex));
     if (theme.columnGap > 0) {
       width += theme.columnGap;
-      padding = EdgeInsets.only(right: theme.columnGap);
+      headerCellWidget = Padding(
+          padding: EdgeInsets.only(right: theme.columnGap),
+          child: headerCellWidget);
     }
-    if (theme.headerCell.padding != null) {
-      if (padding != null) {
-        padding = theme.headerCell.padding!.add(padding);
-      } else {
-        padding = theme.headerCell.padding!;
-      }
-    }
-    if (padding != null) {
-      headerCellWidget = Padding(padding: padding, child: headerCellWidget);
-    }
+
+    //GestureDetector
     return ConstrainedBox(
         constraints: BoxConstraints.tightFor(width: width),
         child: headerCellWidget);
+  }
+
+  void _onHeaderPressed(
+      {required EasyTableModel<ROW> model,
+      required EasyTableColumn<ROW> column,
+      required int columnIndex}) {
+    print('_onHeaderPressed: ${column.name}');
+    if (model.sortedColumn == null) {
+      model.sortByColumn(column: column, sortType: EasyTableSortType.ascending);
+    } else {
+      if (model.sortedColumn != column) {
+        model.sortByColumn(
+            column: column, sortType: EasyTableSortType.ascending);
+      } else if (model.sortType == EasyTableSortType.ascending) {
+        model.sortByColumn(
+            column: column, sortType: EasyTableSortType.descending);
+      } else {
+        model.removeColumnSort();
+      }
+    }
   }
 }

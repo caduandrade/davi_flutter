@@ -6,6 +6,8 @@ import 'package:easy_table/src/theme/easy_table_theme_data.dart';
 import 'package:easy_table/src/easy_table_value_mapper.dart';
 import 'package:flutter/widgets.dart';
 
+typedef SortFunction<ROW> = int Function(ROW a, ROW b);
+
 /// The [EasyTable] column.
 abstract class EasyTableColumn<ROW> extends ChangeNotifier {
   /// Builds a column by defining the Widget.
@@ -14,13 +16,15 @@ abstract class EasyTableColumn<ROW> extends ChangeNotifier {
       dynamic id,
       double width = 100,
       EasyTableHeaderCellBuilder? headerCellBuilder =
-          HeaderCellBuilders.defaultHeaderCellBuilder}) {
+          HeaderCellBuilders.defaultHeaderCellBuilder,
+      SortFunction<ROW>? sortFunction}) {
     return _CellBuilder(
         cellBuilder: cellBuilder,
         name: name,
         id: id,
         width: width,
-        headerCellBuilder: headerCellBuilder);
+        headerCellBuilder: headerCellBuilder,
+        sortFunction: sortFunction);
   }
 
   /// Builds a column by mapping the value of a row.
@@ -30,24 +34,31 @@ abstract class EasyTableColumn<ROW> extends ChangeNotifier {
       String? name,
       double width = 100,
       EasyTableHeaderCellBuilder? headerCellBuilder =
-          HeaderCellBuilders.defaultHeaderCellBuilder}) {
+          HeaderCellBuilders.defaultHeaderCellBuilder,
+      SortFunction<ROW>? sortFunction}) {
     return _ValueMapper(
         valueMapper: valueMapper,
         id: id,
         name: name,
         width: width,
         fractionDigits: fractionDigits,
-        headerCellBuilder: headerCellBuilder);
+        headerCellBuilder: headerCellBuilder,
+        sortFunction: sortFunction);
   }
 
   EasyTableColumn(
-      {this.id, required double width, this.name, this.headerCellBuilder})
+      {this.id,
+      required double width,
+      this.name,
+      this.headerCellBuilder,
+      this.sortFunction})
       : _width = width;
 
   final dynamic id;
   final String? name;
   double _width;
   final EasyTableHeaderCellBuilder? headerCellBuilder;
+  final SortFunction<ROW>? sortFunction;
 
   double get width => _width;
   set width(double value) {
@@ -57,6 +68,11 @@ abstract class EasyTableColumn<ROW> extends ChangeNotifier {
   }
 
   Widget? buildCellWidget(BuildContext context, ROW row);
+
+  @override
+  String toString() {
+    return 'EasyTableColumn{name: $name}';
+  }
 }
 
 class _CellBuilder<ROW> extends EasyTableColumn<ROW> {
@@ -65,12 +81,14 @@ class _CellBuilder<ROW> extends EasyTableColumn<ROW> {
       dynamic id,
       String? name,
       required double width,
-      EasyTableHeaderCellBuilder? headerCellBuilder})
+      EasyTableHeaderCellBuilder? headerCellBuilder,
+      SortFunction<ROW>? sortFunction})
       : super(
             id: id,
             name: name,
             width: width,
-            headerCellBuilder: headerCellBuilder);
+            headerCellBuilder: headerCellBuilder,
+            sortFunction: sortFunction);
 
   final EasyTableCellBuilder<ROW> cellBuilder;
 
@@ -87,12 +105,14 @@ class _ValueMapper<ROW> extends EasyTableColumn<ROW> {
       this.fractionDigits,
       String? name,
       required double width,
-      EasyTableHeaderCellBuilder? headerCellBuilder})
+      EasyTableHeaderCellBuilder? headerCellBuilder,
+      SortFunction<ROW>? sortFunction})
       : super(
             id: id,
             name: name,
             width: width,
-            headerCellBuilder: headerCellBuilder);
+            headerCellBuilder: headerCellBuilder,
+            sortFunction: sortFunction);
 
   final EasyTableValueMapper<ROW> valueMapper;
   final int? fractionDigits;
