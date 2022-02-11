@@ -100,7 +100,7 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
 
     if (stringValueMapper != null) {
       final String value = stringValueMapper!(row);
-      return EasyTableCell(value: value, textStyle: textStyle);
+      return EasyTableCell.string(value: value, textStyle: textStyle);
     } else if (intValueMapper != null) {
       final int value = intValueMapper!(row);
       return EasyTableCell.int(value: value, textStyle: textStyle);
@@ -110,7 +110,8 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
           value: value, fractionDigits: fractionDigits, textStyle: textStyle);
     } else if (objectValueMapper != null) {
       final Object value = objectValueMapper!(row);
-      return EasyTableCell(value: value.toString(), textStyle: textStyle);
+      return EasyTableCell.string(
+          value: value.toString(), textStyle: textStyle);
     }
     return Container();
   }

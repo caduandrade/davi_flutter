@@ -6,6 +6,7 @@ class CellThemeData {
   /// Builds a theme data.
   const CellThemeData(
       {this.textStyle,
+      this.alignment = Alignment.centerLeft,
       this.padding = CellThemeDataDefaults.padding,
       this.contentHeight = CellThemeDataDefaults.contentHeight});
 
@@ -19,6 +20,8 @@ class CellThemeData {
   /// The cell content height.
   /// The default value is defined by [CellThemeDataDefaults.contentHeight].
   final double contentHeight;
+
+  final AlignmentGeometry alignment;
 
   @override
   bool operator ==(Object other) =>

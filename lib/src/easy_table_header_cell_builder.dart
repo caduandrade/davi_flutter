@@ -15,7 +15,7 @@ class HeaderCellBuilders {
   static Widget defaultHeaderCellBuilder(
       BuildContext context, EasyTableColumn column, int columnIndex) {
     EasyTableThemeData theme = EasyTableTheme.of(context);
-    return EasyTableCell(
+    return EasyTableCell.string(
         value: column.name, textStyle: theme.headerCell.textStyle);
   }
 }

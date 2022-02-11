@@ -41,12 +41,11 @@ class _HomePageState extends State<HomePage> {
             name: 'Name', width: 140, stringValue: (row) => row.name),
         EasyTableColumn(
             name: 'Gender',
-            width: 70,
-            cellBuilder: (context, row) => Align(
+            width: 80,
+            cellBuilder: (context, row) => EasyTableCell(
                 child: row.male
                     ? const Icon(Icons.male)
-                    : const Icon(Icons.female),
-                alignment: Alignment.centerLeft)),
+                    : const Icon(Icons.female))),
         EasyTableColumn(
             name: 'Race', width: 100, stringValue: (row) => row.race),
         EasyTableColumn(

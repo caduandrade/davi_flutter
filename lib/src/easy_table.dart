@@ -254,20 +254,10 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
     double width = column.width;
 
     Widget? cellWidget = column.buildCellWidget(context, row);
-    EdgeInsetsGeometry? padding;
     if (theme.columnGap > 0) {
       width += theme.columnGap;
-      padding = EdgeInsets.only(right: theme.columnGap);
-    }
-    if (theme.cell.padding != null) {
-      if (padding != null) {
-        padding = theme.cell.padding!.add(padding);
-      } else {
-        padding = theme.cell.padding!;
-      }
-    }
-    if (padding != null) {
-      cellWidget = Padding(padding: padding, child: cellWidget);
+      cellWidget = Padding(
+          padding: EdgeInsets.only(right: theme.columnGap), child: cellWidget);
     }
     return ConstrainedBox(
         constraints: BoxConstraints.tightFor(width: width, height: rowHeight),
