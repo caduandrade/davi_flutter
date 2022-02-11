@@ -160,7 +160,7 @@ class EasyTableModel<ROW> extends ChangeNotifier {
     print('_resort _columnSort: $_columnSort');
     if (_columnSort != null && _columnSort!.column.sortFunction != null) {
       List<ROW> list = List.from(_originalRows);
-      SortFunction<ROW> sortFunction = _columnSort!.column.sortFunction!;
+      EasyTableColumnSortFunction<ROW> sortFunction = _columnSort!.column.sortFunction!;
       if (sortType == EasyTableSortType.descending) {
         list.sort((a, b) => sortFunction(b, a));
       } else {
@@ -188,7 +188,7 @@ class ColumnAppender<ROW> {
       double width = 100,
       EasyTableHeaderCellBuilder? headerCellBuilder =
           HeaderCellBuilders.defaultHeaderCellBuilder,
-      SortFunction<ROW>? sortFunction}) {
+      EasyTableColumnSortFunction<ROW>? sortFunction}) {
     EasyTableColumn<ROW> column = EasyTableColumn.valueMapper(valueMapper,
         fractionDigits: fractionDigits,
         id: id,
@@ -206,7 +206,7 @@ class ColumnAppender<ROW> {
       double width = 100,
       EasyTableHeaderCellBuilder? headerCellBuilder =
           HeaderCellBuilders.defaultHeaderCellBuilder,
-      SortFunction<ROW>? sortFunction}) {
+      EasyTableColumnSortFunction<ROW>? sortFunction}) {
     EasyTableColumn<ROW> column = EasyTableColumn.cellBuilder(cellBuilder,
         name: name,
         id: id,

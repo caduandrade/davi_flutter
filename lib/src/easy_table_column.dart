@@ -6,7 +6,8 @@ import 'package:easy_table/src/theme/easy_table_theme_data.dart';
 import 'package:easy_table/src/easy_table_value_mapper.dart';
 import 'package:flutter/widgets.dart';
 
-typedef SortFunction<ROW> = int Function(ROW a, ROW b);
+/// Signature for sort column function.
+typedef EasyTableColumnSortFunction<ROW> = int Function(ROW a, ROW b);
 
 /// The [EasyTable] column.
 abstract class EasyTableColumn<ROW> extends ChangeNotifier {
@@ -17,7 +18,7 @@ abstract class EasyTableColumn<ROW> extends ChangeNotifier {
       double width = 100,
       EasyTableHeaderCellBuilder? headerCellBuilder =
           HeaderCellBuilders.defaultHeaderCellBuilder,
-      SortFunction<ROW>? sortFunction}) {
+      EasyTableColumnSortFunction<ROW>? sortFunction}) {
     return _CellBuilder(
         cellBuilder: cellBuilder,
         name: name,
@@ -35,7 +36,7 @@ abstract class EasyTableColumn<ROW> extends ChangeNotifier {
       double width = 100,
       EasyTableHeaderCellBuilder? headerCellBuilder =
           HeaderCellBuilders.defaultHeaderCellBuilder,
-      SortFunction<ROW>? sortFunction}) {
+      EasyTableColumnSortFunction<ROW>? sortFunction}) {
     return _ValueMapper(
         valueMapper: valueMapper,
         id: id,
@@ -58,7 +59,7 @@ abstract class EasyTableColumn<ROW> extends ChangeNotifier {
   final String? name;
   double _width;
   final EasyTableHeaderCellBuilder? headerCellBuilder;
-  final SortFunction<ROW>? sortFunction;
+  final EasyTableColumnSortFunction<ROW>? sortFunction;
 
   double get width => _width;
   set width(double value) {
@@ -82,7 +83,7 @@ class _CellBuilder<ROW> extends EasyTableColumn<ROW> {
       String? name,
       required double width,
       EasyTableHeaderCellBuilder? headerCellBuilder,
-      SortFunction<ROW>? sortFunction})
+      EasyTableColumnSortFunction<ROW>? sortFunction})
       : super(
             id: id,
             name: name,
@@ -106,7 +107,7 @@ class _ValueMapper<ROW> extends EasyTableColumn<ROW> {
       String? name,
       required double width,
       EasyTableHeaderCellBuilder? headerCellBuilder,
-      SortFunction<ROW>? sortFunction})
+      EasyTableColumnSortFunction<ROW>? sortFunction})
       : super(
             id: id,
             name: name,
