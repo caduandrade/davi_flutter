@@ -1,10 +1,7 @@
 import 'dart:collection';
 
-import 'package:easy_table/src/easy_table_cell_builder.dart';
 import 'package:easy_table/src/easy_table_column.dart';
-import 'package:easy_table/src/easy_table_header_cell_builder.dart';
 import 'package:easy_table/src/easy_table_sort.dart';
-import 'package:easy_table/src/easy_table_value_mapper.dart';
 import 'package:flutter/widgets.dart';
 
 /// The [EasyTable] model.
@@ -157,10 +154,10 @@ class EasyTableModel<ROW> extends ChangeNotifier {
   }
 
   void _resort() {
-    print('_resort _columnSort: $_columnSort');
     if (_columnSort != null && _columnSort!.column.sortFunction != null) {
       List<ROW> list = List.from(_originalRows);
-      EasyTableColumnSortFunction<ROW> sortFunction = _columnSort!.column.sortFunction!;
+      EasyTableColumnSortFunction<ROW> sortFunction =
+          _columnSort!.column.sortFunction!;
       if (sortType == EasyTableSortType.descending) {
         list.sort((a, b) => sortFunction(b, a));
       } else {
@@ -169,52 +166,6 @@ class EasyTableModel<ROW> extends ChangeNotifier {
       _visibleRows = list;
       notifyListeners();
     }
-  }
-
-  ColumnAppender<ROW> columnAppender() {
-    return ColumnAppender<ROW>._(this);
-  }
-}
-
-class ColumnAppender<ROW> {
-  ColumnAppender._(this._model);
-
-  final EasyTableModel<ROW> _model;
-
-  EasyTableColumn<ROW> valueMapper(EasyTableValueMapper<ROW> valueMapper,
-      {int? fractionDigits,
-      dynamic id,
-      String? name,
-      double width = 100,
-      EasyTableHeaderCellBuilder? headerCellBuilder =
-          HeaderCellBuilders.defaultHeaderCellBuilder,
-      EasyTableColumnSortFunction<ROW>? sortFunction}) {
-    EasyTableColumn<ROW> column = EasyTableColumn.valueMapper(valueMapper,
-        fractionDigits: fractionDigits,
-        id: id,
-        name: name,
-        width: width,
-        headerCellBuilder: headerCellBuilder,
-        sortFunction: sortFunction);
-    _model.addColumn(column);
-    return column;
-  }
-
-  EasyTableColumn<ROW> cellBuilder(EasyTableCellBuilder<ROW> cellBuilder,
-      {String? name,
-      dynamic id,
-      double width = 100,
-      EasyTableHeaderCellBuilder? headerCellBuilder =
-          HeaderCellBuilders.defaultHeaderCellBuilder,
-      EasyTableColumnSortFunction<ROW>? sortFunction}) {
-    EasyTableColumn<ROW> column = EasyTableColumn.cellBuilder(cellBuilder,
-        name: name,
-        id: id,
-        width: width,
-        headerCellBuilder: headerCellBuilder,
-        sortFunction: sortFunction);
-    _model.addColumn(column);
-    return column;
   }
 }
 

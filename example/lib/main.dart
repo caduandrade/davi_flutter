@@ -35,33 +35,43 @@ class _HomePageState extends State<HomePage> {
     super.initState();
 
     Character.loadCharacters().then((characters) {
-      EasyTableModel<Character> model = EasyTableModel(rows: characters);
-      model.columnAppender()
-        ..valueMapper((row) => row.name,
-            name: 'Name',
-            width: 140,
-            sortFunction: (a, b) => a.name.compareTo(b.name))
-        ..cellBuilder(
-            (context, row) => Align(
+      EasyTableModel<Character> model =
+          EasyTableModel(rows: characters, columns: [
+        EasyTableColumn(
+            name: 'Name', width: 140, stringValue: (row) => row.name),
+        EasyTableColumn(
+            name: 'Gender',
+            width: 70,
+            cellBuilder: (context, row) => Align(
                 child: row.male
                     ? const Icon(Icons.male)
                     : const Icon(Icons.female),
-                alignment: Alignment.centerLeft),
-            name: 'Gender',
-            width: 70)
-        ..valueMapper((row) => row.race, name: 'Race', width: 100)
-        ..valueMapper((row) => row.cls, name: 'Class', width: 110)
-        ..valueMapper((row) => row.level, name: 'Level', width: 80)
-        ..cellBuilder((context, row) => SkillsWidget(skills: row.skills),
-            name: 'Skills', width: 100)
-        ..valueMapper((row) => row.strength, name: 'Strength', width: 80)
-        ..valueMapper((row) => row.dexterity, name: 'Dexterity', width: 80)
-        ..valueMapper((row) => row.intelligence,
-            name: 'Intelligence', width: 90)
-        ..valueMapper((row) => row.life, name: 'Life', width: 80)
-        ..valueMapper((row) => row.mana, name: 'Mana', width: 70)
-        ..valueMapper((row) => row.gold,
-            name: 'Gold', width: 110, fractionDigits: 2);
+                alignment: Alignment.centerLeft)),
+        EasyTableColumn(
+            name: 'Race', width: 100, stringValue: (row) => row.race),
+        EasyTableColumn(
+            name: 'Class', width: 110, stringValue: (row) => row.cls),
+        EasyTableColumn(name: 'Level', width: 80, intValue: (row) => row.level),
+        EasyTableColumn(
+            name: 'Skills',
+            width: 100,
+            cellBuilder: (context, row) => SkillsWidget(skills: row.skills)),
+        EasyTableColumn(
+            name: 'Strength', width: 80, intValue: (row) => row.strength),
+        EasyTableColumn(
+            name: 'Dexterity', width: 80, intValue: (row) => row.dexterity),
+        EasyTableColumn(
+            name: 'Intelligence',
+            width: 90,
+            intValue: (row) => row.intelligence),
+        EasyTableColumn(name: 'Life', width: 80, intValue: (row) => row.life),
+        EasyTableColumn(name: 'Mana', width: 70, intValue: (row) => row.mana),
+        EasyTableColumn(
+            name: 'Gold',
+            width: 110,
+            doubleValue: (row) => row.gold,
+            fractionDigits: 2)
+      ]);
       setState(() {
         _model = model;
       });

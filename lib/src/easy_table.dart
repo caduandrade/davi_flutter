@@ -312,7 +312,6 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
       {required EasyTableModel<ROW> model,
       required EasyTableColumn<ROW> column,
       required int columnIndex}) {
-    print('_onHeaderPressed: ${column.name}');
     if (model.sortedColumn == null) {
       model.sortByColumn(column: column, sortType: EasyTableSortType.ascending);
     } else {
