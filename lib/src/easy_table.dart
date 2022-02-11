@@ -2,7 +2,6 @@ import 'dart:math' as math;
 import 'package:easy_table/src/easy_table_column.dart';
 import 'package:easy_table/src/easy_table_header_cell.dart';
 import 'package:easy_table/src/easy_table_model.dart';
-import 'package:easy_table/src/easy_table_sort.dart';
 import 'package:easy_table/src/private/layout/horizontal_layout.dart';
 import 'package:easy_table/src/row_hover_listener.dart';
 import 'package:easy_table/src/theme/easy_table_theme.dart';
@@ -273,41 +272,17 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
       required int columnIndex}) {
     EasyTableThemeData theme = EasyTableTheme.of(context);
     double width = column.width;
-    Widget headerCellWidget = EasyTableHeaderCell(value: column.name);
 
-    headerCellWidget = GestureDetector(
-        child: headerCellWidget,
-        onTap: () => _onHeaderPressed(
-            model: model, column: column, columnIndex: columnIndex));
+    Widget headerCellWidget = EasyTableHeaderCell<ROW>(
+        model: model, column: column, value: column.name);
     if (theme.columnGap > 0) {
       width += theme.columnGap;
       headerCellWidget = Padding(
           padding: EdgeInsets.only(right: theme.columnGap),
           child: headerCellWidget);
     }
-
-    //GestureDetector
     return ConstrainedBox(
         constraints: BoxConstraints.tightFor(width: width),
         child: headerCellWidget);
-  }
-
-  void _onHeaderPressed(
-      {required EasyTableModel<ROW> model,
-      required EasyTableColumn<ROW> column,
-      required int columnIndex}) {
-    if (model.sortedColumn == null) {
-      model.sortByColumn(column: column, sortType: EasyTableSortType.ascending);
-    } else {
-      if (model.sortedColumn != column) {
-        model.sortByColumn(
-            column: column, sortType: EasyTableSortType.ascending);
-      } else if (model.sortType == EasyTableSortType.ascending) {
-        model.sortByColumn(
-            column: column, sortType: EasyTableSortType.descending);
-      } else {
-        model.removeColumnSort();
-      }
-    }
   }
 }

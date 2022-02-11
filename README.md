@@ -7,6 +7,7 @@
 * Ready for a large number of data. Building cells on demand.
 * Focused on Web/Desktop Applications.
 * Bidirectional scroll bars (always visible).
+* Sortable
 * Highly customized.
 
 ## Usage
@@ -31,8 +32,8 @@ void initState() {
     Person('Cadu', 43),
     Person('Delmar', 72)
   ], columns: [
-    EasyTableColumn.valueMapper((row) => row.name, name: 'Name'),
-    EasyTableColumn.valueMapper((row) => row.age, name: 'Age')
+    EasyTableColumn(name: 'Name', stringValue: (row) => row.name),
+    EasyTableColumn(name: 'Age', intValue: (row) => row.age)
   ]);
 }
 
@@ -44,23 +45,16 @@ Widget build(BuildContext context) {
 
 ![](https://caduandrade.github.io/easy_table_flutter/get_started_v1.png)
 
-Another way to initialize the columns:
-
-```dart
-_model = EasyTableModel<Person>(rows: rows);
-_model!.columnAppender()
-  ..valueMapper((row) => row.name, name: 'Name')
-  ..valueMapper((row) => row.age, name: 'Age');
-```
-
 ## Custom cell
 
 ```dart
-  _model = EasyTableModel<Person>(rows: rows);
-  _model!.columnAppender()
-    ..valueMapper((row) => row.name, name: 'Name')
-    ..cellBuilder((context, row) => StarsWidget(stars: row.stars),
-        name: 'Rate', width: 150);
+_model = EasyTableModel<Person>(rows: rows, columns: [
+  EasyTableColumn(name: 'Name', stringValue: (row) => row.name),
+  EasyTableColumn(
+      name: 'Rate',
+      width: 150,
+      cellBuilder: (context, row) => StarsWidget(stars: row.stars))
+]);
 ```
 
 ![](https://caduandrade.github.io/easy_table_flutter/custom_cell_v1.png)
@@ -75,6 +69,5 @@ _model!.columnAppender()
 * Column reorder
 * Column resize
 * Pinned column
-* Sort
 * More theming options
 * And everything else, the sky is the limit

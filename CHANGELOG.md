@@ -1,3 +1,7 @@
+## 0.4.0
+
+* Sort feature
+
 ## 0.3.0
 
 * `EasyTableModel` to handle rows and columns.

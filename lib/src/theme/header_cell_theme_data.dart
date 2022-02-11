@@ -7,7 +7,11 @@ class HeaderCellThemeData {
   const HeaderCellThemeData(
       {this.textStyle = HeaderCellThemeDataDefaults.textStyle,
       this.padding = HeaderCellThemeDataDefaults.padding,
-      this.alignment = HeaderCellThemeDataDefaults.alignment});
+      this.alignment = HeaderCellThemeDataDefaults.alignment,
+      this.ascendingIcon = HeaderCellThemeDataDefaults.ascendingIcon,
+      this.descendingIcon = HeaderCellThemeDataDefaults.descendingIcon,
+      this.sortIconColor = HeaderCellThemeDataDefaults.sortIconColor,
+      this.sortIconSize = HeaderCellThemeDataDefaults.sortIconSize});
 
   /// Defines the text style.
   final TextStyle? textStyle;
@@ -15,6 +19,11 @@ class HeaderCellThemeData {
   final EdgeInsetsGeometry? padding;
 
   final AlignmentGeometry alignment;
+
+  final IconData ascendingIcon;
+  final IconData descendingIcon;
+  final Color sortIconColor;
+  final double sortIconSize;
 
   @override
   bool operator ==(Object other) =>
@@ -32,4 +41,9 @@ class HeaderCellThemeDataDefaults {
   static const TextStyle textStyle = TextStyle(fontWeight: FontWeight.bold);
   static const EdgeInsetsGeometry padding = EdgeInsets.all(8);
   static const AlignmentGeometry alignment = Alignment.centerLeft;
+
+  static const IconData ascendingIcon = Icons.arrow_downward;
+  static const IconData descendingIcon = Icons.arrow_upward;
+  static const Color sortIconColor = Colors.black;
+  static const double sortIconSize = 16;
 }
