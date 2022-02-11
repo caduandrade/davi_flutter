@@ -27,10 +27,10 @@ class SkillsWidget extends StatelessWidget {
       } else if (skill == Skill.shield) {
         iconData = Icons.shield;
         color = Colors.indigo;
-      } else if (skill == Skill.wb_sunny) {
+      } else if (skill == Skill.wbSunny) {
         iconData = Icons.wb_sunny;
         color = Colors.orange;
-      } else if (skill == Skill.flash_on) {
+      } else if (skill == Skill.flashOn) {
         iconData = Icons.flash_on;
         color = Colors.orange;
       } else if (skill == Skill.adjust) {
@@ -39,7 +39,7 @@ class SkillsWidget extends StatelessWidget {
       } else if (skill == Skill.flare) {
         iconData = Icons.flare;
         color = Colors.brown;
-      } else if (skill == Skill.filter_vintage) {
+      } else if (skill == Skill.filterVintage) {
         iconData = Icons.filter_vintage;
         color = Colors.green;
       } else if (skill == Skill.workspaces) {
@@ -48,7 +48,7 @@ class SkillsWidget extends StatelessWidget {
       } else if (skill == Skill.cloud) {
         iconData = Icons.cloud;
         color = Colors.blue;
-      } else if (skill == Skill.ac_unit) {
+      } else if (skill == Skill.acUnit) {
         iconData = Icons.ac_unit;
         color = Colors.blue;
       }

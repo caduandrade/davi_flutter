@@ -9,14 +9,14 @@ enum Skill {
   pets,
   science,
   shield,
-  wb_sunny,
-  flash_on,
+  wbSunny,
+  flashOn,
   adjust,
   flare,
-  filter_vintage,
+  filterVintage,
   workspaces,
   cloud,
-  ac_unit
+  acUnit
 }
 
 extension on Skill {
