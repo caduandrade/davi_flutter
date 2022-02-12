@@ -63,10 +63,12 @@ class EasyTableHeaderCell<ROW> extends StatelessWidget {
     }
 
     if (column.sortable) {
-      return GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          child: widget,
-          onTap: () => _onHeaderPressed(model: model, column: column));
+      return MouseRegion(
+          cursor: SystemMouseCursors.click,
+          child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              child: widget,
+              onTap: () => _onHeaderPressed(model: model, column: column)));
     }
     return widget;
   }

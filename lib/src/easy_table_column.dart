@@ -83,6 +83,7 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
     notifyListeners();
   }
 
+  //TODO allow disable sort
   bool get sortable => sortFunction != null;
 
   Widget? buildCellWidget(BuildContext context, ROW row) {

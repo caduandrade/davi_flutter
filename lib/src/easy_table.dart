@@ -3,6 +3,7 @@ import 'package:easy_table/src/easy_table_column.dart';
 import 'package:easy_table/src/easy_table_header_cell.dart';
 import 'package:easy_table/src/easy_table_model.dart';
 import 'package:easy_table/src/private/layout/horizontal_layout.dart';
+import 'package:easy_table/src/row_callbacks.dart';
 import 'package:easy_table/src/row_hover_listener.dart';
 import 'package:easy_table/src/theme/easy_table_theme.dart';
 import 'package:easy_table/src/theme/easy_table_theme_data.dart';
@@ -19,13 +20,17 @@ class EasyTable<ROW> extends StatefulWidget {
       {Key? key,
       this.horizontalScrollController,
       this.verticalScrollController,
-      this.onHoverListener})
+      this.onHoverListener,
+      this.onRowTap,
+      this.onRowDoubleTap})
       : super(key: key);
 
   final EasyTableModel<ROW>? model;
   final ScrollController? horizontalScrollController;
   final ScrollController? verticalScrollController;
   final OnRowHoverListener? onHoverListener;
+  final RowDoubleTapCallback<ROW>? onRowDoubleTap;
+  final RowTapCallback<ROW>? onRowTap;
 
   @override
   State<StatefulWidget> createState() => _EasyTableState<ROW>();
@@ -232,8 +237,24 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
       rowWidget = Container(child: rowWidget, color: theme.rowColor!(rowIndex));
     }
 
+    MouseCursor cursor = MouseCursor.defer;
+
+    if (widget.onRowTap != null || widget.onRowDoubleTap != null) {
+      cursor = SystemMouseCursors.click;
+      rowWidget = GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        child: rowWidget,
+        onDoubleTap: widget.onRowDoubleTap != null
+            ? () => widget.onRowDoubleTap!(row)
+            : null,
+        onTap: widget.onRowTap != null ? () => widget.onRowTap!(row) : null,
+      );
+    }
+
     rowWidget = MouseRegion(
-        child: rowWidget, onEnter: (event) => _setHoveredRowIndex(rowIndex));
+        cursor: cursor,
+        child: rowWidget,
+        onEnter: (event) => _setHoveredRowIndex(rowIndex));
 
     if (theme.rowGap > 0) {
       rowWidget = Padding(
@@ -250,18 +271,9 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
       required EasyTableColumn<ROW> column,
       required int rowIndex,
       required double rowHeight}) {
-    EasyTableThemeData theme = EasyTableTheme.of(context);
-    double width = column.width;
-
-    Widget? cellWidget = column.buildCellWidget(context, row);
-    if (theme.columnGap > 0) {
-      width += theme.columnGap;
-      cellWidget = Padding(
-          padding: EdgeInsets.only(right: theme.columnGap), child: cellWidget);
-    }
-    return ConstrainedBox(
-        constraints: BoxConstraints.tightFor(width: width, height: rowHeight),
-        child: cellWidget);
+    Widget? cell = column.buildCellWidget(context, row);
+    return _wrapWithColumnGap(
+        context: context, column: column, widget: cell ?? Container());
   }
 
   /// Builds a table header cell.
@@ -270,19 +282,25 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
       required EasyTableModel<ROW> model,
       required EasyTableColumn<ROW> column,
       required int columnIndex}) {
+    Widget headerCell = EasyTableHeaderCell<ROW>(
+        model: model, column: column, value: column.name);
+    return _wrapWithColumnGap(
+        context: context, column: column, widget: headerCell);
+  }
+
+  Widget _wrapWithColumnGap(
+      {required BuildContext context,
+      required EasyTableColumn<ROW> column,
+      required Widget widget}) {
     EasyTableThemeData theme = EasyTableTheme.of(context);
     double width = column.width;
 
-    Widget headerCellWidget = EasyTableHeaderCell<ROW>(
-        model: model, column: column, value: column.name);
     if (theme.columnGap > 0) {
       width += theme.columnGap;
-      headerCellWidget = Padding(
-          padding: EdgeInsets.only(right: theme.columnGap),
-          child: headerCellWidget);
+      widget = Padding(
+          padding: EdgeInsets.only(right: theme.columnGap), child: widget);
     }
     return ConstrainedBox(
-        constraints: BoxConstraints.tightFor(width: width),
-        child: headerCellWidget);
+        constraints: BoxConstraints.tightFor(width: width), child: widget);
   }
 }

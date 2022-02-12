@@ -7,13 +7,14 @@
 * Ready for a large number of data. Building cells on demand.
 * Focused on Web/Desktop Applications.
 * Bidirectional scroll bars (always visible).
-* Sortable
+* Sortable.
 * Highly customized.
 
 ## Usage
 
 * [Get started](#get-started)
 * [Custom cell](#custom-cell)
+* [Row callbacks](#row-callbacks)
 
 ## Get started
 
@@ -59,6 +60,26 @@ _model = EasyTableModel<Person>(rows: rows, columns: [
 
 ![](https://caduandrade.github.io/easy_table_flutter/custom_cell_v1.png)
 
+## Row callbacks
+
+```dart
+@override
+Widget build(BuildContext context) {
+  return EasyTable<Person>(_model,
+      onRowTap: (person) => _onRowTap(context, person),
+      onRowDoubleTap: (person) => _onRowDoubleTap(context, person));
+}
+
+_onRowTap(BuildContext context, Person person) {
+  ...
+}
+
+_onRowDoubleTap(BuildContext context, Person person) {
+  ...
+}
+
+```
+
 ## TODO
 
 * Collapsed rows
@@ -69,5 +90,6 @@ _model = EasyTableModel<Person>(rows: rows, columns: [
 * Column reorder
 * Column resize
 * Pinned column
+* Filter
 * More theming options
 * And everything else, the sky is the limit

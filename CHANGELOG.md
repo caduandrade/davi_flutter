@@ -1,3 +1,9 @@
+## 0.5.0
+
+* Row callbacks
+  * `onRowTap`
+  * `onRowDoubleTap`
+
 ## 0.4.0
 
 * Sort feature
