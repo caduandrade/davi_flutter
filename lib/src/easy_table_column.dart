@@ -29,6 +29,9 @@ typedef EasyTableColumnSortFunction<ROW> = int Function(ROW a, ROW b);
 ///
 /// If the [sortFunction] is not set, it will be created automatically
 /// for the value mappings.
+///
+/// The [fractionDigits] is the optional decimal-point string-representation
+/// used by the default cell width when the [doubleValue] is set.
 class EasyTableColumn<ROW> extends ChangeNotifier {
   factory EasyTableColumn(
       {dynamic id,
