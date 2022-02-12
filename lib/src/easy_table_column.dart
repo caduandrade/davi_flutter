@@ -9,12 +9,33 @@ import 'package:flutter/widgets.dart';
 typedef EasyTableColumnSortFunction<ROW> = int Function(ROW a, ROW b);
 
 /// The [EasyTable] column.
+///
+/// The [name] argument is optional and is used by the default
+/// cell header widget.
+///
+/// The optional value mappings [intValue], [doubleValue], [stringValue] and
+/// [objectValue] allows automatic cell configuration by identifying
+/// and displaying data types in the row object.
+///
+/// The [cellBuilder] builds a cell widget for each row in that column.
+/// A default [cellBuilder] will be used if the column has any value
+/// mapping defined.
+///
+/// This column is sortable if the argument [sortable] is [TRUE] and
+/// a [sortFunction] has been defined for ascending sort. Descending sort
+/// is applied by inverting the arguments in [sortFunction].
+///
+/// The default value of [sortable] is [TRUE].
+///
+/// If the [sortFunction] is not set, it will be created automatically
+/// for the value mappings.
 class EasyTableColumn<ROW> extends ChangeNotifier {
   factory EasyTableColumn(
       {dynamic id,
       double width = 100,
       String? name,
       int? fractionDigits,
+      bool sortable = true,
       EasyTableCellBuilder<ROW>? cellBuilder,
       EasyTableColumnSortFunction<ROW>? sortFunction,
       EasyTableIntValueMapper<ROW>? intValue,
@@ -48,7 +69,8 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
         stringValueMapper: stringValue,
         intValueMapper: intValue,
         doubleValueMapper: doubleValue,
-        objectValueMapper: objectValue);
+        objectValueMapper: objectValue,
+        sortable: sortable);
   }
 
   EasyTableColumn._(
@@ -61,8 +83,10 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
       this.stringValueMapper,
       this.intValueMapper,
       this.doubleValueMapper,
-      this.objectValueMapper})
-      : _width = width;
+      this.objectValueMapper,
+      required bool sortable})
+      : _width = width,
+        _sortable = sortable;
 
   final dynamic id;
   final String? name;
@@ -73,7 +97,7 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
   final EasyTableDoubleValueMapper<ROW>? doubleValueMapper;
   final EasyTableStringValueMapper<ROW>? stringValueMapper;
   final EasyTableObjectValueMapper<ROW>? objectValueMapper;
-
+  final bool _sortable;
   double _width;
 
   double get width => _width;
@@ -83,8 +107,7 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
     notifyListeners();
   }
 
-  //TODO allow disable sort
-  bool get sortable => sortFunction != null;
+  bool get sortable => _sortable && sortFunction != null;
 
   Widget? buildCellWidget(BuildContext context, ROW row) {
     if (cellBuilder != null) {
