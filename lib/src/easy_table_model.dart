@@ -42,6 +42,13 @@ class EasyTableModel<ROW> extends ChangeNotifier {
   bool get isColumnsEmpty => _columns.isEmpty;
   bool get isColumnsNotEmpty => _columns.isNotEmpty;
 
+  EasyTableColumn<ROW>? _columnInResizing;
+  EasyTableColumn<ROW>? get columnInResizing => _columnInResizing;
+  set columnInResizing(EasyTableColumn<ROW>? column) {
+    _columnInResizing = column;
+    notifyListeners();
+  }
+
   ROW visibleRowAt(int index) => _visibleRows[index];
 
   void addRow(ROW row) {
@@ -107,11 +114,15 @@ class EasyTableModel<ROW> extends ChangeNotifier {
   void removeColumns() {
     _columns.clear();
     _columnSort = null;
+    _columnInResizing = null;
     notifyListeners();
   }
 
   void removeColumnAt(int index) {
     EasyTableColumn<ROW> column = _columns.removeAt(index);
+    if (_columnInResizing == column) {
+      _columnInResizing = null;
+    }
     if (_columnSort?.column == column) {
       _columnSort = null;
       _visibleRows = UnmodifiableListView(_originalRows);
@@ -121,6 +132,9 @@ class EasyTableModel<ROW> extends ChangeNotifier {
 
   void removeColumn(EasyTableColumn<ROW> column) {
     _columns.remove(column);
+    if (_columnInResizing == column) {
+      _columnInResizing = null;
+    }
     if (_columnSort?.column == column) {
       _columnSort = null;
       _visibleRows = UnmodifiableListView(_originalRows);

@@ -70,11 +70,11 @@ Widget build(BuildContext context) {
       onRowDoubleTap: (person) => _onRowDoubleTap(context, person));
 }
 
-_onRowTap(BuildContext context, Person person) {
+void _onRowTap(BuildContext context, Person person) {
   ...
 }
 
-_onRowDoubleTap(BuildContext context, Person person) {
+void _onRowDoubleTap(BuildContext context, Person person) {
   ...
 }
 

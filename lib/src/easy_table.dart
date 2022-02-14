@@ -167,7 +167,8 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
           BoxDecoration(border: Border(bottom: headerTheme.bottomBorder!));
     }
     return Container(
-        child: Row(children: children),
+        child: Row(
+            children: children, crossAxisAlignment: CrossAxisAlignment.stretch),
         width: maxWidth,
         decoration: decoration);
   }
@@ -292,6 +293,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
       {required BuildContext context,
       required EasyTableColumn<ROW> column,
       required Widget widget}) {
+    widget = ClipRect(child: widget);
     EasyTableThemeData theme = EasyTableTheme.of(context);
     double width = column.width;
 

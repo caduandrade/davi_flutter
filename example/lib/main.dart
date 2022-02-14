@@ -50,7 +50,7 @@ class _HomePageState extends State<HomePage> {
             name: 'Race', width: 100, stringValue: (row) => row.race),
         EasyTableColumn(
             name: 'Class', width: 110, stringValue: (row) => row.cls),
-        EasyTableColumn(name: 'Level', width: 80, intValue: (row) => row.level),
+        EasyTableColumn(name: 'Level', width: 70, intValue: (row) => row.level),
         EasyTableColumn(
             name: 'Skills',
             width: 100,
@@ -63,7 +63,7 @@ class _HomePageState extends State<HomePage> {
             name: 'Intelligence',
             width: 90,
             intValue: (row) => row.intelligence),
-        EasyTableColumn(name: 'Life', width: 80, intValue: (row) => row.life),
+        EasyTableColumn(name: 'Life', width: 70, intValue: (row) => row.life),
         EasyTableColumn(name: 'Mana', width: 70, intValue: (row) => row.mana),
         EasyTableColumn(
             name: 'Gold',

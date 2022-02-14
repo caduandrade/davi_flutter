@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'package:easy_table/src/easy_table_cell.dart';
 import 'package:easy_table/src/easy_table_cell_builder.dart';
 import 'package:easy_table/src/theme/easy_table_theme.dart';
@@ -39,6 +40,7 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
       String? name,
       int? fractionDigits,
       bool sortable = true,
+      bool resizable = true,
       EasyTableCellBuilder<ROW>? cellBuilder,
       EasyTableColumnSortFunction<ROW>? sortFunction,
       EasyTableIntValueMapper<ROW>? intValue,
@@ -73,7 +75,8 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
         intValueMapper: intValue,
         doubleValueMapper: doubleValue,
         objectValueMapper: objectValue,
-        sortable: sortable);
+        sortable: sortable,
+        resizable: resizable);
   }
 
   EasyTableColumn._(
@@ -87,6 +90,7 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
       this.intValueMapper,
       this.doubleValueMapper,
       this.objectValueMapper,
+      required this.resizable,
       required bool sortable})
       : _width = width,
         _sortable = sortable;
@@ -105,12 +109,17 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
 
   double get width => _width;
   set width(double value) {
-    //TODO negative check
-    _width = value;
-    notifyListeners();
+    //TODO resizeAreaWidth should be smaller
+    value = math.max(16, value);
+    if (_width != value) {
+      _width = value;
+      notifyListeners();
+    }
   }
 
   bool get sortable => _sortable && sortFunction != null;
+
+  bool resizable;
 
   Widget? buildCellWidget(BuildContext context, ROW row) {
     if (cellBuilder != null) {
