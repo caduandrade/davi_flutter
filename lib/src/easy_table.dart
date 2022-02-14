@@ -2,7 +2,7 @@ import 'dart:math' as math;
 import 'package:easy_table/src/easy_table_column.dart';
 import 'package:easy_table/src/easy_table_header_cell.dart';
 import 'package:easy_table/src/easy_table_model.dart';
-import 'package:easy_table/src/private/layout/horizontal_layout.dart';
+import 'package:easy_table/src/private/layout/top_center_layout.dart';
 import 'package:easy_table/src/row_callbacks.dart';
 import 'package:easy_table/src/row_hover_listener.dart';
 import 'package:easy_table/src/theme/easy_table_theme.dart';
@@ -117,7 +117,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
         double requiredWidth = model.columnsWidth;
         requiredWidth += (model.columnsLength) * theme.columnGap;
         double maxWidth = math.max(constraints.maxWidth, requiredWidth);
-        return HorizontalLayout(
+        return TopCenterLayout(
             top: ScrollConfiguration(
                 behavior:
                     ScrollConfiguration.of(context).copyWith(scrollbars: false),

@@ -20,7 +20,7 @@ class HeaderCellThemeData {
   /// Defines the text style.
   final TextStyle? textStyle;
 
-  final EdgeInsetsGeometry? padding;
+  final EdgeInsets? padding;
 
   final AlignmentGeometry alignment;
 
@@ -62,7 +62,7 @@ class HeaderCellThemeData {
 
 class HeaderCellThemeDataDefaults {
   static const TextStyle textStyle = TextStyle(fontWeight: FontWeight.bold);
-  static const EdgeInsetsGeometry padding = EdgeInsets.all(8);
+  static const EdgeInsets padding = EdgeInsets.all(8);
   static const AlignmentGeometry alignment = Alignment.centerLeft;
 
   static const IconData ascendingIcon = Icons.arrow_downward;

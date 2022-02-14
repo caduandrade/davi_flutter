@@ -3,8 +3,8 @@ import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
 
 @internal
-class HorizontalLayout extends StatelessWidget {
-  const HorizontalLayout({Key? key, required this.top, required this.center})
+class TopCenterLayout extends StatelessWidget {
+  const TopCenterLayout({Key? key, required this.top, required this.center})
       : super(key: key);
 
   final Widget top;
@@ -16,11 +16,11 @@ class HorizontalLayout extends StatelessWidget {
         child: CustomMultiChildLayout(children: [
       LayoutId(id: 1, child: IntrinsicHeight(child: top)),
       LayoutId(id: 2, child: center)
-    ], delegate: _HorizontalLayoutDelegate()));
+    ], delegate: _TopCenterLayoutDelegate()));
   }
 }
 
-class _HorizontalLayoutDelegate extends MultiChildLayoutDelegate {
+class _TopCenterLayoutDelegate extends MultiChildLayoutDelegate {
   @override
   void performLayout(Size size) {
     BoxConstraints constraints = BoxConstraints(

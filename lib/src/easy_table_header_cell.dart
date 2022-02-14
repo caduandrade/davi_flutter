@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'package:easy_table/easy_table.dart';
 import 'package:easy_table/src/easy_table_sort_type.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +20,7 @@ class EasyTableHeaderCell<ROW> extends StatefulWidget {
   final Widget? child;
   final String? value;
 
-  final EdgeInsetsGeometry? padding;
+  final EdgeInsets? padding;
   final AlignmentGeometry? alignment;
 
   final EasyTableModel<ROW> model;
@@ -36,75 +37,74 @@ class _State extends State<EasyTableHeaderCell> {
 
   @override
   Widget build(BuildContext context) {
-    Widget? headerWidget = widget.child;
-
     EasyTableThemeData theme = EasyTableTheme.of(context);
 
-    TextStyle? textStyle = theme.headerCell.textStyle;
+    bool resizing = widget.model.columnInResizing == widget.column;
+    bool enabled = resizing == false && widget.model.columnInResizing == null;
+    bool sortable = widget.column.sortable;
+    bool resizable = widget.column.resizable && (enabled || resizing);
 
-    if (widget.value != null) {
-      headerWidget = Text(widget.value!,
-          overflow: TextOverflow.ellipsis, style: textStyle);
-    }
+    List<Widget> children = [];
 
-    headerWidget = headerWidget ?? Container();
+    children.add(_textWidget(context));
 
-    headerWidget = Align(
-        child: headerWidget,
-        alignment: widget.alignment ?? theme.headerCell.alignment);
-
-    if (widget.column.sortable && widget.model.sortedColumn == widget.column) {
+    if (widget.model.sortedColumn == widget.column) {
       IconData? icon;
       if (widget.model.sortType == EasyTableSortType.ascending) {
         icon = theme.headerCell.ascendingIcon;
       } else if (widget.model.sortType == EasyTableSortType.descending) {
         icon = theme.headerCell.descendingIcon;
       }
-      headerWidget = Row(children: [
-        Expanded(child: headerWidget),
-        Icon(icon,
-            color: theme.headerCell.sortIconColor,
-            size: theme.headerCell.sortIconSize)
-      ]);
+      children.add(Icon(icon,
+          color: theme.headerCell.sortIconColor,
+          size: theme.headerCell.sortIconSize));
     }
 
-    EdgeInsetsGeometry? p = widget.padding ?? theme.headerCell.padding;
-    if (p != null) {
-      headerWidget = Padding(padding: p, child: headerWidget);
-    }
-
-    bool resizing = widget.model.columnInResizing == widget.column;
-    bool enabled = resizing == false && widget.model.columnInResizing == null;
-
-    if (enabled && widget.column.sortable) {
-      headerWidget = MouseRegion(
-          cursor: SystemMouseCursors.click,
+    if (sortable) {
+      children.add(MouseRegion(
+          cursor: enabled ? SystemMouseCursors.click : MouseCursor.defer,
           child: GestureDetector(
               behavior: HitTestBehavior.opaque,
-              child: headerWidget,
-              onTap: () => _onHeaderPressed(
-                  model: widget.model, column: widget.column)));
+              onTap: enabled
+                  ? () => _onHeaderPressed(
+                      model: widget.model, column: widget.column)
+                  : null)));
     }
 
-    if (widget.column.resizable) {
-      headerWidget = _HeaderLayout(children: [
-        headerWidget,
-        _resizeWidget(context: context, enabled: enabled, resizing: resizing)
-      ]);
+    if (resizable) {
+      children.add(_resizeWidget(
+          context: context, resizable: resizable, resizing: resizing));
     }
 
-    return headerWidget;
+    final EdgeInsets? padding = widget.padding ?? theme.headerCell.padding;
+    return _HeaderLayout(
+        debug: widget.column.name == 'Race',
+        children: children,
+        resizable: resizable,
+        padding: padding,
+        sortable: sortable);
+  }
+
+  Widget _textWidget(BuildContext context) {
+    EasyTableThemeData theme = EasyTableTheme.of(context);
+    Widget? text = widget.child;
+    if (widget.value != null) {
+      text = Text(widget.value!,
+          overflow: TextOverflow.ellipsis, style: theme.headerCell.textStyle);
+    }
+    return Align(
+        child: text, alignment: widget.alignment ?? theme.headerCell.alignment);
   }
 
   Widget _resizeWidget(
-      {required BuildContext context, required resizing, required enabled}) {
+      {required BuildContext context, required resizing, required resizable}) {
     EasyTableThemeData theme = EasyTableTheme.of(context);
     Widget child = Container(
         width: theme.headerCell.resizeAreaWidth,
         color: _hovered || resizing
             ? theme.headerCell.resizeAreaHoverColor
             : null);
-    if (widget.column.resizable && (enabled || resizing)) {
+    if (resizable) {
       return MouseRegion(
           onEnter: (e) => setState(() {
                 _hovered = true;
@@ -161,12 +161,27 @@ class _State extends State<EasyTableHeaderCell> {
 }
 
 class _HeaderLayout extends MultiChildRenderObjectWidget {
-  _HeaderLayout({Key? key, required List<Widget> children})
+  _HeaderLayout(
+      {Key? key,
+      required List<Widget> children,
+      required this.padding,
+      required this.resizable,
+      required this.sortable,
+      this.debug = false})
       : super(key: key, children: children);
+
+  final bool sortable;
+  final EdgeInsets? padding;
+  final bool resizable;
+  final bool debug;
 
   @override
   RenderObject createRenderObject(BuildContext context) {
-    return _HeaderRenderBox();
+    return _HeaderRenderBox(
+        debug: debug,
+        padding: padding,
+        resizable: resizable,
+        sortable: sortable);
   }
 
   @override
@@ -178,6 +193,10 @@ class _HeaderLayout extends MultiChildRenderObjectWidget {
   void updateRenderObject(
       BuildContext context, covariant _HeaderRenderBox renderObject) {
     super.updateRenderObject(context, renderObject);
+    renderObject
+      ..padding = padding
+      ..resizable = resizable
+      ..sortable = sortable;
   }
 }
 
@@ -202,6 +221,43 @@ class _HeaderRenderBox extends RenderBox
     with
         ContainerRenderObjectMixin<RenderBox, _HeaderParentData>,
         RenderBoxContainerDefaultsMixin<RenderBox, _HeaderParentData> {
+  _HeaderRenderBox(
+      {required EdgeInsets? padding,
+      required bool sortable,
+      required bool resizable,
+      required this.debug})
+      : _padding = padding,
+        _resizable = resizable,
+        _sortable = sortable;
+
+  final bool debug;
+
+  double? _intrinsicHeight;
+
+  bool _sortable;
+  set sortable(bool sortable) {
+    if (_sortable != sortable) {
+      _sortable = sortable;
+      markNeedsLayout();
+    }
+  }
+
+  bool _resizable;
+  set resizable(bool resizable) {
+    if (_resizable != resizable) {
+      _resizable = resizable;
+      markNeedsLayout();
+    }
+  }
+
+  EdgeInsets? _padding;
+  set padding(EdgeInsets? padding) {
+    if (_padding != padding) {
+      _padding = padding;
+      markNeedsLayout();
+    }
+  }
+
   @override
   void setupParentData(RenderBox child) {
     if (child.parentData is! _HeaderParentData) {
@@ -211,34 +267,119 @@ class _HeaderRenderBox extends RenderBox
 
   @override
   void performLayout() {
-    RenderBox first = firstChild!;
+    List<RenderBox> children = [];
+    visitChildren((child) => children.add(child as RenderBox));
 
-    first.layout(constraints, parentUsesSize: true);
-    first.headerParentData().offset = Offset.zero;
+    RenderBox? resizableArea;
+    if (_resizable) {
+      resizableArea = children.removeLast();
+    }
 
-    RenderBox second = first.headerParentData().nextSibling!;
-    second.layout(
+    RenderBox? sortableArea;
+    if (_sortable) {
+      sortableArea = children.removeLast();
+    }
+
+    double availableWidth = constraints.maxWidth;
+    if (_padding != null) {
+      availableWidth -= _padding!.horizontal;
+    }
+    double verticalPadding = _padding != null ? _padding!.vertical : 0;
+    double height = constraints.maxHeight - verticalPadding;
+    for (int i = 1; i < children.length; i++) {
+      RenderBox child = children[i];
+      child.layout(
+          BoxConstraints(
+              minWidth: 0,
+              maxWidth: double.infinity,
+              minHeight: height,
+              maxHeight: height),
+          parentUsesSize: true);
+      availableWidth = math.max(0, availableWidth - child.size.width);
+    }
+    RenderBox text = children.first;
+    text.layout(
         BoxConstraints(
-            minWidth: 0,
-            maxWidth: constraints.maxWidth,
-            minHeight: constraints.maxHeight,
-            maxHeight: constraints.maxHeight),
+            minWidth: availableWidth,
+            maxWidth: availableWidth,
+            minHeight: height,
+            maxHeight: height),
         parentUsesSize: true);
-    second.headerParentData().offset =
-        Offset(constraints.maxWidth - second.size.width, 0);
+
+    double x = 0;
+    double y = 0;
+    if (_padding != null) {
+      x += _padding!.left;
+      y += _padding!.top;
+    }
+
+    for (RenderBox child in children) {
+      child.headerParentData().offset = Offset(x, y);
+      x += child.size.width;
+    }
+
+    Size resizableAreaSize = Size.zero;
+    if (resizableArea != null) {
+      resizableArea.layout(
+          BoxConstraints(
+              minWidth: 0,
+              maxWidth: constraints.maxWidth,
+              minHeight: constraints.maxHeight,
+              maxHeight: constraints.maxHeight),
+          parentUsesSize: true);
+      resizableArea.headerParentData().offset =
+          Offset(constraints.maxWidth - resizableArea.size.width, 0);
+      resizableAreaSize = resizableArea.size;
+    }
+
+    if (sortableArea != null) {
+      sortableArea.layout(
+          BoxConstraints(
+              minWidth: 0,
+              maxWidth:
+                  math.max(0, constraints.maxWidth - resizableAreaSize.width),
+              minHeight: constraints.maxHeight,
+              maxHeight: constraints.maxHeight),
+          parentUsesSize: true);
+      sortableArea.headerParentData().offset = Offset.zero;
+    }
 
     size = constraints.biggest;
   }
 
   @override
-  double computeMaxIntrinsicHeight(double width) {
-    return computeMinIntrinsicHeight(width);
+  void markNeedsLayout() {
+    _intrinsicHeight = null;
+    super.markNeedsLayout();
   }
 
   @override
   double computeMinIntrinsicHeight(double width) {
-    RenderBox first = firstChild!;
-    return first.getMaxIntrinsicHeight(width);
+    if (_intrinsicHeight == null) {
+      List<RenderBox> children = [];
+      visitChildren((child) => children.add(child as RenderBox));
+
+      if (_sortable) {
+        children.removeAt(0);
+      }
+      if (_resizable) {
+        children.removeLast();
+      }
+      _intrinsicHeight = 0;
+      for (RenderBox child in children) {
+        _intrinsicHeight =
+            math.max(_intrinsicHeight!, child.getMinIntrinsicHeight(width));
+      }
+      if (_padding != null) {
+        _intrinsicHeight = _intrinsicHeight! + _padding!.vertical;
+      }
+    }
+    return _intrinsicHeight!;
+  }
+
+  @override
+  double computeMaxIntrinsicHeight(double width) {
+    return computeMinIntrinsicHeight(width);
   }
 
   @override
