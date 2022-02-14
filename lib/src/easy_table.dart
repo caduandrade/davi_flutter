@@ -283,8 +283,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
       required EasyTableModel<ROW> model,
       required EasyTableColumn<ROW> column,
       required int columnIndex}) {
-    Widget headerCell = EasyTableHeaderCell<ROW>(
-        model: model, column: column, value: column.name);
+    Widget headerCell = EasyTableHeaderCell<ROW>(model: model, column: column);
     return _wrapWithColumnGap(
         context: context, column: column, widget: headerCell);
   }

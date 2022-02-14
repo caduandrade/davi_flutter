@@ -12,13 +12,11 @@ class EasyTableHeaderCell<ROW> extends StatefulWidget {
       required this.model,
       required this.column,
       this.child,
-      this.value,
       this.padding,
       this.alignment})
       : super(key: key);
 
   final Widget? child;
-  final String? value;
 
   final EdgeInsets? padding;
   final AlignmentGeometry? alignment;
@@ -88,8 +86,8 @@ class _State extends State<EasyTableHeaderCell> {
   Widget _textWidget(BuildContext context) {
     EasyTableThemeData theme = EasyTableTheme.of(context);
     Widget? text = widget.child;
-    if (widget.value != null) {
-      text = Text(widget.value!,
+    if (widget.column.name != null) {
+      text = Text(widget.column.name!,
           overflow: TextOverflow.ellipsis, style: theme.headerCell.textStyle);
     }
     return Align(
