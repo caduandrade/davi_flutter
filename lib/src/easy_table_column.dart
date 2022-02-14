@@ -41,6 +41,9 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
       int? fractionDigits,
       bool sortable = true,
       bool resizable = true,
+      EdgeInsets? padding,
+      AlignmentGeometry? alignment,
+      TextStyle? textStyle,
       EasyTableCellBuilder<ROW>? cellBuilder,
       EasyTableColumnSortFunction<ROW>? sortFunction,
       EasyTableIntValueMapper<ROW>? intValue,
@@ -76,13 +79,19 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
         doubleValueMapper: doubleValue,
         objectValueMapper: objectValue,
         sortable: sortable,
-        resizable: resizable);
+        resizable: resizable,
+        padding: padding,
+        alignment: alignment,
+        textStyle: textStyle);
   }
 
   EasyTableColumn._(
       {this.id,
       required double width,
       this.name,
+      this.padding,
+      this.alignment,
+      this.textStyle,
       this.fractionDigits,
       this.cellBuilder,
       this.sortFunction,
@@ -97,6 +106,9 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
 
   final dynamic id;
   final String? name;
+  final EdgeInsets? padding;
+  final AlignmentGeometry? alignment;
+  final TextStyle? textStyle;
   final int? fractionDigits;
   final EasyTableCellBuilder<ROW>? cellBuilder;
   final EasyTableColumnSortFunction<ROW>? sortFunction;

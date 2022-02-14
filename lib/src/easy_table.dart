@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 import 'package:easy_table/src/easy_table_column.dart';
-import 'package:easy_table/src/easy_table_header_cell.dart';
+import 'package:easy_table/src/private/easy_table_header_cell.dart';
 import 'package:easy_table/src/easy_table_model.dart';
 import 'package:easy_table/src/private/layout/top_center_layout.dart';
 import 'package:easy_table/src/row_callbacks.dart';

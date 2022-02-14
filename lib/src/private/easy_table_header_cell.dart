@@ -3,23 +3,15 @@ import 'package:easy_table/easy_table.dart';
 import 'package:easy_table/src/easy_table_sort_type.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:meta/meta.dart';
 
-/// Default header cell
+/// [EasyTable] header cell.
+@internal
 class EasyTableHeaderCell<ROW> extends StatefulWidget {
   /// Builds a header cell.
   const EasyTableHeaderCell(
-      {Key? key,
-      required this.model,
-      required this.column,
-      this.child,
-      this.padding,
-      this.alignment})
+      {Key? key, required this.model, required this.column})
       : super(key: key);
-
-  final Widget? child;
-
-  final EdgeInsets? padding;
-  final AlignmentGeometry? alignment;
 
   final EasyTableModel<ROW> model;
   final EasyTableColumn<ROW> column;
@@ -42,9 +34,7 @@ class _State extends State<EasyTableHeaderCell> {
     bool sortable = widget.column.sortable;
     bool resizable = widget.column.resizable && (enabled || resizing);
 
-    List<Widget> children = [];
-
-    children.add(_textWidget(context));
+    List<Widget> children = [_textWidget(context)];
 
     if (widget.model.sortedColumn == widget.column) {
       IconData? icon;
@@ -74,7 +64,8 @@ class _State extends State<EasyTableHeaderCell> {
           context: context, resizable: resizable, resizing: resizing));
     }
 
-    final EdgeInsets? padding = widget.padding ?? theme.headerCell.padding;
+    final EdgeInsets? padding =
+        widget.column.padding ?? theme.headerCell.padding;
     return _HeaderLayout(
         debug: widget.column.name == 'Race',
         children: children,
@@ -85,13 +76,15 @@ class _State extends State<EasyTableHeaderCell> {
 
   Widget _textWidget(BuildContext context) {
     EasyTableThemeData theme = EasyTableTheme.of(context);
-    Widget? text = widget.child;
+    Widget? text;
     if (widget.column.name != null) {
       text = Text(widget.column.name!,
-          overflow: TextOverflow.ellipsis, style: theme.headerCell.textStyle);
+          overflow: TextOverflow.ellipsis,
+          style: widget.column.textStyle ?? theme.headerCell.textStyle);
     }
     return Align(
-        child: text, alignment: widget.alignment ?? theme.headerCell.alignment);
+        child: text,
+        alignment: widget.column.alignment ?? theme.headerCell.alignment);
   }
 
   Widget _resizeWidget(

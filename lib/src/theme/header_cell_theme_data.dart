@@ -19,11 +19,8 @@ class HeaderCellThemeData {
 
   /// Defines the text style.
   final TextStyle? textStyle;
-
   final EdgeInsets? padding;
-
   final AlignmentGeometry alignment;
-
   final IconData ascendingIcon;
   final IconData descendingIcon;
   final Color sortIconColor;

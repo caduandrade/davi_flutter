@@ -1,3 +1,11 @@
+## 0.7.0
+
+* Theme override
+  * Column
+    * `padding`
+    * `alignment`
+    * `textStyle`
+
 ## 0.6.0
 
 * Resizable columns
