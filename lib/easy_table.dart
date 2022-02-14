@@ -12,6 +12,5 @@ export 'src/theme/header_theme_data.dart';
 export 'src/theme/header_cell_theme_data.dart';
 export 'src/theme/cell_theme_data.dart';
 export 'src/easy_table_column.dart';
-export 'src/easy_table_scroll_controller.dart';
 export 'src/row_hover_listener.dart';
 export 'src/row_callbacks.dart';

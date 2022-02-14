@@ -17,10 +17,10 @@ class EasyTableHeaderCell<ROW> extends StatefulWidget {
   final EasyTableColumn<ROW> column;
 
   @override
-  State<StatefulWidget> createState() => _State();
+  State<StatefulWidget> createState() => _EasyTableHeaderCellState();
 }
 
-class _State extends State<EasyTableHeaderCell> {
+class _EasyTableHeaderCellState extends State<EasyTableHeaderCell> {
   bool _hovered = false;
   double _initialDragPos = 0;
   double _initialColumnWidth = 0;

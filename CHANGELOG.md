@@ -1,10 +1,12 @@
 ## 0.7.0
 
-* Theme override
+* Theme
   * Column
-    * `padding`
-    * `alignment`
-    * `textStyle`
+    * Divider color
+* New column parameters for theme override
+  * `padding`
+  * `alignment`
+  * `textStyle`
 
 ## 0.6.0
 

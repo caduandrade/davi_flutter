@@ -83,7 +83,7 @@ class _HomePageState extends State<HomePage> {
     if (_model == null) {
       body = const Center(child: CircularProgressIndicator());
     } else {
-      // body = EasyTableTheme(child: _table(), data: EasyTableThemeData();
+      // body = EasyTableTheme(child: _table(), data: EasyTableThemeData());
       body = _table();
     }
 

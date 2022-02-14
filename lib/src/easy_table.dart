@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'package:easy_table/src/easy_table_column.dart';
 import 'package:easy_table/src/private/easy_table_header_cell.dart';
 import 'package:easy_table/src/easy_table_model.dart';
+import 'package:easy_table/src/private/easy_table_scroll_controller.dart';
 import 'package:easy_table/src/private/layout/top_center_layout.dart';
 import 'package:easy_table/src/row_callbacks.dart';
 import 'package:easy_table/src/row_hover_listener.dart';
@@ -62,9 +63,9 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
     widget.model?.addListener(_rebuild);
 
     _horizontalScrollController =
-        widget.horizontalScrollController ?? ScrollController();
+        widget.horizontalScrollController ?? EasyTableScrollController();
     _verticalScrollController =
-        widget.verticalScrollController ?? ScrollController();
+        widget.verticalScrollController ?? EasyTableScrollController();
 
     _horizontalScrollController.addListener(_syncHorizontalScroll);
   }
@@ -115,7 +116,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
         }
 
         double requiredWidth = model.columnsWidth;
-        requiredWidth += (model.columnsLength) * theme.columnGap;
+        requiredWidth += (model.columnsLength) * theme.columnDividerThickness;
         double maxWidth = math.max(constraints.maxWidth, requiredWidth);
         return TopCenterLayout(
             top: ScrollConfiguration(
@@ -196,7 +197,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
                     child: MouseRegion(
                         child: ListView.builder(
                             controller: _verticalScrollController,
-                            itemExtent: rowHeight + theme.rowGap,
+                            itemExtent: rowHeight + theme.rowDividerThickness,
                             itemBuilder: (context, index) {
                               return _row(
                                   context: context,
@@ -229,7 +230,10 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
           rowIndex: rowIndex,
           rowHeight: rowHeight));
     }
-    Widget rowWidget = Row(children: children);
+    Widget rowWidget = Row(
+      children: children,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+    );
 
     if (_hoveredRowIndex == rowIndex && theme.hoveredRowColor != null) {
       rowWidget =
@@ -257,9 +261,10 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
         child: rowWidget,
         onEnter: (event) => _setHoveredRowIndex(rowIndex));
 
-    if (theme.rowGap > 0) {
+    if (theme.rowDividerThickness > 0) {
       rowWidget = Padding(
-          child: rowWidget, padding: EdgeInsets.only(bottom: theme.rowGap));
+          child: rowWidget,
+          padding: EdgeInsets.only(bottom: theme.rowDividerThickness));
     }
 
     return rowWidget;
@@ -296,10 +301,21 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
     EasyTableThemeData theme = EasyTableTheme.of(context);
     double width = column.width;
 
-    if (theme.columnGap > 0) {
-      width += theme.columnGap;
-      widget = Padding(
-          padding: EdgeInsets.only(right: theme.columnGap), child: widget);
+    if (theme.columnDividerThickness > 0) {
+      width += theme.columnDividerThickness;
+      if (theme.columnDividerColor != null) {
+        widget = Container(
+            child: widget,
+            decoration: BoxDecoration(
+                border: Border(
+                    right: BorderSide(
+                        width: theme.columnDividerThickness,
+                        color: theme.columnDividerColor!))));
+      } else {
+        widget = Padding(
+            padding: EdgeInsets.only(right: theme.columnDividerThickness),
+            child: widget);
+      }
     }
     return ConstrainedBox(
         constraints: BoxConstraints.tightFor(width: width), child: widget);

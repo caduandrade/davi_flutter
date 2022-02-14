@@ -1,5 +1,7 @@
 import 'package:flutter/widgets.dart';
+import 'package:meta/meta.dart';
 
+@internal
 class EasyTableScrollController extends ScrollController {
   @override
   ScrollPosition createScrollPosition(ScrollPhysics physics,

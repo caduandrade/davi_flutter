@@ -10,17 +10,20 @@ import 'package:flutter/material.dart';
 class EasyTableThemeData {
   /// Builds a theme data.
   const EasyTableThemeData(
-      {this.columnGap = EasyTableThemeDataDefaults.columnGap,
-      this.rowGap = EasyTableThemeDataDefaults.rowGap,
+      {this.columnDividerThickness =
+          EasyTableThemeDataDefaults.columnDividerThickness,
+      this.rowDividerThickness = EasyTableThemeDataDefaults.rowDividerThickness,
       this.decoration = EasyTableThemeDataDefaults.tableDecoration,
+      this.columnDividerColor = EasyTableThemeDataDefaults.columnDividerColor,
       this.rowColor,
       this.hoveredRowColor,
       this.cell = const CellThemeData(),
       this.header = const HeaderThemeData(),
       this.headerCell = const HeaderCellThemeData()});
 
-  final double columnGap;
-  final double rowGap;
+  final double columnDividerThickness;
+  final Color? columnDividerColor;
+  final double rowDividerThickness;
   final BoxDecoration? decoration;
   final EasyTableRowColor? rowColor;
   final EasyTableRowColor? hoveredRowColor;
@@ -43,8 +46,9 @@ class EasyTableThemeDataDefaults {
 
   static const EasyTableRowColor rowWhiteGreyColor = _rowWhiteGreyColor;
 
-  static const double columnGap = 4;
-  static const double rowGap = 0;
+  static const double columnDividerThickness = 1;
+  static const double rowDividerThickness = 0;
+  static const Color columnDividerColor = Colors.grey;
   static const BoxDecoration tableDecoration = BoxDecoration(
       border: Border(
           bottom: BorderSide(color: Colors.grey),
