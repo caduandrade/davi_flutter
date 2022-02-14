@@ -8,6 +8,7 @@
 * Focused on Web/Desktop Applications.
 * Bidirectional scroll bars (always visible).
 * Sortable.
+* Resizable.
 * Highly customized.
 
 ## Usage
@@ -88,7 +89,6 @@ void _onRowDoubleTap(BuildContext context, Person person) {
 * Custom headers
 * Cell edition
 * Column reorder
-* Column resize
 * Pinned column
 * Filter
 * More theming options

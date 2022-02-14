@@ -1,3 +1,7 @@
+## 0.6.0
+
+* Resizable columns
+
 ## 0.5.0
 
 * Row callbacks
