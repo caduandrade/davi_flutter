@@ -182,6 +182,28 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
       required double maxWidth,
       required double rowHeight}) {
     EasyTableThemeData theme = EasyTableTheme.of(context);
+
+    Widget list = ListView.builder(
+        controller: _verticalScrollController,
+        itemExtent: rowHeight + theme.rowDividerThickness,
+        itemBuilder: (context, index) {
+          return _row(
+              context: context,
+              model: model,
+              rowIndex: index,
+              rowHeight: rowHeight);
+        },
+        itemCount: model.rowsLength);
+
+    if (theme.columnDividerThickness > 0 && theme.columnDividerColor != null) {
+      list = CustomPaint(
+          child: list,
+          foregroundPainter: _DividersPainter(
+              model: model,
+              columnDividerThickness: theme.columnDividerThickness,
+              columnDividerColor: theme.columnDividerColor!));
+    }
+
     return Scrollbar(
         isAlwaysShown: true,
         controller: _verticalScrollController,
@@ -196,17 +218,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
                     behavior: ScrollConfiguration.of(context)
                         .copyWith(scrollbars: false),
                     child: MouseRegion(
-                        child: ListView.builder(
-                            controller: _verticalScrollController,
-                            itemExtent: rowHeight + theme.rowDividerThickness,
-                            itemBuilder: (context, index) {
-                              return _row(
-                                  context: context,
-                                  model: model,
-                                  rowIndex: index,
-                                  rowHeight: rowHeight);
-                            },
-                            itemCount: model.rowsLength),
+                        child: list,
                         onExit: (event) => _setHoveredRowIndex(null))),
                 width: maxWidth)));
   }
@@ -324,7 +336,10 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
       }
     }
     return _wrapWithColumnGap(
-        context: context, column: column, widget: cell ?? Container());
+        context: context,
+        column: column,
+        widget: cell ?? Container(),
+        paintDivider: false);
   }
 
   /// Builds a table header cell.
@@ -335,20 +350,24 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
       required int columnIndex}) {
     Widget headerCell = EasyTableHeaderCell<ROW>(model: model, column: column);
     return _wrapWithColumnGap(
-        context: context, column: column, widget: headerCell);
+        context: context,
+        column: column,
+        widget: headerCell,
+        paintDivider: true);
   }
 
   Widget _wrapWithColumnGap(
       {required BuildContext context,
       required EasyTableColumn<ROW> column,
-      required Widget widget}) {
+      required Widget widget,
+      required bool paintDivider}) {
     widget = ClipRect(child: widget);
     EasyTableThemeData theme = EasyTableTheme.of(context);
     double width = column.width;
 
     if (theme.columnDividerThickness > 0) {
       width += theme.columnDividerThickness;
-      if (theme.columnDividerColor != null) {
+      if (paintDivider && theme.columnDividerColor != null) {
         widget = Container(
             child: widget,
             decoration: BoxDecoration(
@@ -365,4 +384,31 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
     return ConstrainedBox(
         constraints: BoxConstraints.tightFor(width: width), child: widget);
   }
+}
+
+class _DividersPainter extends CustomPainter {
+  _DividersPainter(
+      {required this.model,
+      required this.columnDividerThickness,
+      required this.columnDividerColor});
+
+  final EasyTableModel model;
+  final Color columnDividerColor;
+  final double columnDividerThickness;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    Paint paint = Paint()..color = columnDividerColor;
+    double x = 0;
+    for (int i = 0; i < model.columnsLength; i++) {
+      EasyTableColumn column = model.columnAt(i);
+      x += column.width;
+      canvas.drawRect(
+          Rect.fromLTRB(x, 0, x + columnDividerThickness, size.height), paint);
+      x += columnDividerThickness;
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }
