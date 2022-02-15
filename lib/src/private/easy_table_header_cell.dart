@@ -350,16 +350,16 @@ class _HeaderRenderBox extends RenderBox
       List<RenderBox> children = [];
       visitChildren((child) => children.add(child as RenderBox));
 
-      if (_sortable) {
-        children.removeAt(0);
-      }
       if (_resizable) {
+        children.removeLast();
+      }
+      if (_sortable) {
         children.removeLast();
       }
       _intrinsicHeight = 0;
       for (RenderBox child in children) {
-        _intrinsicHeight =
-            math.max(_intrinsicHeight!, child.getMinIntrinsicHeight(width));
+        _intrinsicHeight = math.max(
+            _intrinsicHeight!, child.getMinIntrinsicHeight(double.infinity));
       }
       if (_padding != null) {
         _intrinsicHeight = _intrinsicHeight! + _padding!.vertical;
