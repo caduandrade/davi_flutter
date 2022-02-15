@@ -7,7 +7,7 @@ import 'package:easy_table/src/easy_table_value_mapper.dart';
 import 'package:flutter/widgets.dart';
 
 /// Signature for sort column function.
-typedef EasyTableColumnSortFunction<ROW> = int Function(ROW a, ROW b);
+typedef EasyTableColumnSort<ROW> = int Function(ROW a, ROW b);
 
 /// The [EasyTable] column.
 ///
@@ -23,12 +23,12 @@ typedef EasyTableColumnSortFunction<ROW> = int Function(ROW a, ROW b);
 /// mapping defined.
 ///
 /// This column is sortable if the argument [sortable] is [TRUE] and
-/// a [sortFunction] has been defined for ascending sort. Descending sort
-/// is applied by inverting the arguments in [sortFunction].
+/// a [sort] has been defined for ascending sort. Descending sort
+/// is applied by inverting the arguments in [sort].
 ///
 /// The default value of [sortable] is [TRUE].
 ///
-/// If the [sortFunction] is not set, it will be created automatically
+/// If the [sort] is not set, it will be created automatically
 /// for the value mappings.
 ///
 /// The [fractionDigits] is the optional decimal-point string-representation
@@ -45,20 +45,20 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
       AlignmentGeometry? alignment,
       TextStyle? textStyle,
       EasyTableCellBuilder<ROW>? cellBuilder,
-      EasyTableColumnSortFunction<ROW>? sortFunction,
+      EasyTableColumnSort<ROW>? sort,
       EasyTableIntValueMapper<ROW>? intValue,
       EasyTableDoubleValueMapper<ROW>? doubleValue,
       EasyTableStringValueMapper<ROW>? stringValue,
       EasyTableObjectValueMapper<ROW>? objectValue}) {
-    if (sortFunction == null) {
+    if (sort == null) {
       if (intValue != null) {
-        sortFunction = (a, b) => intValue(a).compareTo(intValue(b));
+        sort = (a, b) => intValue(a).compareTo(intValue(b));
       } else if (doubleValue != null) {
-        sortFunction = (a, b) => doubleValue(a).compareTo(doubleValue(b));
+        sort = (a, b) => doubleValue(a).compareTo(doubleValue(b));
       } else if (stringValue != null) {
-        sortFunction = (a, b) => stringValue(a).compareTo(stringValue(b));
+        sort = (a, b) => stringValue(a).compareTo(stringValue(b));
       } else if (objectValue != null) {
-        sortFunction = (a, b) {
+        sort = (a, b) {
           if (a is Comparable && b is Comparable) {
             return a.compareTo(b);
           }
@@ -73,7 +73,7 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
         name: name,
         fractionDigits: fractionDigits,
         cellBuilder: cellBuilder,
-        sortFunction: sortFunction,
+        sort: sort,
         stringValueMapper: stringValue,
         intValueMapper: intValue,
         doubleValueMapper: doubleValue,
@@ -94,7 +94,7 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
       this.textStyle,
       this.fractionDigits,
       this.cellBuilder,
-      this.sortFunction,
+      this.sort,
       this.stringValueMapper,
       this.intValueMapper,
       this.doubleValueMapper,
@@ -111,7 +111,7 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
   final TextStyle? textStyle;
   final int? fractionDigits;
   final EasyTableCellBuilder<ROW>? cellBuilder;
-  final EasyTableColumnSortFunction<ROW>? sortFunction;
+  final EasyTableColumnSort<ROW>? sort;
   final EasyTableIntValueMapper<ROW>? intValueMapper;
   final EasyTableDoubleValueMapper<ROW>? doubleValueMapper;
   final EasyTableStringValueMapper<ROW>? stringValueMapper;
@@ -129,7 +129,7 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
     }
   }
 
-  bool get sortable => _sortable && sortFunction != null;
+  bool get sortable => _sortable && sort != null;
 
   bool resizable;
 

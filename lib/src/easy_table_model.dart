@@ -168,10 +168,9 @@ class EasyTableModel<ROW> extends ChangeNotifier {
   }
 
   void _resort() {
-    if (_columnSort != null && _columnSort!.column.sortFunction != null) {
+    if (_columnSort != null && _columnSort!.column.sort != null) {
       List<ROW> list = List.from(_originalRows);
-      EasyTableColumnSortFunction<ROW> sortFunction =
-          _columnSort!.column.sortFunction!;
+      EasyTableColumnSort<ROW> sortFunction = _columnSort!.column.sort!;
       if (sortType == EasyTableSortType.descending) {
         list.sort((a, b) => sortFunction(b, a));
       } else {
