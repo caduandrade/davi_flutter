@@ -190,10 +190,10 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
           return _row(
               context: context,
               model: model,
-              rowIndex: index,
+              visibleRowIndex: index,
               rowHeight: rowHeight);
         },
-        itemCount: model.rowsLength);
+        itemCount: model.visibleRowsLength);
 
     if (theme.columnDividerThickness > 0 && theme.columnDividerColor != null) {
       list = CustomPaint(
@@ -227,10 +227,10 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
   Widget _row(
       {required BuildContext context,
       required EasyTableModel<ROW> model,
-      required int rowIndex,
+      required int visibleRowIndex,
       required double rowHeight}) {
     EasyTableThemeData theme = EasyTableTheme.of(context);
-    ROW row = model.visibleRowAt(rowIndex);
+    ROW row = model.visibleRowAt(visibleRowIndex);
     List<Widget> children = [];
     for (int columnIndex = 0;
         columnIndex < model.columnsLength;
@@ -240,7 +240,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
           context: context,
           row: row,
           column: column,
-          rowIndex: rowIndex,
+          visibleRowIndex: visibleRowIndex,
           rowHeight: rowHeight));
     }
     Widget rowWidget = Row(
@@ -248,11 +248,12 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
     );
 
-    if (_hoveredRowIndex == rowIndex && theme.hoveredRowColor != null) {
-      rowWidget =
-          Container(child: rowWidget, color: theme.hoveredRowColor!(rowIndex));
+    if (_hoveredRowIndex == visibleRowIndex && theme.hoveredRowColor != null) {
+      rowWidget = Container(
+          child: rowWidget, color: theme.hoveredRowColor!(visibleRowIndex));
     } else if (theme.rowColor != null) {
-      rowWidget = Container(child: rowWidget, color: theme.rowColor!(rowIndex));
+      rowWidget =
+          Container(child: rowWidget, color: theme.rowColor!(visibleRowIndex));
     }
 
     MouseCursor cursor = MouseCursor.defer;
@@ -272,7 +273,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
     rowWidget = MouseRegion(
         cursor: cursor,
         child: rowWidget,
-        onEnter: (event) => _setHoveredRowIndex(rowIndex));
+        onEnter: (event) => _setHoveredRowIndex(visibleRowIndex));
 
     if (theme.rowDividerThickness > 0) {
       rowWidget = Padding(
@@ -288,7 +289,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
       {required BuildContext context,
       required ROW row,
       required EasyTableColumn<ROW> column,
-      required int rowIndex,
+      required int visibleRowIndex,
       required double rowHeight}) {
     EasyTableThemeData theme = EasyTableTheme.of(context);
     Widget? cell;
@@ -332,7 +333,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
         }
       }
       if (nullValue && theme.nullCellColor != null) {
-        cell = Container(color: theme.nullCellColor!(rowIndex));
+        cell = Container(color: theme.nullCellColor!(visibleRowIndex));
       }
     }
     return _wrapWithColumnGap(
