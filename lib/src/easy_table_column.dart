@@ -52,13 +52,63 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
       EasyTableObjectValueMapper<ROW>? objectValue}) {
     if (sort == null) {
       if (intValue != null) {
-        sort = (a, b) => intValue(a).compareTo(intValue(b));
+        sort = (a, b) {
+          int? v1 = intValue(a);
+          int? v2 = intValue(b);
+          if (v1 == null && v2 == null) {
+            return 0;
+          }
+          if (v1 == null) {
+            return -1;
+          }
+          if (v2 == null) {
+            return 1;
+          }
+          return v1.compareTo(v2);
+        };
       } else if (doubleValue != null) {
-        sort = (a, b) => doubleValue(a).compareTo(doubleValue(b));
+        sort = (a, b) {
+          double? v1 = doubleValue(a);
+          double? v2 = doubleValue(b);
+          if (v1 == null && v2 == null) {
+            return 0;
+          }
+          if (v1 == null) {
+            return -1;
+          }
+          if (v2 == null) {
+            return 1;
+          }
+          return v1.compareTo(v2);
+        };
       } else if (stringValue != null) {
-        sort = (a, b) => stringValue(a).compareTo(stringValue(b));
+        sort = (a, b) {
+          String? v1 = stringValue(a);
+          String? v2 = stringValue(b);
+          if (v1 == null && v2 == null) {
+            return 0;
+          }
+          if (v1 == null) {
+            return -1;
+          }
+          if (v2 == null) {
+            return 1;
+          }
+          return v1.compareTo(v2);
+        };
       } else if (objectValue != null) {
         sort = (a, b) {
+          Object? v1 = objectValue(a);
+          Object? v2 = objectValue(b);
+          if (v1 == null && v2 == null) {
+            return 0;
+          }
+          if (v1 == null) {
+            return -1;
+          }
+          if (v2 == null) {
+            return 1;
+          }
           if (a is Comparable && b is Comparable) {
             return a.compareTo(b);
           }
@@ -141,19 +191,27 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
     final TextStyle? textStyle = theme.cell.textStyle;
 
     if (stringValueMapper != null) {
-      final String value = stringValueMapper!(row);
-      return EasyTableCell.string(value: value, textStyle: textStyle);
+      final String? value = stringValueMapper!(row);
+      if (value != null) {
+        return EasyTableCell.string(value: value, textStyle: textStyle);
+      }
     } else if (intValueMapper != null) {
-      final int value = intValueMapper!(row);
-      return EasyTableCell.int(value: value, textStyle: textStyle);
+      final int? value = intValueMapper!(row);
+      if (value != null) {
+        return EasyTableCell.int(value: value, textStyle: textStyle);
+      }
     } else if (doubleValueMapper != null) {
-      final double value = doubleValueMapper!(row);
-      return EasyTableCell.double(
-          value: value, fractionDigits: fractionDigits, textStyle: textStyle);
+      final double? value = doubleValueMapper!(row);
+      if (value != null) {
+        return EasyTableCell.double(
+            value: value, fractionDigits: fractionDigits, textStyle: textStyle);
+      }
     } else if (objectValueMapper != null) {
-      final Object value = objectValueMapper!(row);
-      return EasyTableCell.string(
-          value: value.toString(), textStyle: textStyle);
+      final Object? value = objectValueMapper!(row);
+      if (value != null) {
+        return EasyTableCell.string(
+            value: value.toString(), textStyle: textStyle);
+      }
     }
     return Container();
   }

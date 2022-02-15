@@ -7,6 +7,7 @@
   * `padding`
   * `alignment`
   * `textStyle`
+* Allow mapping columns to null values
 
 ## 0.6.0
 
