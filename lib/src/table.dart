@@ -6,7 +6,7 @@ import 'package:easy_table/src/private/scroll_controller.dart';
 import 'package:easy_table/src/private/layout/top_center_layout.dart';
 import 'package:easy_table/src/row_callbacks.dart';
 import 'package:easy_table/src/row_hover_listener.dart';
-import 'package:easy_table/src/theme/easy_table_theme.dart';
+import 'package:easy_table/src/theme/theme.dart';
 import 'package:easy_table/src/theme/theme_data.dart';
 import 'package:easy_table/src/theme/header_theme_data.dart';
 import 'package:flutter/material.dart';

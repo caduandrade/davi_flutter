@@ -6,7 +6,7 @@ export 'src/cell.dart';
 export 'src/theme/row_color.dart';
 export 'src/cell_builder.dart';
 export 'src/value_mapper.dart';
-export 'src/theme/easy_table_theme.dart';
+export 'src/theme/theme.dart';
 export 'src/theme/theme_data.dart';
 export 'src/theme/header_theme_data.dart';
 export 'src/theme/header_cell_theme_data.dart';

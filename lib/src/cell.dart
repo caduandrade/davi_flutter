@@ -1,4 +1,4 @@
-import 'package:easy_table/src/theme/easy_table_theme.dart';
+import 'package:easy_table/src/theme/theme.dart';
 import 'package:easy_table/src/theme/theme_data.dart';
 import 'package:flutter/widgets.dart';
 
