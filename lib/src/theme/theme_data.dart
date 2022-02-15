@@ -17,6 +17,7 @@ class EasyTableThemeData {
       this.columnDividerColor = EasyTableThemeDataDefaults.columnDividerColor,
       this.rowColor,
       this.hoveredRowColor,
+      this.nullCellColor,
       this.cell = const CellThemeData(),
       this.header = const HeaderThemeData(),
       this.headerCell = const HeaderCellThemeData()});
@@ -27,6 +28,7 @@ class EasyTableThemeData {
   final BoxDecoration? decoration;
   final EasyTableRowColor? rowColor;
   final EasyTableRowColor? hoveredRowColor;
+  final EasyTableRowColor? nullCellColor;
 
   final CellThemeData cell;
   final HeaderThemeData header;

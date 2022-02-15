@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'package:easy_table/src/cell.dart';
 import 'package:easy_table/src/column.dart';
 import 'package:easy_table/src/private/header_cell.dart';
 import 'package:easy_table/src/model.dart';
@@ -277,7 +278,51 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
       required EasyTableColumn<ROW> column,
       required int rowIndex,
       required double rowHeight}) {
-    Widget? cell = column.buildCellWidget(context, row);
+    EasyTableThemeData theme = EasyTableTheme.of(context);
+    Widget? cell;
+
+    if (column.cellBuilder != null) {
+      cell = column.cellBuilder!(context, row);
+    } else {
+      final TextStyle? textStyle = theme.cell.textStyle;
+      bool nullValue = false;
+      if (column.stringValueMapper != null) {
+        final String? value = column.stringValueMapper!(row);
+        if (value != null) {
+          cell = EasyTableCell.string(value: value, textStyle: textStyle);
+        } else {
+          nullValue = true;
+        }
+      } else if (column.intValueMapper != null) {
+        final int? value = column.intValueMapper!(row);
+        if (value != null) {
+          cell = EasyTableCell.int(value: value, textStyle: textStyle);
+        } else {
+          nullValue = true;
+        }
+      } else if (column.doubleValueMapper != null) {
+        final double? value = column.doubleValueMapper!(row);
+        if (value != null) {
+          cell = EasyTableCell.double(
+              value: value,
+              fractionDigits: column.fractionDigits,
+              textStyle: textStyle);
+        } else {
+          nullValue = true;
+        }
+      } else if (column.objectValueMapper != null) {
+        final Object? value = column.objectValueMapper!(row);
+        if (value != null) {
+          return EasyTableCell.string(
+              value: value.toString(), textStyle: textStyle);
+        } else {
+          nullValue = true;
+        }
+      }
+      if (nullValue && theme.nullCellColor != null) {
+        cell = Container(color: theme.nullCellColor!(rowIndex));
+      }
+    }
     return _wrapWithColumnGap(
         context: context, column: column, widget: cell ?? Container());
   }

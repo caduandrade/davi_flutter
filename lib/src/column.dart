@@ -1,8 +1,5 @@
 import 'dart:math' as math;
-import 'package:easy_table/src/cell.dart';
 import 'package:easy_table/src/cell_builder.dart';
-import 'package:easy_table/src/theme/theme.dart';
-import 'package:easy_table/src/theme/theme_data.dart';
 import 'package:easy_table/src/value_mapper.dart';
 import 'package:flutter/widgets.dart';
 
@@ -182,39 +179,6 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
   bool get sortable => _sortable && sort != null;
 
   bool resizable;
-
-  Widget? buildCellWidget(BuildContext context, ROW row) {
-    if (cellBuilder != null) {
-      return cellBuilder!(context, row);
-    }
-    EasyTableThemeData theme = EasyTableTheme.of(context);
-    final TextStyle? textStyle = theme.cell.textStyle;
-
-    if (stringValueMapper != null) {
-      final String? value = stringValueMapper!(row);
-      if (value != null) {
-        return EasyTableCell.string(value: value, textStyle: textStyle);
-      }
-    } else if (intValueMapper != null) {
-      final int? value = intValueMapper!(row);
-      if (value != null) {
-        return EasyTableCell.int(value: value, textStyle: textStyle);
-      }
-    } else if (doubleValueMapper != null) {
-      final double? value = doubleValueMapper!(row);
-      if (value != null) {
-        return EasyTableCell.double(
-            value: value, fractionDigits: fractionDigits, textStyle: textStyle);
-      }
-    } else if (objectValueMapper != null) {
-      final Object? value = objectValueMapper!(row);
-      if (value != null) {
-        return EasyTableCell.string(
-            value: value.toString(), textStyle: textStyle);
-      }
-    }
-    return Container();
-  }
 
   @override
   String toString() {
