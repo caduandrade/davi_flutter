@@ -3,6 +3,8 @@
 * Theme
   * Column
     * Divider color
+  * Cell
+    * Null cell color
 * New column parameters for theme override
   * `padding`
   * `alignment`
