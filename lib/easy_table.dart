@@ -1,16 +1,16 @@
 library easy_table;
 
-export 'src/easy_table.dart';
-export 'src/easy_table_model.dart';
-export 'src/easy_table_cell.dart';
-export 'src/theme/easy_table_row_color.dart';
-export 'src/easy_table_cell_builder.dart';
-export 'src/easy_table_value_mapper.dart';
+export 'src/table.dart';
+export 'src/model.dart';
+export 'src/cell.dart';
+export 'src/theme/row_color.dart';
+export 'src/cell_builder.dart';
+export 'src/value_mapper.dart';
 export 'src/theme/easy_table_theme.dart';
-export 'src/theme/easy_table_theme_data.dart';
+export 'src/theme/theme_data.dart';
 export 'src/theme/header_theme_data.dart';
 export 'src/theme/header_cell_theme_data.dart';
 export 'src/theme/cell_theme_data.dart';
-export 'src/easy_table_column.dart';
+export 'src/column.dart';
 export 'src/row_hover_listener.dart';
 export 'src/row_callbacks.dart';

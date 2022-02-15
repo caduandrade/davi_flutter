@@ -1,9 +1,9 @@
 import 'dart:math' as math;
-import 'package:easy_table/src/easy_table_cell.dart';
-import 'package:easy_table/src/easy_table_cell_builder.dart';
+import 'package:easy_table/src/cell.dart';
+import 'package:easy_table/src/cell_builder.dart';
 import 'package:easy_table/src/theme/easy_table_theme.dart';
-import 'package:easy_table/src/theme/easy_table_theme_data.dart';
-import 'package:easy_table/src/easy_table_value_mapper.dart';
+import 'package:easy_table/src/theme/theme_data.dart';
+import 'package:easy_table/src/value_mapper.dart';
 import 'package:flutter/widgets.dart';
 
 /// Signature for sort column function.

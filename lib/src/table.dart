@@ -1,13 +1,13 @@
 import 'dart:math' as math;
-import 'package:easy_table/src/easy_table_column.dart';
-import 'package:easy_table/src/private/easy_table_header_cell.dart';
-import 'package:easy_table/src/easy_table_model.dart';
-import 'package:easy_table/src/private/easy_table_scroll_controller.dart';
+import 'package:easy_table/src/column.dart';
+import 'package:easy_table/src/private/header_cell.dart';
+import 'package:easy_table/src/model.dart';
+import 'package:easy_table/src/private/scroll_controller.dart';
 import 'package:easy_table/src/private/layout/top_center_layout.dart';
 import 'package:easy_table/src/row_callbacks.dart';
 import 'package:easy_table/src/row_hover_listener.dart';
 import 'package:easy_table/src/theme/easy_table_theme.dart';
-import 'package:easy_table/src/theme/easy_table_theme_data.dart';
+import 'package:easy_table/src/theme/theme_data.dart';
 import 'package:easy_table/src/theme/header_theme_data.dart';
 import 'package:flutter/material.dart';
 

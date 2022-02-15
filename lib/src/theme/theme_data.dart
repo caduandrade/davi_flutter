@@ -1,4 +1,4 @@
-import 'package:easy_table/src/theme/easy_table_row_color.dart';
+import 'package:easy_table/src/theme/row_color.dart';
 import 'package:easy_table/src/theme/cell_theme_data.dart';
 import 'package:easy_table/src/theme/header_cell_theme_data.dart';
 import 'package:easy_table/src/theme/header_theme_data.dart';

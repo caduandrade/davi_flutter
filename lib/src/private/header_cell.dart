@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 import 'package:easy_table/easy_table.dart';
-import 'package:easy_table/src/easy_table_sort_type.dart';
+import 'package:easy_table/src/sort_type.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:meta/meta.dart';

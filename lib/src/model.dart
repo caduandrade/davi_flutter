@@ -1,7 +1,7 @@
 import 'dart:collection';
 
-import 'package:easy_table/src/easy_table_column.dart';
-import 'package:easy_table/src/easy_table_sort_type.dart';
+import 'package:easy_table/src/column.dart';
+import 'package:easy_table/src/sort_type.dart';
 import 'package:flutter/widgets.dart';
 
 /// The [EasyTable] model.
