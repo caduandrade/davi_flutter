@@ -4,12 +4,12 @@ import 'package:easy_table/src/column.dart';
 import 'package:easy_table/src/private/header_cell.dart';
 import 'package:easy_table/src/model.dart';
 import 'package:easy_table/src/private/scroll_controller.dart';
-import 'package:easy_table/src/private/layout/top_center_layout.dart';
+import 'package:easy_table/src/private/table_layout.dart';
 import 'package:easy_table/src/row_callbacks.dart';
 import 'package:easy_table/src/row_hover_listener.dart';
+import 'package:easy_table/src/theme/header_theme_data.dart';
 import 'package:easy_table/src/theme/theme.dart';
 import 'package:easy_table/src/theme/theme_data.dart';
-import 'package:easy_table/src/theme/header_theme_data.dart';
 import 'package:flutter/material.dart';
 
 /// Table view designed for a large number of data.
@@ -100,8 +100,10 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
   }
 
   void _syncHorizontalScroll() {
-    _headerHorizontalScrollController
-        .jumpTo(_horizontalScrollController.offset);
+    if (_headerHorizontalScrollController.hasClients) {
+      _headerHorizontalScrollController
+          .jumpTo(_horizontalScrollController.offset);
+    }
   }
 
   @override
@@ -111,31 +113,18 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
         EasyTableModel<ROW> model = widget.model!;
         EasyTableThemeData theme = EasyTableTheme.of(context);
 
-        double rowHeight = theme.cell.contentHeight;
-        if (theme.cell.padding != null) {
-          rowHeight += theme.cell.padding!.vertical;
-        }
+        double contentWidth = model.columnsWidth;
+        contentWidth += (model.columnsLength) * theme.columnDividerThickness;
+        contentWidth = math.max(constraints.maxWidth, contentWidth);
 
-        double requiredWidth = model.columnsWidth;
-        requiredWidth += (model.columnsLength) * theme.columnDividerThickness;
-        double maxWidth = math.max(constraints.maxWidth, requiredWidth);
-        return TopCenterLayout(
-            top: ScrollConfiguration(
-                behavior:
-                    ScrollConfiguration.of(context).copyWith(scrollbars: false),
-                child: SingleChildScrollView(
-                    controller: _headerHorizontalScrollController,
-                    scrollDirection: Axis.horizontal,
-                    child: _header(
-                        context: context, model: model, maxWidth: maxWidth))),
-            center: Scrollbar(
-                isAlwaysShown: true,
-                controller: _horizontalScrollController,
-                child: _rows(
-                    context: context,
-                    model: model,
-                    maxWidth: maxWidth,
-                    rowHeight: rowHeight)));
+        HeaderThemeData headerTheme = EasyTableTheme.of(context).header;
+
+        return TableLayout(
+            header: headerTheme.height > 0
+                ? _scrollableHeader(context: context, model: model)
+                : null,
+            body: _tableContent(
+                context: context, model: model, contentWidth: contentWidth));
       }
       return Container();
     });
@@ -146,11 +135,19 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
     return table;
   }
 
-  /// Builds a headers
+  Widget _scrollableHeader(
+      {required BuildContext context, required EasyTableModel<ROW> model}) {
+    return CustomScrollView(
+        controller: _headerHorizontalScrollController,
+        scrollDirection: Axis.horizontal,
+        slivers: [
+          SliverToBoxAdapter(child: _header(context: context, model: model))
+        ]);
+  }
+
+  /// Builds the header
   Widget _header(
-      {required BuildContext context,
-      required EasyTableModel<ROW> model,
-      required double maxWidth}) {
+      {required BuildContext context, required EasyTableModel<ROW> model}) {
     List<Widget> children = [];
     for (int columnIndex = 0;
         columnIndex < model.columnsLength;
@@ -162,26 +159,21 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
           column: column,
           columnIndex: columnIndex));
     }
-    HeaderThemeData headerTheme = EasyTableTheme.of(context).header;
-    BoxDecoration? decoration;
-    if (headerTheme.bottomBorder != null) {
-      decoration =
-          BoxDecoration(border: Border(bottom: headerTheme.bottomBorder!));
-    }
-    return Container(
-        child: Row(
-            children: children, crossAxisAlignment: CrossAxisAlignment.stretch),
-        width: maxWidth,
-        decoration: decoration);
+    return Row(
+        children: children, crossAxisAlignment: CrossAxisAlignment.stretch);
   }
 
   /// Builds the table content.
-  Widget _rows(
+  Widget _tableContent(
       {required BuildContext context,
       required EasyTableModel<ROW> model,
-      required double maxWidth,
-      required double rowHeight}) {
+      required double contentWidth}) {
     EasyTableThemeData theme = EasyTableTheme.of(context);
+
+    double rowHeight = theme.cell.contentHeight;
+    if (theme.cell.padding != null) {
+      rowHeight += theme.cell.padding!.vertical;
+    }
 
     Widget list = ListView.builder(
         controller: _verticalScrollController,
@@ -206,21 +198,28 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
 
     return Scrollbar(
         isAlwaysShown: true,
-        controller: _verticalScrollController,
-        notificationPredicate: (p) {
-          return true;
-        },
-        child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            controller: _horizontalScrollController,
-            child: SizedBox(
-                child: ScrollConfiguration(
-                    behavior: ScrollConfiguration.of(context)
-                        .copyWith(scrollbars: false),
-                    child: MouseRegion(
-                        child: list,
-                        onExit: (event) => _setHoveredRowIndex(null))),
-                width: maxWidth)));
+        controller: _horizontalScrollController,
+        child: Scrollbar(
+            isAlwaysShown: true,
+            controller: _verticalScrollController,
+            notificationPredicate: (p) {
+              return true;
+            },
+            child: CustomScrollView(
+                scrollDirection: Axis.horizontal,
+                controller: _horizontalScrollController,
+                slivers: [
+                  SliverToBoxAdapter(
+                      child: SizedBox(
+                          child: ScrollConfiguration(
+                              behavior: ScrollConfiguration.of(context)
+                                  .copyWith(scrollbars: false),
+                              child: MouseRegion(
+                                  child: list,
+                                  onExit: (event) =>
+                                      _setHoveredRowIndex(null))),
+                          width: contentWidth))
+                ])));
   }
 
   /// Builds a single table row.

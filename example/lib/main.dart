@@ -38,7 +38,7 @@ class _HomePageState extends State<HomePage> {
       EasyTableModel<Character> model =
           EasyTableModel(rows: characters, columns: [
         EasyTableColumn(
-            name: 'Name', width: 140, stringValue: (row) => row.name),
+            name: 'Name', width: 100, stringValue: (row) => row.name),
         EasyTableColumn(
             name: 'Gender',
             width: 80,
@@ -77,14 +77,18 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  double size = 4000;
+  ScrollController scrollController = ScrollController();
   @override
   Widget build(BuildContext context) {
     Widget? body;
     if (_model == null) {
       body = const Center(child: CircularProgressIndicator());
     } else {
-      // body = EasyTableTheme(child: _table(), data: EasyTableThemeData());
-      body = _table();
+      body = EasyTableTheme(
+          child: _table(),
+          data:
+              EasyTableThemeData(hoveredRowColor: (index) => Colors.blue[50]));
     }
 
     return Scaffold(
@@ -99,7 +103,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _table() {
-    return EasyTable<Character>(_model);
+    return EasyTable<Character>(_model, onRowTap: (row) => print(row.name));
   }
 
   Widget _buttons() {

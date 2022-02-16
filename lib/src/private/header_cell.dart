@@ -22,8 +22,7 @@ class EasyTableHeaderCell<ROW> extends StatefulWidget {
 
 class _EasyTableHeaderCellState extends State<EasyTableHeaderCell> {
   bool _hovered = false;
-  double _initialDragPos = 0;
-  double _initialColumnWidth = 0;
+  double _lastDragPos = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -117,16 +116,16 @@ class _EasyTableHeaderCellState extends State<EasyTableHeaderCell> {
   void _onDragStart(DragStartDetails details) {
     final Offset pos = details.globalPosition;
     setState(() {
-      _initialColumnWidth = widget.column.width;
-      _initialDragPos = pos.dx;
+      _lastDragPos = pos.dx;
     });
     widget.model.columnInResizing = widget.column;
   }
 
   void _onDragUpdate(DragUpdateDetails details) {
     final Offset pos = details.globalPosition;
-    double diff = pos.dx - _initialDragPos;
-    widget.column.width = _initialColumnWidth + diff;
+    final double diff = pos.dx - _lastDragPos;
+    widget.column.width += diff;
+    _lastDragPos = pos.dx;
   }
 
   void _onDragEnd(DragEndDetails details) {
@@ -276,7 +275,7 @@ class _HeaderRenderBox extends RenderBox
       availableWidth -= _padding!.horizontal;
     }
     double verticalPadding = _padding != null ? _padding!.vertical : 0;
-    double height = constraints.maxHeight - verticalPadding;
+    double height = math.max(0, constraints.maxHeight - verticalPadding);
     for (int i = 1; i < children.length; i++) {
       RenderBox child = children[i];
       child.layout(
