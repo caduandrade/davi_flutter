@@ -10,11 +10,15 @@ import 'package:meta/meta.dart';
 class EasyTableHeaderCell<ROW> extends StatefulWidget {
   /// Builds a header cell.
   const EasyTableHeaderCell(
-      {Key? key, required this.model, required this.column})
+      {Key? key,
+      required this.model,
+      required this.column,
+      required this.resizable})
       : super(key: key);
 
   final EasyTableModel<ROW> model;
   final EasyTableColumn<ROW> column;
+  final bool resizable;
 
   @override
   State<StatefulWidget> createState() => _EasyTableHeaderCellState();
@@ -31,7 +35,8 @@ class _EasyTableHeaderCellState extends State<EasyTableHeaderCell> {
     bool resizing = widget.model.columnInResizing == widget.column;
     bool enabled = resizing == false && widget.model.columnInResizing == null;
     bool sortable = widget.column.sortable;
-    bool resizable = widget.column.resizable && (enabled || resizing);
+    bool resizable =
+        widget.resizable && widget.column.resizable && (enabled || resizing);
 
     List<Widget> children = [_textWidget(context)];
 
