@@ -54,7 +54,8 @@ class _HomePageState extends State<HomePage> {
         EasyTableColumn(
             name: 'Skills',
             width: 100,
-            cellBuilder: (context, row) => SkillsWidget(skills: row.skills)),
+            cellBuilder: (context, row) =>
+                EasyTableCell(child: SkillsWidget(skills: row.skills))),
         EasyTableColumn(
             name: 'Strength', width: 80, intValue: (row) => row.strength),
         EasyTableColumn(
@@ -87,8 +88,8 @@ class _HomePageState extends State<HomePage> {
     } else {
       body = EasyTableTheme(
           child: _table(),
-          data:
-              EasyTableThemeData(row:RowThemeData(hoveredColor: (index) => Colors.blue[50])));
+          data: EasyTableThemeData(
+              row: RowThemeData(hoveredColor: (index) => Colors.blue[50])));
     }
 
     return Scaffold(
@@ -103,8 +104,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _table() {
-    return EasyTable<Character>(_model,
-        onRowTap: (row) => print(row.name), columnsFit: true);
+    return EasyTable<Character>(_model);
   }
 
   Widget _buttons() {

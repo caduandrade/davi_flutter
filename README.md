@@ -14,6 +14,7 @@
 ## Usage
 
 * [Get started](#get-started)
+* [Columns fit](#columns-fit)
 * [Custom cell](#custom-cell)
 * [Row callbacks](#row-callbacks)
 * Null values
@@ -48,6 +49,28 @@ Widget build(BuildContext context) {
 ```
 
 ![](https://caduandrade.github.io/easy_table_flutter/get_started_v2.png)
+
+## Columns fit
+
+```dart
+  _model = EasyTableModel<Person>(rows: [
+    Person('Landon', 19),
+    Person('Sari', 22),
+    Person('Julian', 37),
+    Person('Carey', 39),
+    Person('Cadu', 43),
+    Person('Delmar', 72)
+  ], columns: [
+    EasyTableColumn(name: 'Name', weight: 5, stringValue: (row) => row.name),
+    EasyTableColumn(name: 'Age', weight: 1, intValue: (row) => row.age)
+  ]);
+```
+
+```dart
+  EasyTable<Person>(_model, columnsFit: true);
+```
+
+![](https://caduandrade.github.io/easy_table_flutter/columns_fit_v1.png)
 
 ## Custom cell
 
@@ -104,8 +127,9 @@ void _onRowDoubleTap(BuildContext context, Person person) {
 ```dart
   EasyTableTheme(
       child: EasyTable<Person>(_model),
-      data:
-          EasyTableThemeData(nullCellColor: ((rowIndex) => Colors.grey[300])));
+      data: EasyTableThemeData(
+          cell:
+              CellThemeData(nullValueColor: ((rowIndex) => Colors.grey[300]))));
 ```
 
 ![](https://caduandrade.github.io/easy_table_flutter/null_cell_color_v1.png)

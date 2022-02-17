@@ -170,8 +170,8 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
         columnIndex < model.columnsLength;
         columnIndex++) {
       EasyTableColumn<ROW> column = model.columnAt(columnIndex);
-      children.add(EasyTableHeaderCell<ROW>(model: model, column: column, resizable: true));
-      //children.add(EasyTableHeaderCell<ROW>(model: model, column: column, resizable: !widget.columnsFit));
+      children.add(EasyTableHeaderCell<ROW>(
+          model: model, column: column, resizable: !widget.columnsFit));
     }
 
     EasyTableThemeData theme = EasyTableTheme.of(context);

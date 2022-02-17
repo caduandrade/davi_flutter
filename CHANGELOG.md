@@ -1,3 +1,7 @@
+## 0.8.0
+
+* Columns fit
+
 ## 0.7.0
 
 * Theme

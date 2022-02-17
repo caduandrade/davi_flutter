@@ -34,7 +34,7 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
   factory EasyTableColumn(
       {dynamic id,
       double width = 100,
-        double weight = 1,
+      double weight = 1,
       String? name,
       int? fractionDigits,
       bool sortable = true,
@@ -180,7 +180,6 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
       notifyListeners();
     }
   }
-
 
   double get width => _width;
   set width(double value) {
