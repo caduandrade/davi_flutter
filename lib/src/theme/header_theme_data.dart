@@ -4,14 +4,17 @@ import 'package:flutter/material.dart';
 /// Defines the configuration of the overall visual [HeaderThemeData] for a widget subtree within the app.
 class HeaderThemeData {
   /// Builds a theme data.
-  const HeaderThemeData(
-      {this.height = HeaderThemeDataDefaults.height,
-      this.bottomBorderHeight = HeaderThemeDataDefaults.bottomBorderHeight,
-      this.bottomBorderColor = HeaderThemeDataDefaults.bottomBorderColor});
+  const HeaderThemeData({
+    this.height = HeaderThemeDataDefaults.height,
+    this.bottomBorderHeight = HeaderThemeDataDefaults.bottomBorderHeight,
+    this.bottomBorderColor = HeaderThemeDataDefaults.bottomBorderColor,
+    this.columnDividerColor = HeaderThemeDataDefaults.columnDividerColor,
+  });
 
   final double height;
   final double bottomBorderHeight;
   final Color? bottomBorderColor;
+  final Color? columnDividerColor;
 
   @override
   bool operator ==(Object other) =>
@@ -33,4 +36,5 @@ class HeaderThemeDataDefaults {
   static const double height = 32;
   static const double bottomBorderHeight = 1;
   static const Color bottomBorderColor = Colors.grey;
+  static const Color columnDividerColor = Colors.grey;
 }

@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'package:easy_table/src/cell.dart';
 import 'package:easy_table/src/column.dart';
 import 'package:easy_table/src/internal/columns_metrics.dart';
+import 'package:easy_table/src/internal/divider_painter.dart';
 import 'package:easy_table/src/internal/header_cell.dart';
 import 'package:easy_table/src/internal/row_layout.dart';
 import 'package:easy_table/src/internal/scroll_controller.dart';
@@ -177,6 +178,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
     Widget header = RowLayout(
         children: children,
         columnsMetrics: columnsMetrics,
+        dividerColor: theme.header.columnDividerColor,
         width: contentWidth,
         height: theme.header.height);
 
@@ -216,6 +218,14 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
               rowHeight: rowHeight);
         },
         itemCount: model.visibleRowsLength);
+
+    if (theme.row.columnDividerColor != null) {
+      list = CustomPaint(
+          child: list,
+          foregroundPainter: DividerPainter(
+              columnsMetrics: columnsMetrics,
+              color: theme.row.columnDividerColor!));
+    }
 
     list =
         MouseRegion(child: list, onExit: (event) => _setHoveredRowIndex(null));
@@ -276,15 +286,16 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
     Widget rowWidget = RowLayout(
         children: children,
         columnsMetrics: columnsMetrics,
+        dividerColor: null,
         width: contentWidth,
         height: theme.cell.contentHeight);
 
-    if (_hoveredRowIndex == visibleRowIndex && theme.hoveredRowColor != null) {
+    if (_hoveredRowIndex == visibleRowIndex && theme.row.hoveredColor != null) {
       rowWidget = Container(
-          child: rowWidget, color: theme.hoveredRowColor!(visibleRowIndex));
-    } else if (theme.rowColor != null) {
+          child: rowWidget, color: theme.row.hoveredColor!(visibleRowIndex));
+    } else if (theme.row.color != null) {
       rowWidget =
-          Container(child: rowWidget, color: theme.rowColor!(visibleRowIndex));
+          Container(child: rowWidget, color: theme.row.color!(visibleRowIndex));
     }
 
     MouseCursor cursor = MouseCursor.defer;
@@ -363,8 +374,8 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
           nullValue = true;
         }
       }
-      if (nullValue && theme.nullCellColor != null) {
-        cell = Container(color: theme.nullCellColor!(visibleRowIndex));
+      if (nullValue && theme.cell.nullValueColor != null) {
+        cell = Container(color: theme.cell.nullValueColor!(visibleRowIndex));
       }
     }
     return ClipRect(child: cell);

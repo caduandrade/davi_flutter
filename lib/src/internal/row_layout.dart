@@ -1,5 +1,6 @@
 import 'package:easy_table/easy_table.dart';
 import 'package:easy_table/src/internal/columns_metrics.dart';
+import 'package:easy_table/src/internal/divider_painter_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:meta/meta.dart';
@@ -12,17 +13,22 @@ class RowLayout extends MultiChildRenderObjectWidget {
       required List<Widget> children,
       required this.columnsMetrics,
       required this.width,
-      required this.height})
+      required this.height,
+      required this.dividerColor})
       : super(key: key, children: children);
 
   final ColumnsMetrics columnsMetrics;
   final double width;
   final double height;
+  final Color? dividerColor;
 
   @override
   RenderObject createRenderObject(BuildContext context) {
     return _RowLayoutRenderBox(
-        columnsMetrics: columnsMetrics, height: height, width: width);
+        columnsMetrics: columnsMetrics,
+        dividerColor: dividerColor,
+        height: height,
+        width: width);
   }
 
   @override
@@ -36,6 +42,7 @@ class RowLayout extends MultiChildRenderObjectWidget {
     super.updateRenderObject(context, renderObject);
     renderObject
       ..columnsMetrics = columnsMetrics
+      ..dividerColor = dividerColor
       ..width = width
       ..height = height;
   }
@@ -65,8 +72,10 @@ class _RowLayoutRenderBox extends RenderBox
   _RowLayoutRenderBox(
       {required ColumnsMetrics columnsMetrics,
       required double width,
-      required double height})
+      required double height,
+      required Color? dividerColor})
       : _columnsMetrics = columnsMetrics,
+        _dividerColor = dividerColor,
         _width = width,
         _height = height;
 
@@ -74,6 +83,14 @@ class _RowLayoutRenderBox extends RenderBox
   set columnsMetrics(ColumnsMetrics columnsMetrics) {
     _columnsMetrics = columnsMetrics;
     markNeedsLayout();
+  }
+
+  Color? _dividerColor;
+  set dividerColor(Color? dividerColor) {
+    if (_dividerColor != dividerColor) {
+      _dividerColor = dividerColor;
+      markNeedsLayout();
+    }
   }
 
   double _width;
@@ -136,14 +153,13 @@ class _RowLayoutRenderBox extends RenderBox
   @override
   void paint(PaintingContext context, Offset offset) {
     defaultPaint(context, offset);
-    Canvas canvas = context.canvas;
-    Paint paint = Paint()..color = Colors.red;
-    for (int i = 0; i < _columnsMetrics.dividers.length; i++) {
-      LayoutWidth layoutWidth = _columnsMetrics.dividers[i];
-      canvas.drawRect(
-          Rect.fromLTWH(
-              layoutWidth.x + offset.dx, offset.dy, layoutWidth.width, _height),
-          paint);
+    if (_dividerColor != null) {
+      DividerPainterUtil.paint(
+          canvas: context.canvas,
+          offset: offset,
+          color: _dividerColor!,
+          columnsMetrics: _columnsMetrics,
+          height: _height);
     }
   }
 }

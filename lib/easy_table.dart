@@ -11,6 +11,7 @@ export 'src/theme/theme_data.dart';
 export 'src/theme/header_theme_data.dart';
 export 'src/theme/header_cell_theme_data.dart';
 export 'src/theme/cell_theme_data.dart';
+export 'src/theme/row_theme_data.dart';
 export 'src/column.dart';
 export 'src/row_hover_listener.dart';
 export 'src/row_callbacks.dart';

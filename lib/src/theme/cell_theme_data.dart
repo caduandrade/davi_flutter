@@ -1,3 +1,4 @@
+import 'package:easy_table/src/theme/row_color.dart';
 import 'package:flutter/material.dart';
 
 /// The [EasyTable] cell theme.
@@ -6,6 +7,7 @@ class CellThemeData {
   /// Builds a theme data.
   const CellThemeData(
       {this.textStyle,
+      this.nullValueColor,
       this.alignment = CellThemeDataDefaults.alignment,
       this.padding = CellThemeDataDefaults.padding,
       this.contentHeight = CellThemeDataDefaults.contentHeight});
@@ -22,6 +24,8 @@ class CellThemeData {
   final double contentHeight;
 
   final AlignmentGeometry alignment;
+
+  final EasyTableRowColor? nullValueColor;
 
   @override
   bool operator ==(Object other) =>
