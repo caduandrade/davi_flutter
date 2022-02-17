@@ -1,5 +1,5 @@
 import 'package:easy_table/easy_table.dart';
-import 'package:easy_table/src/private/columns_metrics.dart';
+import 'package:easy_table/src/internal/columns_metrics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:meta/meta.dart';
