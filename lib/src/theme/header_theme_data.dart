@@ -23,13 +23,15 @@ class HeaderThemeData {
           runtimeType == other.runtimeType &&
           height == other.height &&
           bottomBorderHeight == other.bottomBorderHeight &&
-          bottomBorderColor == other.bottomBorderColor;
+          bottomBorderColor == other.bottomBorderColor &&
+          columnDividerColor == other.columnDividerColor;
 
   @override
   int get hashCode =>
       height.hashCode ^
       bottomBorderHeight.hashCode ^
-      bottomBorderColor.hashCode;
+      bottomBorderColor.hashCode ^
+      columnDividerColor.hashCode;
 }
 
 class HeaderThemeDataDefaults {

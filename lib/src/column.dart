@@ -34,6 +34,7 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
   factory EasyTableColumn(
       {dynamic id,
       double width = 100,
+        double weight = 1,
       String? name,
       int? fractionDigits,
       bool sortable = true,
@@ -117,6 +118,7 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
     return EasyTableColumn._(
         id: id,
         width: width,
+        weight: weight,
         name: name,
         fractionDigits: fractionDigits,
         cellBuilder: cellBuilder,
@@ -135,6 +137,7 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
   EasyTableColumn._(
       {this.id,
       required double width,
+      required double weight,
       this.name,
       this.padding,
       this.alignment,
@@ -149,6 +152,7 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
       required this.resizable,
       required bool sortable})
       : _width = width,
+        _weight = weight,
         _sortable = sortable;
 
   final dynamic id;
@@ -165,6 +169,18 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
   final EasyTableObjectValueMapper<ROW>? objectValueMapper;
   final bool _sortable;
   double _width;
+  double _weight;
+
+  double get weight => _weight;
+  set weight(double value) {
+    //TODO resizeAreaWidth should be smaller
+    value = math.max(1, value);
+    if (_weight != value) {
+      _weight = value;
+      notifyListeners();
+    }
+  }
+
 
   double get width => _width;
   set width(double value) {

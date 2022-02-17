@@ -22,8 +22,10 @@ class ColumnsMetrics {
       availableWidth = math.max(
           0, availableWidth - (columnDividerThickness * model.columnsLength));
 
-      double columnWidth = availableWidth / model.columnsLength;
+      double columnWidthRatio = availableWidth / model.columnsWeight;
       for (int i = 0; i < model.columnsLength; i++) {
+        EasyTableColumn column = model.columnAt(i);
+        double columnWidth = columnWidthRatio * column.weight;
         LayoutWidth layoutWidth = LayoutWidth(x: x, width: columnWidth);
         columnsWidth.add(layoutWidth);
         x += layoutWidth.width;

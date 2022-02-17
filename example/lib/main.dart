@@ -104,7 +104,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget _table() {
     return EasyTable<Character>(_model,
-        onRowTap: (row) => print(row.name), columnsFit: false);
+        onRowTap: (row) => print(row.name), columnsFit: true);
   }
 
   Widget _buttons() {

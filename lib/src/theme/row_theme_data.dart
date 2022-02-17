@@ -14,6 +14,19 @@ class RowThemeData {
   final EasyTableRowColor? color;
   final EasyTableRowColor? hoveredColor;
   final Color? columnDividerColor;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is RowThemeData &&
+          runtimeType == other.runtimeType &&
+          color == other.color &&
+          hoveredColor == other.hoveredColor &&
+          columnDividerColor == other.columnDividerColor;
+
+  @override
+  int get hashCode =>
+      color.hashCode ^ hoveredColor.hashCode ^ columnDividerColor.hashCode;
 }
 
 class RowThemeDataDefaults {

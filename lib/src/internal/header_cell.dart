@@ -64,8 +64,7 @@ class _EasyTableHeaderCellState extends State<EasyTableHeaderCell> {
     }
 
     if (resizable) {
-      children.add(_resizeWidget(
-          context: context, resizable: resizable, resizing: resizing));
+      children.add(_resizeWidget(context: context, resizing: resizing));
     }
 
     final EdgeInsets? padding =
@@ -91,34 +90,29 @@ class _EasyTableHeaderCellState extends State<EasyTableHeaderCell> {
         alignment: widget.column.alignment ?? theme.headerCell.alignment);
   }
 
-  Widget _resizeWidget(
-      {required BuildContext context, required resizing, required resizable}) {
+  Widget _resizeWidget({required BuildContext context, required resizing}) {
     EasyTableThemeData theme = EasyTableTheme.of(context);
-    Widget child = Container(
-        width: theme.headerCell.resizeAreaWidth,
-        color: _hovered || resizing
-            ? theme.headerCell.resizeAreaHoverColor
-            : null);
-    if (resizable) {
-      return MouseRegion(
-          onEnter: (e) => setState(() {
-                _hovered = true;
-              }),
-          onExit: (e) => setState(() {
-                _hovered = false;
-              }),
-          cursor: SystemMouseCursors.resizeColumn,
-          child: GestureDetector(
-              onHorizontalDragStart: _onDragStart,
-              onHorizontalDragEnd: _onDragEnd,
-              onHorizontalDragUpdate: _onDragUpdate,
-              behavior: HitTestBehavior.opaque,
-              child: child));
-    }
-    return child;
+    return MouseRegion(
+        onEnter: (e) => setState(() {
+              _hovered = true;
+            }),
+        onExit: (e) => setState(() {
+              _hovered = false;
+            }),
+        cursor: SystemMouseCursors.resizeColumn,
+        child: GestureDetector(
+            onHorizontalDragStart: _onResizeDragStart,
+            onHorizontalDragEnd: _onResizeDragEnd,
+            onHorizontalDragUpdate: _onResizeDragUpdate,
+            behavior: HitTestBehavior.opaque,
+            child: Container(
+                width: theme.headerCell.resizeAreaWidth,
+                color: _hovered || resizing
+                    ? theme.headerCell.resizeAreaHoverColor
+                    : null)));
   }
 
-  void _onDragStart(DragStartDetails details) {
+  void _onResizeDragStart(DragStartDetails details) {
     final Offset pos = details.globalPosition;
     setState(() {
       _lastDragPos = pos.dx;
@@ -126,14 +120,14 @@ class _EasyTableHeaderCellState extends State<EasyTableHeaderCell> {
     widget.model.columnInResizing = widget.column;
   }
 
-  void _onDragUpdate(DragUpdateDetails details) {
+  void _onResizeDragUpdate(DragUpdateDetails details) {
     final Offset pos = details.globalPosition;
     final double diff = pos.dx - _lastDragPos;
     widget.column.width += diff;
     _lastDragPos = pos.dx;
   }
 
-  void _onDragEnd(DragEndDetails details) {
+  void _onResizeDragEnd(DragEndDetails details) {
     widget.model.columnInResizing = null;
   }
 

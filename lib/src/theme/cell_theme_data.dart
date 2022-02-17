@@ -34,11 +34,17 @@ class CellThemeData {
           runtimeType == other.runtimeType &&
           textStyle == other.textStyle &&
           padding == other.padding &&
-          contentHeight == other.contentHeight;
+          contentHeight == other.contentHeight &&
+          alignment == other.alignment &&
+          nullValueColor == other.nullValueColor;
 
   @override
   int get hashCode =>
-      textStyle.hashCode ^ padding.hashCode ^ contentHeight.hashCode;
+      textStyle.hashCode ^
+      padding.hashCode ^
+      contentHeight.hashCode ^
+      alignment.hashCode ^
+      nullValueColor.hashCode;
 }
 
 class CellThemeDataDefaults {

@@ -147,6 +147,14 @@ class EasyTableModel<ROW> extends ChangeNotifier {
     notifyListeners();
   }
 
+  double get columnsWeight {
+    double w = 0;
+    for (EasyTableColumn column in _columns) {
+      w += column.weight;
+    }
+    return w;
+  }
+
   double get columnsWidth {
     double w = 0;
     for (EasyTableColumn column in _columns) {
