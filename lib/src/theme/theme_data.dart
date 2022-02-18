@@ -30,18 +30,6 @@ class EasyTableThemeData {
 }
 
 class EasyTableThemeDataDefaults {
-  static EasyTableRowColor rowZebraColor({Color? evenColor, Color? oddColor}) {
-    return (rowIndex) {
-      return rowIndex.isOdd ? evenColor : oddColor;
-    };
-  }
-
-  static Color? _rowWhiteGreyColor(int rowIndex) {
-    return rowIndex.isOdd ? Colors.white : Colors.grey[100];
-  }
-
-  static const EasyTableRowColor rowWhiteGreyColor = _rowWhiteGreyColor;
-
   static const double columnDividerThickness = 1;
   static const double rowDividerThickness = 0;
   static const BoxDecoration tableDecoration = BoxDecoration(

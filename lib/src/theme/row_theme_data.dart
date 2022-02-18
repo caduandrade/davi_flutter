@@ -27,6 +27,18 @@ class RowThemeData {
   @override
   int get hashCode =>
       color.hashCode ^ hoveredColor.hashCode ^ columnDividerColor.hashCode;
+
+  static EasyTableRowColor rowZebraColor({Color? evenColor, Color? oddColor}) {
+    return (rowIndex) {
+      return rowIndex.isOdd ? evenColor : oddColor;
+    };
+  }
+
+  static Color? _rowWhiteGreyColor(int rowIndex) {
+    return rowIndex.isOdd ? Colors.white : Colors.grey[100];
+  }
+
+  static const EasyTableRowColor rowWhiteGreyColor = _rowWhiteGreyColor;
 }
 
 class RowThemeDataDefaults {

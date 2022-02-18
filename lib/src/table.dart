@@ -132,9 +132,15 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
             containerWidth: contentWidth,
             columnDividerThickness: theme.columnDividerThickness);
 
-        HeaderThemeData headerTheme = EasyTableTheme.of(context).header;
+        double rowHeight = theme.cell.contentHeight;
+        if (theme.cell.padding != null) {
+          rowHeight += theme.cell.padding!.vertical;
+        }
+
+        HeaderThemeData headerTheme = theme.header;
+        double headerHeight = headerTheme.height;
         Widget? header;
-        if (headerTheme.height > 0) {
+        if (headerHeight > 0) {
           header = _header(
               context: context,
               model: model,
@@ -142,13 +148,30 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
               contentWidth: contentWidth);
         }
 
-        return TableLayout(
-            header: header,
-            body: _body(
-                context: context,
-                model: model,
-                columnsMetrics: columnsMetrics,
-                contentWidth: contentWidth));
+        if (headerTheme.bottomBorderHeight > 0) {
+          Widget divider = Container(
+              height: headerTheme.bottomBorderHeight,
+              color: headerTheme.bottomBorderColor);
+          // children.add(LayoutId(id: _dividerId, child: divider));
+        }
+
+        //header=Container(color:Colors.yellow);
+
+        Widget body = _body(
+            context: context,
+            model: model,
+            columnsMetrics: columnsMetrics,
+            contentWidth: contentWidth,
+            rowHeight: rowHeight);
+        //body=Container(color:Colors.green);
+
+        return ClipRect(
+            child: TableLayout(
+                header: header,
+                body: body,
+                rowsCount: model.rowsLength,
+                rowHeight: rowHeight,
+                headerHeight: headerHeight));
       }
       return Container();
     });
@@ -197,13 +220,9 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
       {required BuildContext context,
       required EasyTableModel<ROW> model,
       required ColumnsMetrics columnsMetrics,
-      required double contentWidth}) {
+      required double contentWidth,
+      required double rowHeight}) {
     EasyTableThemeData theme = EasyTableTheme.of(context);
-
-    double rowHeight = theme.cell.contentHeight;
-    if (theme.cell.padding != null) {
-      rowHeight += theme.cell.padding!.vertical;
-    }
 
     Widget list = ListView.builder(
         controller: _verticalScrollController,
