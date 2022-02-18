@@ -4,7 +4,6 @@ import 'package:easy_table/src/column.dart';
 import 'package:easy_table/src/internal/columns_metrics.dart';
 import 'package:easy_table/src/internal/divider_painter.dart';
 import 'package:easy_table/src/internal/header_cell.dart';
-import 'package:easy_table/src/internal/row_layout.dart';
 import 'package:easy_table/src/internal/scroll_controller.dart';
 import 'package:easy_table/src/internal/table_layout.dart';
 import 'package:easy_table/src/model.dart';
@@ -126,11 +125,14 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
                   (model.columnsLength * theme.columnDividerThickness));
         }
 
-        ColumnsMetrics columnsMetrics = ColumnsMetrics(
-            model: model,
-            columnsFit: widget.columnsFit,
-            containerWidth: contentWidth,
-            columnDividerThickness: theme.columnDividerThickness);
+        ColumnsMetrics columnsMetrics = widget.columnsFit
+            ? ColumnsMetrics.columnsFit(
+                model: model,
+                containerWidth: contentWidth,
+                columnDividerThickness: theme.columnDividerThickness)
+            : ColumnsMetrics.resizable(
+                model: model,
+                columnDividerThickness: theme.columnDividerThickness);
 
         double rowHeight = theme.cell.contentHeight;
         if (theme.cell.padding != null) {
@@ -148,22 +150,12 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
               contentWidth: contentWidth);
         }
 
-        if (headerTheme.bottomBorderHeight > 0) {
-          Widget divider = Container(
-              height: headerTheme.bottomBorderHeight,
-              color: headerTheme.bottomBorderColor);
-          // children.add(LayoutId(id: _dividerId, child: divider));
-        }
-
-        //header=Container(color:Colors.yellow);
-
         Widget body = _body(
             context: context,
             model: model,
             columnsMetrics: columnsMetrics,
             contentWidth: contentWidth,
             rowHeight: rowHeight);
-        //body=Container(color:Colors.green);
 
         return ClipRect(
             child: TableLayout(
@@ -197,13 +189,29 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
           model: model, column: column, resizable: !widget.columnsFit));
     }
 
+    Widget header = _horizontalLayout(
+        context: context, columnsMetrics: columnsMetrics, children: children);
+
     EasyTableThemeData theme = EasyTableTheme.of(context);
-    Widget header = RowLayout(
-        children: children,
-        columnsMetrics: columnsMetrics,
-        dividerColor: theme.header.columnDividerColor,
-        width: contentWidth,
-        height: theme.header.height);
+
+    if (theme.header.columnDividerColor != null) {
+      header = CustomPaint(
+          child: header,
+          foregroundPainter: DividerPainter(
+              columnsMetrics: columnsMetrics,
+              color: theme.header.columnDividerColor!));
+    }
+
+    if (theme.header.bottomBorderHeight > 0 &&
+        theme.header.bottomBorderColor != null) {
+      header = Container(
+          child: header,
+          decoration: BoxDecoration(
+              border: Border(
+                  bottom: BorderSide(
+                      width: theme.header.bottomBorderHeight,
+                      color: theme.header.bottomBorderColor!))));
+    }
 
     if (widget.columnsFit) {
       return header;
@@ -232,9 +240,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
               context: context,
               model: model,
               columnsMetrics: columnsMetrics,
-              visibleRowIndex: index,
-              contentWidth: contentWidth,
-              rowHeight: rowHeight);
+              visibleRowIndex: index);
         },
         itemCount: model.visibleRowsLength);
 
@@ -284,9 +290,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
       {required BuildContext context,
       required EasyTableModel<ROW> model,
       required ColumnsMetrics columnsMetrics,
-      required int visibleRowIndex,
-      required double contentWidth,
-      required double rowHeight}) {
+      required int visibleRowIndex}) {
     EasyTableThemeData theme = EasyTableTheme.of(context);
     ROW row = model.visibleRowAt(visibleRowIndex);
     List<Widget> children = [];
@@ -298,16 +302,11 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
           context: context,
           row: row,
           column: column,
-          visibleRowIndex: visibleRowIndex,
-          rowHeight: rowHeight));
+          visibleRowIndex: visibleRowIndex));
     }
 
-    Widget rowWidget = RowLayout(
-        children: children,
-        columnsMetrics: columnsMetrics,
-        dividerColor: null,
-        width: contentWidth,
-        height: theme.cell.contentHeight);
+    Widget rowWidget = _horizontalLayout(
+        context: context, columnsMetrics: columnsMetrics, children: children);
 
     if (_hoveredRowIndex == visibleRowIndex && theme.row.hoveredColor != null) {
       rowWidget = Container(
@@ -350,8 +349,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
       {required BuildContext context,
       required ROW row,
       required EasyTableColumn<ROW> column,
-      required int visibleRowIndex,
-      required double rowHeight}) {
+      required int visibleRowIndex}) {
     EasyTableThemeData theme = EasyTableTheme.of(context);
     Widget? cell;
 
@@ -398,5 +396,23 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
       }
     }
     return ClipRect(child: cell);
+  }
+
+  Widget _horizontalLayout(
+      {required BuildContext context,
+      required ColumnsMetrics columnsMetrics,
+      required List<Widget> children}) {
+    EasyTableThemeData theme = EasyTableTheme.of(context);
+    for (int i = 0; i < children.length; i++) {
+      LayoutWidth layoutWidth = columnsMetrics.columns[i];
+      children[i] = SizedBox(child: children[i], width: layoutWidth.width);
+      if (theme.columnDividerThickness > 0) {
+        children[i] = Padding(
+            child: children[i],
+            padding: EdgeInsets.only(right: theme.columnDividerThickness));
+      }
+    }
+    return Row(
+        children: children, crossAxisAlignment: CrossAxisAlignment.stretch);
   }
 }

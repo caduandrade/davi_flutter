@@ -122,8 +122,6 @@ class _TableLayoutRenderBox extends RenderBox
 
   @override
   void performLayout() {
-    print('constraints: $constraints');
-
     if (constraints.hasBoundedWidth == false) {
       throw StateError('Unbounded width constraints');
     }

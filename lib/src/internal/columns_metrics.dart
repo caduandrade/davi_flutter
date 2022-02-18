@@ -7,9 +7,29 @@ import 'package:meta/meta.dart';
 
 @internal
 class ColumnsMetrics {
-  factory ColumnsMetrics(
+  factory ColumnsMetrics.resizable(
+      {required EasyTableModel model, required double columnDividerThickness}) {
+    List<LayoutWidth> columnsWidth = [];
+    List<LayoutWidth> dividersWidth = [];
+
+    double x = 0;
+
+    for (int i = 0; i < model.columnsLength; i++) {
+      EasyTableColumn column = model.columnAt(i);
+      LayoutWidth layoutWidth = LayoutWidth(x: x, width: column.width);
+      columnsWidth.add(layoutWidth);
+      x += layoutWidth.width;
+      dividersWidth.add(LayoutWidth(width: columnDividerThickness, x: x));
+      x += columnDividerThickness;
+    }
+
+    return ColumnsMetrics._(
+        columns: UnmodifiableListView(columnsWidth),
+        dividers: UnmodifiableListView(dividersWidth));
+  }
+
+  factory ColumnsMetrics.columnsFit(
       {required EasyTableModel model,
-      required bool columnsFit,
       required double containerWidth,
       required double columnDividerThickness}) {
     List<LayoutWidth> columnsWidth = [];
@@ -17,31 +37,20 @@ class ColumnsMetrics {
 
     double x = 0;
 
-    if (columnsFit) {
-      double availableWidth = containerWidth;
-      availableWidth = math.max(
-          0, availableWidth - (columnDividerThickness * model.columnsLength));
+    double availableWidth = containerWidth;
+    availableWidth = math.max(
+        0, availableWidth - (columnDividerThickness * model.columnsLength));
 
-      double columnWidthRatio = availableWidth / model.columnsWeight;
-      for (int i = 0; i < model.columnsLength; i++) {
-        EasyTableColumn column = model.columnAt(i);
-        double columnWidth = columnWidthRatio * column.weight;
-        LayoutWidth layoutWidth = LayoutWidth(x: x, width: columnWidth);
-        columnsWidth.add(layoutWidth);
-        x += layoutWidth.width;
+    double columnWidthRatio = availableWidth / model.columnsWeight;
+    for (int i = 0; i < model.columnsLength; i++) {
+      EasyTableColumn column = model.columnAt(i);
+      double columnWidth = columnWidthRatio * column.weight;
+      LayoutWidth layoutWidth = LayoutWidth(x: x, width: columnWidth);
+      columnsWidth.add(layoutWidth);
+      x += layoutWidth.width;
 
-        dividersWidth.add(LayoutWidth(width: columnDividerThickness, x: x));
-        x += columnDividerThickness;
-      }
-    } else {
-      for (int i = 0; i < model.columnsLength; i++) {
-        EasyTableColumn column = model.columnAt(i);
-        LayoutWidth layoutWidth = LayoutWidth(x: x, width: column.width);
-        columnsWidth.add(layoutWidth);
-        x += layoutWidth.width;
-        dividersWidth.add(LayoutWidth(width: columnDividerThickness, x: x));
-        x += columnDividerThickness;
-      }
+      dividersWidth.add(LayoutWidth(width: columnDividerThickness, x: x));
+      x += columnDividerThickness;
     }
 
     return ColumnsMetrics._(
