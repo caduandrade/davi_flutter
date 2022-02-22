@@ -13,7 +13,8 @@ class TableLayout extends MultiChildRenderObjectWidget {
       required Widget body,
       required double rowHeight,
       required double headerHeight,
-      required int rowsCount}) {
+      required int rowsCount,
+      required int? visibleRowsCount}) {
     List<Widget> children = [body];
     if (header != null) {
       children.insert(0, header);
@@ -23,7 +24,8 @@ class TableLayout extends MultiChildRenderObjectWidget {
         children: children,
         rowHeight: rowHeight,
         rowsCount: rowsCount,
-        headerHeight: headerHeight);
+        headerHeight: headerHeight,
+        visibleRowsCount: visibleRowsCount);
   }
 
   TableLayout._(
@@ -31,6 +33,7 @@ class TableLayout extends MultiChildRenderObjectWidget {
       required this.rowsCount,
       required this.rowHeight,
       required this.headerHeight,
+      required this.visibleRowsCount,
       required List<Widget> children})
       : super(key: key, children: children);
 
@@ -38,10 +41,17 @@ class TableLayout extends MultiChildRenderObjectWidget {
   final double headerHeight;
   final int rowsCount;
 
+  /// Calculates the height based on the number of visible lines.
+  /// It can be used within an unbounded height layout.
+  final int? visibleRowsCount;
+
   @override
   RenderObject createRenderObject(BuildContext context) {
     return _TableLayoutRenderBox(
-        rowHeight: rowHeight, rowsCount: rowsCount, headerHeight: headerHeight);
+        rowHeight: rowHeight,
+        rowsCount: rowsCount,
+        visibleRowsCount: visibleRowsCount,
+        headerHeight: headerHeight);
   }
 
   @override
@@ -56,7 +66,8 @@ class TableLayout extends MultiChildRenderObjectWidget {
     renderObject
       ..headerHeight = headerHeight
       ..rowsCount = rowsCount
-      ..rowHeight = rowHeight;
+      ..rowHeight = rowHeight
+      ..visibleRowsCount = visibleRowsCount;
   }
 }
 
@@ -84,10 +95,20 @@ class _TableLayoutRenderBox extends RenderBox
   _TableLayoutRenderBox(
       {required int rowsCount,
       required double rowHeight,
-      required double headerHeight})
+      required double headerHeight,
+      required int? visibleRowsCount})
       : _rowHeight = rowHeight,
         _headerHeight = headerHeight,
-        _rowsCount = rowsCount;
+        _rowsCount = rowsCount,
+        _visibleRowsCount = visibleRowsCount;
+
+  int? _visibleRowsCount;
+  set visibleRowsCount(int? value) {
+    if (_visibleRowsCount != value) {
+      _visibleRowsCount = value;
+      markNeedsLayout();
+    }
+  }
 
   int _rowsCount;
   set rowsCount(int value) {
@@ -129,51 +150,46 @@ class _TableLayoutRenderBox extends RenderBox
     RenderBox? headerRenderBox = childCount == 2 ? firstChild! : null;
     RenderBox bodyRenderBox = childCount == 1 ? firstChild! : lastChild!;
 
+    double bodyHeight = 0;
+
     if (headerRenderBox != null) {
       headerRenderBox.layout(
           BoxConstraints(
               minWidth: constraints.minWidth,
               maxWidth: constraints.maxWidth,
-              minHeight: _headerHeight,
-              maxHeight: _headerHeight),
+              minHeight: 0,
+              maxHeight: math.min(_headerHeight, constraints.maxHeight)),
           parentUsesSize: true);
       headerRenderBox.tableLayoutParentData().offset = Offset.zero;
-    }
-
-    double bodyHeight = 0;
-    if (constraints.maxHeight.isInfinite) {
-      bodyHeight = _maxHeight();
-    } else {
-      bodyHeight = math.max(0, constraints.maxHeight - _headerHeight);
+      bodyHeight += headerRenderBox.size.height;
     }
 
     bodyRenderBox.layout(
         BoxConstraints(
             minWidth: constraints.minWidth,
             maxWidth: constraints.maxWidth,
-            minHeight: bodyHeight,
-            maxHeight: bodyHeight),
+            minHeight: 0,
+            maxHeight: math.min(_rowHeight * (_visibleRowsCount ?? _rowsCount),
+                constraints.maxHeight - bodyHeight)),
         parentUsesSize: true);
     bodyRenderBox.tableLayoutParentData().offset = Offset(0, _headerHeight);
+    bodyHeight += bodyRenderBox.size.height;
 
     if (constraints.hasBoundedHeight) {
-      size = constraints.biggest;
+      size = Size(
+          constraints.maxWidth, math.max(bodyHeight, constraints.maxHeight));
     } else {
       size = Size(constraints.maxWidth, bodyHeight);
     }
   }
 
-  double _minHeight() {
-    return childCount == 1 ? 0 : _headerHeight;
-  }
-
   double _maxHeight() {
-    return _minHeight() * (_rowsCount * _rowHeight);
+    return _headerHeight + (_rowsCount * _rowHeight);
   }
 
   @override
   double computeMinIntrinsicHeight(double width) {
-    return _minHeight();
+    return _headerHeight;
   }
 
   @override

@@ -27,8 +27,12 @@ class EasyTable<ROW> extends StatefulWidget {
       this.onHoverListener,
       this.onRowTap,
       this.onRowDoubleTap,
-      this.columnsFit = false})
-      : super(key: key);
+      this.columnsFit = false,
+      int? visibleRowsCount})
+      : _visibleRowsCount = visibleRowsCount == null || visibleRowsCount > 0
+            ? visibleRowsCount
+            : null,
+        super(key: key);
 
   final EasyTableModel<ROW>? model;
   final ScrollController? horizontalScrollController;
@@ -37,6 +41,9 @@ class EasyTable<ROW> extends StatefulWidget {
   final RowDoubleTapCallback<ROW>? onRowDoubleTap;
   final RowTapCallback<ROW>? onRowTap;
   final bool columnsFit;
+  final int? _visibleRowsCount;
+
+  int? get visibleRowsCount => _visibleRowsCount;
 
   @override
   State<StatefulWidget> createState() => _EasyTableState<ROW>();
@@ -162,6 +169,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
                 header: header,
                 body: body,
                 rowsCount: model.rowsLength,
+                visibleRowsCount: widget.visibleRowsCount,
                 rowHeight: rowHeight,
                 headerHeight: headerHeight));
       }
