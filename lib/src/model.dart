@@ -64,7 +64,7 @@ class EasyTableModel<ROW> extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addRows(List<ROW> rows) {
+  void addRows(Iterable<ROW> rows) {
     _originalRows.addAll(rows);
     if (_visibleRowsModifiable) {
       _visibleRows.addAll(rows);
@@ -77,6 +77,17 @@ class EasyTableModel<ROW> extends ChangeNotifier {
     _originalRows.clear();
     if (_visibleRowsModifiable) {
       _visibleRows.clear();
+    }
+    notifyListeners();
+  }
+
+  void replaceRows(Iterable<ROW> rows) {
+    _originalRows.clear();
+    _originalRows.addAll(rows);
+    if (_visibleRowsModifiable) {
+      _visibleRows.clear();
+      _visibleRows.addAll(rows);
+      _resort();
     }
     notifyListeners();
   }
@@ -107,7 +118,7 @@ class EasyTableModel<ROW> extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addColumns(List<EasyTableColumn<ROW>> columns) {
+  void addColumns(Iterable<EasyTableColumn<ROW>> columns) {
     for (EasyTableColumn<ROW> column in columns) {
       _columns.add(column);
       column.addListener(notifyListeners);

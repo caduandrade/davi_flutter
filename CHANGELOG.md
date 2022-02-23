@@ -2,6 +2,8 @@
 
 * `visibleRowsCount` feature to calculate the height based on the number of visible lines. It can be used within an unbounded height layout.
 * Layout bugfix
+* EasyTableModel
+  * Adding the `replaceRows` method
 
 ## 0.8.0
 
