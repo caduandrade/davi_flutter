@@ -1,6 +1,7 @@
 ### 0.9.0
 
 * `visibleRowsCount` feature to calculate the height based on the number of visible lines. It can be used within an unbounded height layout.
+* Layout bugfix
 
 ## 0.8.0
 

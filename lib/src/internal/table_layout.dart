@@ -143,8 +143,19 @@ class _TableLayoutRenderBox extends RenderBox
 
   @override
   void performLayout() {
-    if (constraints.hasBoundedWidth == false) {
-      throw StateError('Unbounded width constraints');
+    if (!constraints.hasBoundedHeight && _visibleRowsCount == null) {
+      throw FlutterError.fromParts(<DiagnosticsNode>[
+        ErrorSummary('EasyTable was given unbounded height.'),
+        ErrorDescription(
+            'EasyTable already is scrollable in the vertical axis.'),
+        ErrorHint(
+          'Consider using the "visibleRowsCount" property to limit the height'
+          ' or use it in another Widget like Expanded or SliverFillRemaining.',
+        ),
+      ]);
+    }
+    if (!constraints.hasBoundedWidth) {
+      throw FlutterError('EasyTable was given unbounded width.');
     }
 
     RenderBox? headerRenderBox = childCount == 2 ? firstChild! : null;
@@ -164,13 +175,21 @@ class _TableLayoutRenderBox extends RenderBox
       bodyHeight += headerRenderBox.size.height;
     }
 
+    double maxHeight;
+
+    if (_visibleRowsCount != null) {
+      maxHeight = math.min(
+          _rowHeight * _visibleRowsCount!, constraints.maxHeight - bodyHeight);
+    } else {
+      maxHeight = constraints.maxHeight - bodyHeight;
+    }
+
     bodyRenderBox.layout(
         BoxConstraints(
             minWidth: constraints.minWidth,
             maxWidth: constraints.maxWidth,
             minHeight: 0,
-            maxHeight: math.min(_rowHeight * (_visibleRowsCount ?? _rowsCount),
-                constraints.maxHeight - bodyHeight)),
+            maxHeight: maxHeight),
         parentUsesSize: true);
     bodyRenderBox.tableLayoutParentData().offset = Offset(0, _headerHeight);
     bodyHeight += bodyRenderBox.size.height;
@@ -183,10 +202,6 @@ class _TableLayoutRenderBox extends RenderBox
     }
   }
 
-  double _maxHeight() {
-    return _headerHeight + (_rowsCount * _rowHeight);
-  }
-
   @override
   double computeMinIntrinsicHeight(double width) {
     return _headerHeight;
@@ -194,7 +209,7 @@ class _TableLayoutRenderBox extends RenderBox
 
   @override
   double computeMaxIntrinsicHeight(double width) {
-    return _maxHeight();
+    return _headerHeight + (_visibleRowsCount ?? _rowsCount * _rowHeight);
   }
 
   @override
