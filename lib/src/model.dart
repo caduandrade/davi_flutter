@@ -11,8 +11,9 @@ class EasyTableModel<ROW> extends ChangeNotifier {
   factory EasyTableModel(
       {List<ROW> rows = const [],
       List<EasyTableColumn<ROW>> columns = const []}) {
+    List<ROW> cloneList = List.from(rows);
     EasyTableModel<ROW> model =
-        EasyTableModel._(rows, UnmodifiableListView(rows));
+        EasyTableModel._(cloneList, UnmodifiableListView(cloneList));
     for (EasyTableColumn<ROW> column in columns) {
       model.addColumn(column);
     }
@@ -59,7 +60,7 @@ class EasyTableModel<ROW> extends ChangeNotifier {
     _originalRows.add(row);
     if (_visibleRowsModifiable) {
       _visibleRows.add(row);
-      _resort();
+      _resort(notify: false);
     }
     notifyListeners();
   }
@@ -68,8 +69,10 @@ class EasyTableModel<ROW> extends ChangeNotifier {
     _originalRows.addAll(rows);
     if (_visibleRowsModifiable) {
       _visibleRows.addAll(rows);
-      _resort();
+    } else {
+      _visibleRows = UnmodifiableListView(_originalRows);
     }
+    _resort(notify: false);
     notifyListeners();
   }
 
@@ -87,8 +90,10 @@ class EasyTableModel<ROW> extends ChangeNotifier {
     if (_visibleRowsModifiable) {
       _visibleRows.clear();
       _visibleRows.addAll(rows);
-      _resort();
+    } else {
+      _visibleRows = UnmodifiableListView(_originalRows);
     }
+    _resort(notify: false);
     notifyListeners();
   }
 
@@ -187,10 +192,10 @@ class EasyTableModel<ROW> extends ChangeNotifier {
       {required EasyTableColumn<ROW> column,
       required EasyTableSortType sortType}) {
     _columnSort = _ColumnSort(column, sortType);
-    _resort();
+    _resort(notify: true);
   }
 
-  void _resort() {
+  void _resort({required bool notify}) {
     if (_columnSort != null && _columnSort!.column.sort != null) {
       List<ROW> list = List.from(_originalRows);
       EasyTableColumnSort<ROW> sortFunction = _columnSort!.column.sort!;
@@ -200,7 +205,9 @@ class EasyTableModel<ROW> extends ChangeNotifier {
         list.sort(sortFunction);
       }
       _visibleRows = list;
-      notifyListeners();
+      if (notify) {
+        notifyListeners();
+      }
     }
   }
 }
