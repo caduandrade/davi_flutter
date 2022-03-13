@@ -38,7 +38,12 @@ class _EasyTableHeaderCellState extends State<EasyTableHeaderCell> {
     bool resizable =
         widget.resizable && widget.column.resizable && (enabled || resizing);
 
-    List<Widget> children = [_textWidget(context)];
+    List<Widget> children = [];
+
+    if (widget.column.leading != null) {
+      children.add(widget.column.leading!);
+    }
+    children.add(_textWidget(context));
 
     if (widget.model.sortedColumn == widget.column) {
       IconData? icon;

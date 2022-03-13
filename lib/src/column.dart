@@ -42,6 +42,7 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
       EdgeInsets? padding,
       AlignmentGeometry? alignment,
       TextStyle? textStyle,
+      Widget? leading,
       EasyTableCellBuilder<ROW>? cellBuilder,
       EasyTableColumnSort<ROW>? sort,
       EasyTableIntValueMapper<ROW>? intValue,
@@ -122,6 +123,7 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
         name: name,
         fractionDigits: fractionDigits,
         cellBuilder: cellBuilder,
+        leading: leading,
         sort: sort,
         stringValueMapper: stringValue,
         intValueMapper: intValue,
@@ -144,6 +146,7 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
       this.textStyle,
       this.fractionDigits,
       this.cellBuilder,
+      this.leading,
       this.sort,
       this.stringValueMapper,
       this.intValueMapper,
@@ -157,6 +160,7 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
 
   final dynamic id;
   final String? name;
+  final Widget? leading;
   final EdgeInsets? padding;
   final AlignmentGeometry? alignment;
   final TextStyle? textStyle;
