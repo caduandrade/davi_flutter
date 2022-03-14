@@ -15,7 +15,8 @@ class HeaderCellThemeData {
       this.sortIconSize = HeaderCellThemeDataDefaults.sortIconSize,
       this.resizeAreaWidth = HeaderCellThemeDataDefaults.resizeAreaWidth,
       this.resizeAreaHoverColor =
-          HeaderCellThemeDataDefaults.resizeAreaHoverColor});
+          HeaderCellThemeDataDefaults.resizeAreaHoverColor,
+      this.expandableName = HeaderCellThemeDataDefaults.expandableName});
 
   /// Defines the text style.
   final TextStyle? textStyle;
@@ -28,6 +29,7 @@ class HeaderCellThemeData {
 
   final double resizeAreaWidth;
   final Color? resizeAreaHoverColor;
+  final bool expandableName;
 
   @override
   bool operator ==(Object other) =>
@@ -42,7 +44,8 @@ class HeaderCellThemeData {
           sortIconColor == other.sortIconColor &&
           sortIconSize == other.sortIconSize &&
           resizeAreaWidth == other.resizeAreaWidth &&
-          resizeAreaHoverColor == other.resizeAreaHoverColor;
+          resizeAreaHoverColor == other.resizeAreaHoverColor &&
+          expandableName == other.expandableName;
 
   @override
   int get hashCode =>
@@ -54,7 +57,8 @@ class HeaderCellThemeData {
       sortIconColor.hashCode ^
       sortIconSize.hashCode ^
       resizeAreaWidth.hashCode ^
-      resizeAreaHoverColor.hashCode;
+      resizeAreaHoverColor.hashCode ^
+      expandableName.hashCode;
 }
 
 class HeaderCellThemeDataDefaults {
@@ -69,4 +73,6 @@ class HeaderCellThemeDataDefaults {
 
   static const double resizeAreaWidth = 8;
   static const Color resizeAreaHoverColor = Color.fromRGBO(200, 200, 200, 0.5);
+
+  static const bool expandableName = true;
 }

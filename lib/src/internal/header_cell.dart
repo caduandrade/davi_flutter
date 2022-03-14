@@ -29,7 +29,7 @@ class _EasyTableHeaderCellState extends State<EasyTableHeaderCell> {
 
   @override
   Widget build(BuildContext context) {
-    EasyTableThemeData theme = EasyTableTheme.of(context);
+    HeaderCellThemeData theme = EasyTableTheme.of(context).headerCell;
 
     bool resizing = widget.model.columnInResizing == widget.column;
     bool enabled = resizing == false && widget.model.columnInResizing == null;
@@ -42,26 +42,27 @@ class _EasyTableHeaderCellState extends State<EasyTableHeaderCell> {
     if (widget.column.leading != null) {
       children.add(widget.column.leading!);
     }
-    children.add(AxisLayoutChild(child: _textWidget(context), expand: 1));
+    children.add(AxisLayoutChild(
+        child: _textWidget(context),
+        shrink: theme.expandableName ? 0 : 1,
+        expand: theme.expandableName ? 1 : 0));
 
     if (widget.model.sortedColumn == widget.column) {
       IconData? icon;
       if (widget.model.sortType == EasyTableSortType.ascending) {
-        icon = theme.headerCell.ascendingIcon;
+        icon = theme.ascendingIcon;
       } else if (widget.model.sortType == EasyTableSortType.descending) {
-        icon = theme.headerCell.descendingIcon;
+        icon = theme.descendingIcon;
       }
-      children.add(Icon(icon,
-          color: theme.headerCell.sortIconColor,
-          size: theme.headerCell.sortIconSize));
+      children.add(
+          Icon(icon, color: theme.sortIconColor, size: theme.sortIconSize));
     }
 
     Widget header = AxisLayout(
         axis: Axis.horizontal,
         children: children,
         crossAlignment: CrossAlignment.stretch);
-    final EdgeInsets? padding =
-        widget.column.padding ?? theme.headerCell.padding;
+    final EdgeInsets? padding = widget.column.padding ?? theme.padding;
     if (padding != null) {
       header = Padding(padding: padding, child: header);
     }
