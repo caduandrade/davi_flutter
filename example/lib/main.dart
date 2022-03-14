@@ -35,10 +35,9 @@ class _HomePageState extends State<HomePage> {
 
     Character.loadCharacters().then((characters) {
       EasyTableModel<Character> model =
-          EasyTableModel(rows: characters,
-              columns: [
+          EasyTableModel(rows: characters, columns: [
         EasyTableColumn(
-            leading: Icon(Icons.person),
+            leading: const Icon(Icons.person, size: 16),
             name: 'Name',
             width: 100,
             stringValue: (row) => row.name),
@@ -68,7 +67,7 @@ class _HomePageState extends State<HomePage> {
             width: 90,
             intValue: (row) => row.intelligence),
         EasyTableColumn(name: 'Life', width: 70, intValue: (row) => row.life),
-        EasyTableColumn(name: 'Mana', width: 70,  cellBuilder: (context,row)=>Center(child: TextField(decoration: fieldDecoration()))),
+        EasyTableColumn(name: 'Mana', width: 70, intValue: (row) => row.mana),
         EasyTableColumn(
             name: 'Gold',
             width: 110,
@@ -81,12 +80,6 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-   InputDecoration fieldDecoration() {
-     return InputDecoration(contentPadding: EdgeInsets.fromLTRB(8,0,8,0), constraints: BoxConstraints(maxHeight: CellThemeDataDefaults.contentHeight),
-      border: const OutlineInputBorder(),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     Widget? body;
@@ -95,8 +88,8 @@ class _HomePageState extends State<HomePage> {
     } else {
       body = EasyTableTheme(
           child: _table(),
-          data: EasyTableThemeData(cell: CellThemeData(),
-              row: RowThemeData( hoveredColor: (index) => Colors.blue[50])));
+          data: EasyTableThemeData(
+              row: RowThemeData(hoveredColor: (index) => Colors.blue[50])));
     }
     return Scaffold(
         appBar: AppBar(
@@ -104,7 +97,8 @@ class _HomePageState extends State<HomePage> {
         ),
         body: Column(children: [
           _buttons(),
-          Expanded(child: Padding(child: body, padding: const EdgeInsets.all(16)))
+          Expanded(
+              child: Padding(child: body, padding: const EdgeInsets.all(16)))
         ], crossAxisAlignment: CrossAxisAlignment.stretch));
   }
 

@@ -1,3 +1,7 @@
+## 1.0.0
+
+* Header leading
+
 ## 0.9.0
 
 * `visibleRowsCount` feature to calculate the height based on the number of visible lines. It can be used within an unbounded height layout.

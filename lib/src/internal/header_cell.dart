@@ -1,8 +1,7 @@
-import 'dart:math' as math;
+import 'package:axis_layout/axis_layout.dart';
 import 'package:easy_table/easy_table.dart';
 import 'package:easy_table/src/sort_type.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:meta/meta.dart';
 
 /// [EasyTable] header cell.
@@ -43,7 +42,7 @@ class _EasyTableHeaderCellState extends State<EasyTableHeaderCell> {
     if (widget.column.leading != null) {
       children.add(widget.column.leading!);
     }
-    children.add(_textWidget(context));
+    children.add(AxisLayoutChild(child: _textWidget(context), expand: 1));
 
     if (widget.model.sortedColumn == widget.column) {
       IconData? icon;
@@ -57,29 +56,39 @@ class _EasyTableHeaderCellState extends State<EasyTableHeaderCell> {
           size: theme.headerCell.sortIconSize));
     }
 
+    Widget header = AxisLayout(
+        axis: Axis.horizontal,
+        children: children,
+        crossAlignment: CrossAlignment.stretch);
+    final EdgeInsets? padding =
+        widget.column.padding ?? theme.headerCell.padding;
+    if (padding != null) {
+      header = Padding(padding: padding, child: header);
+    }
+
     if (sortable) {
-      children.add(MouseRegion(
+      header = MouseRegion(
           cursor: enabled ? SystemMouseCursors.click : MouseCursor.defer,
           child: GestureDetector(
               behavior: HitTestBehavior.opaque,
+              child: header,
               onTap: enabled
                   ? () => _onHeaderPressed(
                       model: widget.model, column: widget.column)
-                  : null)));
+                  : null));
     }
 
     if (resizable) {
-      children.add(_resizeWidget(context: context, resizing: resizing));
+      header = Stack(clipBehavior: Clip.none, children: [
+        Positioned.fill(child: header),
+        Positioned(
+            child: _resizeWidget(context: context, resizing: resizing),
+            top: 0,
+            bottom: 0,
+            right: 0)
+      ]);
     }
-
-    final EdgeInsets? padding =
-        widget.column.padding ?? theme.headerCell.padding;
-    return _HeaderLayout(
-        debug: widget.column.name == 'Race',
-        children: children,
-        resizable: resizable,
-        padding: padding,
-        sortable: sortable);
+    return ClipRect(child: header);
   }
 
   Widget _textWidget(BuildContext context) {
@@ -151,245 +160,5 @@ class _EasyTableHeaderCellState extends State<EasyTableHeaderCell> {
         model.removeColumnSort();
       }
     }
-  }
-}
-
-class _HeaderLayout extends MultiChildRenderObjectWidget {
-  _HeaderLayout(
-      {Key? key,
-      required List<Widget> children,
-      required this.padding,
-      required this.resizable,
-      required this.sortable,
-      this.debug = false})
-      : super(key: key, children: children);
-
-  final bool sortable;
-  final EdgeInsets? padding;
-  final bool resizable;
-  final bool debug;
-
-  @override
-  RenderObject createRenderObject(BuildContext context) {
-    return _HeaderRenderBox(
-        debug: debug,
-        padding: padding,
-        resizable: resizable,
-        sortable: sortable);
-  }
-
-  @override
-  MultiChildRenderObjectElement createElement() {
-    return _HeaderElement(this);
-  }
-
-  @override
-  void updateRenderObject(
-      BuildContext context, covariant _HeaderRenderBox renderObject) {
-    super.updateRenderObject(context, renderObject);
-    renderObject
-      ..padding = padding
-      ..resizable = resizable
-      ..sortable = sortable;
-  }
-}
-
-/// The [_HeaderLayout] element.
-class _HeaderElement extends MultiChildRenderObjectElement {
-  _HeaderElement(_HeaderLayout widget) : super(widget);
-
-  @override
-  void debugVisitOnstageChildren(ElementVisitor visitor) {
-    for (var child in children) {
-      if (child.renderObject != null) {
-        visitor(child);
-      }
-    }
-  }
-}
-
-/// Parent data for [_HeaderRenderBox] class.
-class _HeaderParentData extends ContainerBoxParentData<RenderBox> {}
-
-class _HeaderRenderBox extends RenderBox
-    with
-        ContainerRenderObjectMixin<RenderBox, _HeaderParentData>,
-        RenderBoxContainerDefaultsMixin<RenderBox, _HeaderParentData> {
-  _HeaderRenderBox(
-      {required EdgeInsets? padding,
-      required bool sortable,
-      required bool resizable,
-      required this.debug})
-      : _padding = padding,
-        _resizable = resizable,
-        _sortable = sortable;
-
-  final bool debug;
-
-  double? _intrinsicHeight;
-
-  bool _sortable;
-  set sortable(bool sortable) {
-    if (_sortable != sortable) {
-      _sortable = sortable;
-      markNeedsLayout();
-    }
-  }
-
-  bool _resizable;
-  set resizable(bool resizable) {
-    if (_resizable != resizable) {
-      _resizable = resizable;
-      markNeedsLayout();
-    }
-  }
-
-  EdgeInsets? _padding;
-  set padding(EdgeInsets? padding) {
-    if (_padding != padding) {
-      _padding = padding;
-      markNeedsLayout();
-    }
-  }
-
-  @override
-  void setupParentData(RenderBox child) {
-    if (child.parentData is! _HeaderParentData) {
-      child.parentData = _HeaderParentData();
-    }
-  }
-
-  @override
-  void performLayout() {
-    List<RenderBox> children = [];
-    visitChildren((child) => children.add(child as RenderBox));
-
-    RenderBox? resizableArea;
-    if (_resizable) {
-      resizableArea = children.removeLast();
-    }
-
-    RenderBox? sortableArea;
-    if (_sortable) {
-      sortableArea = children.removeLast();
-    }
-
-    double availableWidth = constraints.maxWidth;
-    if (_padding != null) {
-      availableWidth -= _padding!.horizontal;
-    }
-    double verticalPadding = _padding != null ? _padding!.vertical : 0;
-    double height = math.max(0, constraints.maxHeight - verticalPadding);
-    for (int i = 1; i < children.length; i++) {
-      RenderBox child = children[i];
-      child.layout(
-          BoxConstraints(
-              minWidth: 0,
-              maxWidth: double.infinity,
-              minHeight: height,
-              maxHeight: height),
-          parentUsesSize: true);
-      availableWidth = math.max(0, availableWidth - child.size.width);
-    }
-    RenderBox text = children.first;
-    text.layout(
-        BoxConstraints(
-            minWidth: availableWidth,
-            maxWidth: availableWidth,
-            minHeight: height,
-            maxHeight: height),
-        parentUsesSize: true);
-
-    double x = 0;
-    double y = 0;
-    if (_padding != null) {
-      x += _padding!.left;
-      y += _padding!.top;
-    }
-
-    for (RenderBox child in children) {
-      child.headerParentData().offset = Offset(x, y);
-      x += child.size.width;
-    }
-
-    Size resizableAreaSize = Size.zero;
-    if (resizableArea != null) {
-      resizableArea.layout(
-          BoxConstraints(
-              minWidth: 0,
-              maxWidth: constraints.maxWidth,
-              minHeight: constraints.maxHeight,
-              maxHeight: constraints.maxHeight),
-          parentUsesSize: true);
-      resizableArea.headerParentData().offset =
-          Offset(constraints.maxWidth - resizableArea.size.width, 0);
-      resizableAreaSize = resizableArea.size;
-    }
-
-    if (sortableArea != null) {
-      sortableArea.layout(
-          BoxConstraints(
-              minWidth: 0,
-              maxWidth:
-                  math.max(0, constraints.maxWidth - resizableAreaSize.width),
-              minHeight: constraints.maxHeight,
-              maxHeight: constraints.maxHeight),
-          parentUsesSize: true);
-      sortableArea.headerParentData().offset = Offset.zero;
-    }
-
-    size = constraints.biggest;
-  }
-
-  @override
-  void markNeedsLayout() {
-    _intrinsicHeight = null;
-    super.markNeedsLayout();
-  }
-
-  @override
-  double computeMinIntrinsicHeight(double width) {
-    if (_intrinsicHeight == null) {
-      List<RenderBox> children = [];
-      visitChildren((child) => children.add(child as RenderBox));
-
-      if (_resizable) {
-        children.removeLast();
-      }
-      if (_sortable) {
-        children.removeLast();
-      }
-      _intrinsicHeight = 0;
-      for (RenderBox child in children) {
-        _intrinsicHeight = math.max(
-            _intrinsicHeight!, child.getMinIntrinsicHeight(double.infinity));
-      }
-      if (_padding != null) {
-        _intrinsicHeight = _intrinsicHeight! + _padding!.vertical;
-      }
-    }
-    return _intrinsicHeight!;
-  }
-
-  @override
-  double computeMaxIntrinsicHeight(double width) {
-    return computeMinIntrinsicHeight(width);
-  }
-
-  @override
-  bool hitTestChildren(BoxHitTestResult result, {required Offset position}) {
-    return defaultHitTestChildren(result, position: position);
-  }
-
-  @override
-  void paint(PaintingContext context, Offset offset) {
-    defaultPaint(context, offset);
-  }
-}
-
-/// Utility extension to facilitate obtaining parent data.
-extension _HeaderParentDataGetter on RenderObject {
-  _HeaderParentData headerParentData() {
-    return parentData as _HeaderParentData;
   }
 }
