@@ -24,6 +24,8 @@ class EasyTable<ROW> extends StatefulWidget {
       {Key? key,
       this.horizontalScrollController,
       this.verticalScrollController,
+      this.pinnedHorizontalScrollController,
+      this.pinnedVerticalScrollController,
       this.onHoverListener,
       this.onRowTap,
       this.onRowDoubleTap,
@@ -37,6 +39,8 @@ class EasyTable<ROW> extends StatefulWidget {
   final EasyTableModel<ROW>? model;
   final ScrollController? horizontalScrollController;
   final ScrollController? verticalScrollController;
+  final ScrollController? pinnedHorizontalScrollController;
+  final ScrollController? pinnedVerticalScrollController;
   final OnRowHoverListener? onHoverListener;
   final RowDoubleTapCallback<ROW>? onRowDoubleTap;
   final RowTapCallback<ROW>? onRowTap;
@@ -54,7 +58,12 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
   late ScrollController _verticalScrollController;
   late ScrollController _horizontalScrollController;
 
+  late ScrollController _pinnedVerticalScrollController;
+  late ScrollController _pinnedHorizontalScrollController;
+
   final ScrollController _headerHorizontalScrollController = ScrollController();
+  final ScrollController _pinnedHeaderHorizontalScrollController =
+      ScrollController();
 
   int? _hoveredRowIndex;
   void _setHoveredRowIndex(int? value) {
@@ -79,13 +88,25 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
     _verticalScrollController =
         widget.verticalScrollController ?? EasyTableScrollController();
 
-    _horizontalScrollController.addListener(_syncHorizontalScroll);
+    _pinnedHorizontalScrollController =
+        widget.pinnedHorizontalScrollController ?? EasyTableScrollController();
+    _pinnedVerticalScrollController =
+        widget.pinnedVerticalScrollController ?? EasyTableScrollController();
+
+    _horizontalScrollController.addListener(_syncUnpinnedHorizontalScrolls);
+    _pinnedHorizontalScrollController.addListener(_syncPinnedHorizontalScrolls);
+    _verticalScrollController.addListener(_sync);
+    _pinnedVerticalScrollController.addListener(_sync2);
   }
 
   @override
   void dispose() {
     widget.model?.removeListener(_rebuild);
-    _horizontalScrollController.removeListener(_syncHorizontalScroll);
+    _horizontalScrollController.removeListener(_syncUnpinnedHorizontalScrolls);
+    _pinnedHorizontalScrollController
+        .removeListener(_syncPinnedHorizontalScrolls);
+    _verticalScrollController.removeListener(_sync);
+    _pinnedVerticalScrollController.removeListener(_sync2);
     super.dispose();
   }
 
@@ -96,10 +117,29 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
       oldWidget.model?.removeListener(_rebuild);
       widget.model?.addListener(_rebuild);
     }
+    if (widget.verticalScrollController != null) {
+      _verticalScrollController.removeListener(_sync);
+      _verticalScrollController = widget.verticalScrollController!;
+      _verticalScrollController.addListener(_sync);
+    }
+    if (widget.pinnedVerticalScrollController != null) {
+      _pinnedVerticalScrollController.removeListener(_sync2);
+      _pinnedVerticalScrollController = widget.pinnedVerticalScrollController!;
+      _pinnedVerticalScrollController.addListener(_sync2);
+    }
     if (widget.horizontalScrollController != null) {
-      _horizontalScrollController.removeListener(_syncHorizontalScroll);
+      _horizontalScrollController
+          .removeListener(_syncUnpinnedHorizontalScrolls);
       _horizontalScrollController = widget.horizontalScrollController!;
-      _horizontalScrollController.addListener(_syncHorizontalScroll);
+      _horizontalScrollController.addListener(_syncUnpinnedHorizontalScrolls);
+    }
+    if (widget.pinnedHorizontalScrollController != null) {
+      _pinnedHorizontalScrollController
+          .removeListener(_syncPinnedHorizontalScrolls);
+      _pinnedHorizontalScrollController =
+          widget.pinnedHorizontalScrollController!;
+      _pinnedHorizontalScrollController
+          .addListener(_syncPinnedHorizontalScrolls);
     }
     if (widget.verticalScrollController != null) {
       _verticalScrollController = widget.verticalScrollController!;
@@ -110,10 +150,29 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
     setState(() {});
   }
 
-  void _syncHorizontalScroll() {
+  void _syncUnpinnedHorizontalScrolls() {
     if (_headerHorizontalScrollController.hasClients) {
       _headerHorizontalScrollController
           .jumpTo(_horizontalScrollController.offset);
+    }
+  }
+
+  void _syncPinnedHorizontalScrolls() {
+    if (_pinnedHeaderHorizontalScrollController.hasClients) {
+      _pinnedHeaderHorizontalScrollController
+          .jumpTo(_pinnedHorizontalScrollController.offset);
+    }
+  }
+
+  void _sync() {
+    if (_pinnedVerticalScrollController.hasClients) {
+      _pinnedVerticalScrollController.jumpTo(_verticalScrollController.offset);
+    }
+  }
+
+  void _sync2() {
+    if (_verticalScrollController.hasClients) {
+      _verticalScrollController.jumpTo(_pinnedVerticalScrollController.offset);
     }
   }
 
@@ -123,55 +182,148 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
       if (widget.model != null) {
         EasyTableModel<ROW> model = widget.model!;
         EasyTableThemeData theme = EasyTableTheme.of(context);
-
-        double contentWidth = constraints.maxWidth;
-        if (widget.columnsFit == false) {
-          contentWidth = math.max(
-              contentWidth,
-              model.columnsWidth +
-                  (model.columnsLength * theme.columnDividerThickness));
-        }
-
-        ColumnsMetrics columnsMetrics = widget.columnsFit
-            ? ColumnsMetrics.columnsFit(
-                model: model,
-                containerWidth: contentWidth,
-                columnDividerThickness: theme.columnDividerThickness)
-            : ColumnsMetrics.resizable(
-                model: model,
-                columnDividerThickness: theme.columnDividerThickness);
+        HeaderThemeData headerTheme = theme.header;
 
         double rowHeight = theme.cell.contentHeight;
         if (theme.cell.padding != null) {
           rowHeight += theme.cell.padding!.vertical;
         }
 
-        HeaderThemeData headerTheme = theme.header;
-        double headerHeight = headerTheme.height;
+        final double headerHeight = headerTheme.height;
+
         Widget? header;
-        if (headerHeight > 0) {
-          header = _header(
-              context: context,
+        Widget? pinnedHeader;
+        Widget body;
+        Widget? pinnedBody;
+        double pinnedWidth = 0;
+
+        if (widget.columnsFit) {
+          double contentWidth =
+              math.max(constraints.maxWidth, model.allColumnsWidth);
+          ColumnsMetrics columnsMetrics = ColumnsMetrics.columnsFit(
+              model: model,
+              containerWidth: constraints.maxWidth,
+              columnDividerThickness: theme.columnDividerThickness);
+
+          if (headerHeight > 0) {
+            header = _HeaderWidget<ROW>(
+                horizontalScrollController: _headerHorizontalScrollController,
+                columnsFit: true,
+                model: model,
+                columnsMetrics: columnsMetrics,
+                contentWidth: contentWidth,
+                columnFilter: ColumnFilter.all);
+          }
+          body = _BodyWidget(
+              columnsFit: widget.columnsFit,
+              horizontalScrollController: _horizontalScrollController,
+              verticalScrollController: _verticalScrollController,
+              setHoveredRowIndex: _setHoveredRowIndex,
+              hoveredRowIndex: _hoveredRowIndex,
+              onRowTap: widget.onRowTap,
+              onRowDoubleTap: widget.onRowDoubleTap,
               model: model,
               columnsMetrics: columnsMetrics,
-              contentWidth: contentWidth);
-        }
+              contentWidth: contentWidth,
+              rowHeight: rowHeight,
+              columnFilter: ColumnFilter.all);
+        } else {
+          final int pinnedColumnsLength = model.pinnedColumnsLength;
+          final bool hasPinned = pinnedColumnsLength > 0;
 
-        Widget body = _body(
-            context: context,
-            model: model,
-            columnsMetrics: columnsMetrics,
-            contentWidth: contentWidth,
-            rowHeight: rowHeight);
+          double contentWidth;
+          final double pinnedContentWidth = model.pinnedColumnsWidth +
+              (pinnedColumnsLength * theme.columnDividerThickness);
+          if (hasPinned) {
+            pinnedWidth = math.min(pinnedContentWidth, constraints.maxWidth);
+            contentWidth = math.max(
+                constraints.maxWidth - pinnedWidth,
+                model.unpinnedColumnsWidth +
+                    (model.unpinnedColumnsLength *
+                        theme.columnDividerThickness));
+          } else {
+            contentWidth = math.max(
+                constraints.maxWidth,
+                model.allColumnsWidth +
+                    (model.columnsLength * theme.columnDividerThickness));
+          }
+
+          ColumnsMetrics unpinnedColumnsMetrics = ColumnsMetrics.resizable(
+              model: model,
+              columnDividerThickness: theme.columnDividerThickness,
+              filter: hasPinned ? ColumnFilter.unpinnedOnly : ColumnFilter.all);
+
+          ColumnsMetrics? pinnedColumnsMetrics = hasPinned
+              ? ColumnsMetrics.resizable(
+                  model: model,
+                  columnDividerThickness: theme.columnDividerThickness,
+                  filter: ColumnFilter.pinnedOnly)
+              : null;
+
+          if (headerHeight > 0) {
+            header = _HeaderWidget<ROW>(
+                horizontalScrollController: _headerHorizontalScrollController,
+                columnsFit: false,
+                model: model,
+                columnsMetrics: unpinnedColumnsMetrics,
+                contentWidth: contentWidth,
+                columnFilter:
+                    hasPinned ? ColumnFilter.unpinnedOnly : ColumnFilter.all);
+            pinnedHeader = pinnedColumnsMetrics != null
+                ? _HeaderWidget<ROW>(
+                    horizontalScrollController:
+                        _pinnedHeaderHorizontalScrollController,
+                    columnsFit: false,
+                    model: model,
+                    columnsMetrics: pinnedColumnsMetrics,
+                    contentWidth: pinnedContentWidth,
+                    columnFilter: ColumnFilter.pinnedOnly)
+                : null;
+          }
+
+          body = _BodyWidget(
+              columnsFit: widget.columnsFit,
+              horizontalScrollController: _horizontalScrollController,
+              verticalScrollController: _verticalScrollController,
+              setHoveredRowIndex: _setHoveredRowIndex,
+              hoveredRowIndex: _hoveredRowIndex,
+              onRowTap: widget.onRowTap,
+              onRowDoubleTap: widget.onRowDoubleTap,
+              model: model,
+              columnsMetrics: unpinnedColumnsMetrics,
+              contentWidth: contentWidth,
+              rowHeight: rowHeight,
+              columnFilter:
+                  hasPinned ? ColumnFilter.unpinnedOnly : ColumnFilter.all);
+
+          pinnedBody = pinnedColumnsMetrics != null
+              ? _BodyWidget(
+                  columnsFit: false,
+                  horizontalScrollController: _pinnedHorizontalScrollController,
+                  verticalScrollController: _pinnedVerticalScrollController,
+                  setHoveredRowIndex: _setHoveredRowIndex,
+                  hoveredRowIndex: _hoveredRowIndex,
+                  onRowTap: widget.onRowTap,
+                  onRowDoubleTap: widget.onRowDoubleTap,
+                  model: model,
+                  columnsMetrics: pinnedColumnsMetrics,
+                  contentWidth: pinnedContentWidth,
+                  rowHeight: rowHeight,
+                  columnFilter: ColumnFilter.pinnedOnly)
+              : null;
+        }
 
         return ClipRect(
             child: TableLayout(
                 header: header,
                 body: body,
+                pinnedBody: pinnedBody,
+                pinnedHeader: pinnedHeader,
                 rowsCount: model.rowsLength,
                 visibleRowsCount: widget.visibleRowsCount,
                 rowHeight: rowHeight,
-                headerHeight: headerHeight));
+                headerHeight: headerHeight,
+                pinnedWidth: pinnedWidth));
       }
       return Container();
     });
@@ -181,24 +333,71 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
     }
     return table;
   }
+}
 
-  /// Builds the header
-  Widget _header(
-      {required BuildContext context,
-      required EasyTableModel<ROW> model,
-      required ColumnsMetrics columnsMetrics,
-      required double contentWidth}) {
+/// Horizontal layout with gap between children
+class _HorizontalLayout extends StatelessWidget {
+  const _HorizontalLayout(
+      {Key? key, required this.columnsMetrics, required this.children})
+      : super(key: key);
+
+  final ColumnsMetrics columnsMetrics;
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    EasyTableThemeData theme = EasyTableTheme.of(context);
+    for (int i = 0; i < children.length; i++) {
+      LayoutWidth layoutWidth = columnsMetrics.columns[i];
+      children[i] = SizedBox(child: children[i], width: layoutWidth.width);
+      if (theme.columnDividerThickness > 0) {
+        children[i] = Padding(
+            child: children[i],
+            padding: EdgeInsets.only(right: theme.columnDividerThickness));
+      }
+    }
+    return Row(
+        children: children, crossAxisAlignment: CrossAxisAlignment.stretch);
+  }
+}
+
+/// Table header
+class _HeaderWidget<ROW> extends StatelessWidget {
+  const _HeaderWidget(
+      {Key? key,
+      required this.model,
+      required this.columnsMetrics,
+      required this.columnsFit,
+      required this.horizontalScrollController,
+      required this.columnFilter,
+      required this.contentWidth})
+      : super(key: key);
+
+  final EasyTableModel<ROW> model;
+  final ColumnsMetrics columnsMetrics;
+  final bool columnsFit;
+  final double contentWidth;
+  final ScrollController horizontalScrollController;
+  final ColumnFilter columnFilter;
+
+  @override
+  Widget build(BuildContext context) {
     List<Widget> children = [];
     for (int columnIndex = 0;
         columnIndex < model.columnsLength;
         columnIndex++) {
       EasyTableColumn<ROW> column = model.columnAt(columnIndex);
-      children.add(EasyTableHeaderCell<ROW>(
-          model: model, column: column, resizable: !widget.columnsFit));
+      if (columnFilter == ColumnFilter.all ||
+          (columnFilter == ColumnFilter.unpinnedOnly &&
+              column.pinned == false) ||
+          (columnFilter == ColumnFilter.pinnedOnly && column.pinned)) {
+        children.add(EasyTableHeaderCell<ROW>(
+            model: model, column: column, resizable: !columnsFit));
+      }
     }
 
-    Widget header = _horizontalLayout(
-        context: context, columnsMetrics: columnsMetrics, children: children);
+    Widget header =
+        _HorizontalLayout(columnsMetrics: columnsMetrics, children: children);
 
     EasyTableThemeData theme = EasyTableTheme.of(context);
 
@@ -221,34 +420,66 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
                       color: theme.header.bottomBorderColor!))));
     }
 
-    if (widget.columnsFit) {
+    if (columnsFit) {
       return header;
     }
     // scrollable header
     return CustomScrollView(
-        controller: _headerHorizontalScrollController,
+        controller: horizontalScrollController,
         scrollDirection: Axis.horizontal,
-        slivers: [SliverToBoxAdapter(child: header)]);
+        slivers: [
+          SliverToBoxAdapter(
+              child: SizedBox(child: header, width: contentWidth))
+        ]);
   }
+}
 
-  /// Builds the table body.
-  Widget _body(
-      {required BuildContext context,
-      required EasyTableModel<ROW> model,
-      required ColumnsMetrics columnsMetrics,
-      required double contentWidth,
-      required double rowHeight}) {
+typedef SetHoveredRowIndex = void Function(int? value);
+
+class _BodyWidget<ROW> extends StatelessWidget {
+  const _BodyWidget(
+      {Key? key,
+      required this.model,
+      required this.verticalScrollController,
+      required this.horizontalScrollController,
+      required this.columnsMetrics,
+      required this.contentWidth,
+      required this.rowHeight,
+      required this.columnsFit,
+      this.onRowTap,
+      this.onRowDoubleTap,
+      this.hoveredRowIndex,
+      required this.columnFilter,
+      required this.setHoveredRowIndex})
+      : super(key: key);
+
+  final EasyTableModel<ROW> model;
+  final ScrollController verticalScrollController;
+  final ScrollController horizontalScrollController;
+  final ColumnsMetrics columnsMetrics;
+  final double contentWidth;
+  final double rowHeight;
+  final bool columnsFit;
+  final RowTapCallback<ROW>? onRowTap;
+  final RowDoubleTapCallback<ROW>? onRowDoubleTap;
+  final int? hoveredRowIndex;
+  final SetHoveredRowIndex setHoveredRowIndex;
+  final ColumnFilter columnFilter;
+
+  @override
+  Widget build(BuildContext context) {
     EasyTableThemeData theme = EasyTableTheme.of(context);
 
     Widget list = ListView.builder(
-        controller: _verticalScrollController,
+        controller: verticalScrollController,
         itemExtent: rowHeight + theme.rowDividerThickness,
         itemBuilder: (context, index) {
           return _row(
               context: context,
               model: model,
               columnsMetrics: columnsMetrics,
-              visibleRowIndex: index);
+              visibleRowIndex: index,
+              columnFilter: columnFilter);
         },
         itemCount: model.visibleRowsLength);
 
@@ -261,36 +492,44 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
     }
 
     list =
-        MouseRegion(child: list, onExit: (event) => _setHoveredRowIndex(null));
+        MouseRegion(child: list, onExit: (event) => setHoveredRowIndex(null));
 
-    if (widget.columnsFit) {
+    if (columnsFit) {
       return Scrollbar(
           isAlwaysShown: true,
-          controller: _verticalScrollController,
+          controller: verticalScrollController,
           child: list);
     }
 
+    CustomScrollView customScrollView = CustomScrollView(
+        scrollDirection: Axis.horizontal,
+        controller: horizontalScrollController,
+        slivers: [
+          SliverToBoxAdapter(
+              child: SizedBox(
+                  child: ScrollConfiguration(
+                      behavior: ScrollConfiguration.of(context)
+                          .copyWith(scrollbars: false),
+                      child: list),
+                  width: contentWidth))
+        ]);
+
+    if (columnFilter == ColumnFilter.pinnedOnly) {
+      return Scrollbar(
+          isAlwaysShown: true,
+          controller: horizontalScrollController,
+          child: customScrollView);
+    }
     return Scrollbar(
         isAlwaysShown: true,
-        controller: _horizontalScrollController,
+        controller: horizontalScrollController,
         child: Scrollbar(
             isAlwaysShown: true,
-            controller: _verticalScrollController,
+            controller: verticalScrollController,
             notificationPredicate: (p) {
               return true;
             },
-            child: CustomScrollView(
-                scrollDirection: Axis.horizontal,
-                controller: _horizontalScrollController,
-                slivers: [
-                  SliverToBoxAdapter(
-                      child: SizedBox(
-                          child: ScrollConfiguration(
-                              behavior: ScrollConfiguration.of(context)
-                                  .copyWith(scrollbars: false),
-                              child: list),
-                          width: contentWidth))
-                ])));
+            child: customScrollView));
   }
 
   /// Builds a single table row.
@@ -298,7 +537,8 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
       {required BuildContext context,
       required EasyTableModel<ROW> model,
       required ColumnsMetrics columnsMetrics,
-      required int visibleRowIndex}) {
+      required int visibleRowIndex,
+      required ColumnFilter columnFilter}) {
     EasyTableThemeData theme = EasyTableTheme.of(context);
     ROW row = model.visibleRowAt(visibleRowIndex);
     List<Widget> children = [];
@@ -306,17 +546,22 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
         columnIndex < model.columnsLength;
         columnIndex++) {
       EasyTableColumn<ROW> column = model.columnAt(columnIndex);
-      children.add(_cell(
-          context: context,
-          row: row,
-          column: column,
-          visibleRowIndex: visibleRowIndex));
+      if (columnFilter == ColumnFilter.all ||
+          (columnFilter == ColumnFilter.unpinnedOnly &&
+              column.pinned == false) ||
+          (columnFilter == ColumnFilter.pinnedOnly && column.pinned)) {
+        children.add(_cell(
+            context: context,
+            row: row,
+            column: column,
+            visibleRowIndex: visibleRowIndex));
+      }
     }
 
-    Widget rowWidget = _horizontalLayout(
-        context: context, columnsMetrics: columnsMetrics, children: children);
+    Widget rowWidget =
+        _HorizontalLayout(columnsMetrics: columnsMetrics, children: children);
 
-    if (_hoveredRowIndex == visibleRowIndex && theme.row.hoveredColor != null) {
+    if (hoveredRowIndex == visibleRowIndex && theme.row.hoveredColor != null) {
       rowWidget = Container(
           child: rowWidget, color: theme.row.hoveredColor!(visibleRowIndex));
     } else if (theme.row.color != null) {
@@ -326,22 +571,20 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
 
     MouseCursor cursor = MouseCursor.defer;
 
-    if (widget.onRowTap != null || widget.onRowDoubleTap != null) {
+    if (onRowTap != null || onRowDoubleTap != null) {
       cursor = SystemMouseCursors.click;
       rowWidget = GestureDetector(
         behavior: HitTestBehavior.opaque,
         child: rowWidget,
-        onDoubleTap: widget.onRowDoubleTap != null
-            ? () => widget.onRowDoubleTap!(row)
-            : null,
-        onTap: widget.onRowTap != null ? () => widget.onRowTap!(row) : null,
+        onDoubleTap: onRowDoubleTap != null ? () => onRowDoubleTap!(row) : null,
+        onTap: onRowTap != null ? () => onRowTap!(row) : null,
       );
     }
 
     rowWidget = MouseRegion(
         cursor: cursor,
         child: rowWidget,
-        onEnter: (event) => _setHoveredRowIndex(visibleRowIndex));
+        onEnter: (event) => setHoveredRowIndex(visibleRowIndex));
 
     if (theme.rowDividerThickness > 0) {
       rowWidget = Padding(
@@ -404,23 +647,5 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
       }
     }
     return ClipRect(child: cell);
-  }
-
-  Widget _horizontalLayout(
-      {required BuildContext context,
-      required ColumnsMetrics columnsMetrics,
-      required List<Widget> children}) {
-    EasyTableThemeData theme = EasyTableTheme.of(context);
-    for (int i = 0; i < children.length; i++) {
-      LayoutWidth layoutWidth = columnsMetrics.columns[i];
-      children[i] = SizedBox(child: children[i], width: layoutWidth.width);
-      if (theme.columnDividerThickness > 0) {
-        children[i] = Padding(
-            child: children[i],
-            padding: EdgeInsets.only(right: theme.columnDividerThickness));
-      }
-    }
-    return Row(
-        children: children, crossAxisAlignment: CrossAxisAlignment.stretch);
   }
 }

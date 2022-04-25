@@ -5,10 +5,14 @@ import 'package:easy_table/src/column.dart';
 import 'package:easy_table/src/model.dart';
 import 'package:meta/meta.dart';
 
+enum ColumnFilter { all, pinnedOnly, unpinnedOnly }
+
 @internal
 class ColumnsMetrics {
   factory ColumnsMetrics.resizable(
-      {required EasyTableModel model, required double columnDividerThickness}) {
+      {required EasyTableModel model,
+      required double columnDividerThickness,
+      required ColumnFilter filter}) {
     List<LayoutWidth> columnsWidth = [];
     List<LayoutWidth> dividersWidth = [];
 
@@ -16,11 +20,15 @@ class ColumnsMetrics {
 
     for (int i = 0; i < model.columnsLength; i++) {
       EasyTableColumn column = model.columnAt(i);
-      LayoutWidth layoutWidth = LayoutWidth(x: x, width: column.width);
-      columnsWidth.add(layoutWidth);
-      x += layoutWidth.width;
-      dividersWidth.add(LayoutWidth(width: columnDividerThickness, x: x));
-      x += columnDividerThickness;
+      if (filter == ColumnFilter.all ||
+          (filter == ColumnFilter.unpinnedOnly && column.pinned == false) ||
+          (filter == ColumnFilter.pinnedOnly && column.pinned)) {
+        LayoutWidth layoutWidth = LayoutWidth(x: x, width: column.width);
+        columnsWidth.add(layoutWidth);
+        x += layoutWidth.width;
+        dividersWidth.add(LayoutWidth(width: columnDividerThickness, x: x));
+        x += columnDividerThickness;
+      }
     }
 
     return ColumnsMetrics._(
@@ -38,8 +46,9 @@ class ColumnsMetrics {
     double x = 0;
 
     double availableWidth = containerWidth;
-    availableWidth = math.max(
-        0, availableWidth - (columnDividerThickness * model.columnsLength));
+    final int count = model.columnsLength;
+    availableWidth =
+        math.max(0, availableWidth - (columnDividerThickness * count));
 
     double columnWidthRatio = availableWidth / model.columnsWeight;
     for (int i = 0; i < model.columnsLength; i++) {

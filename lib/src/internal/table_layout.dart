@@ -10,22 +10,39 @@ class TableLayout extends MultiChildRenderObjectWidget {
   factory TableLayout(
       {Key? key,
       Widget? header,
+      Widget? pinnedHeader,
+      Widget? pinnedBody,
       required Widget body,
       required double rowHeight,
       required double headerHeight,
       required int rowsCount,
-      required int? visibleRowsCount}) {
+      required int? visibleRowsCount,
+      required double pinnedWidth}) {
     List<Widget> children = [body];
+    bool hasHeader = false;
+    bool pinned = false;
     if (header != null) {
-      children.insert(0, header);
+      children.add(header);
+      hasHeader = true;
     }
+    if (pinnedBody != null) {
+      pinned = true;
+      children.add(pinnedBody);
+    }
+    if (pinnedHeader != null) {
+      children.add(pinnedHeader);
+    }
+
     return TableLayout._(
         key: key,
         children: children,
         rowHeight: rowHeight,
         rowsCount: rowsCount,
         headerHeight: headerHeight,
-        visibleRowsCount: visibleRowsCount);
+        visibleRowsCount: visibleRowsCount,
+        hasHeader: hasHeader,
+        pinnedWidth: pinnedWidth,
+        pinned: pinned);
   }
 
   TableLayout._(
@@ -34,12 +51,18 @@ class TableLayout extends MultiChildRenderObjectWidget {
       required this.rowHeight,
       required this.headerHeight,
       required this.visibleRowsCount,
+      required this.hasHeader,
+      required this.pinnedWidth,
+      required this.pinned,
       required List<Widget> children})
       : super(key: key, children: children);
 
   final double rowHeight;
   final double headerHeight;
   final int rowsCount;
+  final double pinnedWidth;
+  final bool hasHeader;
+  final bool pinned;
 
   /// Calculates the height based on the number of visible lines.
   /// It can be used within an unbounded height layout.
@@ -51,7 +74,10 @@ class TableLayout extends MultiChildRenderObjectWidget {
         rowHeight: rowHeight,
         rowsCount: rowsCount,
         visibleRowsCount: visibleRowsCount,
-        headerHeight: headerHeight);
+        headerHeight: headerHeight,
+        pinnedWidth: pinnedWidth,
+        hasHeader: hasHeader,
+        pinned: pinned);
   }
 
   @override
@@ -67,7 +93,10 @@ class TableLayout extends MultiChildRenderObjectWidget {
       ..headerHeight = headerHeight
       ..rowsCount = rowsCount
       ..rowHeight = rowHeight
-      ..visibleRowsCount = visibleRowsCount;
+      ..visibleRowsCount = visibleRowsCount
+      ..hasHeader = hasHeader
+      ..pinnedWidth = pinnedWidth
+      ..pinned = pinned;
   }
 }
 
@@ -96,11 +125,17 @@ class _TableLayoutRenderBox extends RenderBox
       {required int rowsCount,
       required double rowHeight,
       required double headerHeight,
-      required int? visibleRowsCount})
+      required int? visibleRowsCount,
+      required bool hasHeader,
+      required double pinnedWidth,
+      required bool pinned})
       : _rowHeight = rowHeight,
         _headerHeight = headerHeight,
         _rowsCount = rowsCount,
-        _visibleRowsCount = visibleRowsCount;
+        _visibleRowsCount = visibleRowsCount,
+        _hasHeader = hasHeader,
+        _pinned = pinned,
+        _pinnedWidth = pinnedWidth;
 
   int? _visibleRowsCount;
   set visibleRowsCount(int? value) {
@@ -134,6 +169,30 @@ class _TableLayoutRenderBox extends RenderBox
     }
   }
 
+  bool _hasHeader;
+  set hasHeader(bool value) {
+    if (_hasHeader != value) {
+      _hasHeader = value;
+      markNeedsLayout();
+    }
+  }
+
+  double _pinnedWidth;
+  set pinnedWidth(double value) {
+    if (_pinnedWidth != value) {
+      _pinnedWidth = value;
+      markNeedsLayout();
+    }
+  }
+
+  bool _pinned;
+  set pinned(bool value) {
+    if (_pinned != value) {
+      _pinned = value;
+      markNeedsLayout();
+    }
+  }
+
   @override
   void setupParentData(RenderBox child) {
     if (child.parentData is! _TableLayoutParentData) {
@@ -158,47 +217,77 @@ class _TableLayoutRenderBox extends RenderBox
       throw FlutterError('EasyTable was given unbounded width.');
     }
 
-    RenderBox? headerRenderBox = childCount == 2 ? firstChild! : null;
-    RenderBox bodyRenderBox = childCount == 1 ? firstChild! : lastChild!;
+    List<RenderBox> children = [];
+    visitChildren((child) => children.add(child as RenderBox));
 
-    double bodyHeight = 0;
+    RenderBox bodyRenderBox = children.removeAt(0);
+    RenderBox? headerRenderBox = _hasHeader ? children.removeAt(0) : null;
+    RenderBox? pinnedBodyRenderBox = _pinned ? children.removeAt(0) : null;
+    RenderBox? pinnedHeaderRenderBox =
+        _pinned && _hasHeader ? children.removeAt(0) : null;
+
+    final double unpinnedWidth =
+        math.max(0, constraints.maxWidth - _pinnedWidth);
+
+    if (pinnedHeaderRenderBox != null) {
+      pinnedHeaderRenderBox.layout(
+          BoxConstraints(
+              minWidth: _pinnedWidth,
+              maxWidth: _pinnedWidth,
+              minHeight: _headerHeight,
+              maxHeight: _headerHeight),
+          parentUsesSize: true);
+      pinnedHeaderRenderBox.tableLayoutParentData().offset = Offset.zero;
+    }
 
     if (headerRenderBox != null) {
       headerRenderBox.layout(
           BoxConstraints(
-              minWidth: constraints.minWidth,
-              maxWidth: constraints.maxWidth,
-              minHeight: 0,
-              maxHeight: math.min(_headerHeight, constraints.maxHeight)),
+              minWidth: unpinnedWidth,
+              maxWidth: unpinnedWidth,
+              minHeight: _headerHeight,
+              maxHeight: _headerHeight),
           parentUsesSize: true);
-      headerRenderBox.tableLayoutParentData().offset = Offset.zero;
-      bodyHeight += headerRenderBox.size.height;
+      headerRenderBox.tableLayoutParentData().offset = Offset(_pinnedWidth, 0);
     }
 
-    double maxHeight;
-
-    if (_visibleRowsCount != null) {
-      maxHeight = math.min(
-          _rowHeight * _visibleRowsCount!, constraints.maxHeight - bodyHeight);
-    } else {
-      maxHeight = constraints.maxHeight - bodyHeight;
+    double minBodyHeight = 0;
+    double maxBodyHeight = math.max(constraints.maxHeight - _headerHeight, 0);
+    if (constraints.hasBoundedHeight == false && _visibleRowsCount != null) {
+      minBodyHeight = math.min(_rowHeight * _visibleRowsCount!,
+          constraints.maxHeight - _headerHeight);
+      minBodyHeight = math.max(minBodyHeight, 0);
+      maxBodyHeight = math.min(minBodyHeight, maxBodyHeight);
     }
 
     bodyRenderBox.layout(
         BoxConstraints(
-            minWidth: constraints.minWidth,
-            maxWidth: constraints.maxWidth,
-            minHeight: 0,
-            maxHeight: maxHeight),
+            minWidth: unpinnedWidth,
+            maxWidth: unpinnedWidth,
+            minHeight: minBodyHeight,
+            maxHeight: maxBodyHeight),
         parentUsesSize: true);
-    bodyRenderBox.tableLayoutParentData().offset = Offset(0, _headerHeight);
-    bodyHeight += bodyRenderBox.size.height;
+    bodyRenderBox.tableLayoutParentData().offset =
+        Offset(_pinnedWidth, _headerHeight);
+    double bodyHeight = bodyRenderBox.size.height;
+
+    if (pinnedBodyRenderBox != null) {
+      pinnedBodyRenderBox.layout(
+          BoxConstraints(
+              minWidth: _pinnedWidth,
+              maxWidth: _pinnedWidth,
+              minHeight: bodyHeight,
+              maxHeight: bodyHeight),
+          parentUsesSize: true);
+      pinnedBodyRenderBox.tableLayoutParentData().offset =
+          Offset(0, _headerHeight);
+    }
 
     if (constraints.hasBoundedHeight) {
-      size = Size(
-          constraints.maxWidth, math.max(bodyHeight, constraints.maxHeight));
+      size = Size(constraints.maxWidth,
+          math.max(bodyHeight + _headerHeight, constraints.maxHeight));
     } else {
-      size = Size(constraints.maxWidth, bodyHeight);
+      size = Size(constraints.maxWidth, bodyHeight + _headerHeight);
     }
   }
 

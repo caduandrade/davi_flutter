@@ -171,12 +171,52 @@ class EasyTableModel<ROW> extends ChangeNotifier {
     return w;
   }
 
-  double get columnsWidth {
+  double get pinnedColumnsWidth {
+    double w = 0;
+    for (EasyTableColumn column in _columns) {
+      if (column.pinned) {
+        w += column.width;
+      }
+    }
+    return w;
+  }
+
+  double get unpinnedColumnsWidth {
+    double w = 0;
+    for (EasyTableColumn column in _columns) {
+      if (!column.pinned) {
+        w += column.width;
+      }
+    }
+    return w;
+  }
+
+  double get allColumnsWidth {
     double w = 0;
     for (EasyTableColumn column in _columns) {
       w += column.width;
     }
     return w;
+  }
+
+  int get unpinnedColumnsLength {
+    int v = 0;
+    for (EasyTableColumn column in _columns) {
+      if (!column.pinned) {
+        v++;
+      }
+    }
+    return v;
+  }
+
+  int get pinnedColumnsLength {
+    int v = 0;
+    for (EasyTableColumn column in _columns) {
+      if (column.pinned) {
+        v++;
+      }
+    }
+    return v;
   }
 
   /// Revert to original sort order

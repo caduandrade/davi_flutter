@@ -39,6 +39,7 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
       int? fractionDigits,
       bool sortable = true,
       bool resizable = true,
+      bool pinned = false,
       EdgeInsets? padding,
       AlignmentGeometry? alignment,
       TextStyle? textStyle,
@@ -125,6 +126,7 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
         cellBuilder: cellBuilder,
         leading: leading,
         sort: sort,
+        pinned: pinned,
         stringValueMapper: stringValue,
         intValueMapper: intValue,
         doubleValueMapper: doubleValue,
@@ -148,6 +150,7 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
       this.cellBuilder,
       this.leading,
       this.sort,
+      required this.pinned,
       this.stringValueMapper,
       this.intValueMapper,
       this.doubleValueMapper,
@@ -165,6 +168,7 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
   final AlignmentGeometry? alignment;
   final TextStyle? textStyle;
   final int? fractionDigits;
+  final bool pinned;
   final EasyTableCellBuilder<ROW>? cellBuilder;
   final EasyTableColumnSort<ROW>? sort;
   final EasyTableIntValueMapper<ROW>? intValueMapper;

@@ -10,6 +10,7 @@
 * Sortable.
 * Resizable.
 * Highly customized.
+* Pinned columns.
 
 ## Usage
 
@@ -135,6 +136,25 @@ void _onRowDoubleTap(BuildContext context, Person person) {
 
 ![](https://caduandrade.github.io/easy_table_flutter/null_cell_color_v1.png)
 
+## Pinned column
+
+```dart
+    _model = EasyTableModel(rows: persons, columns: [
+      EasyTableColumn(
+          pinned: true,
+          width: 30,
+          cellBuilder: (BuildContext context, Person row) {
+            return InkWell(
+                child: const Icon(Icons.edit, size: 16),
+                onTap: () => _onEdit(row));
+          }),
+      EasyTableColumn(name: 'Name', width: 120, stringValue: (row) => row.name),
+      EasyTableColumn(name: 'Age', width: 120, intValue: (row) => row.age)
+    ]);
+```
+
+![](https://caduandrade.github.io/easy_table_flutter/pinned_column_v1.png)
+
 ## TODO
 
 * Collapsed rows
@@ -143,7 +163,7 @@ void _onRowDoubleTap(BuildContext context, Person person) {
 * Custom headers
 * Cell edition
 * Column reorder
-* Pinned column
+* Pinned column on right?
 * Filter
 * More theming options
 * And everything else, the sky is the limit
@@ -157,6 +177,10 @@ void _onRowDoubleTap(BuildContext context, Person person) {
 ### Ethereum (ERC-20) or Binance Smart Chain (BEP-20)
 
 [0x9eB815FD4c88A53322304143A9Aa8733D3369985](https://etherscan.io/address/0x9eb815fd4c88a53322304143a9aa8733d3369985)
+
+### Solana
+
+[7vp45LoQXtLYFXXKx8wQGnzYmhcnKo1TmfqUgMX45Ad8](https://explorer.solana.com/address/7vp45LoQXtLYFXXKx8wQGnzYmhcnKo1TmfqUgMX45Ad8)
 
 ### Helium
 
