@@ -20,6 +20,7 @@
 * [Row callbacks](#row-callbacks)
 * Null values
   * [Cell color](#cell-color)
+* [Pinned column](#pinned-column)
 * [Support this project](#support-this-project)
 
 ## Get started
