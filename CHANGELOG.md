@@ -1,3 +1,7 @@
+## 1.1.0
+
+* Pinned columns
+
 ## 1.0.0
 
 * Header leading
