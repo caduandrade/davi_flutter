@@ -22,10 +22,9 @@ class EasyTable<ROW> extends StatefulWidget {
 //TODO allow null and use defaults?
   const EasyTable(this.model,
       {Key? key,
-      this.horizontalScrollController,
+      this.unpinnedHorizontalScrollController,
       this.verticalScrollController,
       this.pinnedHorizontalScrollController,
-      this.pinnedVerticalScrollController,
       this.onHoverListener,
       this.onRowTap,
       this.onRowDoubleTap,
@@ -37,10 +36,9 @@ class EasyTable<ROW> extends StatefulWidget {
         super(key: key);
 
   final EasyTableModel<ROW>? model;
-  final ScrollController? horizontalScrollController;
+  final ScrollController? unpinnedHorizontalScrollController;
   final ScrollController? verticalScrollController;
   final ScrollController? pinnedHorizontalScrollController;
-  final ScrollController? pinnedVerticalScrollController;
   final OnRowHoverListener? onHoverListener;
   final RowDoubleTapCallback<ROW>? onRowDoubleTap;
   final RowTapCallback<ROW>? onRowTap;
@@ -55,13 +53,13 @@ class EasyTable<ROW> extends StatefulWidget {
 
 /// The [EasyTable] state.
 class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
-  late ScrollController _verticalScrollController;
-  late ScrollController _horizontalScrollController;
+  late ScrollController _unpinnedVerticalScrollController;
+  late ScrollController _unpinnedHorizontalScrollController;
 
   late ScrollController _pinnedVerticalScrollController;
   late ScrollController _pinnedHorizontalScrollController;
 
-  final ScrollController _headerHorizontalScrollController = ScrollController();
+  final ScrollController _unpinnedHeaderHorizontalScrollController = ScrollController();
   final ScrollController _pinnedHeaderHorizontalScrollController =
       ScrollController();
 
@@ -83,30 +81,29 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
 
     widget.model?.addListener(_rebuild);
 
-    _horizontalScrollController =
-        widget.horizontalScrollController ?? EasyTableScrollController();
-    _verticalScrollController =
+    _unpinnedHorizontalScrollController =
+        widget.unpinnedHorizontalScrollController ?? EasyTableScrollController();
+    _unpinnedVerticalScrollController =
         widget.verticalScrollController ?? EasyTableScrollController();
 
     _pinnedHorizontalScrollController =
         widget.pinnedHorizontalScrollController ?? EasyTableScrollController();
-    _pinnedVerticalScrollController =
-        widget.pinnedVerticalScrollController ?? EasyTableScrollController();
+    _pinnedVerticalScrollController = EasyTableScrollController();
 
-    _horizontalScrollController.addListener(_syncUnpinnedHorizontalScrolls);
-    _pinnedHorizontalScrollController.addListener(_syncPinnedHorizontalScrolls);
-    _verticalScrollController.addListener(_sync);
-    _pinnedVerticalScrollController.addListener(_sync2);
+    _unpinnedHorizontalScrollController.addListener(_syncUnpinnedHeaderHorizontalScrolls);
+    _pinnedHorizontalScrollController.addListener(_syncPinnedHeaderHorizontalScrolls);
+    _unpinnedVerticalScrollController.addListener(_syncPinnedVerticalScrolls);
+    _pinnedVerticalScrollController.addListener(_syncUnpinnedVerticalScrolls);
   }
 
   @override
   void dispose() {
     widget.model?.removeListener(_rebuild);
-    _horizontalScrollController.removeListener(_syncUnpinnedHorizontalScrolls);
+    _unpinnedHorizontalScrollController.removeListener(_syncUnpinnedHeaderHorizontalScrolls);
     _pinnedHorizontalScrollController
-        .removeListener(_syncPinnedHorizontalScrolls);
-    _verticalScrollController.removeListener(_sync);
-    _pinnedVerticalScrollController.removeListener(_sync2);
+        .removeListener(_syncPinnedHeaderHorizontalScrolls);
+    _unpinnedVerticalScrollController.removeListener(_syncPinnedVerticalScrolls);
+    _pinnedVerticalScrollController.removeListener(_syncUnpinnedVerticalScrolls);
     super.dispose();
   }
 
@@ -118,31 +115,26 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
       widget.model?.addListener(_rebuild);
     }
     if (widget.verticalScrollController != null) {
-      _verticalScrollController.removeListener(_sync);
-      _verticalScrollController = widget.verticalScrollController!;
-      _verticalScrollController.addListener(_sync);
+      _unpinnedVerticalScrollController.removeListener(_syncPinnedVerticalScrolls);
+      _unpinnedVerticalScrollController = widget.verticalScrollController!;
+      _unpinnedVerticalScrollController.addListener(_syncPinnedVerticalScrolls);
     }
-    if (widget.pinnedVerticalScrollController != null) {
-      _pinnedVerticalScrollController.removeListener(_sync2);
-      _pinnedVerticalScrollController = widget.pinnedVerticalScrollController!;
-      _pinnedVerticalScrollController.addListener(_sync2);
-    }
-    if (widget.horizontalScrollController != null) {
-      _horizontalScrollController
-          .removeListener(_syncUnpinnedHorizontalScrolls);
-      _horizontalScrollController = widget.horizontalScrollController!;
-      _horizontalScrollController.addListener(_syncUnpinnedHorizontalScrolls);
+    if (widget.unpinnedHorizontalScrollController != null) {
+      _unpinnedHorizontalScrollController
+          .removeListener(_syncUnpinnedHeaderHorizontalScrolls);
+      _unpinnedHorizontalScrollController = widget.unpinnedHorizontalScrollController!;
+      _unpinnedHorizontalScrollController.addListener(_syncUnpinnedHeaderHorizontalScrolls);
     }
     if (widget.pinnedHorizontalScrollController != null) {
       _pinnedHorizontalScrollController
-          .removeListener(_syncPinnedHorizontalScrolls);
+          .removeListener(_syncPinnedHeaderHorizontalScrolls);
       _pinnedHorizontalScrollController =
           widget.pinnedHorizontalScrollController!;
       _pinnedHorizontalScrollController
-          .addListener(_syncPinnedHorizontalScrolls);
+          .addListener(_syncPinnedHeaderHorizontalScrolls);
     }
     if (widget.verticalScrollController != null) {
-      _verticalScrollController = widget.verticalScrollController!;
+      _unpinnedVerticalScrollController = widget.verticalScrollController!;
     }
   }
 
@@ -150,29 +142,29 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
     setState(() {});
   }
 
-  void _syncUnpinnedHorizontalScrolls() {
-    if (_headerHorizontalScrollController.hasClients) {
-      _headerHorizontalScrollController
-          .jumpTo(_horizontalScrollController.offset);
+  void _syncUnpinnedHeaderHorizontalScrolls() {
+    if (_unpinnedHeaderHorizontalScrollController.hasClients) {
+      _unpinnedHeaderHorizontalScrollController
+          .jumpTo(_unpinnedHorizontalScrollController.offset);
     }
   }
 
-  void _syncPinnedHorizontalScrolls() {
+  void _syncPinnedHeaderHorizontalScrolls() {
     if (_pinnedHeaderHorizontalScrollController.hasClients) {
       _pinnedHeaderHorizontalScrollController
           .jumpTo(_pinnedHorizontalScrollController.offset);
     }
   }
 
-  void _sync() {
+  void _syncPinnedVerticalScrolls() {
     if (_pinnedVerticalScrollController.hasClients) {
-      _pinnedVerticalScrollController.jumpTo(_verticalScrollController.offset);
+      _pinnedVerticalScrollController.jumpTo(_unpinnedVerticalScrollController.offset);
     }
   }
 
-  void _sync2() {
-    if (_verticalScrollController.hasClients) {
-      _verticalScrollController.jumpTo(_pinnedVerticalScrollController.offset);
+  void _syncUnpinnedVerticalScrolls() {
+    if (_unpinnedVerticalScrollController.hasClients) {
+      _unpinnedVerticalScrollController.jumpTo(_pinnedVerticalScrollController.offset);
     }
   }
 
@@ -207,7 +199,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
 
           if (headerHeight > 0) {
             header = _HeaderWidget<ROW>(
-                horizontalScrollController: _headerHorizontalScrollController,
+                horizontalScrollController: _unpinnedHeaderHorizontalScrollController,
                 columnsFit: true,
                 model: model,
                 columnsMetrics: columnsMetrics,
@@ -216,8 +208,8 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
           }
           body = _BodyWidget(
               columnsFit: widget.columnsFit,
-              horizontalScrollController: _horizontalScrollController,
-              verticalScrollController: _verticalScrollController,
+              horizontalScrollController: _unpinnedHorizontalScrollController,
+              verticalScrollController: _unpinnedVerticalScrollController,
               setHoveredRowIndex: _setHoveredRowIndex,
               hoveredRowIndex: _hoveredRowIndex,
               onRowTap: widget.onRowTap,
@@ -262,7 +254,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
 
           if (headerHeight > 0) {
             header = _HeaderWidget<ROW>(
-                horizontalScrollController: _headerHorizontalScrollController,
+                horizontalScrollController: _unpinnedHeaderHorizontalScrollController,
                 columnsFit: false,
                 model: model,
                 columnsMetrics: unpinnedColumnsMetrics,
@@ -283,8 +275,8 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
 
           body = _BodyWidget(
               columnsFit: widget.columnsFit,
-              horizontalScrollController: _horizontalScrollController,
-              verticalScrollController: _verticalScrollController,
+              horizontalScrollController: _unpinnedHorizontalScrollController,
+              verticalScrollController: _unpinnedVerticalScrollController,
               setHoveredRowIndex: _setHoveredRowIndex,
               hoveredRowIndex: _hoveredRowIndex,
               onRowTap: widget.onRowTap,
