@@ -36,24 +36,25 @@ class _HomePageState extends State<HomePage> {
     Character.loadCharacters().then((characters) {
       EasyTableModel<Character> model =
           EasyTableModel(rows: characters, columns: [
-        EasyTableColumn(pinned: true,
+        EasyTableColumn(
+            pinned: true,
             leading: const Icon(Icons.person, size: 16),
             name: 'Name',
             width: 100,
             stringValue: (row) => row.name),
-        EasyTableColumn(pinned: true,
+        EasyTableColumn(
             name: 'Gender',
             width: 80,
             cellBuilder: (context, row) => EasyTableCell(
                 child: row.male
                     ? const Icon(Icons.male)
                     : const Icon(Icons.female))),
-        EasyTableColumn(pinned: true,
+        EasyTableColumn(
             name: 'Race', width: 100, stringValue: (row) => row.race),
-        EasyTableColumn(pinned: true,
+        EasyTableColumn(
             name: 'Class', width: 110, stringValue: (row) => row.cls),
         EasyTableColumn(name: 'Level', width: 70, intValue: (row) => row.level),
-        EasyTableColumn(pinned: true,
+        EasyTableColumn(
             name: 'Skills',
             width: 100,
             cellBuilder: (context, row) =>
@@ -78,22 +79,11 @@ class _HomePageState extends State<HomePage> {
         _model = model;
       });
     });
-
-    scrollController2.addListener(() {
-      scrollController.jumpTo(scrollController2.offset);
-    });
-    scrollController.addListener(() {
-      scrollController2.jumpTo(scrollController.offset);
-    });
   }
-  
-  ScrollController scrollController = ScrollController();
-  ScrollController scrollController2 = ScrollController();
 
   @override
   Widget build(BuildContext context) {
     Widget? body;
-
 
     if (_model == null) {
       body = const Center(child: CircularProgressIndicator());
@@ -104,32 +94,6 @@ class _HomePageState extends State<HomePage> {
               row: RowThemeData(hoveredColor: (index) => Colors.blue[50])));
     }
 
-    /*
-    ThemeData themeData = Theme.of(context);
-    print(themeData.scrollbarTheme.crossAxisMargin);
-
-
-    
-    Widget listView = ListView.builder(controller:scrollController,itemBuilder: ((context, index) => Container(child: Text('$index'),color: Colors.yellow)),itemCount: 100, itemExtent: 20);
-
-    listView= ScrollConfiguration(
-        behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
-        child:listView);
-
-
-    Widget scrollTest =Container(color:Colors.green[300],width: 11,height: 2000);
-    scrollTest = SingleChildScrollView(child:scrollTest,controller: scrollController2);
-    scrollTest=ScrollConfiguration(
-        behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
-        child:scrollTest);
-    scrollTest =Scrollbar(isAlwaysShown: true, child:scrollTest,controller: scrollController2, thickness: 5, hoverThickness: 5,radius: null);
-
-
-    body = Row(children: [Expanded(child: listView), scrollTest]);
-    //body = Row(children: [Expanded(child: listView), Container(color:Colors.pink,width: 20, child: ElevatedButton(child: Text('x'),onPressed: _on))]);
-*/
-
-
     return Scaffold(
         appBar: AppBar(
           title: const Text('EasyTable Example'),
@@ -139,10 +103,6 @@ class _HomePageState extends State<HomePage> {
           Expanded(
               child: Padding(child: body, padding: const EdgeInsets.all(16)))
         ], crossAxisAlignment: CrossAxisAlignment.stretch));
-  }
-
-  void _on(){
-    scrollController.jumpTo(300);
   }
 
   Widget _table() {

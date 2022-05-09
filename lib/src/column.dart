@@ -180,6 +180,7 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
   double _weight;
 
   double get weight => _weight;
+
   set weight(double value) {
     //TODO resizeAreaWidth should be smaller
     value = math.max(1, value);
@@ -190,6 +191,7 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
   }
 
   double get width => _width;
+
   set width(double value) {
     //TODO resizeAreaWidth should be smaller
     value = math.max(16, value);

@@ -3,7 +3,6 @@ import 'package:meta/meta.dart';
 
 @internal
 class EasyTableScrollController extends ScrollController {
-
   @override
   ScrollPosition createScrollPosition(ScrollPhysics physics,
       ScrollContext context, ScrollPosition? oldPosition) {

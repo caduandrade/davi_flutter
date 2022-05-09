@@ -4,50 +4,49 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
 
-/// [EasyTable] table layout.
+/// [EasyTable] table area layout.
 @internal
-class TableLayout extends MultiChildRenderObjectWidget {
-  factory TableLayout(
+class TableAreaLayout extends MultiChildRenderObjectWidget {
+  factory TableAreaLayout(
       {Key? key,
-      Widget? pinnedWidget,
-      required Widget unpinnedWidget,
+      Widget? headerWidget,
+      required Widget contentWidget,
       required Widget scrollbarWidget,
       required double rowHeight,
       required double headerHeight,
-      required double scrollbarWidth,
+      required double scrollbarHeight,
       required int? visibleRowsCount,
-      required double? pinnedWidth,
-      required bool hasHeader}) {
-    List<Widget> children = [unpinnedWidget, scrollbarWidget];
-    if (pinnedWidget != null) {
-      children.insert(0, pinnedWidget);
+      required double? width}) {
+    List<Widget> children = [contentWidget, scrollbarWidget];
+    if (headerWidget != null) {
+      children.insert(0, headerWidget);
     }
-    return TableLayout._(
+    return TableAreaLayout._(
         key: key,
         children: children,
         rowHeight: rowHeight,
-        scrollbarWidth: scrollbarWidth,
+        scrollbarHeight: scrollbarHeight,
         headerHeight: headerHeight,
         visibleRowsCount: visibleRowsCount,
-        hasHeader: hasHeader,
-        pinnedWidth: pinnedWidth);
+        hasHeader: children.length == 3,
+        width: width);
   }
 
-  TableLayout._(
+  TableAreaLayout._(
       {Key? key,
-      required this.scrollbarWidth,
+      required this.scrollbarHeight,
       required this.rowHeight,
       required this.headerHeight,
       required this.visibleRowsCount,
       required this.hasHeader,
-      required this.pinnedWidth,
+      required this.width,
       required List<Widget> children})
       : super(key: key, children: children);
 
   final double rowHeight;
   final double headerHeight;
-  final double scrollbarWidth;
-  final double? pinnedWidth;
+  final double scrollbarHeight;
+  final double? width;
   final bool hasHeader;
 
   /// Calculates the height based on the number of visible lines.
@@ -58,10 +57,10 @@ class TableLayout extends MultiChildRenderObjectWidget {
   RenderObject createRenderObject(BuildContext context) {
     return _TableLayoutRenderBox(
         rowHeight: rowHeight,
-        scrollbarWidth: scrollbarWidth,
+        scrollbarHeight: scrollbarHeight,
         visibleRowsCount: visibleRowsCount,
         headerHeight: headerHeight,
-        pinnedWidth: pinnedWidth,
+        width: width,
         hasHeader: hasHeader);
   }
 
@@ -76,17 +75,17 @@ class TableLayout extends MultiChildRenderObjectWidget {
     super.updateRenderObject(context, renderObject);
     renderObject
       ..headerHeight = headerHeight
-      ..scrollbarWidth = scrollbarWidth
+      ..scrollbarHeight = scrollbarHeight
       ..rowHeight = rowHeight
       ..visibleRowsCount = visibleRowsCount
       ..hasHeader = hasHeader
-      ..pinnedWidth = pinnedWidth;
+      ..width = width;
   }
 }
 
-/// The [TableLayout] element.
+/// The [TableAreaLayout] element.
 class _TableLayoutElement extends MultiChildRenderObjectElement {
-  _TableLayoutElement(TableLayout widget) : super(widget);
+  _TableLayoutElement(TableAreaLayout widget) : super(widget);
 
   @override
   void debugVisitOnstageChildren(ElementVisitor visitor) {
@@ -99,25 +98,25 @@ class _TableLayoutElement extends MultiChildRenderObjectElement {
 }
 
 /// Parent data for [_TableLayoutRenderBox] class.
-class _TableLayoutParentData extends ContainerBoxParentData<RenderBox> {}
+class _TableAreaLayoutParentData extends ContainerBoxParentData<RenderBox> {}
 
 class _TableLayoutRenderBox extends RenderBox
     with
-        ContainerRenderObjectMixin<RenderBox, _TableLayoutParentData>,
-        RenderBoxContainerDefaultsMixin<RenderBox, _TableLayoutParentData> {
+        ContainerRenderObjectMixin<RenderBox, _TableAreaLayoutParentData>,
+        RenderBoxContainerDefaultsMixin<RenderBox, _TableAreaLayoutParentData> {
   _TableLayoutRenderBox(
-      {required double scrollbarWidth,
+      {required double scrollbarHeight,
       required double rowHeight,
       required double headerHeight,
       required int? visibleRowsCount,
       required bool hasHeader,
-      required double? pinnedWidth})
+      required double? width})
       : _rowHeight = rowHeight,
         _headerHeight = headerHeight,
-        _scrollbarWidth = scrollbarWidth,
+        _scrollbarHeight = scrollbarHeight,
         _visibleRowsCount = visibleRowsCount,
         _hasHeader = hasHeader,
-        _pinnedWidth = pinnedWidth;
+        _width = width;
 
   int? _visibleRowsCount;
 
@@ -128,11 +127,11 @@ class _TableLayoutRenderBox extends RenderBox
     }
   }
 
-  double _scrollbarWidth;
+  double _scrollbarHeight;
 
-  set scrollbarWidth(double value) {
-    if (_scrollbarWidth != value) {
-      _scrollbarWidth = value;
+  set scrollbarHeight(double value) {
+    if (_scrollbarHeight != value) {
+      _scrollbarHeight = value;
       markNeedsLayout();
     }
   }
@@ -164,19 +163,20 @@ class _TableLayoutRenderBox extends RenderBox
     }
   }
 
-  double? _pinnedWidth;
+  //TODO replace by parent constraints?
+  double? _width;
 
-  set pinnedWidth(double? value) {
-    if (_pinnedWidth != value) {
-      _pinnedWidth = value;
+  set width(double? value) {
+    if (_width != value) {
+      _width = value;
       markNeedsLayout();
     }
   }
 
   @override
   void setupParentData(RenderBox child) {
-    if (child.parentData is! _TableLayoutParentData) {
-      child.parentData = _TableLayoutParentData();
+    if (child.parentData is! _TableAreaLayoutParentData) {
+      child.parentData = _TableAreaLayoutParentData();
     }
   }
 
@@ -200,108 +200,117 @@ class _TableLayoutRenderBox extends RenderBox
     List<RenderBox> children = [];
     visitChildren((child) => children.add(child as RenderBox));
 
-    final RenderBox? pinnedRenderBox;
-    final RenderBox unpinnedRenderBox;
+    final RenderBox? headerRenderBox;
+    final RenderBox contentRenderBox;
     final RenderBox scrollbarRenderBox;
     if (children.length == 3) {
-      pinnedRenderBox = children[0];
-      unpinnedRenderBox = children[1];
+      headerRenderBox = children[0];
+      contentRenderBox = children[1];
       scrollbarRenderBox = children[2];
     } else {
-      pinnedRenderBox = null;
-      unpinnedRenderBox = children[0];
+      headerRenderBox = null;
+      contentRenderBox = children[0];
       scrollbarRenderBox = children[1];
     }
 
-    final double scrollbarWidth =
-        math.min(_scrollbarWidth, constraints.maxWidth);
-    final double pinnedWidth = _pinnedWidth != null
-        ? math.min(_pinnedWidth!, constraints.maxWidth - scrollbarWidth)
-        : 0;
-    final double unpinnedWidth =
-        math.max(0, constraints.maxWidth - pinnedWidth - scrollbarWidth);
+    final double width = _width != null
+        ? math.min(_width!, constraints.maxWidth)
+        : constraints.maxWidth;
 
     if (constraints.hasBoundedHeight) {
-      double x = 0;
+      double y = 0;
+      double availableHeight = constraints.maxHeight;
 
-      // pinned
-      if (pinnedRenderBox != null) {
-        pinnedRenderBox.layout(
+      // header
+      if (headerRenderBox != null) {
+        final double headerHeight = math.min(_headerHeight, availableHeight);
+        headerRenderBox.layout(
             BoxConstraints(
-                minWidth: pinnedWidth,
-                maxWidth: pinnedWidth,
-                minHeight: constraints.maxHeight,
-                maxHeight: constraints.maxHeight),
+                minWidth: width,
+                maxWidth: width,
+                minHeight: headerHeight,
+                maxHeight: headerHeight),
             parentUsesSize: true);
-        pinnedRenderBox.tableAreaLayoutParentData().offset = Offset.zero;
-        x = pinnedWidth;
+        headerRenderBox.tableAreaLayoutParentData().offset = Offset.zero;
+        y = headerHeight;
+        availableHeight -= headerHeight;
       }
 
-      unpinnedRenderBox.layout(
+      final double scrollbarHeight =
+          math.min(_scrollbarHeight, availableHeight);
+
+      final double contentHeight =
+          math.max(0, availableHeight - scrollbarHeight);
+
+      contentRenderBox.layout(
           BoxConstraints(
-              minWidth: unpinnedWidth,
-              maxWidth: unpinnedWidth,
-              minHeight: constraints.maxHeight,
-              maxHeight: constraints.maxHeight),
+              minWidth: width,
+              maxWidth: width,
+              minHeight: contentHeight,
+              maxHeight: contentHeight),
           parentUsesSize: true);
-      unpinnedRenderBox.tableAreaLayoutParentData().offset = Offset(x, 0);
-      x += unpinnedWidth;
+      contentRenderBox.tableAreaLayoutParentData().offset = Offset(0, y);
+      y += contentHeight;
+      availableHeight -= contentHeight;
 
       scrollbarRenderBox.layout(
           BoxConstraints(
-              minWidth: scrollbarWidth,
-              maxWidth: scrollbarWidth,
-              minHeight: constraints.maxHeight,
-              maxHeight: constraints.maxHeight),
+              minWidth: width,
+              maxWidth: width,
+              minHeight: scrollbarHeight,
+              maxHeight: scrollbarHeight),
           parentUsesSize: true);
-      scrollbarRenderBox.tableAreaLayoutParentData().offset = Offset(x, 0);
+      scrollbarRenderBox.tableAreaLayoutParentData().offset = Offset(0, y);
 
-      size = Size(constraints.maxWidth, constraints.maxHeight);
+      size = Size(width, constraints.maxHeight);
     } else {
       // unbounded height
-      double x = 0;
-      final double contentHeight = _visibleRowsCount! * _rowHeight;
-      final double height = (_hasHeader ? _headerHeight : 0) + contentHeight;
+      double y = 0;
+      double height = 0;
 
-      // pinned
-      if (pinnedRenderBox != null) {
-        pinnedRenderBox.layout(
+      // header
+      if (headerRenderBox != null) {
+        headerRenderBox.layout(
             BoxConstraints(
-                minWidth: pinnedWidth,
-                maxWidth: pinnedWidth,
-                minHeight: height,
-                maxHeight: height),
+                minWidth: width,
+                maxWidth: width,
+                minHeight: _headerHeight,
+                maxHeight: _headerHeight),
             parentUsesSize: true);
-        pinnedRenderBox.tableAreaLayoutParentData().offset = Offset.zero;
-        x = pinnedWidth;
+        headerRenderBox.tableAreaLayoutParentData().offset = Offset.zero;
+        y = _headerHeight;
+        height += _headerHeight;
       }
 
-      unpinnedRenderBox.layout(
+      final double contentHeight = _visibleRowsCount! * _rowHeight;
+      contentRenderBox.layout(
           BoxConstraints(
-              minWidth: unpinnedWidth,
-              maxWidth: unpinnedWidth,
-              minHeight: height,
-              maxHeight: height),
+              minWidth: width,
+              maxWidth: width,
+              minHeight: contentHeight,
+              maxHeight: contentHeight),
           parentUsesSize: true);
-      unpinnedRenderBox.tableAreaLayoutParentData().offset = Offset(x, 0);
-      x += unpinnedWidth;
+      contentRenderBox.tableAreaLayoutParentData().offset = Offset(0, y);
+      y += contentHeight;
+      height += contentHeight;
 
       scrollbarRenderBox.layout(
           BoxConstraints(
-              minWidth: scrollbarWidth,
-              maxWidth: scrollbarWidth,
-              minHeight: height,
-              maxHeight: height),
+              minWidth: width,
+              maxWidth: width,
+              minHeight: _scrollbarHeight,
+              maxHeight: _scrollbarHeight),
           parentUsesSize: true);
-      scrollbarRenderBox.tableAreaLayoutParentData().offset = Offset(x, 0);
+      scrollbarRenderBox.tableAreaLayoutParentData().offset = Offset(0, y);
+      height += _scrollbarHeight;
 
-      size = Size(constraints.maxWidth, height);
+      size = Size(width, height);
     }
   }
 
   @override
   double computeMinIntrinsicHeight(double width) {
-    double height = _scrollbarWidth;
+    double height = _scrollbarHeight;
     if (_hasHeader) {
       height += _headerHeight;
     }
@@ -329,8 +338,8 @@ class _TableLayoutRenderBox extends RenderBox
 }
 
 /// Utility extension to facilitate obtaining parent data.
-extension _TableLayoutParentDataGetter on RenderObject {
-  _TableLayoutParentData tableAreaLayoutParentData() {
-    return parentData as _TableLayoutParentData;
+extension _TableAreaLayoutParentDataGetter on RenderObject {
+  _TableAreaLayoutParentData tableAreaLayoutParentData() {
+    return parentData as _TableAreaLayoutParentData;
   }
 }

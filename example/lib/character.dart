@@ -87,15 +87,15 @@ class Character {
   static Future<List<Character>> loadCharacters() async {
     math.Random random = math.Random();
     List<Character> list = [];
-
+for(int i=0; i<5;i++){
     for (String name in await _readNames('data/females.txt')) {
       list.add(_character(name: name, male: false, random: random));
     }
     for (String name in await _readNames('data/males.txt')) {
       list.add(_character(name: name, male: true, random: random));
-    }
+    }}
     list.shuffle();
-    return list.sublist(0,55);
+    return list;
   }
 
   static Future<List<String>> _readNames(String filePath) async {

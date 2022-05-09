@@ -1,4 +1,5 @@
 docs/
+lib/src/internal/qa/
 
 # Miscellaneous
 *.class

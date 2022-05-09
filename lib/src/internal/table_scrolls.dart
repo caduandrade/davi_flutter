@@ -1,4 +1,5 @@
 import 'package:easy_table/src/internal/scroll_controller.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
 
@@ -28,8 +29,11 @@ class TableScrolls {
 
   final AreaScrolls pinnedArea;
   final AreaScrolls unpinnedArea;
+
   ScrollController _vertical;
+
   ScrollController get vertical => _vertical;
+
   set vertical(ScrollController vertical) {
     _removeVerticalListeners();
     _vertical = vertical;
@@ -54,7 +58,14 @@ class TableScrolls {
     unpinnedArea.contentVertical.addListener(_onUnpinnedVerticalChange);
   }
 
+  /// used to avoid circular calls
+  bool _ignore = false;
+
   void _onVerticalChange() {
+    if (_ignore) {
+      return;
+    }
+    _ignore = true;
     if (_vertical.hasClients) {
       if (pinnedArea.contentVertical.hasClients) {
         pinnedArea.contentVertical.jumpTo(_vertical.offset);
@@ -63,9 +74,14 @@ class TableScrolls {
         unpinnedArea.contentVertical.jumpTo(_vertical.offset);
       }
     }
+    _ignore = false;
   }
 
   void _onPinnedVerticalChange() {
+    if (_ignore) {
+      return;
+    }
+    _ignore = true;
     if (pinnedArea.contentVertical.hasClients) {
       if (_vertical.hasClients) {
         _vertical.jumpTo(pinnedArea.contentVertical.offset);
@@ -74,9 +90,14 @@ class TableScrolls {
         unpinnedArea.contentVertical.jumpTo(pinnedArea.contentVertical.offset);
       }
     }
+    _ignore = false;
   }
 
   void _onUnpinnedVerticalChange() {
+    if (_ignore) {
+      return;
+    }
+    _ignore = true;
     if (unpinnedArea.contentVertical.hasClients) {
       if (_vertical.hasClients) {
         _vertical.jumpTo(unpinnedArea.contentVertical.offset);
@@ -85,6 +106,7 @@ class TableScrolls {
         pinnedArea.contentVertical.jumpTo(unpinnedArea.contentVertical.offset);
       }
     }
+    _ignore = false;
   }
 }
 
@@ -100,7 +122,9 @@ class AreaScrolls {
   final ScrollController contentHorizontal = ScrollController();
 
   ScrollController _horizontal;
+
   ScrollController get horizontal => _horizontal;
+
   set horizontal(ScrollController horizontal) {
     _removeHorizontalListeners();
     _horizontal = horizontal;

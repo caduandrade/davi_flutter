@@ -30,25 +30,34 @@ class EasyTableModel<ROW> extends ChangeNotifier {
 
   EasyTableColumn<ROW>? get sortedColumn =>
       _columnSort != null ? _columnSort!.column : null;
+
   EasyTableSortType? get sortType =>
       _columnSort != null ? _columnSort!.sortType : null;
 
   bool get _visibleRowsModifiable => _visibleRows is! UnmodifiableListView;
 
   int get rowsLength => _originalRows.length;
+
   bool get isRowsEmpty => _originalRows.isEmpty;
+
   bool get isRowsNotEmpty => _originalRows.isNotEmpty;
 
   int get visibleRowsLength => _visibleRows.length;
+
   bool get isVisibleRowsEmpty => _visibleRows.isEmpty;
+
   bool get isVisibleRowsNotEmpty => _visibleRows.isNotEmpty;
 
   int get columnsLength => _columns.length;
+
   bool get isColumnsEmpty => _columns.isEmpty;
+
   bool get isColumnsNotEmpty => _columns.isNotEmpty;
 
   EasyTableColumn<ROW>? _columnInResizing;
+
   EasyTableColumn<ROW>? get columnInResizing => _columnInResizing;
+
   set columnInResizing(EasyTableColumn<ROW>? column) {
     _columnInResizing = column;
     notifyListeners();

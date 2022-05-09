@@ -5,6 +5,7 @@ import 'package:easy_table/src/column.dart';
 import 'package:easy_table/src/model.dart';
 import 'package:meta/meta.dart';
 
+@internal
 enum ColumnFilter { all, pinnedOnly, unpinnedOnly }
 
 @internal
