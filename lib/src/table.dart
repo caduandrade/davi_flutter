@@ -270,6 +270,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
               : null;
         }
 
+        print('pinnedContentWidth: $pinnedContentWidth');
         Widget? pinnedArea;
         if (pinnedHeader != null && pinnedBody != null) {
           pinnedArea = TableAreaLayout(
@@ -301,14 +302,25 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
             width: null);
 
         Widget verticalScrollArea = TableAreaLayout(
-            headerWidget: Container(decoration: theme.topRightCornerDecoration),
+            headerWidget: Container(
+                decoration: BoxDecoration(
+                    color: theme.topCornerColor,
+                    border: Border(
+                        left: BorderSide(color: theme.topCornerBorderColor),
+                        bottom:
+                            BorderSide(color: theme.topCornerBorderColor)))),
             contentWidget: VerticalScrollBar(
                 scrollBehavior: scrollBehavior,
                 scrollController: _scrolls.vertical,
                 rowHeight: rowHeight,
                 visibleRowsLength: model.visibleRowsLength),
-            scrollbarWidget:
-                Container(decoration: theme.bottomRightCornerDecoration),
+            scrollbarWidget: Container(
+                decoration: BoxDecoration(
+                    color: theme.bottomCornerColor,
+                    border: Border(
+                        left: BorderSide(color: theme.bottomCornerBorderColor),
+                        top:
+                            BorderSide(color: theme.bottomCornerBorderColor)))),
             rowHeight: rowHeight,
             headerHeight: headerHeight,
             visibleRowsCount: widget.visibleRowsCount,

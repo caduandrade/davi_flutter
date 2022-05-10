@@ -42,6 +42,9 @@ class VerticalScrollBar extends StatelessWidget {
                         },
                         itemCount: visibleRowsLength)),
                 controller: scrollController)),
-        decoration: theme.verticalDecoration);
+        decoration: BoxDecoration(
+            color: theme.verticalColor,
+            border:
+                Border(left: BorderSide(color: theme.verticalBorderColor))));
   }
 }

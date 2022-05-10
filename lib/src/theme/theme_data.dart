@@ -15,10 +15,12 @@ class EasyTableThemeData {
           EasyTableThemeDataDefaults.columnDividerThickness,
       this.rowDividerThickness = EasyTableThemeDataDefaults.rowDividerThickness,
       this.decoration = EasyTableThemeDataDefaults.tableDecoration,
-      this.topRightCornerDecoration =
-          EasyTableThemeDataDefaults.topRightCornerDecoration,
-      this.bottomRightCornerDecoration =
-          EasyTableThemeDataDefaults.bottomRightCornerDecoration,
+      this.topCornerBorderColor =
+          EasyTableThemeDataDefaults.topCornerBorderColor,
+      this.topCornerColor = EasyTableThemeDataDefaults.topCornerColor,
+      this.bottomCornerBorderColor =
+          EasyTableThemeDataDefaults.bottomCornerBorderColor,
+      this.bottomCornerColor = EasyTableThemeDataDefaults.bottomCornerColor,
       this.row = const RowThemeData(),
       this.cell = const CellThemeData(),
       this.header = const HeaderThemeData(),
@@ -33,8 +35,10 @@ class EasyTableThemeData {
   final HeaderCellThemeData headerCell;
   final RowThemeData row;
   final TableScrollThemeData scroll;
-  final BoxDecoration topRightCornerDecoration;
-  final BoxDecoration bottomRightCornerDecoration;
+  final Color topCornerBorderColor;
+  final Color topCornerColor;
+  final Color bottomCornerBorderColor;
+  final Color bottomCornerColor;
 }
 
 class EasyTableThemeDataDefaults {
@@ -51,9 +55,9 @@ class EasyTableThemeDataDefaults {
       border: Border(
           left: BorderSide(color: Colors.grey),
           bottom: BorderSide(color: Colors.grey)));
-  static const BoxDecoration bottomRightCornerDecoration = BoxDecoration(
-      color: Color(0xFFE0E0E0),
-      border: Border(
-          left: BorderSide(color: Colors.grey),
-          top: BorderSide(color: Colors.grey)));
+
+  static const Color bottomCornerColor = Color(0xFFE0E0E0);
+  static const Color bottomCornerBorderColor = Colors.grey;
+  static const Color topCornerColor = Color(0xFFE0E0E0);
+  static const Color topCornerBorderColor = Colors.grey;
 }

@@ -1,3 +1,4 @@
+import 'package:easy_table/easy_table.dart';
 import 'package:easy_table/src/theme/scroll_theme_data.dart';
 import 'package:easy_table/src/theme/theme.dart';
 import 'package:flutter/material.dart';
@@ -20,25 +21,43 @@ class HorizontalScrollBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    TableScrollThemeData theme = EasyTableTheme.of(context).scroll;
-    BoxDecoration? decoration = pinned
-        ? theme.pinnedHorizontalDecoration
-        : theme.unpinnedHorizontalDecoration;
+    EasyTableThemeData theme = EasyTableTheme.of(context);
+    TableScrollThemeData scrollTheme = theme.scroll;
+    double width = contentWidth;
+    BoxDecoration? decoration;
+    if (pinned) {
+      width -= theme.columnDividerThickness;
+      decoration = BoxDecoration(
+          color: scrollTheme.pinnedHorizontalColor,
+          border: Border(
+              top: BorderSide(color: scrollTheme.pinnedHorizontalBorderColor),
+              right: BorderSide(
+                  color: scrollTheme.pinnedHorizontalBorderColor,
+                  width: theme.columnDividerThickness)));
+    } else {
+      decoration = BoxDecoration(
+          color: scrollTheme.unpinnedHorizontalColor,
+          border: Border(
+              top: BorderSide(
+                  color: scrollTheme.unpinnedHorizontalBorderColor)));
+    }
+
     return Container(
         child: Theme(
             data: ThemeData(
                 scrollbarTheme: ScrollbarThemeData(
-                    crossAxisMargin: theme.margin,
-                    thumbColor: MaterialStateProperty.all(theme.thumbColor))),
+                    crossAxisMargin: scrollTheme.margin,
+                    thumbColor:
+                        MaterialStateProperty.all(scrollTheme.thumbColor))),
             child: Scrollbar(
-                thickness: theme.thickness,
-                hoverThickness: theme.thickness,
-                radius: theme.radius,
+                thickness: scrollTheme.thickness,
+                hoverThickness: scrollTheme.thickness,
+                radius: scrollTheme.radius,
                 isAlwaysShown: true,
                 child: ScrollConfiguration(
                     behavior: scrollBehavior,
                     child: SingleChildScrollView(
-                        child: Container(width: contentWidth),
+                        child: Container(width: width),
                         controller: scrollController,
                         scrollDirection: Axis.horizontal)),
                 controller: scrollController)),
