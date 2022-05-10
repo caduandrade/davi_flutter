@@ -51,7 +51,7 @@ Widget build(BuildContext context) {
 }
 ```
 
-![](https://caduandrade.github.io/easy_table_flutter/get_started_v2.png)
+![](https://caduandrade.github.io/easy_table_flutter/get_started_v3.png)
 
 ## Columns fit
 
