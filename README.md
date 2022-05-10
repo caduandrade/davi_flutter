@@ -73,7 +73,7 @@ Widget build(BuildContext context) {
   EasyTable<Person>(_model, columnsFit: true);
 ```
 
-![](https://caduandrade.github.io/easy_table_flutter/columns_fit_v1.png)
+![](https://caduandrade.github.io/easy_table_flutter/columns_fit_v2.png)
 
 ## Custom cell
 
@@ -87,7 +87,7 @@ _model = EasyTableModel<Person>(rows: rows, columns: [
 ]);
 ```
 
-![](https://caduandrade.github.io/easy_table_flutter/custom_cell_v2.png)
+![](https://caduandrade.github.io/easy_table_flutter/custom_cell_v3.png)
 
 ## Row callbacks
 
@@ -135,7 +135,7 @@ void _onRowDoubleTap(BuildContext context, Person person) {
               CellThemeData(nullValueColor: ((rowIndex) => Colors.grey[300]))));
 ```
 
-![](https://caduandrade.github.io/easy_table_flutter/null_cell_color_v1.png)
+![](https://caduandrade.github.io/easy_table_flutter/null_cell_color_v2.png)
 
 ## Pinned column
 
@@ -154,7 +154,7 @@ void _onRowDoubleTap(BuildContext context, Person person) {
     ]);
 ```
 
-![](https://caduandrade.github.io/easy_table_flutter/pinned_column_v1.png)
+![](https://caduandrade.github.io/easy_table_flutter/pinned_column_v2.png)
 
 ## TODO
 

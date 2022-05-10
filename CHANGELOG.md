@@ -1,10 +1,14 @@
+## 1.2.0
+
+* Scrollbars without overlapping table contents.
+
 ## 1.1.0
 
-* Pinned columns
+* Pinned columns.
 
 ## 1.0.0
 
-* Header leading
+* Header leading.
 
 ## 0.9.0
 
@@ -15,7 +19,7 @@
 
 ## 0.8.0
 
-* Columns fit
+* Columns fit.
 
 ## 0.7.0
 
@@ -32,7 +36,7 @@
 
 ## 0.6.0
 
-* Resizable columns
+* Resizable columns.
 
 ## 0.5.0
 
@@ -42,7 +46,7 @@
 
 ## 0.4.0
 
-* Sort feature
+* Sort feature.
 
 ## 0.3.0
 
@@ -65,4 +69,4 @@
 
 ## 0.0.1
 
-* Package creation
+* Package creation.
