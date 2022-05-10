@@ -75,6 +75,4 @@ class _HomePageState extends State<HomePage> {
                     constraints: const BoxConstraints.tightFor(
                         width: 500, height: 50)))));
   }
-
-  void _setHoveredRowIndex(int? value) {}
 }

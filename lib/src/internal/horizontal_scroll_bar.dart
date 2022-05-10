@@ -1,6 +1,6 @@
-import 'package:easy_table/easy_table.dart';
 import 'package:easy_table/src/theme/scroll_theme_data.dart';
 import 'package:easy_table/src/theme/theme.dart';
+import 'package:easy_table/src/theme/theme_data.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
