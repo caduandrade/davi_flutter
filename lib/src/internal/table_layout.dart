@@ -182,7 +182,6 @@ class _TableLayoutRenderBox extends RenderBox
 
   @override
   void performLayout() {
-    print('_pinnedWidth: $_pinnedWidth');
     if (!constraints.hasBoundedHeight && _visibleRowsCount == null) {
       throw FlutterError.fromParts(<DiagnosticsNode>[
         ErrorSummary('EasyTable was given unbounded height.'),

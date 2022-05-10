@@ -121,6 +121,8 @@ class AreaScrolls {
   final ScrollController headerHorizontal = ScrollController();
   final ScrollController contentHorizontal = ScrollController();
 
+  bool _ignore = false;
+
   ScrollController _horizontal;
 
   ScrollController get horizontal => _horizontal;
@@ -144,7 +146,12 @@ class AreaScrolls {
   }
 
   void _onHorizontalChange() {
-    if (_horizontal.hasClients) {
+    if (_ignore) {
+      return;
+    }
+    _ignore = true;
+    if (_horizontal.hasClients &&
+        _horizontal.offset < _horizontal.position.maxScrollExtent) {
       if (headerHorizontal.hasClients) {
         headerHorizontal.jumpTo(_horizontal.offset);
       }
@@ -152,10 +159,17 @@ class AreaScrolls {
         contentHorizontal.jumpTo(_horizontal.offset);
       }
     }
+    _ignore = false;
   }
 
   void _onHeaderHorizontalChange() {
-    if (headerHorizontal.hasClients) {
+    if (_ignore) {
+      return;
+    }
+
+    _ignore = true;
+    if (headerHorizontal.hasClients &&
+        headerHorizontal.offset < headerHorizontal.position.maxScrollExtent) {
       if (_horizontal.hasClients) {
         _horizontal.jumpTo(headerHorizontal.offset);
       }
@@ -163,10 +177,16 @@ class AreaScrolls {
         contentHorizontal.jumpTo(headerHorizontal.offset);
       }
     }
+    _ignore = false;
   }
 
   void _onContentHorizontalChange() {
-    if (contentHorizontal.hasClients) {
+    if (_ignore) {
+      return;
+    }
+    _ignore = true;
+    if (contentHorizontal.hasClients &&
+        contentHorizontal.offset < contentHorizontal.position.maxScrollExtent) {
       if (headerHorizontal.hasClients) {
         headerHorizontal.jumpTo(contentHorizontal.offset);
       }
@@ -174,5 +194,6 @@ class AreaScrolls {
         _horizontal.jumpTo(contentHorizontal.offset);
       }
     }
+    _ignore = false;
   }
 }

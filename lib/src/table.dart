@@ -270,7 +270,6 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
               : null;
         }
 
-        print('pinnedContentWidth: $pinnedContentWidth');
         Widget? pinnedArea;
         if (pinnedHeader != null && pinnedBody != null) {
           pinnedArea = TableAreaLayout(
