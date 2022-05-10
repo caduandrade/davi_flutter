@@ -22,6 +22,7 @@ class TableRowWidget<ROW> extends StatelessWidget {
       required this.setHoveredRowIndex,
       required this.hoveredRowIndex,
       required this.onRowTap,
+      required this.onRowSecondaryTap,
       required this.onRowDoubleTap})
       : super(key: key);
 
@@ -31,6 +32,7 @@ class TableRowWidget<ROW> extends StatelessWidget {
   final ColumnFilter columnFilter;
   final int? hoveredRowIndex;
   final RowTapCallback<ROW>? onRowTap;
+  final RowTapCallback<ROW>? onRowSecondaryTap;
   final RowDoubleTapCallback<ROW>? onRowDoubleTap;
   final SetHoveredRowIndex setHoveredRowIndex;
 
@@ -67,11 +69,13 @@ class TableRowWidget<ROW> extends StatelessWidget {
     if (onRowTap != null || onRowDoubleTap != null) {
       cursor = SystemMouseCursors.click;
       rowWidget = GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        child: rowWidget,
-        onDoubleTap: onRowDoubleTap != null ? () => onRowDoubleTap!(row) : null,
-        onTap: onRowTap != null ? () => onRowTap!(row) : null,
-      );
+          behavior: HitTestBehavior.opaque,
+          child: rowWidget,
+          onDoubleTap:
+              onRowDoubleTap != null ? () => onRowDoubleTap!(row) : null,
+          onTap: onRowTap != null ? () => onRowTap!(row) : null,
+          onSecondaryTap:
+              onRowSecondaryTap != null ? () => onRowSecondaryTap!(row) : null);
     }
 
     rowWidget = MouseRegion(

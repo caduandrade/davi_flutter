@@ -92,6 +92,7 @@ class _HomePageState extends State<HomePage> {
         setHoveredRowIndex: _setHoveredRowIndex,
         hoveredRowIndex: 0,
         onRowTap: null,
+        onRowSecondaryTap: null,
         onRowDoubleTap: null,
         scrollBehavior: scrollBehavior);
 

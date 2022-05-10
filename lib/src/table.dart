@@ -28,6 +28,7 @@ class EasyTable<ROW> extends StatefulWidget {
       this.verticalScrollController,
       this.onHoverListener,
       this.onRowTap,
+      this.onRowSecondaryTap,
       this.onRowDoubleTap,
       this.columnsFit = false,
       int? visibleRowsCount,
@@ -46,6 +47,7 @@ class EasyTable<ROW> extends StatefulWidget {
   final OnRowHoverListener? onHoverListener;
   final RowDoubleTapCallback<ROW>? onRowDoubleTap;
   final RowTapCallback<ROW>? onRowTap;
+  final RowTapCallback<ROW>? onRowSecondaryTap;
   final bool columnsFit;
   final int? _visibleRowsCount;
   final double scrollbarMargin;
@@ -173,6 +175,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
               setHoveredRowIndex: _setHoveredRowIndex,
               hoveredRowIndex: _hoveredRowIndex,
               onRowTap: widget.onRowTap,
+              onRowSecondaryTap: widget.onRowSecondaryTap,
               onRowDoubleTap: widget.onRowDoubleTap,
               model: model,
               columnsMetrics: columnsMetrics,
@@ -242,6 +245,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
               setHoveredRowIndex: _setHoveredRowIndex,
               hoveredRowIndex: _hoveredRowIndex,
               onRowTap: widget.onRowTap,
+              onRowSecondaryTap: widget.onRowSecondaryTap,
               onRowDoubleTap: widget.onRowDoubleTap,
               model: model,
               columnsMetrics: unpinnedColumnsMetrics,
@@ -260,6 +264,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
                   setHoveredRowIndex: _setHoveredRowIndex,
                   hoveredRowIndex: _hoveredRowIndex,
                   onRowTap: widget.onRowTap,
+                  onRowSecondaryTap: widget.onRowSecondaryTap,
                   onRowDoubleTap: widget.onRowDoubleTap,
                   model: model,
                   columnsMetrics: pinnedColumnsMetrics,

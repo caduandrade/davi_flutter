@@ -21,9 +21,10 @@ class TableAreaContentWidget<ROW> extends StatelessWidget {
       required this.contentWidth,
       required this.rowHeight,
       required this.columnsFit,
-      this.onRowTap,
-      this.onRowDoubleTap,
-      this.hoveredRowIndex,
+      required this.onRowTap,
+      required this.onRowSecondaryTap,
+      required this.onRowDoubleTap,
+      required this.hoveredRowIndex,
       required this.columnFilter,
       required this.setHoveredRowIndex,
       required this.scrollBehavior})
@@ -37,6 +38,7 @@ class TableAreaContentWidget<ROW> extends StatelessWidget {
   final double rowHeight;
   final bool columnsFit;
   final RowTapCallback<ROW>? onRowTap;
+  final RowTapCallback<ROW>? onRowSecondaryTap;
   final RowDoubleTapCallback<ROW>? onRowDoubleTap;
   final int? hoveredRowIndex;
   final SetHoveredRowIndex setHoveredRowIndex;
@@ -57,6 +59,7 @@ class TableAreaContentWidget<ROW> extends StatelessWidget {
               visibleRowIndex: index,
               columnFilter: columnFilter,
               onRowTap: onRowTap,
+              onRowSecondaryTap: onRowSecondaryTap,
               onRowDoubleTap: onRowDoubleTap,
               hoveredRowIndex: hoveredRowIndex,
               setHoveredRowIndex: setHoveredRowIndex);

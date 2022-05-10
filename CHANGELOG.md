@@ -1,6 +1,7 @@
 ## 1.2.0
 
 * Scrollbars without overlapping table contents.
+* Added the `onRowSecondaryTap` callback.
 
 ## 1.1.0
 
