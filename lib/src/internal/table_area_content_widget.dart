@@ -31,7 +31,8 @@ class TableAreaContentWidget<ROW> extends StatelessWidget {
       required int? hoveredRowIndex,
       required SetHoveredRowIndex setHoveredRowIndex,
       required ScrollBehavior scrollBehavior,
-      required ColumnFilter columnFilter}) {
+      required ColumnFilter columnFilter,
+      required double cellContentHeight}) {
     List<EasyTableColumn<ROW>> columns = [];
     for (int columnIndex = 0;
         columnIndex < model.columnsLength;
@@ -58,6 +59,7 @@ class TableAreaContentWidget<ROW> extends StatelessWidget {
         hoveredRowIndex: hoveredRowIndex,
         setHoveredRowIndex: setHoveredRowIndex,
         scrollBehavior: scrollBehavior,
+        cellContentHeight: cellContentHeight,
         columns: UnmodifiableListView<EasyTableColumn<ROW>>(columns));
   }
 
@@ -76,7 +78,8 @@ class TableAreaContentWidget<ROW> extends StatelessWidget {
       required this.hoveredRowIndex,
       required this.columns,
       required this.setHoveredRowIndex,
-      required this.scrollBehavior})
+      required this.scrollBehavior,
+      required this.cellContentHeight})
       : super(key: key);
 
   final EasyTableModel<ROW> model;
@@ -93,6 +96,7 @@ class TableAreaContentWidget<ROW> extends StatelessWidget {
   final SetHoveredRowIndex setHoveredRowIndex;
   final UnmodifiableListView<EasyTableColumn<ROW>> columns;
   final ScrollBehavior scrollBehavior;
+  final double cellContentHeight;
 
   @override
   Widget build(BuildContext context) {
@@ -110,6 +114,7 @@ class TableAreaContentWidget<ROW> extends StatelessWidget {
               model: model,
               delegate: delegate,
               columnsMetrics: columnsMetrics,
+              contentHeight: cellContentHeight,
               columns: columns,
               visibleRowIndex: index,
               onRowTap: onRowTap,

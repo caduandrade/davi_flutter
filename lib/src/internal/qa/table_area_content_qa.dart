@@ -79,6 +79,7 @@ class _HomePageState extends State<HomePage> {
         columnFilter: columnFilter,
         columnsFit: false,
         rowHeight: 30,
+        cellContentHeight: 32,
         contentWidth: 500,
         setHoveredRowIndex: _setHoveredRowIndex,
         hoveredRowIndex: 0,

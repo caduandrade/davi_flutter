@@ -71,6 +71,7 @@ class _HomePageState extends State<HomePage> {
         columns: columns,
         setHoveredRowIndex: _setHoveredRowIndex,
         hoveredRowIndex: 0,
+        contentHeight: 32,
         onRowTap: null,
         onRowSecondaryTap: null,
         onRowDoubleTap: null);

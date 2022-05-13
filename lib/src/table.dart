@@ -18,6 +18,9 @@ import 'package:flutter/material.dart';
 /// Table view designed for a large number of data.
 ///
 /// The type [ROW] represents the data of each row.
+/// The [cellContentHeight] is mandatory due to performance.
+/// The total height of the cell will be the sum of the [cellContentHeight]
+/// value, divider thickness, and cell margin.
 class EasyTable<ROW> extends StatefulWidget {
 //TODO handle negative values
 //TODO allow null and use defaults?
@@ -34,6 +37,7 @@ class EasyTable<ROW> extends StatefulWidget {
       int? visibleRowsCount,
       this.scrollbarMargin = 0,
       this.scrollbarThickness = 10,
+      this.cellContentHeight = 32,
       this.scrollbarRadius = Radius.zero})
       : _visibleRowsCount = visibleRowsCount == null || visibleRowsCount > 0
             ? visibleRowsCount
@@ -53,6 +57,7 @@ class EasyTable<ROW> extends StatefulWidget {
   final double scrollbarMargin;
   final double scrollbarThickness;
   final Radius? scrollbarRadius;
+  final double cellContentHeight;
 
   double get scrollbarSize => scrollbarMargin * 2 + scrollbarThickness;
 
@@ -129,7 +134,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
         EasyTableThemeData theme = EasyTableTheme.of(context);
         HeaderThemeData headerTheme = theme.header;
 
-        double rowHeight = theme.cell.contentHeight;
+        double rowHeight = widget.cellContentHeight;
         if (theme.cell.padding != null) {
           rowHeight += theme.cell.padding!.vertical;
         }
@@ -181,6 +186,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
               columnsMetrics: columnsMetrics,
               contentWidth: contentWidth,
               rowHeight: rowHeight,
+              cellContentHeight: widget.cellContentHeight,
               columnFilter: ColumnFilter.all,
               scrollBehavior: scrollBehavior);
         } else {
@@ -251,6 +257,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
               columnsMetrics: unpinnedColumnsMetrics,
               contentWidth: contentWidth,
               rowHeight: rowHeight,
+              cellContentHeight: widget.cellContentHeight,
               columnFilter:
                   hasPinned ? ColumnFilter.unpinnedOnly : ColumnFilter.all,
               scrollBehavior: scrollBehavior);
@@ -270,6 +277,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
                   columnsMetrics: pinnedColumnsMetrics,
                   contentWidth: pinnedContentWidth,
                   rowHeight: rowHeight,
+                  cellContentHeight: widget.cellContentHeight,
                   columnFilter: ColumnFilter.pinnedOnly,
                   scrollBehavior: scrollBehavior)
               : null;
@@ -340,7 +348,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
             hasHeader: true,
             scrollbarWidth: scrollbarWidth,
             rowHeight: rowHeight,
-            pinnedWidth: pinnedContentWidth);
+            pinnedWidth: pinnedWidth);
 
         return ClipRect(child: layout);
       }

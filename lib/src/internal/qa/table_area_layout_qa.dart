@@ -89,6 +89,7 @@ class _HomePageState extends State<HomePage> {
         columnsFit: false,
         rowHeight: rowHeight,
         contentWidth: contentWidth,
+        cellContentHeight: 32,
         setHoveredRowIndex: _setHoveredRowIndex,
         hoveredRowIndex: 0,
         onRowTap: null,

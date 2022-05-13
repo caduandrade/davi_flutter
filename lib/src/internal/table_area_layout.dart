@@ -163,7 +163,6 @@ class _TableLayoutRenderBox extends RenderBox
     }
   }
 
-  //TODO replace by parent constraints?
   double? _width;
 
   set width(double? value) {

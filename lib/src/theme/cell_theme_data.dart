@@ -9,8 +9,7 @@ class CellThemeData {
       {this.textStyle,
       this.nullValueColor,
       this.alignment = CellThemeDataDefaults.alignment,
-      this.padding = CellThemeDataDefaults.padding,
-      this.contentHeight = CellThemeDataDefaults.contentHeight});
+      this.padding = CellThemeDataDefaults.padding});
 
   /// Defines the text style.
   final TextStyle? textStyle;
@@ -18,10 +17,6 @@ class CellThemeData {
   /// The cell padding.
   /// The default value is defined by [CellThemeDataDefaults.padding].
   final EdgeInsets? padding;
-
-  /// The cell content height.
-  /// The default value is defined by [CellThemeDataDefaults.contentHeight].
-  final double contentHeight;
 
   final AlignmentGeometry alignment;
 
@@ -34,7 +29,6 @@ class CellThemeData {
           runtimeType == other.runtimeType &&
           textStyle == other.textStyle &&
           padding == other.padding &&
-          contentHeight == other.contentHeight &&
           alignment == other.alignment &&
           nullValueColor == other.nullValueColor;
 
@@ -42,13 +36,11 @@ class CellThemeData {
   int get hashCode =>
       textStyle.hashCode ^
       padding.hashCode ^
-      contentHeight.hashCode ^
       alignment.hashCode ^
       nullValueColor.hashCode;
 }
 
 class CellThemeDataDefaults {
-  static const double contentHeight = 32;
   static const EdgeInsets padding = EdgeInsets.only(left: 8, right: 8);
   static const AlignmentGeometry alignment = Alignment.centerLeft;
 }

@@ -1,3 +1,8 @@
+## 1.3.0
+
+* Improved renderer performance.
+* `CellThemeData.contentHeight` moved to `EasyTable.cellContentHeight`.
+
 ## 1.2.0
 
 * Scrollbars without overlapping table contents.

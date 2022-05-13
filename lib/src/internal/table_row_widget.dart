@@ -26,7 +26,8 @@ class TableRowWidget<ROW> extends StatelessWidget {
       required this.hoveredRowIndex,
       required this.onRowTap,
       required this.onRowSecondaryTap,
-      required this.onRowDoubleTap})
+      required this.onRowDoubleTap,
+      required this.contentHeight})
       : super(key: key);
 
   final EasyTableModel<ROW> model;
@@ -39,6 +40,7 @@ class TableRowWidget<ROW> extends StatelessWidget {
   final RowDoubleTapCallback<ROW>? onRowDoubleTap;
   final SetHoveredRowIndex setHoveredRowIndex;
   final TableRowLayoutDelegate delegate;
+  final double contentHeight;
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +72,7 @@ class TableRowWidget<ROW> extends StatelessWidget {
             cellPadding: theme.cell.padding,
             columns: columns,
             columnsMetrics: columnsMetrics,
-            contentHeight: theme.cell.contentHeight,
+            contentHeight: contentHeight,
             nullValueColor: nullValueColor));
 
     if (hoveredRowIndex == visibleRowIndex && theme.row.hoveredColor != null) {
