@@ -17,7 +17,7 @@ class CellThemeData {
 
   /// The cell padding.
   /// The default value is defined by [CellThemeDataDefaults.padding].
-  final EdgeInsetsGeometry? padding;
+  final EdgeInsets? padding;
 
   /// The cell content height.
   /// The default value is defined by [CellThemeDataDefaults.contentHeight].
@@ -49,6 +49,6 @@ class CellThemeData {
 
 class CellThemeDataDefaults {
   static const double contentHeight = 32;
-  static const EdgeInsetsGeometry padding = EdgeInsets.only(left: 8, right: 8);
+  static const EdgeInsets padding = EdgeInsets.only(left: 8, right: 8);
   static const AlignmentGeometry alignment = Alignment.centerLeft;
 }

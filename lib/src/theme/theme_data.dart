@@ -39,6 +39,14 @@ class EasyTableThemeData {
   final Color topCornerColor;
   final Color bottomCornerBorderColor;
   final Color bottomCornerColor;
+
+  double get rowHeight {
+    double height = cell.contentHeight + rowDividerThickness;
+    if (cell.padding != null) {
+      height += cell.padding!.vertical;
+    }
+    return height;
+  }
 }
 
 class EasyTableThemeDataDefaults {

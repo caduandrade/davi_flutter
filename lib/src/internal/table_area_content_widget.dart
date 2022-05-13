@@ -1,6 +1,10 @@
+import 'dart:collection';
+
+import 'package:easy_table/src/column.dart';
 import 'package:easy_table/src/internal/columns_metrics.dart';
 import 'package:easy_table/src/internal/divider_painter.dart';
 import 'package:easy_table/src/internal/set_hovered_row_index.dart';
+import 'package:easy_table/src/internal/table_row_layout_delegate.dart';
 import 'package:easy_table/src/internal/table_row_widget.dart';
 import 'package:easy_table/src/model.dart';
 import 'package:easy_table/src/row_callbacks.dart';
@@ -12,7 +16,52 @@ import 'package:meta/meta.dart';
 /// [EasyTable] area content widget.
 @internal
 class TableAreaContentWidget<ROW> extends StatelessWidget {
-  const TableAreaContentWidget(
+  factory TableAreaContentWidget(
+      {Key? key,
+      required EasyTableModel<ROW> model,
+      required ScrollController verticalScrollController,
+      required ScrollController horizontalScrollController,
+      required ColumnsMetrics columnsMetrics,
+      required double contentWidth,
+      required double rowHeight,
+      required bool columnsFit,
+      required RowTapCallback<ROW>? onRowTap,
+      required RowTapCallback<ROW>? onRowSecondaryTap,
+      required RowDoubleTapCallback<ROW>? onRowDoubleTap,
+      required int? hoveredRowIndex,
+      required SetHoveredRowIndex setHoveredRowIndex,
+      required ScrollBehavior scrollBehavior,
+      required ColumnFilter columnFilter}) {
+    List<EasyTableColumn<ROW>> columns = [];
+    for (int columnIndex = 0;
+        columnIndex < model.columnsLength;
+        columnIndex++) {
+      EasyTableColumn<ROW> column = model.columnAt(columnIndex);
+      if (columnFilter == ColumnFilter.all ||
+          (columnFilter == ColumnFilter.unpinnedOnly &&
+              column.pinned == false) ||
+          (columnFilter == ColumnFilter.pinnedOnly && column.pinned)) {
+        columns.add(column);
+      }
+    }
+    return TableAreaContentWidget._(
+        model: model,
+        verticalScrollController: verticalScrollController,
+        horizontalScrollController: horizontalScrollController,
+        columnsMetrics: columnsMetrics,
+        contentWidth: contentWidth,
+        rowHeight: rowHeight,
+        columnsFit: columnsFit,
+        onRowTap: onRowTap,
+        onRowSecondaryTap: onRowSecondaryTap,
+        onRowDoubleTap: onRowDoubleTap,
+        hoveredRowIndex: hoveredRowIndex,
+        setHoveredRowIndex: setHoveredRowIndex,
+        scrollBehavior: scrollBehavior,
+        columns: UnmodifiableListView<EasyTableColumn<ROW>>(columns));
+  }
+
+  const TableAreaContentWidget._(
       {Key? key,
       required this.model,
       required this.verticalScrollController,
@@ -25,7 +74,7 @@ class TableAreaContentWidget<ROW> extends StatelessWidget {
       required this.onRowSecondaryTap,
       required this.onRowDoubleTap,
       required this.hoveredRowIndex,
-      required this.columnFilter,
+      required this.columns,
       required this.setHoveredRowIndex,
       required this.scrollBehavior})
       : super(key: key);
@@ -42,22 +91,27 @@ class TableAreaContentWidget<ROW> extends StatelessWidget {
   final RowDoubleTapCallback<ROW>? onRowDoubleTap;
   final int? hoveredRowIndex;
   final SetHoveredRowIndex setHoveredRowIndex;
-  final ColumnFilter columnFilter;
+  final UnmodifiableListView<EasyTableColumn<ROW>> columns;
   final ScrollBehavior scrollBehavior;
 
   @override
   Widget build(BuildContext context) {
     EasyTableThemeData theme = EasyTableTheme.of(context);
 
+    TableRowLayoutDelegate delegate =
+        TableRowLayoutDelegate(columnsMetrics: columnsMetrics);
+
     Widget list = ListView.builder(
         controller: verticalScrollController,
         itemExtent: rowHeight,
         itemBuilder: (context, index) {
           return TableRowWidget<ROW>(
+              key: ValueKey(index),
               model: model,
+              delegate: delegate,
               columnsMetrics: columnsMetrics,
+              columns: columns,
               visibleRowIndex: index,
-              columnFilter: columnFilter,
               onRowTap: onRowTap,
               onRowSecondaryTap: onRowSecondaryTap,
               onRowDoubleTap: onRowDoubleTap,

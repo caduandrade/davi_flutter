@@ -1,8 +1,10 @@
-import 'package:easy_table/src/cell.dart';
+import 'dart:collection';
+
 import 'package:easy_table/src/column.dart';
 import 'package:easy_table/src/internal/columns_metrics.dart';
-import 'package:easy_table/src/internal/horizontal_layout.dart';
 import 'package:easy_table/src/internal/set_hovered_row_index.dart';
+import 'package:easy_table/src/internal/table_row_layout_delegate.dart';
+import 'package:easy_table/src/internal/table_row_painter.dart';
 import 'package:easy_table/src/model.dart';
 import 'package:easy_table/src/row_callbacks.dart';
 import 'package:easy_table/src/theme/theme.dart';
@@ -15,10 +17,11 @@ import 'package:meta/meta.dart';
 class TableRowWidget<ROW> extends StatelessWidget {
   const TableRowWidget(
       {Key? key,
+      required this.delegate,
       required this.model,
       required this.columnsMetrics,
       required this.visibleRowIndex,
-      required this.columnFilter,
+      required this.columns,
       required this.setHoveredRowIndex,
       required this.hoveredRowIndex,
       required this.onRowTap,
@@ -29,32 +32,46 @@ class TableRowWidget<ROW> extends StatelessWidget {
   final EasyTableModel<ROW> model;
   final ColumnsMetrics columnsMetrics;
   final int visibleRowIndex;
-  final ColumnFilter columnFilter;
+  final UnmodifiableListView<EasyTableColumn<ROW>> columns;
   final int? hoveredRowIndex;
   final RowTapCallback<ROW>? onRowTap;
   final RowTapCallback<ROW>? onRowSecondaryTap;
   final RowDoubleTapCallback<ROW>? onRowDoubleTap;
   final SetHoveredRowIndex setHoveredRowIndex;
+  final TableRowLayoutDelegate delegate;
 
   @override
   Widget build(BuildContext context) {
-    EasyTableThemeData theme = EasyTableTheme.of(context);
-    ROW row = model.visibleRowAt(visibleRowIndex);
-    List<Widget> children = [];
-    for (int columnIndex = 0;
-        columnIndex < model.columnsLength;
-        columnIndex++) {
-      EasyTableColumn<ROW> column = model.columnAt(columnIndex);
-      if (columnFilter == ColumnFilter.all ||
-          (columnFilter == ColumnFilter.unpinnedOnly &&
-              column.pinned == false) ||
-          (columnFilter == ColumnFilter.pinnedOnly && column.pinned)) {
-        children.add(_buildCell(context: context, column: column));
+    final EasyTableThemeData theme = EasyTableTheme.of(context);
+
+    final ROW row = model.visibleRowAt(visibleRowIndex);
+
+    Widget? rowWidget;
+    List<LayoutId> children = [];
+    for (int columnIndex = 0; columnIndex < columns.length; columnIndex++) {
+      final EasyTableColumn<ROW> column = columns[columnIndex];
+      if (column.cellBuilder != null) {
+        Widget cell = ClipRect(child: column.cellBuilder!(context, row));
+        children.add(LayoutId(id: columnIndex, child: cell));
       }
     }
-
-    Widget rowWidget =
-        HorizontalLayout(columnsMetrics: columnsMetrics, children: children);
+    if (children.isNotEmpty) {
+      rowWidget =
+          CustomMultiChildLayout(delegate: delegate, children: children);
+    }
+    Color? nullValueColor;
+    if (theme.cell.nullValueColor != null) {
+      nullValueColor = theme.cell.nullValueColor!(visibleRowIndex);
+    }
+    rowWidget = CustomPaint(
+        child: rowWidget,
+        painter: TableRowPainter<ROW>(
+            row: row,
+            cellPadding: theme.cell.padding,
+            columns: columns,
+            columnsMetrics: columnsMetrics,
+            contentHeight: theme.cell.contentHeight,
+            nullValueColor: nullValueColor));
 
     if (hoveredRowIndex == visibleRowIndex && theme.row.hoveredColor != null) {
       rowWidget = Container(
@@ -90,58 +107,5 @@ class TableRowWidget<ROW> extends StatelessWidget {
     }
 
     return rowWidget;
-  }
-
-  /// Builds a table cell
-  Widget _buildCell(
-      {required BuildContext context, required EasyTableColumn<ROW> column}) {
-    EasyTableThemeData theme = EasyTableTheme.of(context);
-    Widget? cell;
-
-    final ROW row = model.visibleRowAt(visibleRowIndex);
-
-    if (column.cellBuilder != null) {
-      cell = column.cellBuilder!(context, row);
-    } else {
-      final TextStyle? textStyle = theme.cell.textStyle;
-      bool nullValue = false;
-      if (column.stringValueMapper != null) {
-        final String? value = column.stringValueMapper!(row);
-        if (value != null) {
-          cell = EasyTableCell.string(value: value, textStyle: textStyle);
-        } else {
-          nullValue = true;
-        }
-      } else if (column.intValueMapper != null) {
-        final int? value = column.intValueMapper!(row);
-        if (value != null) {
-          cell = EasyTableCell.int(value: value, textStyle: textStyle);
-        } else {
-          nullValue = true;
-        }
-      } else if (column.doubleValueMapper != null) {
-        final double? value = column.doubleValueMapper!(row);
-        if (value != null) {
-          cell = EasyTableCell.double(
-              value: value,
-              fractionDigits: column.fractionDigits,
-              textStyle: textStyle);
-        } else {
-          nullValue = true;
-        }
-      } else if (column.objectValueMapper != null) {
-        final Object? value = column.objectValueMapper!(row);
-        if (value != null) {
-          return EasyTableCell.string(
-              value: value.toString(), textStyle: textStyle);
-        } else {
-          nullValue = true;
-        }
-      }
-      if (nullValue && theme.cell.nullValueColor != null) {
-        cell = Container(color: theme.cell.nullValueColor!(visibleRowIndex));
-      }
-    }
-    return ClipRect(child: cell);
   }
 }

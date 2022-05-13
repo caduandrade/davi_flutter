@@ -1,5 +1,8 @@
+import 'dart:collection';
+
 import 'package:easy_table/src/column.dart';
 import 'package:easy_table/src/internal/columns_metrics.dart';
+import 'package:easy_table/src/internal/table_row_layout_delegate.dart';
 import 'package:easy_table/src/internal/table_row_widget.dart';
 import 'package:easy_table/src/model.dart';
 import 'package:flutter/material.dart';
@@ -53,15 +56,19 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     const ColumnFilter columnFilter = ColumnFilter.all;
-
+    UnmodifiableListView<EasyTableColumn<_Row>> columns =
+        UnmodifiableListView([column1, column2, column3, column4]);
     ColumnsMetrics columnsMetrics = ColumnsMetrics.resizable(
         model: model, columnDividerThickness: 1, filter: columnFilter);
     //TODO danger: columnsMetrics and TableRowWidget with different column filter.
+    TableRowLayoutDelegate delegate =
+        TableRowLayoutDelegate(columnsMetrics: columnsMetrics);
     Widget widget = TableRowWidget<_Row>(
         model: model,
+        delegate: delegate,
         columnsMetrics: columnsMetrics,
         visibleRowIndex: 0,
-        columnFilter: columnFilter,
+        columns: columns,
         setHoveredRowIndex: _setHoveredRowIndex,
         hoveredRowIndex: 0,
         onRowTap: null,

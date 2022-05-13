@@ -72,6 +72,17 @@ class ColumnsMetrics {
 
   final List<LayoutWidth> columns;
   final List<LayoutWidth> dividers;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ColumnsMetrics &&
+          runtimeType == other.runtimeType &&
+          columns == other.columns &&
+          dividers == other.dividers;
+
+  @override
+  int get hashCode => columns.hashCode ^ dividers.hashCode;
 }
 
 class LayoutWidth {
@@ -79,4 +90,15 @@ class LayoutWidth {
 
   final double width;
   final double x;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is LayoutWidth &&
+          runtimeType == other.runtimeType &&
+          width == other.width &&
+          x == other.x;
+
+  @override
+  int get hashCode => width.hashCode ^ x.hashCode;
 }

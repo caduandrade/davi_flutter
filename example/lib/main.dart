@@ -91,6 +91,7 @@ class _HomePageState extends State<HomePage> {
       body = EasyTableTheme(
           child: _table(),
           data: EasyTableThemeData(
+              rowDividerThickness: 1,
               row: RowThemeData(hoveredColor: (index) => Colors.blue[50])));
     }
 
