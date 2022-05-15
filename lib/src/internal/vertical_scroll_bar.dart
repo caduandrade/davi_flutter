@@ -29,9 +29,8 @@ class VerticalScrollBar extends StatelessWidget {
                     thumbColor: MaterialStateProperty.all(theme.thumbColor))),
             child: Scrollbar(
                 thickness: theme.thickness,
-                hoverThickness: theme.thickness,
                 radius: theme.radius,
-                isAlwaysShown: true,
+                thumbVisibility: true,
                 child: ScrollConfiguration(
                     behavior: scrollBehavior,
                     child: ListView.builder(

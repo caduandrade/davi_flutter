@@ -1,5 +1,4 @@
 import 'package:easy_table/src/cell_icon.dart';
-import 'package:flutter/material.dart';
 
 /// Signature for a function that maps an [int] value of a row.
 ///

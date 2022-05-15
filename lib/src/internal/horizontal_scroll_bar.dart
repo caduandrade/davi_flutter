@@ -51,9 +51,8 @@ class HorizontalScrollBar extends StatelessWidget {
                         MaterialStateProperty.all(scrollTheme.thumbColor))),
             child: Scrollbar(
                 thickness: scrollTheme.thickness,
-                hoverThickness: scrollTheme.thickness,
                 radius: scrollTheme.radius,
-                isAlwaysShown: true,
+                thumbVisibility: true,
                 child: ScrollConfiguration(
                     behavior: scrollBehavior,
                     child: SingleChildScrollView(
