@@ -2,7 +2,6 @@ library easy_table;
 
 export 'src/table.dart';
 export 'src/model.dart';
-export 'src/cell.dart';
 export 'src/theme/row_color.dart';
 export 'src/cell_builder.dart';
 export 'src/value_mapper.dart';

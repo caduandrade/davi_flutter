@@ -15,18 +15,18 @@ class TableRowPainter<ROW> extends CustomPainter {
       required this.columns,
       required this.contentHeight,
       required this.nullValueColor,
-      required this.cellPadding,
-      required this.cellTextStyle,
-      required this.cellAlignment});
+      required this.themePadding,
+      required this.themeTextStyle,
+      required this.themeAlignment});
 
   final UnmodifiableListView<EasyTableColumn<ROW>> columns;
   final ColumnsMetrics columnsMetrics;
   final ROW row;
   final double contentHeight;
-  final EdgeInsets? cellPadding;
-  final Alignment cellAlignment;
+  final EdgeInsets? themePadding;
+  final Alignment themeAlignment;
   final Color? nullValueColor;
-  final TextStyle? cellTextStyle;
+  final TextStyle? themeTextStyle;
   final TextPainter _defaultTextPainter =
       TextPainter(textDirection: TextDirection.ltr, ellipsis: '...');
 
@@ -39,8 +39,9 @@ class TableRowPainter<ROW> extends CustomPainter {
         continue;
       }
 
-      Alignment alignment = column.cellAlignment ?? cellAlignment;
-      TextStyle? textStyle = column.cellTextStyle ?? cellTextStyle;
+      Alignment alignment = column.cellAlignment ?? themeAlignment;
+      TextStyle? textStyle = column.cellTextStyle ?? themeTextStyle;
+      EdgeInsets? padding = column.cellPadding ?? themePadding;
 
       final LayoutWidth layoutWidth = columnsMetrics.columns[columnIndex];
       final double left = layoutWidth.x;
@@ -87,6 +88,9 @@ class TableRowPainter<ROW> extends CustomPainter {
             if (cellStyle.background != null) {
               background = cellStyle.background;
             }
+            if (cellStyle.padding != null) {
+              padding = cellStyle.padding;
+            }
           }
           textPainter = _defaultTextPainter
             ..text = TextSpan(text: value, style: textStyle);
@@ -112,6 +116,7 @@ class TableRowPainter<ROW> extends CustomPainter {
             size: size,
             layoutWidth: layoutWidth,
             alignment: alignment,
+            padding: padding,
             textPainter: textPainter);
       } else if (nullValueColor != null) {
         _paintBackground(
@@ -154,14 +159,15 @@ class TableRowPainter<ROW> extends CustomPainter {
       required Canvas canvas,
       required Size size,
       required TextPainter textPainter,
-      required Alignment alignment}) {
+      required Alignment alignment,
+      required EdgeInsets? padding}) {
     double width = layoutWidth.width;
-    if (cellPadding != null) {
-      left = math.min(left + width, left + cellPadding!.left);
-      top = math.min(top + size.height, top + cellPadding!.top);
-      right = math.max(left, right - cellPadding!.right);
-      bottom = math.max(top, bottom - cellPadding!.bottom);
-      width = math.max(0, width - cellPadding!.horizontal);
+    if (padding != null) {
+      left = math.min(left + width, left + padding!.left);
+      top = math.min(top + size.height, top + padding!.top);
+      right = math.max(left, right - padding!.right);
+      bottom = math.max(top, bottom - padding!.bottom);
+      width = math.max(0, width - padding!.horizontal);
     }
     textPainter.layout(maxWidth: width);
     if (alignment.y == 0) {

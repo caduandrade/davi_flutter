@@ -5,7 +5,9 @@
 * `EasyTableColumn`
   * Added the `iconValueMapper` and `cellStyleBuilder` attributes.
   * `textStyle` refactored to `headerTextStyle` and `cellTextStyle`.
+  * `padding` refactored to `headerPadding` and `cellPadding`.
   * `alignment` to `headerAlignment` and `cellAlignment`.
+* `EasyTableCell` has been removed.
 
 ## 1.2.0
 

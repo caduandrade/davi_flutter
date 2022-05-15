@@ -1,6 +1,8 @@
 import 'dart:collection';
 
+import 'package:easy_table/src/cell_style.dart';
 import 'package:easy_table/src/column.dart';
+import 'package:easy_table/src/internal/cell.dart';
 import 'package:easy_table/src/internal/columns_metrics.dart';
 import 'package:easy_table/src/internal/set_hovered_row_index.dart';
 import 'package:easy_table/src/internal/table_row_layout_delegate.dart';
@@ -53,7 +55,24 @@ class TableRowWidget<ROW> extends StatelessWidget {
     for (int columnIndex = 0; columnIndex < columns.length; columnIndex++) {
       final EasyTableColumn<ROW> column = columns[columnIndex];
       if (column.cellBuilder != null) {
-        Widget cell = ClipRect(child: column.cellBuilder!(context, row));
+        Widget cellChild = column.cellBuilder!(context, row);
+        EdgeInsets? padding;
+        Alignment? alignment;
+        Color? background;
+        if (column.cellStyleBuilder != null) {
+          CellStyle? cellStyle = column.cellStyleBuilder!(row);
+          if (cellStyle != null) {
+            background = cellStyle.background;
+            alignment = cellStyle.alignment;
+            padding = cellStyle.padding;
+          }
+        }
+        Widget cell = ClipRect(
+            child: EasyTableCell(
+                child: cellChild,
+                alignment: alignment,
+                padding: padding,
+                background: background));
         children.add(LayoutId(id: columnIndex, child: cell));
       }
     }
@@ -69,9 +88,9 @@ class TableRowWidget<ROW> extends StatelessWidget {
         child: rowWidget,
         painter: TableRowPainter<ROW>(
             row: row,
-            cellPadding: theme.cell.padding,
-            cellAlignment: theme.cell.alignment,
-            cellTextStyle: theme.cell.textStyle,
+            themePadding: theme.cell.padding,
+            themeAlignment: theme.cell.alignment,
+            themeTextStyle: theme.cell.textStyle,
             columns: columns,
             columnsMetrics: columnsMetrics,
             contentHeight: contentHeight,

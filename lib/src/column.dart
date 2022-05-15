@@ -41,7 +41,8 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
       bool sortable = true,
       bool resizable = true,
       bool pinned = false,
-      EdgeInsets? padding,
+      EdgeInsets? headerPadding,
+      EdgeInsets? cellPadding,
       Alignment? headerAlignment,
       Alignment? cellAlignment,
       TextStyle? cellTextStyle,
@@ -139,7 +140,8 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
         iconValueMapper: iconValue,
         sortable: sortable,
         resizable: resizable,
-        padding: padding,
+        headerPadding: headerPadding,
+        cellPadding: cellPadding,
         headerAlignment: headerAlignment,
         cellAlignment: cellAlignment,
         headerTextStyle: headerTextStyle,
@@ -152,7 +154,8 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
       required double width,
       required double weight,
       this.name,
-      this.padding,
+      this.headerPadding,
+      this.cellPadding,
       this.headerAlignment,
       this.cellAlignment,
       this.headerTextStyle,
@@ -177,7 +180,8 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
   final dynamic id;
   final String? name;
   final Widget? leading;
-  final EdgeInsets? padding;
+  final EdgeInsets? cellPadding;
+  final EdgeInsets? headerPadding;
   final Alignment? headerAlignment;
   final Alignment? cellAlignment;
   final TextStyle? cellTextStyle;

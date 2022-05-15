@@ -62,7 +62,7 @@ class _EasyTableHeaderCellState extends State<EasyTableHeaderCell> {
         axis: Axis.horizontal,
         children: children,
         crossAlignment: CrossAlignment.stretch);
-    final EdgeInsets? padding = widget.column.padding ?? theme.padding;
+    final EdgeInsets? padding = widget.column.headerPadding ?? theme.padding;
     if (padding != null) {
       header = Padding(padding: padding, child: header);
     }

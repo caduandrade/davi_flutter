@@ -7,8 +7,9 @@ typedef CellStyleBuilder<ROW> = CellStyle? Function(ROW row);
 
 /// Overrides the theme and column style.
 class CellStyle {
-  CellStyle({this.alignment, this.textStyle, this.background});
+  CellStyle({this.alignment, this.textStyle, this.background, this.padding});
 
+  final EdgeInsets? padding;
   final Alignment? alignment;
   final TextStyle? textStyle;
   final Color? background;
