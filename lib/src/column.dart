@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 import 'package:easy_table/src/cell_builder.dart';
+import 'package:easy_table/src/cell_style.dart';
 import 'package:easy_table/src/value_mapper.dart';
 import 'package:flutter/widgets.dart';
 
@@ -42,7 +43,7 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
       bool pinned = false,
       EdgeInsets? padding,
       Alignment? headerAlignment,
-        Alignment? cellAlignment,
+      Alignment? cellAlignment,
       TextStyle? cellTextStyle,
       TextStyle? headerTextStyle,
       Widget? leading,
@@ -52,7 +53,8 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
       EasyTableDoubleValueMapper<ROW>? doubleValue,
       EasyTableStringValueMapper<ROW>? stringValue,
       EasyTableIconValueMapper<ROW>? iconValue,
-      EasyTableObjectValueMapper<ROW>? objectValue}) {
+      EasyTableObjectValueMapper<ROW>? objectValue,
+      CellStyleBuilder<ROW>? cellStyleBuilder}) {
     if (sort == null) {
       if (intValue != null) {
         sort = (a, b) {
@@ -141,7 +143,8 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
         headerAlignment: headerAlignment,
         cellAlignment: cellAlignment,
         headerTextStyle: headerTextStyle,
-        cellTextStyle: cellTextStyle);
+        cellTextStyle: cellTextStyle,
+        cellStyleBuilder: cellStyleBuilder);
   }
 
   EasyTableColumn._(
@@ -151,7 +154,7 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
       this.name,
       this.padding,
       this.headerAlignment,
-        this.cellAlignment,
+      this.cellAlignment,
       this.headerTextStyle,
       this.cellTextStyle,
       this.fractionDigits,
@@ -165,7 +168,8 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
       this.doubleValueMapper,
       this.objectValueMapper,
       required this.resizable,
-      required bool sortable})
+      required bool sortable,
+      required this.cellStyleBuilder})
       : _width = width,
         _weight = weight,
         _sortable = sortable;
@@ -187,6 +191,7 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
   final EasyTableStringValueMapper<ROW>? stringValueMapper;
   final EasyTableObjectValueMapper<ROW>? objectValueMapper;
   final EasyTableIconValueMapper<ROW>? iconValueMapper;
+  final CellStyleBuilder<ROW>? cellStyleBuilder;
   final bool _sortable;
   double _width;
   double _weight;

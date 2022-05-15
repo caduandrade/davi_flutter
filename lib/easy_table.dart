@@ -16,3 +16,4 @@ export 'src/theme/row_theme_data.dart';
 export 'src/column.dart';
 export 'src/row_hover_listener.dart';
 export 'src/row_callbacks.dart';
+export 'src/cell_style.dart';

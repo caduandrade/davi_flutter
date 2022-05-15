@@ -71,6 +71,7 @@ class TableRowWidget<ROW> extends StatelessWidget {
             row: row,
             cellPadding: theme.cell.padding,
             cellAlignment: theme.cell.alignment,
+            cellTextStyle: theme.cell.textStyle,
             columns: columns,
             columnsMetrics: columnsMetrics,
             contentHeight: contentHeight,

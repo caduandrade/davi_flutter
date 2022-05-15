@@ -1,5 +1,6 @@
 import 'dart:collection';
 import 'dart:math' as math;
+import 'package:easy_table/src/cell_style.dart';
 import 'package:easy_table/src/column.dart';
 import 'package:easy_table/src/internal/columns_metrics.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +15,7 @@ class TableRowPainter<ROW> extends CustomPainter {
       required this.contentHeight,
       required this.nullValueColor,
       required this.cellPadding,
+      required this.cellTextStyle,
       required this.cellAlignment});
 
   final UnmodifiableListView<EasyTableColumn<ROW>> columns;
@@ -23,6 +25,7 @@ class TableRowPainter<ROW> extends CustomPainter {
   final EdgeInsets? cellPadding;
   final Alignment cellAlignment;
   final Color? nullValueColor;
+  final TextStyle? cellTextStyle;
   final TextPainter _defaultTextPainter =
       TextPainter(textDirection: TextDirection.ltr, ellipsis: '...');
 
@@ -36,6 +39,7 @@ class TableRowPainter<ROW> extends CustomPainter {
       }
 
       Alignment alignment = column.cellAlignment ?? cellAlignment;
+      TextStyle? textStyle = column.cellTextStyle ?? cellTextStyle;
 
       final LayoutWidth layoutWidth = columnsMetrics.columns[columnIndex];
       final double left = layoutWidth.x;
@@ -57,7 +61,20 @@ class TableRowPainter<ROW> extends CustomPainter {
       } else {
         String? value = _stringValue(column: column);
         if (value != null) {
-          textPainter = _defaultTextPainter..text = TextSpan(text: value);
+          CellStyle? cellStyle;
+          if (column.cellStyleBuilder != null) {
+            cellStyle = column.cellStyleBuilder!(row);
+          }
+          if (cellStyle != null) {
+            if (cellStyle.alignment != null) {
+              alignment = cellStyle.alignment!;
+            }
+            if (cellStyle.textStyle != null) {
+              textStyle = cellStyle.textStyle;
+            }
+          }
+          textPainter = _defaultTextPainter
+            ..text = TextSpan(text: value, style: textStyle);
         }
       }
 

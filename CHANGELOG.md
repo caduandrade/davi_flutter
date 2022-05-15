@@ -3,7 +3,7 @@
 * Improved renderer performance.
 * `CellThemeData.contentHeight` moved to `EasyTable.cellContentHeight`.
 * `EasyTableColumn`
-  * Added the `iconValueMapper` attribute.
+  * Added the `iconValueMapper` and `cellStyleBuilder` attributes.
   * `textStyle` refactored to `headerTextStyle` and `cellTextStyle`.
   * `alignment` to `headerAlignment` and `cellAlignment`.
 
