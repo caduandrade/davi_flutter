@@ -4,6 +4,7 @@
 * `CellThemeData.contentHeight` moved to `EasyTable.cellContentHeight`.
 * `EasyTableColumn`
   * Adding the `iconValueMapper` attribute.
+  * `textStyle` refactored to `headerTextStyle` and `cellTextStyle`.
 
 ## 1.2.0
 

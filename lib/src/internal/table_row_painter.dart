@@ -13,13 +13,15 @@ class TableRowPainter<ROW> extends CustomPainter {
       required this.columns,
       required this.contentHeight,
       required this.nullValueColor,
-      required this.cellPadding});
+      required this.cellPadding,
+      required this.cellAlignment});
 
   final UnmodifiableListView<EasyTableColumn<ROW>> columns;
   final ColumnsMetrics columnsMetrics;
   final ROW row;
   final double contentHeight;
   final EdgeInsets? cellPadding;
+  final Alignment cellAlignment;
   final Color? nullValueColor;
   final TextPainter _defaultTextPainter =
       TextPainter(textDirection: TextDirection.ltr, ellipsis: '...');
@@ -64,6 +66,7 @@ class TableRowPainter<ROW> extends CustomPainter {
             top: top,
             bottom: bottom,
             canvas: canvas,
+            size: size,
             layoutWidth: layoutWidth,
             textPainter: textPainter);
       } else {
@@ -100,17 +103,31 @@ class TableRowPainter<ROW> extends CustomPainter {
       required double bottom,
       required LayoutWidth layoutWidth,
       required Canvas canvas,
+      required Size size,
       required TextPainter textPainter}) {
     double width = layoutWidth.width;
     if (cellPadding != null) {
-      left += cellPadding!.left;
-      top += cellPadding!.top;
-      right -= cellPadding!.right;
-      bottom -= cellPadding!.bottom;
-      width -= cellPadding!.horizontal;
+      left = math.min(left + width, left + cellPadding!.left);
+      top = math.min(top + size.height, top + cellPadding!.top);
+      right = math.max(left, right - cellPadding!.right);
+      bottom = math.max(top, bottom - cellPadding!.bottom);
+      width = math.max(0, width - cellPadding!.horizontal);
     }
     textPainter.layout(maxWidth: width);
-    top += math.max(0, (contentHeight - textPainter.height) * 0.5);
+    if (cellAlignment.y == 0) {
+      // vertical center
+      top += math.max(0, (contentHeight - textPainter.height) * 0.5);
+    } else if (cellAlignment.y == 1) {
+      // bottom
+      top += math.max(0, contentHeight - textPainter.height);
+    }
+    if (cellAlignment.x == 0) {
+      // horizontal center
+      top += math.max(0, (contentHeight - textPainter.height) * 0.5);
+    } else if (cellAlignment.y == 1) {
+      // right
+      top += math.max(0, contentHeight - textPainter.height);
+    }
     canvas.save();
     canvas.clipRect(Rect.fromLTRB(left, top, right, bottom));
     textPainter.paint(canvas, Offset(left, top));

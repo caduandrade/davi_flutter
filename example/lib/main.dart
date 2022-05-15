@@ -51,11 +51,11 @@ class _HomePageState extends State<HomePage> {
         EasyTableColumn(
             name: 'Class', width: 110, stringValue: (row) => row.cls),
         EasyTableColumn(name: 'Level', width: 70, intValue: (row) => row.level),
-        EasyTableColumn(
+        /*EasyTableColumn(
             name: 'Skills',
             width: 100,
             cellBuilder: (context, row) =>
-                EasyTableCell(child: SkillsWidget(skills: row.skills))),
+                EasyTableCell(child: SkillsWidget(skills: row.skills))),*/
         EasyTableColumn(
             name: 'Strength', width: 80, intValue: (row) => row.strength),
         EasyTableColumn(

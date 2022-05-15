@@ -70,6 +70,7 @@ class TableRowWidget<ROW> extends StatelessWidget {
         painter: TableRowPainter<ROW>(
             row: row,
             cellPadding: theme.cell.padding,
+            cellAlignment: theme.cell.alignment,
             columns: columns,
             columnsMetrics: columnsMetrics,
             contentHeight: contentHeight,

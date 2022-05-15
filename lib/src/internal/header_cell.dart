@@ -98,7 +98,7 @@ class _EasyTableHeaderCellState extends State<EasyTableHeaderCell> {
     if (widget.column.name != null) {
       text = Text(widget.column.name!,
           overflow: TextOverflow.ellipsis,
-          style: widget.column.textStyle ?? theme.headerCell.textStyle);
+          style: widget.column.headerTextStyle ?? theme.headerCell.textStyle);
     }
     return Align(
         child: text,

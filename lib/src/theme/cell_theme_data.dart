@@ -18,7 +18,7 @@ class CellThemeData {
   /// The default value is defined by [CellThemeDataDefaults.padding].
   final EdgeInsets? padding;
 
-  final AlignmentGeometry alignment;
+  final Alignment alignment;
 
   final EasyTableRowColor? nullValueColor;
 
@@ -42,5 +42,5 @@ class CellThemeData {
 
 class CellThemeDataDefaults {
   static const EdgeInsets padding = EdgeInsets.only(left: 8, right: 8);
-  static const AlignmentGeometry alignment = Alignment.centerLeft;
+  static const Alignment alignment = Alignment.centerLeft;
 }

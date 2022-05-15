@@ -41,8 +41,9 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
       bool resizable = true,
       bool pinned = false,
       EdgeInsets? padding,
-      AlignmentGeometry? alignment,
-      TextStyle? textStyle,
+      Alignment? alignment,
+      TextStyle? cellTextStyle,
+      TextStyle? headerTextStyle,
       Widget? leading,
       EasyTableCellBuilder<ROW>? cellBuilder,
       EasyTableColumnSort<ROW>? sort,
@@ -137,7 +138,8 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
         resizable: resizable,
         padding: padding,
         alignment: alignment,
-        textStyle: textStyle);
+        headerTextStyle: headerTextStyle,
+        cellTextStyle: cellTextStyle);
   }
 
   EasyTableColumn._(
@@ -147,7 +149,8 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
       this.name,
       this.padding,
       this.alignment,
-      this.textStyle,
+      this.headerTextStyle,
+      this.cellTextStyle,
       this.fractionDigits,
       this.cellBuilder,
       this.leading,
@@ -168,8 +171,9 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
   final String? name;
   final Widget? leading;
   final EdgeInsets? padding;
-  final AlignmentGeometry? alignment;
-  final TextStyle? textStyle;
+  final Alignment? alignment;
+  final TextStyle? cellTextStyle;
+  final TextStyle? headerTextStyle;
   final int? fractionDigits;
   final bool pinned;
   final EasyTableCellBuilder<ROW>? cellBuilder;
@@ -186,7 +190,6 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
   double get weight => _weight;
 
   set weight(double value) {
-    //TODO resizeAreaWidth should be smaller
     value = math.max(1, value);
     if (_weight != value) {
       _weight = value;
@@ -197,7 +200,6 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
   double get width => _width;
 
   set width(double value) {
-    //TODO resizeAreaWidth should be smaller
     value = math.max(16, value);
     if (_width != value) {
       _width = value;
