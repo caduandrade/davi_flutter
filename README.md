@@ -2,7 +2,7 @@
 
 # Easy Table
 
-![](https://caduandrade.github.io/easy_table_flutter/easy_table_v3.png)
+![](https://caduandrade.github.io/easy_table_flutter/easy_table_v4.png)
 
 * Ready for a large number of data. Building cells on demand.
 * Focused on Web/Desktop Applications.
