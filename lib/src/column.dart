@@ -11,9 +11,9 @@ typedef EasyTableColumnSort<ROW> = int Function(ROW a, ROW b);
 /// The [name] argument is optional and is used by the default
 /// cell header widget.
 ///
-/// The optional value mappings [intValue], [doubleValue], [stringValue] and
-/// [objectValue] allows automatic cell configuration by identifying
-/// and displaying data types in the row object.
+/// The optional value mappings [intValue], [doubleValue], [stringValue],
+/// [iconValue] and [objectValue] allows automatic cell configuration
+/// by identifying and displaying data types in the row object.
 ///
 /// The [cellBuilder] builds a cell widget for each row in that column.
 /// A default [cellBuilder] will be used if the column has any value
@@ -49,6 +49,7 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
       EasyTableIntValueMapper<ROW>? intValue,
       EasyTableDoubleValueMapper<ROW>? doubleValue,
       EasyTableStringValueMapper<ROW>? stringValue,
+      EasyTableIconValueMapper<ROW>? iconValue,
       EasyTableObjectValueMapper<ROW>? objectValue}) {
     if (sort == null) {
       if (intValue != null) {
@@ -131,6 +132,7 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
         intValueMapper: intValue,
         doubleValueMapper: doubleValue,
         objectValueMapper: objectValue,
+        iconValueMapper: iconValue,
         sortable: sortable,
         resizable: resizable,
         padding: padding,
@@ -153,6 +155,7 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
       required this.pinned,
       this.stringValueMapper,
       this.intValueMapper,
+      this.iconValueMapper,
       this.doubleValueMapper,
       this.objectValueMapper,
       required this.resizable,
@@ -175,6 +178,7 @@ class EasyTableColumn<ROW> extends ChangeNotifier {
   final EasyTableDoubleValueMapper<ROW>? doubleValueMapper;
   final EasyTableStringValueMapper<ROW>? stringValueMapper;
   final EasyTableObjectValueMapper<ROW>? objectValueMapper;
+  final EasyTableIconValueMapper<ROW>? iconValueMapper;
   final bool _sortable;
   double _width;
   double _weight;
