@@ -178,12 +178,10 @@ void _onRowDoubleTap(BuildContext context, Person person) {
 * Collapsed rows
 * Header grouping
 * Row selection
-* Custom headers
 * Cell edition
 * Column reorder
 * Pinned column on right?
 * Filter
-* More theming options
 * And everything else, the sky is the limit
 
 ## Support this project
