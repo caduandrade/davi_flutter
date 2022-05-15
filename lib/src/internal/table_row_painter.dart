@@ -1,5 +1,6 @@
 import 'dart:collection';
 import 'dart:math' as math;
+import 'package:easy_table/src/cell_icon.dart';
 import 'package:easy_table/src/cell_style.dart';
 import 'package:easy_table/src/column.dart';
 import 'package:easy_table/src/internal/columns_metrics.dart';
@@ -50,13 +51,20 @@ class TableRowPainter<ROW> extends CustomPainter {
       TextPainter? textPainter;
 
       if (column.iconValueMapper != null) {
-        IconData? icon = column.iconValueMapper!(row);
-        if (icon != null) {
+        CellIcon? cellIcon = column.iconValueMapper!(row);
+        if (cellIcon != null) {
+          if (cellIcon.alignment != null) {
+            alignment = cellIcon.alignment!;
+          }
+          IconData icon = cellIcon.icon;
           textPainter = TextPainter(
               textDirection: TextDirection.ltr,
               text: TextSpan(
                   text: String.fromCharCode(icon.codePoint),
-                  style: TextStyle(fontFamily: icon.fontFamily, fontSize: 26)));
+                  style: TextStyle(
+                      fontFamily: icon.fontFamily,
+                      fontSize: cellIcon.size,
+                      color: cellIcon.color)));
         }
       } else {
         String? value = _stringValue(column: column);

@@ -45,7 +45,9 @@ class _HomePageState extends State<HomePage> {
         EasyTableColumn(
             name: 'Gender',
             width: 80,
-            iconValue: (row) => row.male ? Icons.male : Icons.female),
+            iconValue: (row) => row.male
+                ? CellIcon(icon: Icons.male, color: Colors.blue[700]!)
+                : CellIcon(icon: Icons.female, color: Colors.pink[600]!)),
         EasyTableColumn(
             name: 'Race', width: 100, stringValue: (row) => row.race),
         EasyTableColumn(
