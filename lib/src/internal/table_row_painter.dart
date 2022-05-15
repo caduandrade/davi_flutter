@@ -163,11 +163,11 @@ class TableRowPainter<ROW> extends CustomPainter {
       required EdgeInsets? padding}) {
     double width = layoutWidth.width;
     if (padding != null) {
-      left = math.min(left + width, left + padding!.left);
-      top = math.min(top + size.height, top + padding!.top);
-      right = math.max(left, right - padding!.right);
-      bottom = math.max(top, bottom - padding!.bottom);
-      width = math.max(0, width - padding!.horizontal);
+      left = math.min(left + width, left + padding.left);
+      top = math.min(top + size.height, top + padding.top);
+      right = math.max(left, right - padding.right);
+      bottom = math.max(top, bottom - padding.bottom);
+      width = math.max(0, width - padding.horizontal);
     }
     textPainter.layout(maxWidth: width);
     if (alignment.y == 0) {

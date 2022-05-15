@@ -16,7 +16,8 @@
 
 * [Get started](#get-started)
 * [Columns fit](#columns-fit)
-* [Custom cell](#custom-cell)
+* [Column style](#column-style)
+* [Custom cell widget](#custom-cell-widget)
 * [Row callbacks](#row-callbacks)
 * Null values
   * [Cell color](#cell-color)
@@ -51,43 +52,54 @@ Widget build(BuildContext context) {
 }
 ```
 
-![](https://caduandrade.github.io/easy_table_flutter/get_started_v3.png)
+![](https://caduandrade.github.io/easy_table_flutter/get_started_v4.png)
 
 ## Columns fit
 
 ```dart
-  _model = EasyTableModel<Person>(rows: [
-    Person('Landon', 19),
-    Person('Sari', 22),
-    Person('Julian', 37),
-    Person('Carey', 39),
-    Person('Cadu', 43),
-    Person('Delmar', 72)
-  ], columns: [
-    EasyTableColumn(name: 'Name', weight: 5, stringValue: (row) => row.name),
-    EasyTableColumn(name: 'Age', weight: 1, intValue: (row) => row.age)
-  ]);
+    _model = EasyTableModel<Person>(rows: rows, columns: [
+      EasyTableColumn(name: 'Name', weight: 5, stringValue: (row) => row.name),
+      EasyTableColumn(name: 'Age', weight: 1, intValue: (row) => row.age)
+    ]);
 ```
 
 ```dart
   EasyTable<Person>(_model, columnsFit: true);
 ```
 
-![](https://caduandrade.github.io/easy_table_flutter/columns_fit_v2.png)
+![](https://caduandrade.github.io/easy_table_flutter/columns_fit_v3.png)
 
-## Custom cell
+## Column style
 
 ```dart
-_model = EasyTableModel<Person>(rows: rows, columns: [
-  EasyTableColumn(name: 'Name', stringValue: (row) => row.name),
-  EasyTableColumn(
-      name: 'Rate',
-      width: 150,
-      cellBuilder: (context, row) => StarsWidget(stars: row.stars))
-]);
+    _model = EasyTableModel<Person>(rows: rows, columns: [
+      EasyTableColumn(name: 'Name', width: 120, stringValue: (row) => row.name),
+      EasyTableColumn(
+          name: 'Age',
+          width: 120,
+          intValue: (row) => row.age,
+          headerTextStyle: TextStyle(color: Colors.blue[900]!),
+          headerAlignment: Alignment.center,
+          cellAlignment: Alignment.center,
+          cellTextStyle: TextStyle(color: Colors.blue[700]!))
+    ]);
 ```
 
-![](https://caduandrade.github.io/easy_table_flutter/custom_cell_v3.png)
+![](https://caduandrade.github.io/easy_table_flutter/column_style_v1.png)
+
+## Custom cell widget
+
+```dart
+    _model = EasyTableModel<Person>(rows: rows, columns: [
+      EasyTableColumn(name: 'Name', stringValue: (row) => row.name),
+      EasyTableColumn(
+          name: 'Rate',
+          width: 150,
+          cellBuilder: (context, row) => StarsWidget(stars: row.stars))
+    ]);
+```
+
+![](https://caduandrade.github.io/easy_table_flutter/custom_cell_widget_v1.png)
 
 ## Row callbacks
 
@@ -159,7 +171,7 @@ void _onRowDoubleTap(BuildContext context, Person person) {
     ]);
 ```
 
-![](https://caduandrade.github.io/easy_table_flutter/pinned_column_v2.png)
+![](https://caduandrade.github.io/easy_table_flutter/pinned_column_v3.png)
 
 ## TODO
 
