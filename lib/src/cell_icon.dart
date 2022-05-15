@@ -4,12 +4,14 @@ import 'package:flutter/material.dart';
 class CellIcon {
   CellIcon(
       {required this.icon,
-      this.size = 22,
+      this.size = 24,
       this.color = Colors.black,
-      this.alignment});
+      this.alignment,
+      this.background});
 
   final IconData icon;
   final double size;
   final Color color;
+  final Color? background;
   final Alignment? alignment;
 }

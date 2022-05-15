@@ -49,12 +49,16 @@ class TableRowPainter<ROW> extends CustomPainter {
       final double bottom = top + size.height;
 
       TextPainter? textPainter;
+      Color? background;
 
       if (column.iconValueMapper != null) {
         CellIcon? cellIcon = column.iconValueMapper!(row);
         if (cellIcon != null) {
           if (cellIcon.alignment != null) {
             alignment = cellIcon.alignment!;
+          }
+          if (cellIcon.background != null) {
+            background = cellIcon.background;
           }
           IconData icon = cellIcon.icon;
           textPainter = TextPainter(
@@ -80,6 +84,9 @@ class TableRowPainter<ROW> extends CustomPainter {
             if (cellStyle.textStyle != null) {
               textStyle = cellStyle.textStyle;
             }
+            if (cellStyle.background != null) {
+              background = cellStyle.background;
+            }
           }
           textPainter = _defaultTextPainter
             ..text = TextSpan(text: value, style: textStyle);
@@ -87,6 +94,15 @@ class TableRowPainter<ROW> extends CustomPainter {
       }
 
       if (textPainter != null) {
+        if (background != null) {
+          _paintBackground(
+              left: left,
+              right: right,
+              top: top,
+              bottom: bottom,
+              canvas: canvas,
+              color: background);
+        }
         _paintTextPainter(
             left: left,
             right: right,
@@ -97,9 +113,14 @@ class TableRowPainter<ROW> extends CustomPainter {
             layoutWidth: layoutWidth,
             alignment: alignment,
             textPainter: textPainter);
-      } else {
-        _paintNull(
-            left: left, right: right, top: top, bottom: bottom, canvas: canvas);
+      } else if (nullValueColor != null) {
+        _paintBackground(
+            left: left,
+            right: right,
+            top: top,
+            bottom: bottom,
+            canvas: canvas,
+            color: nullValueColor!);
       }
     }
   }
@@ -163,16 +184,15 @@ class TableRowPainter<ROW> extends CustomPainter {
     canvas.restore();
   }
 
-  void _paintNull(
+  void _paintBackground(
       {required double left,
       required double top,
       required double right,
       required double bottom,
-      required Canvas canvas}) {
-    if (nullValueColor != null) {
-      Paint paint = Paint()..color = nullValueColor!;
-      canvas.drawRect(Rect.fromLTRB(left, top, right, bottom), paint);
-    }
+      required Canvas canvas,
+      required Color color}) {
+    Paint paint = Paint()..color = color;
+    canvas.drawRect(Rect.fromLTRB(left, top, right, bottom), paint);
   }
 
   @override
