@@ -35,6 +35,8 @@ class TableRowPainter<ROW> extends CustomPainter {
         continue;
       }
 
+      Alignment alignment = column.cellAlignment ?? cellAlignment;
+
       final LayoutWidth layoutWidth = columnsMetrics.columns[columnIndex];
       final double left = layoutWidth.x;
       const double top = 0;
@@ -68,6 +70,7 @@ class TableRowPainter<ROW> extends CustomPainter {
             canvas: canvas,
             size: size,
             layoutWidth: layoutWidth,
+            alignment: alignment,
             textPainter: textPainter);
       } else {
         _paintNull(
@@ -104,7 +107,8 @@ class TableRowPainter<ROW> extends CustomPainter {
       required LayoutWidth layoutWidth,
       required Canvas canvas,
       required Size size,
-      required TextPainter textPainter}) {
+      required TextPainter textPainter,
+      required Alignment alignment}) {
     double width = layoutWidth.width;
     if (cellPadding != null) {
       left = math.min(left + width, left + cellPadding!.left);
@@ -114,19 +118,19 @@ class TableRowPainter<ROW> extends CustomPainter {
       width = math.max(0, width - cellPadding!.horizontal);
     }
     textPainter.layout(maxWidth: width);
-    if (cellAlignment.y == 0) {
+    if (alignment.y == 0) {
       // vertical center
       top += math.max(0, (contentHeight - textPainter.height) * 0.5);
-    } else if (cellAlignment.y == 1) {
+    } else if (alignment.y == 1) {
       // bottom
       top += math.max(0, contentHeight - textPainter.height);
     }
-    if (cellAlignment.x == 0) {
+    if (alignment.x == 0) {
       // horizontal center
-      top += math.max(0, (contentHeight - textPainter.height) * 0.5);
-    } else if (cellAlignment.y == 1) {
+      left += math.max(0, (width - textPainter.width) * 0.5);
+    } else if (alignment.x == 1) {
       // right
-      top += math.max(0, contentHeight - textPainter.height);
+      left += math.max(0, width - textPainter.width);
     }
     canvas.save();
     canvas.clipRect(Rect.fromLTRB(left, top, right, bottom));

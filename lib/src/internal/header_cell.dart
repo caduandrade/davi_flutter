@@ -102,7 +102,7 @@ class _EasyTableHeaderCellState extends State<EasyTableHeaderCell> {
     }
     return Align(
         child: text,
-        alignment: widget.column.alignment ?? theme.headerCell.alignment);
+        alignment: widget.column.headerAlignment ?? theme.headerCell.alignment);
   }
 
   Widget _resizeWidget({required BuildContext context, required resizing}) {
