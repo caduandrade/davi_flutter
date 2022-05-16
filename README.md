@@ -186,7 +186,7 @@ EasyTableTheme(
                 RowThemeData(dividerThickness: 2, dividerColor: Colors.green)));
 ```
 
-![](https://caduandrade.github.io/easy_table_flutter/theme_divider_v1.png)
+![](https://caduandrade.github.io/easy_table_flutter/theme_divider_v2.png)
 
 ## TODO
 
