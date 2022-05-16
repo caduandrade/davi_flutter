@@ -3,6 +3,7 @@
 * `EasyTableThemeData.rowDividerThickness` moved to `RowThemeData.dividerThickness`
 * `RowThemeData.columnDividerColor` moved to `EasyTableThemeData.columnDividerColor`
 * Added `RowThemeData.dividerColor`
+* Removed `EasyTable.scrollbarMargin` `EasyTable.scrollbarThickness` (already exists in `TableScrollThemeData`)
 
 ## 1.3.0
 

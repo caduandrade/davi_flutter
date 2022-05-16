@@ -37,7 +37,7 @@ class _HomePageState extends State<HomePage> {
       EasyTableModel<Character> model =
           EasyTableModel(rows: characters, columns: [
         EasyTableColumn(
-            pinned: true,
+            // pinned: true,
             leading: const Icon(Icons.person, size: 16),
             name: 'Name',
             width: 100,

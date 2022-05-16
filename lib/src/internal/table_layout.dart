@@ -17,6 +17,7 @@ class TableLayout extends MultiChildRenderObjectWidget {
       required double scrollbarWidth,
       required int? visibleRowsCount,
       required double? pinnedWidth,
+      required double scrollbarHeight,
       required bool hasHeader}) {
     List<Widget> children = [unpinnedWidget, scrollbarWidget];
     if (pinnedWidget != null) {
@@ -30,7 +31,8 @@ class TableLayout extends MultiChildRenderObjectWidget {
         headerHeight: headerHeight,
         visibleRowsCount: visibleRowsCount,
         hasHeader: hasHeader,
-        pinnedWidth: pinnedWidth);
+        pinnedWidth: pinnedWidth,
+        scrollbarHeight: scrollbarHeight);
   }
 
   TableLayout._(
@@ -41,6 +43,7 @@ class TableLayout extends MultiChildRenderObjectWidget {
       required this.visibleRowsCount,
       required this.hasHeader,
       required this.pinnedWidth,
+      required this.scrollbarHeight,
       required List<Widget> children})
       : super(key: key, children: children);
 
@@ -49,6 +52,7 @@ class TableLayout extends MultiChildRenderObjectWidget {
   final double scrollbarWidth;
   final double? pinnedWidth;
   final bool hasHeader;
+  final double scrollbarHeight;
 
   /// Calculates the height based on the number of visible lines.
   /// It can be used within an unbounded height layout.
@@ -62,7 +66,8 @@ class TableLayout extends MultiChildRenderObjectWidget {
         visibleRowsCount: visibleRowsCount,
         headerHeight: headerHeight,
         pinnedWidth: pinnedWidth,
-        hasHeader: hasHeader);
+        hasHeader: hasHeader,
+        scrollbarHeight: scrollbarHeight);
   }
 
   @override
@@ -80,7 +85,8 @@ class TableLayout extends MultiChildRenderObjectWidget {
       ..rowHeight = rowHeight
       ..visibleRowsCount = visibleRowsCount
       ..hasHeader = hasHeader
-      ..pinnedWidth = pinnedWidth;
+      ..pinnedWidth = pinnedWidth
+      ..scrollbarHeight = scrollbarHeight;
   }
 }
 
@@ -111,13 +117,15 @@ class _TableLayoutRenderBox extends RenderBox
       required double headerHeight,
       required int? visibleRowsCount,
       required bool hasHeader,
-      required double? pinnedWidth})
+      required double? pinnedWidth,
+      required double scrollbarHeight})
       : _rowHeight = rowHeight,
         _headerHeight = headerHeight,
         _scrollbarWidth = scrollbarWidth,
         _visibleRowsCount = visibleRowsCount,
         _hasHeader = hasHeader,
-        _pinnedWidth = pinnedWidth;
+        _pinnedWidth = pinnedWidth,
+        _scrollbarHeight = scrollbarHeight;
 
   int? _visibleRowsCount;
 
@@ -169,6 +177,15 @@ class _TableLayoutRenderBox extends RenderBox
   set pinnedWidth(double? value) {
     if (_pinnedWidth != value) {
       _pinnedWidth = value;
+      markNeedsLayout();
+    }
+  }
+
+  double _scrollbarHeight;
+
+  set scrollbarHeight(double value) {
+    if (_scrollbarHeight != value) {
+      _scrollbarHeight = value;
       markNeedsLayout();
     }
   }
@@ -261,7 +278,8 @@ class _TableLayoutRenderBox extends RenderBox
       // unbounded height
       double x = 0;
       final double contentHeight = _visibleRowsCount! * _rowHeight;
-      final double height = (_hasHeader ? _headerHeight : 0) + contentHeight;
+      final double height =
+          (_hasHeader ? _headerHeight : 0) + contentHeight + _scrollbarHeight;
 
       // pinned
       if (pinnedRenderBox != null) {

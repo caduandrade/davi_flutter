@@ -35,8 +35,6 @@ class EasyTable<ROW> extends StatefulWidget {
       this.onRowDoubleTap,
       this.columnsFit = false,
       int? visibleRowsCount,
-      this.scrollbarMargin = 0,
-      this.scrollbarThickness = 10,
       this.cellContentHeight = 32,
       this.scrollbarRadius = Radius.zero})
       : _visibleRowsCount = visibleRowsCount == null || visibleRowsCount > 0
@@ -54,12 +52,8 @@ class EasyTable<ROW> extends StatefulWidget {
   final RowTapCallback<ROW>? onRowSecondaryTap;
   final bool columnsFit;
   final int? _visibleRowsCount;
-  final double scrollbarMargin;
-  final double scrollbarThickness;
   final Radius? scrollbarRadius;
   final double cellContentHeight;
-
-  double get scrollbarSize => scrollbarMargin * 2 + scrollbarThickness;
 
   int? get visibleRowsCount => _visibleRowsCount;
 
@@ -132,6 +126,9 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
       if (widget.model != null) {
         EasyTableModel<ROW> model = widget.model!;
         EasyTableThemeData theme = EasyTableTheme.of(context);
+
+        double scrollbarSize = theme.scroll.margin * 2 + theme.scroll.thickness;
+
         HeaderThemeData headerTheme = theme.header;
 
         double rowHeight = widget.cellContentHeight;
@@ -142,7 +139,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
 
         final double headerHeight = headerTheme.height;
         final double scrollbarWidth =
-            math.min(widget.scrollbarSize, constraints.maxWidth);
+            math.min(scrollbarSize, constraints.maxWidth);
         final double maxWidth =
             math.max(0, constraints.maxWidth - scrollbarWidth);
 
@@ -192,21 +189,21 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
         } else {
           final int pinnedColumnsLength = model.pinnedColumnsLength;
           final bool hasPinned = pinnedColumnsLength > 0;
-
           pinnedContentWidth = model.pinnedColumnsWidth +
               (pinnedColumnsLength * theme.columnDividerThickness);
           if (hasPinned) {
+            bool needPinnedHorizontalScroll = pinnedContentWidth > maxWidth;
             pinnedWidth = math.min(pinnedContentWidth, maxWidth);
-            contentWidth = math.max(
-                maxWidth - pinnedWidth,
-                model.unpinnedColumnsWidth +
-                    (model.unpinnedColumnsLength *
-                        theme.columnDividerThickness));
+            contentWidth = model.unpinnedColumnsWidth +
+                (model.unpinnedColumnsLength * theme.columnDividerThickness);
+            bool needUnpinnedHorizontalScroll =
+                contentWidth > maxWidth - pinnedWidth;
+            contentWidth = math.max(maxWidth - pinnedWidth, contentWidth);
           } else {
-            contentWidth = math.max(
-                maxWidth,
-                model.allColumnsWidth +
-                    (model.columnsLength * theme.columnDividerThickness));
+            contentWidth = model.allColumnsWidth +
+                (model.columnsLength * theme.columnDividerThickness);
+            bool needUnpinnedHorizontalScroll = contentWidth > maxWidth;
+            contentWidth = math.max(maxWidth, contentWidth);
           }
 
           ColumnsMetrics unpinnedColumnsMetrics = ColumnsMetrics.resizable(
@@ -294,7 +291,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
                   scrollBehavior: scrollBehavior,
                   pinned: true),
               rowHeight: rowHeight,
-              scrollbarHeight: widget.scrollbarSize,
+              scrollbarHeight: scrollbarSize,
               headerHeight: headerHeight,
               visibleRowsCount: widget.visibleRowsCount,
               width: pinnedWidth);
@@ -310,7 +307,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
             rowHeight: rowHeight,
             headerHeight: headerHeight,
             visibleRowsCount: widget.visibleRowsCount,
-            scrollbarHeight: widget.scrollbarSize,
+            scrollbarHeight: scrollbarSize,
             width: null);
 
         Widget verticalScrollArea = TableAreaLayout(
@@ -336,7 +333,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
             rowHeight: rowHeight,
             headerHeight: headerHeight,
             visibleRowsCount: widget.visibleRowsCount,
-            scrollbarHeight: widget.scrollbarSize,
+            scrollbarHeight: scrollbarSize,
             width: null);
 
         Widget layout = TableLayout(
@@ -348,7 +345,8 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
             hasHeader: true,
             scrollbarWidth: scrollbarWidth,
             rowHeight: rowHeight,
-            pinnedWidth: pinnedWidth);
+            pinnedWidth: pinnedWidth,
+            scrollbarHeight: scrollbarSize);
 
         return ClipRect(child: layout);
       }
