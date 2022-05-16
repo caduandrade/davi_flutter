@@ -8,12 +8,14 @@ class RowThemeData {
   const RowThemeData({
     this.color,
     this.hoveredColor,
-    this.columnDividerColor = RowThemeDataDefaults.columnDividerColor,
+    this.dividerThickness = RowThemeDataDefaults.dividerThickness,
+    this.dividerColor = RowThemeDataDefaults.dividerColor,
   });
 
   final EasyTableRowColor? color;
   final EasyTableRowColor? hoveredColor;
-  final Color? columnDividerColor;
+  final double dividerThickness;
+  final Color? dividerColor;
 
   @override
   bool operator ==(Object other) =>
@@ -22,11 +24,11 @@ class RowThemeData {
           runtimeType == other.runtimeType &&
           color == other.color &&
           hoveredColor == other.hoveredColor &&
-          columnDividerColor == other.columnDividerColor;
+          dividerColor == other.dividerColor;
 
   @override
   int get hashCode =>
-      color.hashCode ^ hoveredColor.hashCode ^ columnDividerColor.hashCode;
+      color.hashCode ^ hoveredColor.hashCode ^ dividerColor.hashCode;
 
   static EasyTableRowColor rowZebraColor({Color? evenColor, Color? oddColor}) {
     return (rowIndex) {
@@ -42,5 +44,6 @@ class RowThemeData {
 }
 
 class RowThemeDataDefaults {
-  static const Color columnDividerColor = Colors.grey;
+  static const Color dividerColor = Colors.grey;
+  static const double dividerThickness = 0;
 }

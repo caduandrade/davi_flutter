@@ -13,7 +13,7 @@ class EasyTableThemeData {
   const EasyTableThemeData(
       {this.columnDividerThickness =
           EasyTableThemeDataDefaults.columnDividerThickness,
-      this.rowDividerThickness = EasyTableThemeDataDefaults.rowDividerThickness,
+      this.columnDividerColor = EasyTableThemeDataDefaults.columnDividerColor,
       this.decoration = EasyTableThemeDataDefaults.tableDecoration,
       this.topCornerBorderColor =
           EasyTableThemeDataDefaults.topCornerBorderColor,
@@ -28,7 +28,7 @@ class EasyTableThemeData {
       this.scroll = const TableScrollThemeData()});
 
   final double columnDividerThickness;
-  final double rowDividerThickness;
+  final Color? columnDividerColor;
   final BoxDecoration? decoration;
   final CellThemeData cell;
   final HeaderThemeData header;
@@ -43,7 +43,6 @@ class EasyTableThemeData {
 
 class EasyTableThemeDataDefaults {
   static const double columnDividerThickness = 1;
-  static const double rowDividerThickness = 0;
   static const BoxDecoration tableDecoration = BoxDecoration(
       border: Border(
           bottom: BorderSide(color: Colors.grey),
@@ -60,4 +59,5 @@ class EasyTableThemeDataDefaults {
   static const Color bottomCornerBorderColor = Colors.grey;
   static const Color topCornerColor = Color(0xFFE0E0E0);
   static const Color topCornerBorderColor = Colors.grey;
+  static const Color columnDividerColor = Colors.grey;
 }

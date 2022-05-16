@@ -1,3 +1,9 @@
+## 1.4.0
+
+* `EasyTableThemeData.rowDividerThickness` moved to `RowThemeData.dividerThickness`
+* `RowThemeData.columnDividerColor` moved to `EasyTableThemeData.columnDividerColor`
+* Added `RowThemeData.dividerColor`
+
 ## 1.3.0
 
 * Improved renderer performance.

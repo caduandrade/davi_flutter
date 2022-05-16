@@ -138,7 +138,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
         if (theme.cell.padding != null) {
           rowHeight += theme.cell.padding!.vertical;
         }
-        rowHeight += theme.rowDividerThickness;
+        rowHeight += theme.row.dividerThickness;
 
         final double headerHeight = headerTheme.height;
         final double scrollbarWidth =

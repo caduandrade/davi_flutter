@@ -123,10 +123,14 @@ class TableRowWidget<ROW> extends StatelessWidget {
         child: rowWidget,
         onEnter: (event) => setHoveredRowIndex(visibleRowIndex));
 
-    if (theme.rowDividerThickness > 0) {
-      rowWidget = Padding(
+    if (theme.row.dividerThickness > 0 && theme.row.dividerColor != null) {
+      rowWidget = Container(
           child: rowWidget,
-          padding: EdgeInsets.only(bottom: theme.rowDividerThickness));
+          decoration: BoxDecoration(
+              border: Border(
+                  bottom: BorderSide(
+                      width: theme.row.dividerThickness,
+                      color: theme.row.dividerColor!))));
     }
 
     return rowWidget;

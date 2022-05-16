@@ -127,12 +127,12 @@ class TableAreaContentWidget<ROW> extends StatelessWidget {
 
     list = ScrollConfiguration(behavior: scrollBehavior, child: list);
 
-    if (theme.row.columnDividerColor != null) {
+    if (theme.columnDividerColor != null) {
       list = CustomPaint(
           child: list,
           foregroundPainter: DividerPainter(
               columnsMetrics: columnsMetrics,
-              color: theme.row.columnDividerColor!));
+              color: theme.columnDividerColor!));
     }
 
     list =

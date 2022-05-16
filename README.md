@@ -19,9 +19,10 @@
 * [Column style](#column-style)
 * [Custom cell widget](#custom-cell-widget)
 * [Row callbacks](#row-callbacks)
-* Null values
-  * [Cell color](#cell-color)
 * [Pinned column](#pinned-column)
+* Theme
+  * [Null value color](#null-value-color)
+  * [Divider color and thickness](#divider-color-and-thickness)
 * [Support this project](#support-this-project)
 
 ## Get started
@@ -125,9 +126,28 @@ void _onRowDoubleTap(BuildContext context, Person person) {
 }
 ```
 
-## Null values
+## Pinned column
 
-### Cell color
+```dart
+    _model = EasyTableModel(rows: persons, columns: [
+      EasyTableColumn(
+          pinned: true,
+          width: 30,
+          cellBuilder: (BuildContext context, Person row) {
+            return InkWell(
+                child: const Icon(Icons.edit, size: 16),
+                onTap: () => _onEdit(row));
+          }),
+      EasyTableColumn(name: 'Name', width: 120, stringValue: (row) => row.name),
+      EasyTableColumn(name: 'Age', width: 120, intValue: (row) => row.age)
+    ]);
+```
+
+![](https://caduandrade.github.io/easy_table_flutter/pinned_column_v3.png)
+
+## Theme
+
+### Null value color
 
 ```dart
   _model = EasyTableModel<Person>(rows: [
@@ -154,24 +174,19 @@ void _onRowDoubleTap(BuildContext context, Person person) {
 
 ![](https://caduandrade.github.io/easy_table_flutter/null_cell_color_v2.png)
 
-## Pinned column
+### Divider color and thickness
 
 ```dart
-    _model = EasyTableModel(rows: persons, columns: [
-      EasyTableColumn(
-          pinned: true,
-          width: 30,
-          cellBuilder: (BuildContext context, Person row) {
-            return InkWell(
-                child: const Icon(Icons.edit, size: 16),
-                onTap: () => _onEdit(row));
-          }),
-      EasyTableColumn(name: 'Name', width: 120, stringValue: (row) => row.name),
-      EasyTableColumn(name: 'Age', width: 120, intValue: (row) => row.age)
-    ]);
+EasyTableTheme(
+        child: EasyTable<Person>(_model),
+        data: const EasyTableThemeData(
+            columnDividerThickness: 2,
+            columnDividerColor: Colors.blue,
+            row:
+                RowThemeData(dividerThickness: 2, dividerColor: Colors.green)));
 ```
 
-![](https://caduandrade.github.io/easy_table_flutter/pinned_column_v3.png)
+![](https://caduandrade.github.io/easy_table_flutter/theme_divider_v1.png)
 
 ## TODO
 

@@ -88,9 +88,10 @@ class _HomePageState extends State<HomePage> {
     } else {
       body = EasyTableTheme(
           child: _table(),
-          data: EasyTableThemeData(
-              rowDividerThickness: 1,
-              row: RowThemeData(hoveredColor: (index) => Colors.blue[50])));
+          data: const EasyTableThemeData(
+            columnDividerThickness: 2,
+            columnDividerColor: Colors.orange,
+            row: RowThemeData(dividerColor: Colors.pink, dividerThickness: 2)));
     }
 
     return Scaffold(
