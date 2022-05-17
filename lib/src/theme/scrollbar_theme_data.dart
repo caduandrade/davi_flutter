@@ -1,25 +1,27 @@
 import 'package:flutter/material.dart';
 
 /// The [EasyTable] scroll theme.
-/// Defines the configuration of the overall visual [TableScrollThemeData] for a widget subtree within the app.
-class TableScrollThemeData {
+/// Defines the configuration of the overall visual [TableScrollbarThemeData] for a widget subtree within the app.
+class TableScrollbarThemeData {
   /// Builds a theme data.
-  const TableScrollThemeData(
+  const TableScrollbarThemeData(
       {this.radius,
-      this.margin = TableScrollThemeDataDefaults.margin,
-      this.thickness = TableScrollThemeDataDefaults.thickness,
+      this.margin = TableScrollbarThemeDataDefaults.margin,
+      this.thickness = TableScrollbarThemeDataDefaults.thickness,
       this.verticalBorderColor =
-          TableScrollThemeDataDefaults.verticalBorderColor,
-      this.verticalColor = TableScrollThemeDataDefaults.verticalColor,
+          TableScrollbarThemeDataDefaults.verticalBorderColor,
+      this.verticalColor = TableScrollbarThemeDataDefaults.verticalColor,
       this.pinnedHorizontalBorderColor =
-          TableScrollThemeDataDefaults.pinnedHorizontalBorderColor,
+          TableScrollbarThemeDataDefaults.pinnedHorizontalBorderColor,
       this.pinnedHorizontalColor =
-          TableScrollThemeDataDefaults.pinnedHorizontalColor,
+          TableScrollbarThemeDataDefaults.pinnedHorizontalColor,
       this.unpinnedHorizontalBorderColor =
-          TableScrollThemeDataDefaults.unpinnedHorizontalBorderColor,
+          TableScrollbarThemeDataDefaults.unpinnedHorizontalBorderColor,
       this.unpinnedHorizontalColor =
-          TableScrollThemeDataDefaults.unpinnedHorizontalColor,
-      this.thumbColor = TableScrollThemeDataDefaults.thumbColor});
+          TableScrollbarThemeDataDefaults.unpinnedHorizontalColor,
+      this.thumbColor = TableScrollbarThemeDataDefaults.thumbColor,
+      this.horizontalOnlyWhenNeeded =
+          TableScrollbarThemeDataDefaults.horizontalOnlyWhenNeeded});
 
   final Radius? radius;
   final double margin;
@@ -31,9 +33,11 @@ class TableScrollThemeData {
   final Color unpinnedHorizontalBorderColor;
   final Color unpinnedHorizontalColor;
   final Color thumbColor;
+  final bool horizontalOnlyWhenNeeded;
 }
 
-class TableScrollThemeDataDefaults {
+class TableScrollbarThemeDataDefaults {
+  static const horizontalOnlyWhenNeeded = false;
   static const double margin = 0;
   static const double thickness = 10;
   static const Color verticalBorderColor = Colors.grey;

@@ -26,5 +26,5 @@ class TableRowLayoutDelegate extends MultiChildLayoutDelegate {
   }
 
   @override
-  bool shouldRelayout(covariant TableRowLayoutDelegate oldDelegate) => false;
+  bool shouldRelayout(covariant TableRowLayoutDelegate oldDelegate) => true;
 }

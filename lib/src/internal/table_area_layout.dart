@@ -9,26 +9,31 @@ import 'package:meta/meta.dart';
 class TableAreaLayout extends MultiChildRenderObjectWidget {
   factory TableAreaLayout(
       {Key? key,
-      Widget? headerWidget,
+      required Widget? headerWidget,
       required Widget contentWidget,
-      required Widget scrollbarWidget,
+      required Widget? scrollbarWidget,
       required double rowHeight,
       required double headerHeight,
       required double scrollbarHeight,
       required int? visibleRowsCount,
       required double? width}) {
-    List<Widget> children = [contentWidget, scrollbarWidget];
+    List<Widget> children = [];
     if (headerWidget != null) {
-      children.insert(0, headerWidget);
+      children.add(headerWidget);
+    }
+    children.add(contentWidget);
+    if (scrollbarWidget != null) {
+      children.add(scrollbarWidget);
     }
     return TableAreaLayout._(
         key: key,
         children: children,
         rowHeight: rowHeight,
-        scrollbarHeight: scrollbarHeight,
+        scrollbarHeight: scrollbarWidget != null ? scrollbarHeight : 0,
         headerHeight: headerHeight,
         visibleRowsCount: visibleRowsCount,
-        hasHeader: children.length == 3,
+        hasHorizontalScrollbar: scrollbarWidget != null,
+        hasHeader: headerWidget != null,
         width: width);
   }
 
@@ -40,6 +45,7 @@ class TableAreaLayout extends MultiChildRenderObjectWidget {
       required this.visibleRowsCount,
       required this.hasHeader,
       required this.width,
+      required this.hasHorizontalScrollbar,
       required List<Widget> children})
       : super(key: key, children: children);
 
@@ -48,6 +54,7 @@ class TableAreaLayout extends MultiChildRenderObjectWidget {
   final double scrollbarHeight;
   final double? width;
   final bool hasHeader;
+  final bool hasHorizontalScrollbar;
 
   /// Calculates the height based on the number of visible lines.
   /// It can be used within an unbounded height layout.
@@ -61,7 +68,8 @@ class TableAreaLayout extends MultiChildRenderObjectWidget {
         visibleRowsCount: visibleRowsCount,
         headerHeight: headerHeight,
         width: width,
-        hasHeader: hasHeader);
+        hasHeader: hasHeader,
+        hasHorizontalScrollbar: hasHorizontalScrollbar);
   }
 
   @override
@@ -79,6 +87,7 @@ class TableAreaLayout extends MultiChildRenderObjectWidget {
       ..rowHeight = rowHeight
       ..visibleRowsCount = visibleRowsCount
       ..hasHeader = hasHeader
+      ..hasHorizontalScrollbar = hasHorizontalScrollbar
       ..width = width;
   }
 }
@@ -110,12 +119,14 @@ class _TableLayoutRenderBox extends RenderBox
       required double headerHeight,
       required int? visibleRowsCount,
       required bool hasHeader,
+      required bool hasHorizontalScrollbar,
       required double? width})
       : _rowHeight = rowHeight,
         _headerHeight = headerHeight,
         _scrollbarHeight = scrollbarHeight,
         _visibleRowsCount = visibleRowsCount,
         _hasHeader = hasHeader,
+        _hasHorizontalScrollbar = hasHorizontalScrollbar,
         _width = width;
 
   int? _visibleRowsCount;
@@ -150,6 +161,15 @@ class _TableLayoutRenderBox extends RenderBox
   set headerHeight(double value) {
     if (_headerHeight != value) {
       _headerHeight = value;
+      markNeedsLayout();
+    }
+  }
+
+  bool _hasHorizontalScrollbar;
+
+  set hasHorizontalScrollbar(bool value) {
+    if (_hasHorizontalScrollbar != value) {
+      _hasHorizontalScrollbar = value;
       markNeedsLayout();
     }
   }
@@ -199,17 +219,15 @@ class _TableLayoutRenderBox extends RenderBox
     List<RenderBox> children = [];
     visitChildren((child) => children.add(child as RenderBox));
 
-    final RenderBox? headerRenderBox;
-    final RenderBox contentRenderBox;
-    final RenderBox scrollbarRenderBox;
-    if (children.length == 3) {
-      headerRenderBox = children[0];
-      contentRenderBox = children[1];
-      scrollbarRenderBox = children[2];
-    } else {
-      headerRenderBox = null;
-      contentRenderBox = children[0];
-      scrollbarRenderBox = children[1];
+    RenderBox? headerRenderBox;
+    RenderBox contentRenderBox;
+    RenderBox? scrollbarRenderBox;
+    if (_hasHeader) {
+      headerRenderBox = children.removeAt(0);
+    }
+    contentRenderBox = children.removeAt(0);
+    if (_hasHorizontalScrollbar) {
+      scrollbarRenderBox = children.removeAt(0);
     }
 
     final double width = _width != null
@@ -252,14 +270,16 @@ class _TableLayoutRenderBox extends RenderBox
       y += contentHeight;
       availableHeight -= contentHeight;
 
-      scrollbarRenderBox.layout(
-          BoxConstraints(
-              minWidth: width,
-              maxWidth: width,
-              minHeight: scrollbarHeight,
-              maxHeight: scrollbarHeight),
-          parentUsesSize: true);
-      scrollbarRenderBox.tableAreaLayoutParentData().offset = Offset(0, y);
+      if (scrollbarRenderBox != null) {
+        scrollbarRenderBox.layout(
+            BoxConstraints(
+                minWidth: width,
+                maxWidth: width,
+                minHeight: scrollbarHeight,
+                maxHeight: scrollbarHeight),
+            parentUsesSize: true);
+        scrollbarRenderBox.tableAreaLayoutParentData().offset = Offset(0, y);
+      }
 
       size = Size(width, constraints.maxHeight);
     } else {
@@ -293,15 +313,17 @@ class _TableLayoutRenderBox extends RenderBox
       y += contentHeight;
       height += contentHeight;
 
-      scrollbarRenderBox.layout(
-          BoxConstraints(
-              minWidth: width,
-              maxWidth: width,
-              minHeight: _scrollbarHeight,
-              maxHeight: _scrollbarHeight),
-          parentUsesSize: true);
-      scrollbarRenderBox.tableAreaLayoutParentData().offset = Offset(0, y);
-      height += _scrollbarHeight;
+      if (scrollbarRenderBox != null) {
+        scrollbarRenderBox.layout(
+            BoxConstraints(
+                minWidth: width,
+                maxWidth: width,
+                minHeight: _scrollbarHeight,
+                maxHeight: _scrollbarHeight),
+            parentUsesSize: true);
+        scrollbarRenderBox.tableAreaLayoutParentData().offset = Offset(0, y);
+        height += _scrollbarHeight;
+      }
 
       size = Size(width, height);
     }

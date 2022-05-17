@@ -1,4 +1,4 @@
-import 'package:easy_table/src/theme/scroll_theme_data.dart';
+import 'package:easy_table/src/theme/scrollbar_theme_data.dart';
 import 'package:easy_table/src/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
@@ -20,7 +20,7 @@ class VerticalScrollBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    TableScrollThemeData theme = EasyTableTheme.of(context).scroll;
+    TableScrollbarThemeData theme = EasyTableTheme.of(context).scrollbar;
     return Container(
         child: Theme(
             data: ThemeData(

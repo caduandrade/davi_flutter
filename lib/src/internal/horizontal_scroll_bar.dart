@@ -1,4 +1,4 @@
-import 'package:easy_table/src/theme/scroll_theme_data.dart';
+import 'package:easy_table/src/theme/scrollbar_theme_data.dart';
 import 'package:easy_table/src/theme/theme.dart';
 import 'package:easy_table/src/theme/theme_data.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +22,7 @@ class HorizontalScrollBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     EasyTableThemeData theme = EasyTableTheme.of(context);
-    TableScrollThemeData scrollTheme = theme.scroll;
+    TableScrollbarThemeData scrollTheme = theme.scrollbar;
     double width = contentWidth;
     BoxDecoration? decoration;
     if (pinned) {
@@ -43,6 +43,7 @@ class HorizontalScrollBar extends StatelessWidget {
     }
 
     return Container(
+        decoration: decoration,
         child: Theme(
             data: ThemeData(
                 scrollbarTheme: ScrollbarThemeData(
@@ -50,6 +51,7 @@ class HorizontalScrollBar extends StatelessWidget {
                     thumbColor:
                         MaterialStateProperty.all(scrollTheme.thumbColor))),
             child: Scrollbar(
+                controller: scrollController,
                 thickness: scrollTheme.thickness,
                 radius: scrollTheme.radius,
                 thumbVisibility: true,
@@ -58,8 +60,6 @@ class HorizontalScrollBar extends StatelessWidget {
                     child: SingleChildScrollView(
                         child: Container(width: width),
                         controller: scrollController,
-                        scrollDirection: Axis.horizontal)),
-                controller: scrollController)),
-        decoration: decoration);
+                        scrollDirection: Axis.horizontal)))));
   }
 }

@@ -123,234 +123,270 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
     ScrollBehavior scrollBehavior =
         ScrollConfiguration.of(context).copyWith(scrollbars: false);
     Widget table = LayoutBuilder(builder: (context, constraints) {
-      if (widget.model != null) {
-        EasyTableModel<ROW> model = widget.model!;
-        EasyTableThemeData theme = EasyTableTheme.of(context);
+      if (widget.model == null) {
+        return Container();
+      }
 
-        double scrollbarSize = theme.scroll.margin * 2 + theme.scroll.thickness;
+      final EasyTableModel<ROW> model = widget.model!;
+      EasyTableThemeData theme = EasyTableTheme.of(context);
 
-        HeaderThemeData headerTheme = theme.header;
+      final double scrollbarSize =
+          theme.scrollbar.margin * 2 + theme.scrollbar.thickness;
 
-        double rowHeight = widget.cellContentHeight;
-        if (theme.cell.padding != null) {
-          rowHeight += theme.cell.padding!.vertical;
-        }
-        rowHeight += theme.row.dividerThickness;
+      HeaderThemeData headerTheme = theme.header;
 
-        final double headerHeight = headerTheme.height;
-        final double scrollbarWidth =
-            math.min(scrollbarSize, constraints.maxWidth);
-        final double maxWidth =
+      double rowHeight = widget.cellContentHeight;
+      if (theme.cell.padding != null) {
+        rowHeight += theme.cell.padding!.vertical;
+      }
+      rowHeight += theme.row.dividerThickness;
+
+      final double headerHeight = headerTheme.height;
+      final double scrollbarWidth =
+          math.min(scrollbarSize, constraints.maxWidth);
+      final double maxWidth =
+          math.max(0, constraints.maxWidth - scrollbarWidth);
+
+      Widget? unpinnedHeader;
+      Widget? pinnedHeader;
+      Widget unpinnedBody;
+      Widget? pinnedBody;
+      double pinnedWidth = 0;
+      double contentWidth;
+      double pinnedContentWidth = 0;
+      final allowHorizontalScrollbar = !widget.columnsFit;
+      bool needHorizontalScrollbar = !theme.scrollbar.horizontalOnlyWhenNeeded;
+      if (widget.columnsFit) {
+        final bool horizontalScrollbarVisible =
+            allowHorizontalScrollbar && needHorizontalScrollbar;
+        final double availableWidth =
             math.max(0, constraints.maxWidth - scrollbarWidth);
+        contentWidth = math.max(availableWidth, model.allColumnsWidth);
+        ColumnsMetrics columnsMetrics = ColumnsMetrics.columnsFit(
+            model: model,
+            containerWidth: availableWidth,
+            columnDividerThickness: theme.columnDividerThickness);
 
-        Widget? unpinnedHeader;
-        Widget? pinnedHeader;
-        Widget unpinnedBody;
-        Widget? pinnedBody;
-        double pinnedWidth = 0;
-        double contentWidth;
-        double pinnedContentWidth = 0;
-        if (widget.columnsFit) {
-          final double availableWidth =
-              math.max(0, constraints.maxWidth - scrollbarWidth);
-          contentWidth = math.max(availableWidth, model.allColumnsWidth);
-          ColumnsMetrics columnsMetrics = ColumnsMetrics.columnsFit(
-              model: model,
-              containerWidth: availableWidth,
-              columnDividerThickness: theme.columnDividerThickness);
-
-          if (headerHeight > 0) {
-            unpinnedHeader = TableHeaderWidget<ROW>(
-                horizontalScrollController:
-                    _scrolls.unpinnedArea.headerHorizontal,
-                columnsFit: true,
-                model: model,
-                columnsMetrics: columnsMetrics,
-                contentWidth: contentWidth,
-                columnFilter: ColumnFilter.all);
-          }
-          unpinnedBody = TableAreaContentWidget(
-              columnsFit: widget.columnsFit,
+        if (headerHeight > 0) {
+          unpinnedHeader = TableHeaderWidget<ROW>(
               horizontalScrollController:
-                  _scrolls.unpinnedArea.contentHorizontal,
-              verticalScrollController: _scrolls.unpinnedArea.contentVertical,
-              setHoveredRowIndex: _setHoveredRowIndex,
-              hoveredRowIndex: _hoveredRowIndex,
-              onRowTap: widget.onRowTap,
-              onRowSecondaryTap: widget.onRowSecondaryTap,
-              onRowDoubleTap: widget.onRowDoubleTap,
+                  allowHorizontalScrollbar && needHorizontalScrollbar
+                      ? _scrolls.unpinnedArea.headerHorizontal
+                      : null,
+              columnsFit: true,
               model: model,
               columnsMetrics: columnsMetrics,
               contentWidth: contentWidth,
-              rowHeight: rowHeight,
-              cellContentHeight: widget.cellContentHeight,
-              columnFilter: ColumnFilter.all,
-              scrollBehavior: scrollBehavior);
+              columnFilter: ColumnFilter.all);
+        }
+        unpinnedBody = TableAreaContentWidget(
+            columnsFit: widget.columnsFit,
+            horizontalScrollController:
+                allowHorizontalScrollbar && needHorizontalScrollbar
+                    ? _scrolls.unpinnedArea.contentHorizontal
+                    : null,
+            verticalScrollController: _scrolls.unpinnedArea.contentVertical,
+            setHoveredRowIndex: _setHoveredRowIndex,
+            hoveredRowIndex: _hoveredRowIndex,
+            onRowTap: widget.onRowTap,
+            onRowSecondaryTap: widget.onRowSecondaryTap,
+            onRowDoubleTap: widget.onRowDoubleTap,
+            model: model,
+            columnsMetrics: columnsMetrics,
+            contentWidth: contentWidth,
+            rowHeight: rowHeight,
+            cellContentHeight: widget.cellContentHeight,
+            columnFilter: ColumnFilter.all,
+            scrollBehavior: scrollBehavior);
+      } else {
+        final int pinnedColumnsLength = model.pinnedColumnsLength;
+        final bool hasPinned = pinnedColumnsLength > 0;
+        pinnedContentWidth = model.pinnedColumnsWidth +
+            (pinnedColumnsLength * theme.columnDividerThickness);
+        if (hasPinned) {
+          bool needPinnedHorizontalScroll = pinnedContentWidth > maxWidth;
+          pinnedWidth = math.min(pinnedContentWidth, maxWidth);
+          contentWidth = model.unpinnedColumnsWidth +
+              (model.unpinnedColumnsLength * theme.columnDividerThickness);
+          bool needUnpinnedHorizontalScroll =
+              contentWidth > maxWidth - pinnedWidth;
+          contentWidth = math.max(maxWidth - pinnedWidth, contentWidth);
+          if (theme.scrollbar.horizontalOnlyWhenNeeded) {
+            needHorizontalScrollbar =
+                needPinnedHorizontalScroll || needUnpinnedHorizontalScroll;
+          }
         } else {
-          final int pinnedColumnsLength = model.pinnedColumnsLength;
-          final bool hasPinned = pinnedColumnsLength > 0;
-          pinnedContentWidth = model.pinnedColumnsWidth +
-              (pinnedColumnsLength * theme.columnDividerThickness);
-          if (hasPinned) {
-            bool needPinnedHorizontalScroll = pinnedContentWidth > maxWidth;
-            pinnedWidth = math.min(pinnedContentWidth, maxWidth);
-            contentWidth = model.unpinnedColumnsWidth +
-                (model.unpinnedColumnsLength * theme.columnDividerThickness);
-            bool needUnpinnedHorizontalScroll =
-                contentWidth > maxWidth - pinnedWidth;
-            contentWidth = math.max(maxWidth - pinnedWidth, contentWidth);
-          } else {
-            contentWidth = model.allColumnsWidth +
-                (model.columnsLength * theme.columnDividerThickness);
-            bool needUnpinnedHorizontalScroll = contentWidth > maxWidth;
-            contentWidth = math.max(maxWidth, contentWidth);
+          contentWidth = model.allColumnsWidth +
+              (model.columnsLength * theme.columnDividerThickness);
+          if (theme.scrollbar.horizontalOnlyWhenNeeded) {
+            needHorizontalScrollbar = contentWidth > maxWidth;
           }
+          contentWidth = math.max(maxWidth, contentWidth);
+        }
 
-          ColumnsMetrics unpinnedColumnsMetrics = ColumnsMetrics.resizable(
-              model: model,
-              columnDividerThickness: theme.columnDividerThickness,
-              filter: hasPinned ? ColumnFilter.unpinnedOnly : ColumnFilter.all);
+        final bool horizontalScrollbarVisible =
+            allowHorizontalScrollbar && needHorizontalScrollbar;
 
-          ColumnsMetrics? pinnedColumnsMetrics = hasPinned
-              ? ColumnsMetrics.resizable(
-                  model: model,
-                  columnDividerThickness: theme.columnDividerThickness,
-                  filter: ColumnFilter.pinnedOnly)
-              : null;
+        ColumnsMetrics unpinnedColumnsMetrics = ColumnsMetrics.resizable(
+            model: model,
+            columnDividerThickness: theme.columnDividerThickness,
+            filter: hasPinned ? ColumnFilter.unpinnedOnly : ColumnFilter.all);
 
-          if (headerHeight > 0) {
-            unpinnedHeader = TableHeaderWidget<ROW>(
-                horizontalScrollController:
-                    _scrolls.unpinnedArea.headerHorizontal,
-                columnsFit: false,
+        ColumnsMetrics? pinnedColumnsMetrics = hasPinned
+            ? ColumnsMetrics.resizable(
                 model: model,
-                columnsMetrics: unpinnedColumnsMetrics,
-                contentWidth: contentWidth,
-                columnFilter:
-                    hasPinned ? ColumnFilter.unpinnedOnly : ColumnFilter.all);
-            pinnedHeader = pinnedColumnsMetrics != null
-                ? TableHeaderWidget<ROW>(
-                    horizontalScrollController:
-                        _scrolls.pinnedArea.headerHorizontal,
-                    columnsFit: false,
-                    model: model,
-                    columnsMetrics: pinnedColumnsMetrics,
-                    contentWidth: pinnedContentWidth,
-                    columnFilter: ColumnFilter.pinnedOnly)
-                : null;
-          }
+                columnDividerThickness: theme.columnDividerThickness,
+                filter: ColumnFilter.pinnedOnly)
+            : null;
 
-          unpinnedBody = TableAreaContentWidget(
-              columnsFit: widget.columnsFit,
+        if (headerHeight > 0) {
+          unpinnedHeader = TableHeaderWidget<ROW>(
               horizontalScrollController:
-                  _scrolls.unpinnedArea.contentHorizontal,
-              verticalScrollController: _scrolls.unpinnedArea.contentVertical,
-              setHoveredRowIndex: _setHoveredRowIndex,
-              hoveredRowIndex: _hoveredRowIndex,
-              onRowTap: widget.onRowTap,
-              onRowSecondaryTap: widget.onRowSecondaryTap,
-              onRowDoubleTap: widget.onRowDoubleTap,
+                  allowHorizontalScrollbar && needHorizontalScrollbar
+                      ? _scrolls.unpinnedArea.headerHorizontal
+                      : null,
+              columnsFit: false,
               model: model,
               columnsMetrics: unpinnedColumnsMetrics,
               contentWidth: contentWidth,
-              rowHeight: rowHeight,
-              cellContentHeight: widget.cellContentHeight,
               columnFilter:
-                  hasPinned ? ColumnFilter.unpinnedOnly : ColumnFilter.all,
-              scrollBehavior: scrollBehavior);
-
-          pinnedBody = pinnedColumnsMetrics != null
-              ? TableAreaContentWidget(
-                  columnsFit: false,
+                  hasPinned ? ColumnFilter.unpinnedOnly : ColumnFilter.all);
+          pinnedHeader = pinnedColumnsMetrics != null
+              ? TableHeaderWidget<ROW>(
                   horizontalScrollController:
-                      _scrolls.pinnedArea.contentHorizontal,
-                  verticalScrollController: _scrolls.pinnedArea.contentVertical,
-                  setHoveredRowIndex: _setHoveredRowIndex,
-                  hoveredRowIndex: _hoveredRowIndex,
-                  onRowTap: widget.onRowTap,
-                  onRowSecondaryTap: widget.onRowSecondaryTap,
-                  onRowDoubleTap: widget.onRowDoubleTap,
+                      allowHorizontalScrollbar && needHorizontalScrollbar
+                          ? _scrolls.pinnedArea.headerHorizontal
+                          : null,
+                  columnsFit: false,
                   model: model,
                   columnsMetrics: pinnedColumnsMetrics,
                   contentWidth: pinnedContentWidth,
-                  rowHeight: rowHeight,
-                  cellContentHeight: widget.cellContentHeight,
-                  columnFilter: ColumnFilter.pinnedOnly,
-                  scrollBehavior: scrollBehavior)
+                  columnFilter: ColumnFilter.pinnedOnly)
               : null;
         }
 
-        Widget? pinnedArea;
-        if (pinnedHeader != null && pinnedBody != null) {
-          pinnedArea = TableAreaLayout(
-              headerWidget: pinnedHeader,
-              contentWidget: pinnedBody,
-              scrollbarWidget: HorizontalScrollBar(
-                  contentWidth: pinnedContentWidth,
-                  scrollController: _scrolls.pinnedArea.horizontal,
-                  scrollBehavior: scrollBehavior,
-                  pinned: true),
-              rowHeight: rowHeight,
-              scrollbarHeight: scrollbarSize,
-              headerHeight: headerHeight,
-              visibleRowsCount: widget.visibleRowsCount,
-              width: pinnedWidth);
-        }
-        Widget unpinnedArea = TableAreaLayout(
-            headerWidget: unpinnedHeader,
-            contentWidget: unpinnedBody,
-            scrollbarWidget: HorizontalScrollBar(
-                contentWidth: contentWidth,
-                scrollController: _scrolls.unpinnedArea.horizontal,
-                scrollBehavior: scrollBehavior,
-                pinned: false),
+        unpinnedBody = TableAreaContentWidget(
+            columnsFit: widget.columnsFit,
+            horizontalScrollController:
+                allowHorizontalScrollbar && needHorizontalScrollbar
+                    ? _scrolls.unpinnedArea.contentHorizontal
+                    : null,
+            verticalScrollController: _scrolls.unpinnedArea.contentVertical,
+            setHoveredRowIndex: _setHoveredRowIndex,
+            hoveredRowIndex: _hoveredRowIndex,
+            onRowTap: widget.onRowTap,
+            onRowSecondaryTap: widget.onRowSecondaryTap,
+            onRowDoubleTap: widget.onRowDoubleTap,
+            model: model,
+            columnsMetrics: unpinnedColumnsMetrics,
+            contentWidth: contentWidth,
             rowHeight: rowHeight,
-            headerHeight: headerHeight,
-            visibleRowsCount: widget.visibleRowsCount,
-            scrollbarHeight: scrollbarSize,
-            width: null);
+            cellContentHeight: widget.cellContentHeight,
+            columnFilter:
+                hasPinned ? ColumnFilter.unpinnedOnly : ColumnFilter.all,
+            scrollBehavior: scrollBehavior);
 
-        Widget verticalScrollArea = TableAreaLayout(
-            headerWidget: Container(
-                decoration: BoxDecoration(
-                    color: theme.topCornerColor,
-                    border: Border(
-                        left: BorderSide(color: theme.topCornerBorderColor),
-                        bottom:
-                            BorderSide(color: theme.topCornerBorderColor)))),
-            contentWidget: VerticalScrollBar(
-                scrollBehavior: scrollBehavior,
-                scrollController: _scrolls.vertical,
+        pinnedBody = pinnedColumnsMetrics != null
+            ? TableAreaContentWidget(
+                columnsFit: false,
+                horizontalScrollController:
+                    allowHorizontalScrollbar && needHorizontalScrollbar
+                        ? _scrolls.pinnedArea.contentHorizontal
+                        : null,
+                verticalScrollController: _scrolls.pinnedArea.contentVertical,
+                setHoveredRowIndex: _setHoveredRowIndex,
+                hoveredRowIndex: _hoveredRowIndex,
+                onRowTap: widget.onRowTap,
+                onRowSecondaryTap: widget.onRowSecondaryTap,
+                onRowDoubleTap: widget.onRowDoubleTap,
+                model: model,
+                columnsMetrics: pinnedColumnsMetrics,
+                contentWidth: pinnedContentWidth,
                 rowHeight: rowHeight,
-                visibleRowsLength: model.visibleRowsLength),
-            scrollbarWidget: Container(
-                decoration: BoxDecoration(
-                    color: theme.bottomCornerColor,
-                    border: Border(
-                        left: BorderSide(color: theme.bottomCornerBorderColor),
-                        top:
-                            BorderSide(color: theme.bottomCornerBorderColor)))),
-            rowHeight: rowHeight,
-            headerHeight: headerHeight,
-            visibleRowsCount: widget.visibleRowsCount,
-            scrollbarHeight: scrollbarSize,
-            width: null);
-
-        Widget layout = TableLayout(
-            unpinnedWidget: unpinnedArea,
-            pinnedWidget: pinnedArea,
-            scrollbarWidget: verticalScrollArea,
-            headerHeight: headerHeight,
-            visibleRowsCount: widget.visibleRowsCount,
-            hasHeader: true,
-            scrollbarWidth: scrollbarWidth,
-            rowHeight: rowHeight,
-            pinnedWidth: pinnedWidth,
-            scrollbarHeight: scrollbarSize);
-
-        return ClipRect(child: layout);
+                cellContentHeight: widget.cellContentHeight,
+                columnFilter: ColumnFilter.pinnedOnly,
+                scrollBehavior: scrollBehavior)
+            : null;
       }
-      return Container();
+
+      Widget? pinnedArea;
+      if (pinnedHeader != null && pinnedBody != null) {
+        pinnedArea = TableAreaLayout(
+            headerWidget: pinnedHeader,
+            contentWidget: pinnedBody,
+            scrollbarWidget: allowHorizontalScrollbar && needHorizontalScrollbar
+                ? HorizontalScrollBar(
+                    contentWidth: pinnedContentWidth,
+                    scrollController: _scrolls.pinnedArea.horizontal,
+                    scrollBehavior: scrollBehavior,
+                    pinned: true)
+                : null,
+            rowHeight: rowHeight,
+            scrollbarHeight: scrollbarSize,
+            headerHeight: headerHeight,
+            visibleRowsCount: widget.visibleRowsCount,
+            width: pinnedWidth);
+      }
+
+      Widget unpinnedArea = TableAreaLayout(
+          headerWidget: unpinnedHeader,
+          contentWidget: unpinnedBody,
+          scrollbarWidget: allowHorizontalScrollbar && needHorizontalScrollbar
+              ? HorizontalScrollBar(
+                  contentWidth: contentWidth,
+                  scrollController: _scrolls.unpinnedArea.horizontal,
+                  scrollBehavior: scrollBehavior,
+                  pinned: false)
+              : null,
+          rowHeight: rowHeight,
+          headerHeight: headerHeight,
+          visibleRowsCount: widget.visibleRowsCount,
+          scrollbarHeight: scrollbarSize,
+          width: null);
+
+      Widget verticalScrollArea = TableAreaLayout(
+          headerWidget: Container(
+              decoration: BoxDecoration(
+                  color: theme.topCornerColor,
+                  border: Border(
+                      left: BorderSide(color: theme.topCornerBorderColor),
+                      bottom: BorderSide(color: theme.topCornerBorderColor)))),
+          contentWidget: VerticalScrollBar(
+              scrollBehavior: scrollBehavior,
+              scrollController: _scrolls.vertical,
+              rowHeight: rowHeight,
+              visibleRowsLength: model.visibleRowsLength),
+          scrollbarWidget: allowHorizontalScrollbar && needHorizontalScrollbar
+              ? Container(
+                  decoration: BoxDecoration(
+                      color: theme.bottomCornerColor,
+                      border: Border(
+                          left:
+                              BorderSide(color: theme.bottomCornerBorderColor),
+                          top: BorderSide(
+                              color: theme.bottomCornerBorderColor))))
+              : null,
+          rowHeight: rowHeight,
+          headerHeight: headerHeight,
+          visibleRowsCount: widget.visibleRowsCount,
+          scrollbarHeight: scrollbarSize,
+          width: null);
+
+      Widget layout = TableLayout(
+          unpinnedWidget: unpinnedArea,
+          pinnedWidget: pinnedArea,
+          scrollbarWidget: verticalScrollArea,
+          headerHeight: headerHeight,
+          visibleRowsCount: widget.visibleRowsCount,
+          hasHeader: true,
+          scrollbarWidth: scrollbarWidth,
+          rowHeight: rowHeight,
+          pinnedWidth: pinnedWidth,
+          scrollbarHeight: allowHorizontalScrollbar && needHorizontalScrollbar
+              ? scrollbarSize
+              : 0);
+
+      return ClipRect(child: layout);
     });
     EasyTableThemeData theme = EasyTableTheme.of(context);
     if (theme.decoration != null) {

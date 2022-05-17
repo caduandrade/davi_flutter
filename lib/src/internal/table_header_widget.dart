@@ -26,7 +26,7 @@ class TableHeaderWidget<ROW> extends StatelessWidget {
   final ColumnsMetrics columnsMetrics;
   final bool columnsFit;
   final double contentWidth;
-  final ScrollController horizontalScrollController;
+  final ScrollController? horizontalScrollController;
   final ColumnFilter columnFilter;
 
   @override
@@ -69,9 +69,10 @@ class TableHeaderWidget<ROW> extends StatelessWidget {
                       color: theme.header.bottomBorderColor!))));
     }
 
-    if (columnsFit) {
+    if (columnsFit || horizontalScrollController == null) {
       return header;
     }
+
     // scrollable header
     return CustomScrollView(
         controller: horizontalScrollController,

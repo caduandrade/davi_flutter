@@ -20,7 +20,7 @@ class TableAreaContentWidget<ROW> extends StatelessWidget {
       {Key? key,
       required EasyTableModel<ROW> model,
       required ScrollController verticalScrollController,
-      required ScrollController horizontalScrollController,
+      required ScrollController? horizontalScrollController,
       required ColumnsMetrics columnsMetrics,
       required double contentWidth,
       required double rowHeight,
@@ -84,7 +84,7 @@ class TableAreaContentWidget<ROW> extends StatelessWidget {
 
   final EasyTableModel<ROW> model;
   final ScrollController verticalScrollController;
-  final ScrollController horizontalScrollController;
+  final ScrollController? horizontalScrollController;
   final ColumnsMetrics columnsMetrics;
   final double contentWidth;
   final double rowHeight;
@@ -138,7 +138,7 @@ class TableAreaContentWidget<ROW> extends StatelessWidget {
     list =
         MouseRegion(child: list, onExit: (event) => setHoveredRowIndex(null));
 
-    if (columnsFit) {
+    if (columnsFit || horizontalScrollController == null) {
       return list;
     }
 
@@ -146,11 +146,7 @@ class TableAreaContentWidget<ROW> extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         controller: horizontalScrollController,
         slivers: [
-          SliverToBoxAdapter(
-              child: SizedBox(
-                  child: ScrollConfiguration(
-                      behavior: scrollBehavior, child: list),
-                  width: contentWidth))
+          SliverToBoxAdapter(child: SizedBox(child: list, width: contentWidth))
         ]);
 
     return ScrollConfiguration(

@@ -6,7 +6,7 @@
 
 * Ready for a large number of data. Building cells on demand.
 * Focused on Web/Desktop Applications.
-* Bidirectional scroll bars (always visible).
+* Bidirectional scroll bars.
 * Sortable.
 * Resizable.
 * Highly customized.
@@ -21,8 +21,12 @@
 * [Row callbacks](#row-callbacks)
 * [Pinned column](#pinned-column)
 * Theme
-  * [Null value color](#null-value-color)
-  * [Divider color and thickness](#divider-color-and-thickness)
+  * Scrollbar
+    * [Horizontal scrollbar only when needed](#horizontal-scrollbar-only-when-needed) 
+  * Cell
+    * [Null value color](#null-value-color)
+  * Divider
+    * [Divider color and thickness](#divider-color-and-thickness)
 * [Support this project](#support-this-project)
 
 ## Get started
@@ -147,7 +151,23 @@ void _onRowDoubleTap(BuildContext context, Person person) {
 
 ## Theme
 
-### Null value color
+### Scrollbar
+
+#### Horizontal scrollbar only when needed
+
+```dart
+EasyTableTheme(
+        child: EasyTable<Person>(_model),
+        data: const EasyTableThemeData(
+            scrollbar:
+                TableScrollbarThemeData(horizontalOnlyWhenNeeded: true)));
+```
+
+![](https://caduandrade.github.io/easy_table_flutter/horizontal_scrollbar_when_needed_v1.png)
+
+### Cell
+
+#### Null value color
 
 ```dart
   _model = EasyTableModel<Person>(rows: [
@@ -174,7 +194,9 @@ void _onRowDoubleTap(BuildContext context, Person person) {
 
 ![](https://caduandrade.github.io/easy_table_flutter/null_cell_color_v2.png)
 
-### Divider color and thickness
+### Divider
+
+#### Divider color and thickness
 
 ```dart
 EasyTableTheme(
@@ -193,7 +215,7 @@ EasyTableTheme(
 * Collapsed rows
 * Header grouping
 * Row selection
-* Cell edition
+* Cell edition?
 * Column reorder
 * Pinned column on right?
 * Filter
