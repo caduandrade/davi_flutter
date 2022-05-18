@@ -7,6 +7,7 @@ import 'package:easy_table/src/internal/table_header_widget.dart';
 import 'package:easy_table/src/internal/table_layout.dart';
 import 'package:easy_table/src/internal/vertical_scroll_bar.dart';
 import 'package:easy_table/src/model.dart';
+import 'package:easy_table/src/last_visible_row_listener.dart';
 import 'package:easy_table/src/row_callbacks.dart';
 import 'package:easy_table/src/row_hover_listener.dart';
 import 'package:easy_table/src/internal/table_scrolls.dart';
@@ -30,6 +31,7 @@ class EasyTable<ROW> extends StatefulWidget {
       this.pinnedHorizontalScrollController,
       this.verticalScrollController,
       this.onHoverListener,
+      this.onLastVisibleRowListener,
       this.onRowTap,
       this.onRowSecondaryTap,
       this.onRowDoubleTap,
@@ -54,6 +56,7 @@ class EasyTable<ROW> extends StatefulWidget {
   final int? _visibleRowsCount;
   final Radius? scrollbarRadius;
   final double cellContentHeight;
+  final OnLastVisibleRowListener? onLastVisibleRowListener;
 
   int? get visibleRowsCount => _visibleRowsCount;
 
@@ -118,11 +121,19 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
     setState(() {});
   }
 
+  double lastHeight = double.nan;
+
   @override
   Widget build(BuildContext context) {
     ScrollBehavior scrollBehavior =
         ScrollConfiguration.of(context).copyWith(scrollbars: false);
     Widget table = LayoutBuilder(builder: (context, constraints) {
+/*
+      if(constraints.maxHeight != lastHeight) {
+        //print('build ${DateTime.now()}');
+        lastHeight = constraints.maxHeight;
+      }
+*/
       if (widget.model == null) {
         return Container();
       }
@@ -157,8 +168,6 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
       final allowHorizontalScrollbar = !widget.columnsFit;
       bool needHorizontalScrollbar = !theme.scrollbar.horizontalOnlyWhenNeeded;
       if (widget.columnsFit) {
-        final bool horizontalScrollbarVisible =
-            allowHorizontalScrollbar && needHorizontalScrollbar;
         final double availableWidth =
             math.max(0, constraints.maxWidth - scrollbarWidth);
         contentWidth = math.max(availableWidth, model.allColumnsWidth);
@@ -199,6 +208,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
             columnFilter: ColumnFilter.all,
             scrollBehavior: scrollBehavior);
       } else {
+        final int unpinnedColumnsLength = model.unpinnedColumnsLength;
         final int pinnedColumnsLength = model.pinnedColumnsLength;
         final bool hasPinned = pinnedColumnsLength > 0;
         pinnedContentWidth = model.pinnedColumnsWidth +
@@ -207,7 +217,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
           bool needPinnedHorizontalScroll = pinnedContentWidth > maxWidth;
           pinnedWidth = math.min(pinnedContentWidth, maxWidth);
           contentWidth = model.unpinnedColumnsWidth +
-              (model.unpinnedColumnsLength * theme.columnDividerThickness);
+              (unpinnedColumnsLength * theme.columnDividerThickness);
           bool needUnpinnedHorizontalScroll =
               contentWidth > maxWidth - pinnedWidth;
           contentWidth = math.max(maxWidth - pinnedWidth, contentWidth);
@@ -223,9 +233,6 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
           }
           contentWidth = math.max(maxWidth, contentWidth);
         }
-
-        final bool horizontalScrollbarVisible =
-            allowHorizontalScrollbar && needHorizontalScrollbar;
 
         ColumnsMetrics unpinnedColumnsMetrics = ColumnsMetrics.resizable(
             model: model,
@@ -386,6 +393,24 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
               ? scrollbarSize
               : 0);
 
+      if (widget.onLastVisibleRowListener != null) {
+        layout = NotificationListener<ScrollMetricsNotification>(
+            child: layout,
+            onNotification: (notification) {
+              double maxPixels = _scrolls.vertical.offset +
+                  _scrolls.vertical.position.viewportDimension;
+              int index = math.max(
+                  math.min((maxPixels / rowHeight).ceil() - 1,
+                      widget.model!.rowsLength - 1),
+                  0);
+              if (_lastVisibleRow != index) {
+                _lastVisibleRow = index;
+                widget.onLastVisibleRowListener!(index);
+              }
+              return false;
+            });
+      }
+
       return ClipRect(child: layout);
     });
     EasyTableThemeData theme = EasyTableTheme.of(context);
@@ -394,4 +419,6 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
     }
     return table;
   }
+
+  int _lastVisibleRow = -1;
 }

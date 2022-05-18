@@ -4,12 +4,14 @@
   * A warning is being displayed in the console due to a bug in Flutter: https://github.com/flutter/flutter/issues/103939
   * The error happens when the horizontal scrollbar is hidden after being visible.
   * The following MR should fix the issue: https://github.com/flutter/flutter/pull/103948 
+* `EasyTable.onLastVisibleRowListener` for listening to the last visible row index.
+  * Useful for infinite scroll. 
 * Added `RowThemeData.dividerColor`.
 * `EasyTableThemeData.rowDividerThickness` moved to `RowThemeData.dividerThickness`.
 * `RowThemeData.columnDividerColor` moved to `EasyTableThemeData.columnDividerColor`.
-* Removed `EasyTable.scrollbarMargin` and `EasyTable.scrollbarThickness` (already exists in `TableScrollThemeData`).
 * `TableScrollThemeData` renamed to `TableScrollbarThemeData`.
 * `EasyTableThemeData.scroll` renamed to `EasyTableThemeData.scrollbar`.
+* Removed `EasyTable.scrollbarMargin` and `EasyTable.scrollbarThickness` (already exists in `TableScrollbarThemeData`).
 
 ## 1.3.0
 

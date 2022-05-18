@@ -1,4 +1,4 @@
-[![](https://img.shields.io/pub/v/easy_table.svg)](https://pub.dev/packages/easy_table) [![](https://img.shields.io/badge/demo-try%20it%20out-blue)](https://caduandrade.github.io/easy_table_flutter_demo/) [![](https://img.shields.io/badge/Flutter-%E2%9D%A4-red)](https://flutter.dev/) [![](https://img.shields.io/badge/donate-crypto-green)](#support-this-project)
+[![](https://img.shields.io/pub/v/easy_table.svg)](https://pub.dev/packages/easy_table) [![](https://img.shields.io/badge/demo-try%20it%20out-blue)](https://caduandrade.github.io/easy_table_flutter_demo/) [![](https://img.shields.io/badge/Flutter-%E2%9D%A4-red)](https://flutter.dev/) [![](https://img.shields.io/badge/donate-crypto-green)](#support-this-project) ![](https://img.shields.io/badge/%F0%9F%91%8D%20and%20%E2%AD%90-are%20free-yellow)
 
 # Easy Table
 
@@ -20,6 +20,7 @@
 * [Custom cell widget](#custom-cell-widget)
 * [Row callbacks](#row-callbacks)
 * [Pinned column](#pinned-column)
+* [Infinite scroll](#infinite-scroll)
 * Theme
   * Scrollbar
     * [Horizontal scrollbar only when needed](#horizontal-scrollbar-only-when-needed) 
@@ -149,6 +150,55 @@ void _onRowDoubleTap(BuildContext context, Person person) {
 
 ![](https://caduandrade.github.io/easy_table_flutter/pinned_column_v3.png)
 
+## Infinite scroll
+
+```dart
+  final UniqueKey _tableKey = UniqueKey();
+  EasyTableModel<String>? _model;
+  bool _loading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    List<String> rows = List.generate(30, (index) => 'value $index');
+    _model = EasyTableModel<String>(
+        rows: rows,
+        columns: [EasyTableColumn(name: 'Value', stringValue: (row) => row)]);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    EasyTable table = EasyTable<String>(_model,
+        key: _tableKey, onLastVisibleRowListener: _onLastVisibleRowListener);
+
+    List<Widget> children = [Positioned.fill(key: _tableKey, child: table)];
+
+    if (_loading) {
+      children.add(const Positioned(
+          child: LoadingWidget(), left: 0, right: 0, bottom: 0));
+    }
+    return Stack(children: children);
+  }
+
+  void _onLastVisibleRowListener(int lastVisibleRowIndex) {
+    if (!_loading && lastVisibleRowIndex == _model!.visibleRowsLength - 1) {
+      setState(() {
+        _loading = true;
+      });
+      Future.delayed(const Duration(seconds: 2), () {
+        setState(() {
+          _loading = false;
+          List<String> newValues = List.generate(
+              30, (index) => 'value ${_model!.visibleRowsLength + index}');
+          _model!.addRows(newValues);
+        });
+      });
+    }
+  }
+```
+
+![](https://caduandrade.github.io/easy_table_flutter/infinite_scroll_v1.gif)
+
 ## Theme
 
 ### Scrollbar
@@ -164,6 +214,10 @@ EasyTableTheme(
 ```
 
 ![](https://caduandrade.github.io/easy_table_flutter/horizontal_scrollbar_when_needed_v1.png)
+
+> A warning is being displayed in the console due to a bug in Flutter: https://github.com/flutter/flutter/issues/103939.
+> The error happens when the horizontal scrollbar is hidden after being visible.
+> The following MR should fix the issue: https://github.com/flutter/flutter/pull/103948
 
 ### Cell
 
@@ -212,6 +266,7 @@ EasyTableTheme(
 
 ## TODO
 
+* Easiest way to create loading indicator for infinite scroll
 * Collapsed rows
 * Header grouping
 * Row selection
