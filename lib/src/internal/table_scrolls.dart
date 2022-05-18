@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'package:easy_table/src/internal/scroll_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -68,10 +69,12 @@ class TableScrolls {
     _ignore = true;
     if (_vertical.hasClients) {
       if (pinnedArea.contentVertical.hasClients) {
-        pinnedArea.contentVertical.jumpTo(_vertical.offset);
+        pinnedArea.contentVertical.jumpTo(math.min(_vertical.offset,
+            pinnedArea.contentVertical.position.maxScrollExtent));
       }
       if (unpinnedArea.contentVertical.hasClients) {
-        unpinnedArea.contentVertical.jumpTo(_vertical.offset);
+        unpinnedArea.contentVertical.jumpTo(math.min(_vertical.offset,
+            unpinnedArea.contentVertical.position.maxScrollExtent));
       }
     }
     _ignore = false;
