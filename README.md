@@ -197,7 +197,7 @@ void _onRowDoubleTap(BuildContext context, Person person) {
   }
 ```
 
-![](https://caduandrade.github.io/easy_table_flutter/infinite_scroll_v1.gif)
+![](https://caduandrade.github.io/easy_table_flutter/infinite_scroll_v2.gif)
 
 ## Theme
 
