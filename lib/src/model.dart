@@ -244,6 +244,11 @@ class EasyTableModel<ROW> extends ChangeNotifier {
     _resort(notify: true);
   }
 
+  /// Notifies any row data update by calling all the registered listeners.
+  void notifyUpdate() {
+    notifyListeners();
+  }
+
   void _resort({required bool notify}) {
     if (_columnSort != null && _columnSort!.column.sort != null) {
       List<ROW> list = List.from(_originalRows);
