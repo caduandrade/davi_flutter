@@ -55,7 +55,7 @@ class TableRowWidget<ROW> extends StatelessWidget {
     for (int columnIndex = 0; columnIndex < columns.length; columnIndex++) {
       final EasyTableColumn<ROW> column = columns[columnIndex];
       if (column.cellBuilder != null) {
-        Widget cellChild = column.cellBuilder!(context, row);
+        Widget cellChild = column.cellBuilder!(context, row, visibleRowIndex);
         EdgeInsets? padding;
         Alignment? alignment;
         Color? background;

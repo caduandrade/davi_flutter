@@ -56,7 +56,8 @@ class _HomePageState extends State<HomePage> {
         EasyTableColumn(
             name: 'Skills',
             width: 100,
-            cellBuilder: (context, row) => SkillsWidget(skills: row.skills)),
+            cellBuilder: (context, row, visibleRowIndex) =>
+                SkillsWidget(skills: row.skills)),
         EasyTableColumn(
             name: 'Strength', width: 80, intValue: (row) => row.strength),
         EasyTableColumn(

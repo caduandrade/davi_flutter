@@ -1,3 +1,7 @@
+## 1.5.0
+
+* Added `visibleRowIndex` in `EasyTableCellBuilder`.
+
 ## 1.4.0
 
 * Feature to display horizontal scrollbar only when needed.
