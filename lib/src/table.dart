@@ -15,6 +15,7 @@ import 'package:easy_table/src/theme/header_theme_data.dart';
 import 'package:easy_table/src/theme/theme.dart';
 import 'package:easy_table/src/theme/theme_data.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 /// Table view designed for a large number of data.
 ///
@@ -38,7 +39,8 @@ class EasyTable<ROW> extends StatefulWidget {
       this.columnsFit = false,
       int? visibleRowsCount,
       this.cellContentHeight = 32,
-      this.scrollbarRadius = Radius.zero})
+      this.scrollbarRadius = Radius.zero,
+      this.focusable = true})
       : _visibleRowsCount = visibleRowsCount == null || visibleRowsCount > 0
             ? visibleRowsCount
             : null,
@@ -57,6 +59,7 @@ class EasyTable<ROW> extends StatefulWidget {
   final Radius? scrollbarRadius;
   final double cellContentHeight;
   final OnLastVisibleRowListener? onLastVisibleRowListener;
+  final bool focusable;
 
   int? get visibleRowsCount => _visibleRowsCount;
 
@@ -69,6 +72,8 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
   late TableScrolls _scrolls;
   int? _hoveredRowIndex;
   int _lastVisibleRow = -1;
+  final FocusNode _focusNode = FocusNode();
+  bool _focused = false;
 
   void _setHoveredRowIndex(int? value) {
     if (_hoveredRowIndex != value) {
@@ -95,6 +100,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
   void dispose() {
     widget.model?.removeListener(_rebuild);
     _scrolls.removeListeners();
+    _focusNode.dispose();
     super.dispose();
   }
 
@@ -403,6 +409,19 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
             });
       }
 
+      if (widget.focusable) {
+        layout = Focus(
+            focusNode: _focusNode,
+            onKey: (node, event) => _handleKeyPress(node, event, rowHeight),
+            child: layout);
+        layout = Listener(
+            child: layout,
+            onPointerDown: (pointer) {
+              _focusNode.requestFocus();
+              _focused = true;
+            });
+      }
+
       return ClipRect(child: layout);
     });
     EasyTableThemeData theme = EasyTableTheme.of(context);
@@ -410,5 +429,53 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
       table = Container(child: table, decoration: theme.decoration);
     }
     return table;
+  }
+
+  KeyEventResult _handleKeyPress(
+      FocusNode node, RawKeyEvent event, double rowHeight) {
+    if (event is RawKeyUpEvent) {
+      if (event.logicalKey == LogicalKeyboardKey.tab) {
+        if (_focused) {
+          _focused = false;
+          node.nextFocus();
+        } else {
+          _focused = true;
+        }
+      } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+        if (_scrolls.vertical.hasClients) {
+          double target = math.min(
+              _scrolls.vertical.position.pixels + rowHeight,
+              _scrolls.vertical.position.maxScrollExtent);
+          _scrolls.vertical.animateTo(target,
+              duration: const Duration(milliseconds: 30), curve: Curves.ease);
+        }
+      } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+        if (_scrolls.vertical.hasClients) {
+          double target =
+              math.max(_scrolls.vertical.position.pixels - rowHeight, 0);
+          _scrolls.vertical.animateTo(target,
+              duration: const Duration(milliseconds: 30), curve: Curves.ease);
+        }
+      } else if (event.logicalKey == LogicalKeyboardKey.pageDown) {
+        if (_scrolls.vertical.hasClients) {
+          double target = math.min(
+              _scrolls.vertical.position.pixels +
+                  _scrolls.vertical.position.viewportDimension,
+              _scrolls.vertical.position.maxScrollExtent);
+          _scrolls.vertical.animateTo(target,
+              duration: const Duration(milliseconds: 30), curve: Curves.ease);
+        }
+      } else if (event.logicalKey == LogicalKeyboardKey.pageUp) {
+        if (_scrolls.vertical.hasClients) {
+          double target = math.max(
+              _scrolls.vertical.position.pixels -
+                  _scrolls.vertical.position.viewportDimension,
+              0);
+          _scrolls.vertical.animateTo(target,
+              duration: const Duration(milliseconds: 30), curve: Curves.ease);
+        }
+      }
+    }
+    return KeyEventResult.handled;
   }
 }
