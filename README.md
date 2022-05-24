@@ -101,7 +101,8 @@ Widget build(BuildContext context) {
       EasyTableColumn(
           name: 'Rate',
           width: 150,
-          cellBuilder: (context, row) => StarsWidget(stars: row.stars))
+          cellBuilder: (context, row, visibleRowIndex) =>
+              StarsWidget(stars: row.stars))
     ]);
 ```
 
@@ -138,7 +139,7 @@ void _onRowDoubleTap(BuildContext context, Person person) {
       EasyTableColumn(
           pinned: true,
           width: 30,
-          cellBuilder: (BuildContext context, Person row) {
+          cellBuilder: (BuildContext context, Person row, int visibleRowIndex) {
             return InkWell(
                 child: const Icon(Icons.edit, size: 16),
                 onTap: () => _onEdit(row));
