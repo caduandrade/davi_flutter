@@ -67,8 +67,8 @@ class EasyTable<ROW> extends StatefulWidget {
 /// The [EasyTable] state.
 class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
   late TableScrolls _scrolls;
-
   int? _hoveredRowIndex;
+  int _lastVisibleRow = -1;
 
   void _setHoveredRowIndex(int? value) {
     if (_hoveredRowIndex != value) {
@@ -121,19 +121,11 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
     setState(() {});
   }
 
-  double lastHeight = double.nan;
-
   @override
   Widget build(BuildContext context) {
     ScrollBehavior scrollBehavior =
         ScrollConfiguration.of(context).copyWith(scrollbars: false);
     Widget table = LayoutBuilder(builder: (context, constraints) {
-/*
-      if(constraints.maxHeight != lastHeight) {
-        //print('build ${DateTime.now()}');
-        lastHeight = constraints.maxHeight;
-      }
-*/
       if (widget.model == null) {
         return Container();
       }
@@ -419,6 +411,4 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
     }
     return table;
   }
-
-  int _lastVisibleRow = -1;
 }
