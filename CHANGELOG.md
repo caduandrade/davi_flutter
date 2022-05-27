@@ -1,3 +1,8 @@
+## 1.5.1
+
+* Bugfix
+  * Drag stops when horizontal scrollbar is displayed.
+
 ## 1.5.0
 
 * Vertical scroll with keyboard keys: arrow up, arrow down, page down and page up.
