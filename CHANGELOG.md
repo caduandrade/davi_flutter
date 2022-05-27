@@ -1,3 +1,8 @@
+## 1.5.2
+
+* Bugfix
+  * `CellStyle.background` not being used in null-valued cells.
+
 ## 1.5.1
 
 * Bugfix

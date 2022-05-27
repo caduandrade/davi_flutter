@@ -72,41 +72,43 @@ class TableRowPainter<ROW> extends CustomPainter {
                       color: cellIcon.color)));
         }
       } else {
+        CellStyle? cellStyle;
+        if (column.cellStyleBuilder != null) {
+          cellStyle = column.cellStyleBuilder!(row);
+        }
+        if (cellStyle != null) {
+          if (cellStyle.alignment != null) {
+            alignment = cellStyle.alignment!;
+          }
+          if (cellStyle.textStyle != null) {
+            textStyle = cellStyle.textStyle;
+          }
+          if (cellStyle.background != null) {
+            background = cellStyle.background;
+          }
+          if (cellStyle.padding != null) {
+            padding = cellStyle.padding;
+          }
+        }
+
         String? value = _stringValue(column: column);
         if (value != null) {
-          CellStyle? cellStyle;
-          if (column.cellStyleBuilder != null) {
-            cellStyle = column.cellStyleBuilder!(row);
-          }
-          if (cellStyle != null) {
-            if (cellStyle.alignment != null) {
-              alignment = cellStyle.alignment!;
-            }
-            if (cellStyle.textStyle != null) {
-              textStyle = cellStyle.textStyle;
-            }
-            if (cellStyle.background != null) {
-              background = cellStyle.background;
-            }
-            if (cellStyle.padding != null) {
-              padding = cellStyle.padding;
-            }
-          }
           textPainter = _defaultTextPainter
             ..text = TextSpan(text: value, style: textStyle);
         }
       }
 
+      if (background != null) {
+        _paintBackground(
+            left: left,
+            right: right,
+            top: top,
+            bottom: bottom,
+            canvas: canvas,
+            color: background);
+      }
+
       if (textPainter != null) {
-        if (background != null) {
-          _paintBackground(
-              left: left,
-              right: right,
-              top: top,
-              bottom: bottom,
-              canvas: canvas,
-              color: background);
-        }
         _paintTextPainter(
             left: left,
             right: right,
@@ -118,7 +120,7 @@ class TableRowPainter<ROW> extends CustomPainter {
             alignment: alignment,
             padding: padding,
             textPainter: textPainter);
-      } else if (nullValueColor != null) {
+      } else if (nullValueColor != null && background == null) {
         _paintBackground(
             left: left,
             right: right,

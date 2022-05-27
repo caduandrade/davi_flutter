@@ -20,6 +20,8 @@ class CellThemeData {
 
   final Alignment alignment;
 
+  /// Defines a background when the cell value is null.
+  /// It is ignoring when [CellStyle.background] is not null.
   final EasyTableRowColor? nullValueColor;
 
   @override
