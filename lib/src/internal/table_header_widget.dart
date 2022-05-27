@@ -69,11 +69,13 @@ class TableHeaderWidget<ROW> extends StatelessWidget {
                       color: theme.header.bottomBorderColor!))));
     }
 
-    if (columnsFit || horizontalScrollController == null) {
+    if (columnsFit) {
       return header;
     }
 
-    // scrollable header
+    // Keep the [CustomScrollView] even when the scroll is not visible.
+    // Otherwise, the tree structure will change and the drag will stop
+    // as soon as the scrollbar becomes visible.
     return CustomScrollView(
         controller: horizontalScrollController,
         scrollDirection: Axis.horizontal,
