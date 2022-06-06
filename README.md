@@ -11,6 +11,7 @@
 * Resizable.
 * Highly customized.
 * Pinned columns.
+* Multiple column sort.
 
 ## Usage
 

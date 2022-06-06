@@ -17,4 +17,6 @@ export 'src/row_hover_listener.dart';
 export 'src/row_callbacks.dart';
 export 'src/cell_style.dart';
 export 'src/cell_icon.dart';
+export 'src/column_sort.dart';
+export 'src/sort_type.dart';
 export 'src/last_visible_row_listener.dart';

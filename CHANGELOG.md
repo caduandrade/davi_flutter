@@ -1,5 +1,6 @@
-## 1.5.2
+## 1.6.0
 
+* Multiple column sort.
 * Bugfix
   * `CellStyle.background` not being used in null-valued cells.
 
