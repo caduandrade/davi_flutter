@@ -13,6 +13,7 @@ class HeaderCellThemeData {
       this.descendingIcon = HeaderCellThemeDataDefaults.descendingIcon,
       this.sortIconColor = HeaderCellThemeDataDefaults.sortIconColor,
       this.sortIconSize = HeaderCellThemeDataDefaults.sortIconSize,
+      this.sortOrderSize = HeaderCellThemeDataDefaults.sortOrderSize,
       this.resizeAreaWidth = HeaderCellThemeDataDefaults.resizeAreaWidth,
       this.resizeAreaHoverColor =
           HeaderCellThemeDataDefaults.resizeAreaHoverColor,
@@ -26,6 +27,7 @@ class HeaderCellThemeData {
   final IconData descendingIcon;
   final Color sortIconColor;
   final double sortIconSize;
+  final double sortOrderSize;
 
   final double resizeAreaWidth;
   final Color? resizeAreaHoverColor;
@@ -43,6 +45,7 @@ class HeaderCellThemeData {
           descendingIcon == other.descendingIcon &&
           sortIconColor == other.sortIconColor &&
           sortIconSize == other.sortIconSize &&
+          sortOrderSize == other.sortOrderSize &&
           resizeAreaWidth == other.resizeAreaWidth &&
           resizeAreaHoverColor == other.resizeAreaHoverColor &&
           expandableName == other.expandableName;
@@ -56,6 +59,7 @@ class HeaderCellThemeData {
       descendingIcon.hashCode ^
       sortIconColor.hashCode ^
       sortIconSize.hashCode ^
+      sortOrderSize.hashCode ^
       resizeAreaWidth.hashCode ^
       resizeAreaHoverColor.hashCode ^
       expandableName.hashCode;
@@ -70,6 +74,7 @@ class HeaderCellThemeDataDefaults {
   static const IconData descendingIcon = Icons.arrow_upward;
   static const Color sortIconColor = Colors.black;
   static const double sortIconSize = 16;
+  static const double sortOrderSize = 12;
 
   static const double resizeAreaWidth = 8;
   static const Color resizeAreaHoverColor = Color.fromRGBO(200, 200, 200, 0.5);

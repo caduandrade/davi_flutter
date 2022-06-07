@@ -26,16 +26,9 @@ class EasyTableModel<ROW> extends ChangeNotifier {
   final List<EasyTableColumn<ROW>> _columns = [];
   final List<ROW> _originalRows;
 
-  final List<_ColumnSort<ROW>> _sortedColumns = [];
-
-  List<ColumnSort> get sortedColumns {
-    List<ColumnSort> list = [];
-    for (_ColumnSort<ROW> c in _sortedColumns) {
-      int index = _columns.indexOf(c.column);
-      list.add(ColumnSort(columnIndex: index, sortType: c.sortType));
-    }
-    return list;
-  }
+  final List<EasyTableColumn<ROW>> _sortedColumns = [];
+  List<EasyTableColumn<ROW>> get sortedColumns =>
+      UnmodifiableListView(_sortedColumns);
 
   List<ROW> _visibleRows;
 
@@ -66,21 +59,6 @@ class EasyTableModel<ROW> extends ChangeNotifier {
   set columnInResizing(EasyTableColumn<ROW>? column) {
     _columnInResizing = column;
     notifyListeners();
-  }
-
-  _ColumnSort<ROW>? _getColumnSort(EasyTableColumn<ROW> column) {
-    for (int i = 0; i < _sortedColumns.length; i++) {
-      _ColumnSort<ROW> columnSort = _sortedColumns[i];
-      if (columnSort.column == column) {
-        return columnSort;
-      }
-    }
-    return null;
-  }
-
-  EasyTableSortType? getSortType(EasyTableColumn<ROW> column) {
-    _ColumnSort<ROW>? columnSort = _getColumnSort(column);
-    return columnSort?.sortType;
   }
 
   bool get isSorted => _sortedColumns.isNotEmpty;
@@ -149,6 +127,13 @@ class EasyTableModel<ROW> extends ChangeNotifier {
     _updateVisibleRows(notify: true);
   }
 
+  void _updateSortOrders() {
+    int order = 1;
+    for (EasyTableColumn<ROW> column in _sortedColumns) {
+      column._sortOrder = order++;
+    }
+  }
+
   void removeColumnAt(int index) {
     EasyTableColumn<ROW> column = _columns[index];
     removeColumn(column);
@@ -160,9 +145,9 @@ class EasyTableModel<ROW> extends ChangeNotifier {
       if (_columnInResizing == column) {
         _columnInResizing = null;
       }
-      _ColumnSort<ROW>? columnSort = _getColumnSort(column);
-      if (columnSort != null) {
-        _sortedColumns.remove(columnSort);
+      if (_sortedColumns.remove(column)) {
+        column._clearSortData();
+        _updateSortOrders();
         _updateVisibleRows(notify: false);
       }
       notifyListeners();
@@ -228,49 +213,50 @@ class EasyTableModel<ROW> extends ChangeNotifier {
   /// Revert to original sort order
   void clearSort() {
     _sortedColumns.clear();
+    _clearColumnsSortData();
     _updateVisibleRows(notify: true);
+  }
+
+  void _clearColumnsSortData() {
+    for (EasyTableColumn<ROW> column in _columns) {
+      column._clearSortData();
+    }
   }
 
   void sort(List<ColumnSort> columnSorts) {
     _sortedColumns.clear();
+    _clearColumnsSortData();
     for (ColumnSort columnSort in columnSorts) {
       EasyTableColumn<ROW> column = _columns[columnSort.columnIndex];
       if (column.sort != null) {
-        _sortedColumns.add(
-            _ColumnSort<ROW>(column: column, sortType: columnSort.sortType));
+        column._sortType = columnSort.sortType;
+        _sortedColumns.add(column);
       }
     }
+    _updateSortOrders();
     _updateVisibleRows(notify: true);
   }
 
   /// Updates the multi sort given a column.
   void multiSortByColumn(EasyTableColumn<ROW> column) {
-    if (_columns.contains(column) == false) {
+    if (_columns.contains(column) == false || column.sort == null) {
       return;
     }
-    int? columnSortIndex;
-    for (int i = 0; i < _sortedColumns.length; i++) {
-      _ColumnSort<ROW> columnSort = _sortedColumns[i];
-      if (columnSort.column == column) {
-        columnSortIndex = i;
-        break;
-      }
-    }
-    if (columnSortIndex == null) {
-      _sortedColumns.add(
-          _ColumnSort(column: column, sortType: EasyTableSortType.ascending));
+    int columnSortIndex = _sortedColumns.indexOf(column);
+    if (columnSortIndex == -1) {
+      column._sortType = EasyTableSortType.ascending;
+      _sortedColumns.add(column);
     } else if (columnSortIndex == _sortedColumns.length - 1) {
       // last
-      _ColumnSort<ROW> lastColumnSort = _sortedColumns.removeLast();
-      if (lastColumnSort.sortType == EasyTableSortType.ascending) {
-        lastColumnSort = _ColumnSort<ROW>(
-            column: lastColumnSort.column,
-            sortType: EasyTableSortType.descending);
-        _sortedColumns.add(lastColumnSort);
+      if (_sortedColumns.last.sortType == EasyTableSortType.ascending) {
+        _sortedColumns.last._sortType = EasyTableSortType.descending;
+      } else {
+        _sortedColumns.removeAt(columnSortIndex)._clearSortData();
       }
     } else {
-      _sortedColumns.removeAt(columnSortIndex);
+      _sortedColumns.removeAt(columnSortIndex)._clearSortData();
     }
+    _updateSortOrders();
     _updateVisibleRows(notify: true);
   }
 
@@ -284,7 +270,10 @@ class EasyTableModel<ROW> extends ChangeNotifier {
       required EasyTableSortType sortType}) {
     if (column.sort != null && _columns.contains(column)) {
       _sortedColumns.clear();
-      _sortedColumns.add(_ColumnSort<ROW>(column: column, sortType: sortType));
+      _clearColumnsSortData();
+      column._sortOrder = 1;
+      column._sortType = sortType;
+      _sortedColumns.add(column);
       _updateVisibleRows(notify: true);
     }
   }
@@ -311,8 +300,8 @@ class EasyTableModel<ROW> extends ChangeNotifier {
   int _compoundSort(ROW a, ROW b) {
     int r = 0;
     for (int i = 0; i < _sortedColumns.length; i++) {
-      final EasyTableColumnSort<ROW> sort = _sortedColumns[i].column.sort!;
-      final EasyTableSortType sortType = _sortedColumns[i].sortType;
+      final EasyTableColumnSort<ROW> sort = _sortedColumns[i].sort!;
+      final EasyTableSortType sortType = _sortedColumns[i].sortType!;
 
       if (sortType == EasyTableSortType.descending) {
         r = sort(b, a);
@@ -327,16 +316,15 @@ class EasyTableModel<ROW> extends ChangeNotifier {
   }
 }
 
-class _ColumnSort<ROW> {
-  _ColumnSort({required this.column, required this.sortType}) {
-    if (column.sort == null) {
-      throw FlutterError.fromParts(<DiagnosticsNode>[
-        ErrorSummary('Null sort'),
-        ErrorDescription('EasyTableColumn sort can not be null.')
-      ]);
-    }
+mixin ColumnSortMixin {
+  int? _sortOrder;
+  int? get sortOrder => _sortOrder;
+  EasyTableSortType? _sortType;
+  EasyTableSortType? get sortType => _sortType;
+  void _clearSortData() {
+    _sortOrder = null;
+    _sortType = null;
   }
 
-  final EasyTableColumn<ROW> column;
-  final EasyTableSortType sortType;
+  bool get isSorted => _sortType != null;
 }

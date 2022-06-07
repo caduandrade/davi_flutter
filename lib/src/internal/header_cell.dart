@@ -48,7 +48,7 @@ class _EasyTableHeaderCellState extends State<EasyTableHeaderCell> {
         shrink: theme.expandableName ? 0 : 1,
         expand: theme.expandableName ? 1 : 0));
 
-    final EasyTableSortType? sortType = widget.model.getSortType(widget.column);
+    final EasyTableSortType? sortType = widget.column.sortType;
     if (sortType != null) {
       IconData? icon;
       if (sortType == EasyTableSortType.ascending) {
@@ -58,6 +58,11 @@ class _EasyTableHeaderCellState extends State<EasyTableHeaderCell> {
       }
       children.add(
           Icon(icon, color: theme.sortIconColor, size: theme.sortIconSize));
+      children.add(Align(
+          alignment: Alignment.center,
+          child: Text(widget.column.sortOrder.toString(),
+              style: TextStyle(
+                  color: theme.sortIconColor, fontSize: theme.sortOrderSize))));
     }
 
     Widget header = AxisLayout(
@@ -159,8 +164,7 @@ class _EasyTableHeaderCellState extends State<EasyTableHeaderCell> {
     } else if (widget.multiSortEnabled) {
       widget.model.multiSortByColumn(widget.column);
     } else {
-      final EasyTableSortType? sortType =
-          widget.model.getSortType(widget.column);
+      final EasyTableSortType? sortType = widget.column.sortType;
       if (sortType == null) {
         model.sortByColumn(
             column: column, sortType: EasyTableSortType.ascending);
