@@ -61,7 +61,8 @@ class _HomePageState extends State<HomePage> {
         columnFilter: columnFilter,
         contentWidth: 500,
         columnsFit: false,
-        horizontalScrollController: horizontalScrollController);
+        horizontalScrollController: horizontalScrollController,
+        multiSortEnabled: false);
 
     return Scaffold(
         appBar: AppBar(

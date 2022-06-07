@@ -103,7 +103,8 @@ class _HomePageState extends State<HomePage> {
         columnFilter: columnFilter,
         contentWidth: contentWidth,
         columnsFit: false,
-        horizontalScrollController: headerHorizontalScrollController);
+        horizontalScrollController: headerHorizontalScrollController,
+        multiSortEnabled: false);
     //header=Container(color: Colors.green);
 
     //TODO body or content?

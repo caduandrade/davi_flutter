@@ -1,6 +1,7 @@
 ## 1.6.0
 
 * Multiple column sort.
+  * `EasyTableModel.removeColumnSort` renamed to `EasyTableModel.clearSort`. 
 * Bugfix
   * `CellStyle.background` not being used in null-valued cells.
 

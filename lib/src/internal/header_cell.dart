@@ -1,6 +1,5 @@
 import 'package:axis_layout/axis_layout.dart';
 import 'package:easy_table/easy_table.dart';
-import 'package:easy_table/src/sort_type.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
@@ -12,12 +11,14 @@ class EasyTableHeaderCell<ROW> extends StatefulWidget {
       {Key? key,
       required this.model,
       required this.column,
-      required this.resizable})
+      required this.resizable,
+      required this.multiSortEnabled})
       : super(key: key);
 
   final EasyTableModel<ROW> model;
   final EasyTableColumn<ROW> column;
   final bool resizable;
+  final bool multiSortEnabled;
 
   @override
   State<StatefulWidget> createState() => _EasyTableHeaderCellState();
@@ -71,13 +72,17 @@ class _EasyTableHeaderCellState extends State<EasyTableHeaderCell> {
     if (sortable) {
       header = MouseRegion(
           cursor: enabled ? SystemMouseCursors.click : MouseCursor.defer,
-          child: GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              child: header,
-              onTap: enabled
-                  ? () => _onHeaderPressed(
-                      model: widget.model, column: widget.column)
-                  : null));
+          child: Focus(
+              onKeyEvent: (node, event) {
+                return KeyEventResult.handled;
+              },
+              child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  child: header,
+                  onTap: enabled
+                      ? () => _onHeaderPressed(
+                          model: widget.model, column: widget.column)
+                      : null)));
     }
 
     if (resizable) {
@@ -151,6 +156,8 @@ class _EasyTableHeaderCellState extends State<EasyTableHeaderCell> {
       {required EasyTableModel model, required EasyTableColumn column}) {
     if (model.isSorted == false) {
       model.sortByColumn(column: column, sortType: EasyTableSortType.ascending);
+    } else if (widget.multiSortEnabled) {
+      widget.model.multiSortByColumn(widget.column);
     } else {
       final EasyTableSortType? sortType =
           widget.model.getSortType(widget.column);
@@ -161,7 +168,7 @@ class _EasyTableHeaderCellState extends State<EasyTableHeaderCell> {
         model.sortByColumn(
             column: column, sortType: EasyTableSortType.descending);
       } else {
-        model.removeColumnSort();
+        model.clearSort();
       }
     }
   }
