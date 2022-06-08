@@ -1,6 +1,6 @@
 import 'package:easy_table/src/sort_type.dart';
 
-/// Describes the ordering of a column.
+/// Describes the column sort.
 class ColumnSort {
   ColumnSort({required this.columnIndex, required this.sortType});
 

@@ -27,6 +27,8 @@ class EasyTableModel<ROW> extends ChangeNotifier {
   final List<ROW> _originalRows;
 
   final List<EasyTableColumn<ROW>> _sortedColumns = [];
+
+  /// Gets the sorted columns.
   List<EasyTableColumn<ROW>> get sortedColumns =>
       UnmodifiableListView(_sortedColumns);
 
@@ -61,7 +63,11 @@ class EasyTableModel<ROW> extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Indicates whether the model is sorted.
   bool get isSorted => _sortedColumns.isNotEmpty;
+
+  /// Indicates whether the model is sorted by multiple columns.
+  bool get isMultiSorted => _sortedColumns.length > 1;
 
   ROW visibleRowAt(int index) => _visibleRows[index];
 
@@ -75,6 +81,7 @@ class EasyTableModel<ROW> extends ChangeNotifier {
     _updateVisibleRows(notify: true);
   }
 
+  /// Remove all rows.
   void removeRows() {
     _originalRows.clear();
     _updateVisibleRows(notify: true);
@@ -120,6 +127,7 @@ class EasyTableModel<ROW> extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Remove all columns.
   void removeColumns() {
     _columns.clear();
     _sortedColumns.clear();
@@ -223,6 +231,7 @@ class EasyTableModel<ROW> extends ChangeNotifier {
     }
   }
 
+  /// Defines the columns that will be used in sorting.
   void sort(List<ColumnSort> columnSorts) {
     _sortedColumns.clear();
     _clearColumnsSortData();
@@ -260,11 +269,13 @@ class EasyTableModel<ROW> extends ChangeNotifier {
     _updateVisibleRows(notify: true);
   }
 
+  /// Sort given a column index.
   void sortByColumnIndex(
       {required int columnIndex, required EasyTableSortType sortType}) {
     sortByColumn(column: _columns[columnIndex], sortType: sortType);
   }
 
+  /// Sort given a column.
   void sortByColumn(
       {required EasyTableColumn<ROW> column,
       required EasyTableSortType sortType}) {
@@ -297,6 +308,7 @@ class EasyTableModel<ROW> extends ChangeNotifier {
     }
   }
 
+  /// Function to realize the multi sort.
   int _compoundSort(ROW a, ROW b) {
     int r = 0;
     for (int i = 0; i < _sortedColumns.length; i++) {

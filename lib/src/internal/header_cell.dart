@@ -58,11 +58,14 @@ class _EasyTableHeaderCellState extends State<EasyTableHeaderCell> {
       }
       children.add(
           Icon(icon, color: theme.sortIconColor, size: theme.sortIconSize));
-      children.add(Align(
-          alignment: Alignment.center,
-          child: Text(widget.column.sortOrder.toString(),
-              style: TextStyle(
-                  color: theme.sortIconColor, fontSize: theme.sortOrderSize))));
+      if (widget.model.isMultiSorted) {
+        children.add(Align(
+            alignment: Alignment.center,
+            child: Text(widget.column.sortOrder.toString(),
+                style: TextStyle(
+                    color: theme.sortIconColor,
+                    fontSize: theme.sortOrderSize))));
+      }
     }
 
     Widget header = AxisLayout(
