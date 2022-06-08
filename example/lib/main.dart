@@ -107,7 +107,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _table() {
-    return EasyTable<Character>(_model);
+    return EasyTable<Character>(_model, multiSortEnabled: true);
   }
 
   Widget _buttons() {

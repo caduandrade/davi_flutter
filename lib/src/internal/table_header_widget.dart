@@ -19,7 +19,8 @@ class TableHeaderWidget<ROW> extends StatelessWidget {
       required this.columnsFit,
       required this.horizontalScrollController,
       required this.columnFilter,
-      required this.contentWidth})
+      required this.contentWidth,
+      required this.multiSortEnabled})
       : super(key: key);
 
   final EasyTableModel<ROW> model;
@@ -28,6 +29,7 @@ class TableHeaderWidget<ROW> extends StatelessWidget {
   final double contentWidth;
   final ScrollController? horizontalScrollController;
   final ColumnFilter columnFilter;
+  final bool multiSortEnabled;
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +43,10 @@ class TableHeaderWidget<ROW> extends StatelessWidget {
               column.pinned == false) ||
           (columnFilter == ColumnFilter.pinnedOnly && column.pinned)) {
         children.add(EasyTableHeaderCell<ROW>(
-            model: model, column: column, resizable: !columnsFit));
+            model: model,
+            column: column,
+            resizable: !columnsFit,
+            multiSortEnabled: multiSortEnabled));
       }
     }
 

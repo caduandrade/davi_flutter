@@ -2,7 +2,7 @@
 
 # Easy Table
 
-![](https://caduandrade.github.io/easy_table_flutter/easy_table_v4.png)
+![](https://caduandrade.github.io/easy_table_flutter/easy_table_v5.png)
 
 * Ready for a large number of data. Building cells on demand.
 * Focused on Web/Desktop Applications.
@@ -11,11 +11,13 @@
 * Resizable.
 * Highly customized.
 * Pinned columns.
+* Multiple column sort.
 
 ## Usage
 
 * [Get started](#get-started)
 * [Columns fit](#columns-fit)
+* [Multi sort](#multi-sort)
 * [Column style](#column-style)
 * [Custom cell widget](#custom-cell-widget)
 * [Row callbacks](#row-callbacks)
@@ -74,6 +76,12 @@ Widget build(BuildContext context) {
 ```
 
 ![](https://caduandrade.github.io/easy_table_flutter/columns_fit_v3.png)
+
+## Multi sort
+
+```dart
+  EasyTable(_model, multiSortEnabled: true);
+```
 
 ## Column style
 

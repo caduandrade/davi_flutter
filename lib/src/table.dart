@@ -40,7 +40,8 @@ class EasyTable<ROW> extends StatefulWidget {
       int? visibleRowsCount,
       this.cellContentHeight = 32,
       this.scrollbarRadius = Radius.zero,
-      this.focusable = true})
+      this.focusable = true,
+      this.multiSortEnabled = false})
       : _visibleRowsCount = visibleRowsCount == null || visibleRowsCount > 0
             ? visibleRowsCount
             : null,
@@ -60,6 +61,7 @@ class EasyTable<ROW> extends StatefulWidget {
   final double cellContentHeight;
   final OnLastVisibleRowListener? onLastVisibleRowListener;
   final bool focusable;
+  final bool multiSortEnabled;
 
   int? get visibleRowsCount => _visibleRowsCount;
 
@@ -184,7 +186,8 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
               model: model,
               columnsMetrics: columnsMetrics,
               contentWidth: contentWidth,
-              columnFilter: ColumnFilter.all);
+              columnFilter: ColumnFilter.all,
+              multiSortEnabled: widget.multiSortEnabled);
         }
         unpinnedBody = TableAreaContentWidget(
             columnsFit: widget.columnsFit,
@@ -255,7 +258,8 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
               columnsMetrics: unpinnedColumnsMetrics,
               contentWidth: contentWidth,
               columnFilter:
-                  hasPinned ? ColumnFilter.unpinnedOnly : ColumnFilter.all);
+                  hasPinned ? ColumnFilter.unpinnedOnly : ColumnFilter.all,
+              multiSortEnabled: widget.multiSortEnabled);
           pinnedHeader = pinnedColumnsMetrics != null
               ? TableHeaderWidget<ROW>(
                   horizontalScrollController:
@@ -266,7 +270,8 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
                   model: model,
                   columnsMetrics: pinnedColumnsMetrics,
                   contentWidth: pinnedContentWidth,
-                  columnFilter: ColumnFilter.pinnedOnly)
+                  columnFilter: ColumnFilter.pinnedOnly,
+                  multiSortEnabled: widget.multiSortEnabled)
               : null;
         }
 

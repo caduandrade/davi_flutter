@@ -1,6 +1,7 @@
 import 'dart:collection';
 
 import 'package:easy_table/src/column.dart';
+import 'package:easy_table/src/column_sort.dart';
 import 'package:easy_table/src/sort_type.dart';
 import 'package:flutter/widgets.dart';
 
@@ -25,16 +26,15 @@ class EasyTableModel<ROW> extends ChangeNotifier {
   final List<EasyTableColumn<ROW>> _columns = [];
   final List<ROW> _originalRows;
 
+  final List<EasyTableColumn<ROW>> _sortedColumns = [];
+
+  /// Gets the sorted columns.
+  List<EasyTableColumn<ROW>> get sortedColumns =>
+      UnmodifiableListView(_sortedColumns);
+
   List<ROW> _visibleRows;
-  _ColumnSort<ROW>? _columnSort;
 
-  EasyTableColumn<ROW>? get sortedColumn =>
-      _columnSort != null ? _columnSort!.column : null;
-
-  EasyTableSortType? get sortType =>
-      _columnSort != null ? _columnSort!.sortType : null;
-
-  bool get _visibleRowsModifiable => _visibleRows is! UnmodifiableListView;
+  bool get _isVisibleRowsModifiable => _visibleRows is! UnmodifiableListView;
 
   int get rowsLength => _originalRows.length;
 
@@ -63,51 +63,38 @@ class EasyTableModel<ROW> extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Indicates whether the model is sorted.
+  bool get isSorted => _sortedColumns.isNotEmpty;
+
+  /// Indicates whether the model is sorted by multiple columns.
+  bool get isMultiSorted => _sortedColumns.length > 1;
+
   ROW visibleRowAt(int index) => _visibleRows[index];
 
   void addRow(ROW row) {
     _originalRows.add(row);
-    if (_visibleRowsModifiable) {
-      _visibleRows.add(row);
-      _resort(notify: false);
-    }
-    notifyListeners();
+    _updateVisibleRows(notify: true);
   }
 
   void addRows(Iterable<ROW> rows) {
     _originalRows.addAll(rows);
-    if (_visibleRowsModifiable) {
-      _visibleRows.addAll(rows);
-    } else {
-      _visibleRows = UnmodifiableListView(_originalRows);
-    }
-    _resort(notify: false);
-    notifyListeners();
+    _updateVisibleRows(notify: true);
   }
 
+  /// Remove all rows.
   void removeRows() {
     _originalRows.clear();
-    if (_visibleRowsModifiable) {
-      _visibleRows.clear();
-    }
-    notifyListeners();
+    _updateVisibleRows(notify: true);
   }
 
   void replaceRows(Iterable<ROW> rows) {
     _originalRows.clear();
     _originalRows.addAll(rows);
-    if (_visibleRowsModifiable) {
-      _visibleRows.clear();
-      _visibleRows.addAll(rows);
-    } else {
-      _visibleRows = UnmodifiableListView(_originalRows);
-    }
-    _resort(notify: false);
-    notifyListeners();
+    _updateVisibleRows(notify: true);
   }
 
   void removeVisibleRowAt(int index) {
-    if (_visibleRowsModifiable) {
+    if (_isVisibleRowsModifiable) {
       ROW row = _visibleRows.removeAt(index);
       _originalRows.remove(row);
     } else {
@@ -118,7 +105,7 @@ class EasyTableModel<ROW> extends ChangeNotifier {
 
   void removeRow(ROW row) {
     _originalRows.remove(row);
-    if (_visibleRowsModifiable) {
+    if (_isVisibleRowsModifiable) {
       _visibleRows.remove(row);
     }
     notifyListeners();
@@ -140,36 +127,39 @@ class EasyTableModel<ROW> extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Remove all columns.
   void removeColumns() {
     _columns.clear();
-    _columnSort = null;
+    _sortedColumns.clear();
     _columnInResizing = null;
-    notifyListeners();
+    _updateVisibleRows(notify: true);
+  }
+
+  void _updateSortOrders() {
+    int order = 1;
+    for (EasyTableColumn<ROW> column in _sortedColumns) {
+      column._sortOrder = order++;
+    }
   }
 
   void removeColumnAt(int index) {
-    EasyTableColumn<ROW> column = _columns.removeAt(index);
-    if (_columnInResizing == column) {
-      _columnInResizing = null;
-    }
-    if (_columnSort?.column == column) {
-      _columnSort = null;
-      _visibleRows = UnmodifiableListView(_originalRows);
-    }
-    notifyListeners();
+    EasyTableColumn<ROW> column = _columns[index];
+    removeColumn(column);
   }
 
   void removeColumn(EasyTableColumn<ROW> column) {
-    _columns.remove(column);
-    if (_columnInResizing == column) {
-      _columnInResizing = null;
+    if (_columns.remove(column)) {
+      column.removeListener(notifyListeners);
+      if (_columnInResizing == column) {
+        _columnInResizing = null;
+      }
+      if (_sortedColumns.remove(column)) {
+        column._clearSortData();
+        _updateSortOrders();
+        _updateVisibleRows(notify: false);
+      }
+      notifyListeners();
     }
-    if (_columnSort?.column == column) {
-      _columnSort = null;
-      _visibleRows = UnmodifiableListView(_originalRows);
-    }
-    column.removeListener(notifyListeners);
-    notifyListeners();
   }
 
   double get columnsWeight {
@@ -229,19 +219,74 @@ class EasyTableModel<ROW> extends ChangeNotifier {
   }
 
   /// Revert to original sort order
-  void removeColumnSort() {
-    if (_columnSort != null) {
-      _columnSort = null;
-      _visibleRows = UnmodifiableListView(_originalRows);
-      notifyListeners();
+  void clearSort() {
+    _sortedColumns.clear();
+    _clearColumnsSortData();
+    _updateVisibleRows(notify: true);
+  }
+
+  void _clearColumnsSortData() {
+    for (EasyTableColumn<ROW> column in _columns) {
+      column._clearSortData();
     }
   }
 
+  /// Defines the columns that will be used in sorting.
+  void sort(List<ColumnSort> columnSorts) {
+    _sortedColumns.clear();
+    _clearColumnsSortData();
+    for (ColumnSort columnSort in columnSorts) {
+      EasyTableColumn<ROW> column = _columns[columnSort.columnIndex];
+      if (column.sort != null) {
+        column._sortType = columnSort.sortType;
+        _sortedColumns.add(column);
+      }
+    }
+    _updateSortOrders();
+    _updateVisibleRows(notify: true);
+  }
+
+  /// Updates the multi sort given a column.
+  void multiSortByColumn(EasyTableColumn<ROW> column) {
+    if (_columns.contains(column) == false || column.sort == null) {
+      return;
+    }
+    int columnSortIndex = _sortedColumns.indexOf(column);
+    if (columnSortIndex == -1) {
+      column._sortType = EasyTableSortType.ascending;
+      _sortedColumns.add(column);
+    } else if (columnSortIndex == _sortedColumns.length - 1) {
+      // last
+      if (_sortedColumns.last.sortType == EasyTableSortType.ascending) {
+        _sortedColumns.last._sortType = EasyTableSortType.descending;
+      } else {
+        _sortedColumns.removeAt(columnSortIndex)._clearSortData();
+      }
+    } else {
+      _sortedColumns.removeAt(columnSortIndex)._clearSortData();
+    }
+    _updateSortOrders();
+    _updateVisibleRows(notify: true);
+  }
+
+  /// Sort given a column index.
+  void sortByColumnIndex(
+      {required int columnIndex, required EasyTableSortType sortType}) {
+    sortByColumn(column: _columns[columnIndex], sortType: sortType);
+  }
+
+  /// Sort given a column.
   void sortByColumn(
       {required EasyTableColumn<ROW> column,
       required EasyTableSortType sortType}) {
-    _columnSort = _ColumnSort(column, sortType);
-    _resort(notify: true);
+    if (column.sort != null && _columns.contains(column)) {
+      _sortedColumns.clear();
+      _clearColumnsSortData();
+      column._sortOrder = 1;
+      column._sortType = sortType;
+      _sortedColumns.add(column);
+      _updateVisibleRows(notify: true);
+    }
   }
 
   /// Notifies any row data update by calling all the registered listeners.
@@ -249,31 +294,49 @@ class EasyTableModel<ROW> extends ChangeNotifier {
     notifyListeners();
   }
 
-  void _resort({required bool notify}) {
-    if (_columnSort != null && _columnSort!.column.sort != null) {
+  /// Updates the visible rows given the sorts and filters.
+  void _updateVisibleRows({required bool notify}) {
+    if (isSorted) {
       List<ROW> list = List.from(_originalRows);
-      EasyTableColumnSort<ROW> sortFunction = _columnSort!.column.sort!;
-      if (sortType == EasyTableSortType.descending) {
-        list.sort((a, b) => sortFunction(b, a));
-      } else {
-        list.sort(sortFunction);
-      }
+      list.sort(_compoundSort);
       _visibleRows = list;
-      if (notify) {
-        notifyListeners();
+    } else {
+      _visibleRows = UnmodifiableListView(_originalRows);
+    }
+    if (notify) {
+      notifyListeners();
+    }
+  }
+
+  /// Function to realize the multi sort.
+  int _compoundSort(ROW a, ROW b) {
+    int r = 0;
+    for (int i = 0; i < _sortedColumns.length; i++) {
+      final EasyTableColumnSort<ROW> sort = _sortedColumns[i].sort!;
+      final EasyTableSortType sortType = _sortedColumns[i].sortType!;
+
+      if (sortType == EasyTableSortType.descending) {
+        r = sort(b, a);
+      } else {
+        r = sort(a, b);
+      }
+      if (r != 0) {
+        break;
       }
     }
+    return r;
   }
 }
 
-class _ColumnSort<ROW> {
-  _ColumnSort(this.column, this.sortType);
-
-  final EasyTableColumn<ROW> column;
-  final EasyTableSortType sortType;
-
-  @override
-  String toString() {
-    return '_ColumnSort{column: $column, sortType: $sortType}';
+mixin ColumnSortMixin {
+  int? _sortOrder;
+  int? get sortOrder => _sortOrder;
+  EasyTableSortType? _sortType;
+  EasyTableSortType? get sortType => _sortType;
+  void _clearSortData() {
+    _sortOrder = null;
+    _sortType = null;
   }
+
+  bool get isSorted => _sortType != null;
 }

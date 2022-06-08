@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'package:easy_table/src/cell_builder.dart';
 import 'package:easy_table/src/cell_style.dart';
+import 'package:easy_table/src/model.dart';
 import 'package:easy_table/src/value_mapper.dart';
 import 'package:flutter/widgets.dart';
 
@@ -31,7 +32,7 @@ typedef EasyTableColumnSort<ROW> = int Function(ROW a, ROW b);
 ///
 /// The [fractionDigits] is the optional decimal-point string-representation
 /// used by the default cell width when the [doubleValue] is set.
-class EasyTableColumn<ROW> extends ChangeNotifier {
+class EasyTableColumn<ROW> extends ChangeNotifier with ColumnSortMixin {
   factory EasyTableColumn(
       {dynamic id,
       double width = 100,
