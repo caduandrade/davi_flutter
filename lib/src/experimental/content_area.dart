@@ -4,20 +4,27 @@ import 'package:flutter/material.dart';
 
 class ContentArea {
   ContentArea(
-      {required this.id, required this.bounds, required this.layoutSettings});
+      {required this.id,
+      required this.headerAreaDebugColor,
+      required this.scrollbarAreaDebugColor});
 
   final ContentAreaId id;
-  final Rect bounds;
-  final TableLayoutSettings layoutSettings;
+  final Color headerAreaDebugColor;
+  final Color scrollbarAreaDebugColor;
 
-  void paintDebugAreas({required Canvas canvas}) {
+  Rect bounds = Rect.zero;
+
+  void paintDebugAreas(
+      {required Canvas canvas,
+      required Offset offset,
+      required TableLayoutSettings layoutSettings}) {
     if (layoutSettings.hasHeader) {
       Paint paint = Paint()
         ..style = PaintingStyle.fill
         ..color = headerAreaDebugColor;
       canvas.drawRect(
-          Rect.fromLTWH(bounds.left, bounds.top, bounds.width,
-              layoutSettings.headerHeight),
+          Rect.fromLTWH(offset.dx + bounds.left, offset.dy + bounds.top,
+              bounds.width, layoutSettings.headerHeight),
           paint);
     }
 
@@ -27,33 +34,11 @@ class ContentArea {
         ..color = scrollbarAreaDebugColor;
       canvas.drawRect(
           Rect.fromLTWH(
-              bounds.left,
-              bounds.bottom - layoutSettings.scrollbarHeight,
+              offset.dx + bounds.left,
+              offset.dy + bounds.bottom - layoutSettings.scrollbarHeight,
               bounds.width,
               layoutSettings.scrollbarHeight),
           paint);
-    }
-  }
-
-  Color get headerAreaDebugColor {
-    switch (id) {
-      case ContentAreaId.leftPinned:
-        return Colors.yellow;
-      case ContentAreaId.rightPinned:
-        return Colors.orangeAccent;
-      case ContentAreaId.unpinned:
-        return Colors.lime;
-    }
-  }
-
-  Color get scrollbarAreaDebugColor {
-    switch (id) {
-      case ContentAreaId.leftPinned:
-        return Colors.yellow;
-      case ContentAreaId.rightPinned:
-        return Colors.orangeAccent;
-      case ContentAreaId.unpinned:
-        return Colors.lime;
     }
   }
 }

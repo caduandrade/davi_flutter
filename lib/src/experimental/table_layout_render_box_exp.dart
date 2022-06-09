@@ -5,6 +5,7 @@ import 'package:easy_table/src/experimental/table_layout_parent_data_exp.dart';
 import 'package:easy_table/src/experimental/table_layout_settings.dart';
 import 'package:easy_table/src/experimental/table_paint_settings.dart';
 import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
 class TableLayoutRenderBoxExp extends RenderBox
@@ -21,6 +22,19 @@ class TableLayoutRenderBoxExp extends RenderBox
 
   late final TapGestureRecognizer _tapGestureRecognizer;
   late final HorizontalDragGestureRecognizer _horizontalDragGestureRecognizer;
+
+  final ContentArea _leftPinnedContentArea = ContentArea(
+      id: ContentAreaId.leftPinned,
+      headerAreaDebugColor: Colors.yellow[300]!,
+      scrollbarAreaDebugColor: Colors.yellow[200]!);
+  final ContentArea _unpinnedContentArea = ContentArea(
+      id: ContentAreaId.unpinned,
+      headerAreaDebugColor: Colors.lime[300]!,
+      scrollbarAreaDebugColor: Colors.lime[200]!);
+  final ContentArea _rightPinnedContentArea = ContentArea(
+      id: ContentAreaId.rightPinned,
+      headerAreaDebugColor: Colors.orange[300]!,
+      scrollbarAreaDebugColor: Colors.orange[200]!);
 
   TableLayoutSettings _layoutSettings;
   set layoutSettings(TableLayoutSettings value) {
@@ -97,6 +111,13 @@ class TableLayoutRenderBoxExp extends RenderBox
     List<RenderBox> children = [];
     visitChildren((child) => children.add(child as RenderBox));
 
+    _leftPinnedContentArea.bounds =
+        Rect.fromLTWH(0, 0, 100, constraints.maxHeight);
+    _unpinnedContentArea.bounds =
+        Rect.fromLTWH(150, 0, 100, constraints.maxHeight);
+    _rightPinnedContentArea.bounds =
+        Rect.fromLTWH(400, 0, 100, constraints.maxHeight);
+
     if (constraints.hasBoundedHeight) {
       size = Size(constraints.maxWidth, constraints.maxHeight);
     } else {
@@ -150,15 +171,22 @@ class TableLayoutRenderBoxExp extends RenderBox
     defaultPaint(context, offset);
     if (_paintSettings.debugAreas) {
       if (_layoutSettings.hasHeader) {
-        ContentArea leftPinnedArea = ContentArea(
-            id: ContentAreaId.leftPinned,
-            bounds: Rect.fromLTWH(offset.dx, offset.dy, 100, size.height),
-            layoutSettings: _layoutSettings);
-        leftPinnedArea.paintDebugAreas(canvas: context.canvas);
+        _forEachContentArea((area) => area.paintDebugAreas(
+            canvas: context.canvas,
+            offset: offset,
+            layoutSettings: _layoutSettings));
       }
     }
   }
+
+  void _forEachContentArea(_ContentAreaFunction function) {
+    function(_leftPinnedContentArea);
+    function(_unpinnedContentArea);
+    function(_rightPinnedContentArea);
+  }
 }
+
+typedef _ContentAreaFunction = void Function(ContentArea area);
 
 /// Utility extension to facilitate obtaining parent data.
 extension _TableLayoutParentDataGetter on RenderObject {
