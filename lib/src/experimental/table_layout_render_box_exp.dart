@@ -1,10 +1,9 @@
 import 'package:easy_table/src/experimental/content_area.dart';
 import 'package:easy_table/src/experimental/content_area_id.dart';
-import 'package:easy_table/src/experimental/table_callbacks.dart';
+import 'package:easy_table/src/experimental/layout_child_type.dart';
 import 'package:easy_table/src/experimental/table_layout_parent_data_exp.dart';
 import 'package:easy_table/src/experimental/table_layout_settings.dart';
 import 'package:easy_table/src/experimental/table_paint_settings.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
@@ -14,14 +13,9 @@ class TableLayoutRenderBoxExp extends RenderBox
         RenderBoxContainerDefaultsMixin<RenderBox, TableLayoutParentDataExp> {
   TableLayoutRenderBoxExp(
       {required TableLayoutSettings layoutSettings,
-      required TablePaintSettings paintSettings,
-      required TableCallbacks callbacks})
+      required TablePaintSettings paintSettings})
       : _layoutSettings = layoutSettings,
-        _paintSettings = paintSettings,
-        _callbacks = callbacks;
-
-  late final TapGestureRecognizer _tapGestureRecognizer;
-  late final HorizontalDragGestureRecognizer _horizontalDragGestureRecognizer;
+        _paintSettings = paintSettings;
 
   final ContentArea _leftPinnedContentArea = ContentArea(
       id: ContentAreaId.leftPinned,
@@ -52,37 +46,6 @@ class TableLayoutRenderBoxExp extends RenderBox
     }
   }
 
-  TableCallbacks? _callbacks;
-  set callbacks(TableCallbacks? value) {
-    if (_callbacks != value) {
-      _callbacks = value;
-      _setCallbacksOnGestureRecognizers();
-    }
-  }
-
-  @override
-  void attach(PipelineOwner owner) {
-    _tapGestureRecognizer = TapGestureRecognizer(debugOwner: this);
-    _horizontalDragGestureRecognizer =
-        HorizontalDragGestureRecognizer(debugOwner: this);
-    _setCallbacksOnGestureRecognizers();
-    super.attach(owner);
-  }
-
-  void _setCallbacksOnGestureRecognizers() {
-    _tapGestureRecognizer.onTap = _callbacks?.onTap;
-    _horizontalDragGestureRecognizer.onStart = _callbacks?.onDragStart;
-    _horizontalDragGestureRecognizer.onUpdate = _callbacks?.onDragUpdate;
-    _horizontalDragGestureRecognizer.onEnd = _callbacks?.onDragEnd;
-  }
-
-  @override
-  void detach() {
-    _tapGestureRecognizer.dispose();
-    _horizontalDragGestureRecognizer.dispose();
-    super.detach();
-  }
-
   @override
   void setupParentData(RenderBox child) {
     if (child.parentData is! TableLayoutParentDataExp) {
@@ -108,8 +71,20 @@ class TableLayoutRenderBoxExp extends RenderBox
       throw FlutterError('EasyTable was given unbounded width.');
     }
 
+    RenderBox? unpinnedHorizontalScrollbar;
     List<RenderBox> children = [];
-    visitChildren((child) => children.add(child as RenderBox));
+    visitChildren((child) {
+      RenderBox renderBox = child as RenderBox;
+      TableLayoutParentDataExp parentData = child._parentData();
+      if (parentData.type == LayoutChildType.horizontalScrollbar) {
+        if (parentData.contentAreaId == ContentAreaId.unpinned) {
+          unpinnedHorizontalScrollbar = renderBox;
+        } else {
+          //TODO error
+        }
+      }
+      children.add(renderBox);
+    });
 
     _leftPinnedContentArea.bounds =
         Rect.fromLTWH(0, 0, 100, constraints.maxHeight);
@@ -124,6 +99,10 @@ class TableLayoutRenderBoxExp extends RenderBox
       // unbounded height
       size = Size(constraints.maxWidth, constraints.maxHeight);
     }
+
+    _unpinnedContentArea.layout(
+        layoutSettings: _layoutSettings,
+        scrollbar: unpinnedHorizontalScrollbar);
   }
 
   @override
@@ -145,30 +124,7 @@ class TableLayoutRenderBoxExp extends RenderBox
   }
 
   @override
-  bool hitTest(BoxHitTestResult result, {required Offset position}) {
-    //TODO check area
-    result.add(BoxHitTestEntry(this, position));
-    return true;
-  }
-
-  @override
-  bool hitTestChildren(BoxHitTestResult result, {required Offset position}) {
-    //TODO check area
-    return defaultHitTestChildren(result, position: position);
-  }
-
-  @override
-  void handleEvent(PointerEvent event, BoxHitTestEntry entry) {
-    assert(debugHandleEvent(event, entry));
-    if (event is PointerDownEvent) {
-      _tapGestureRecognizer.addPointer(event);
-      _horizontalDragGestureRecognizer.addPointer(event);
-    }
-  }
-
-  @override
   void paint(PaintingContext context, Offset offset) {
-    defaultPaint(context, offset);
     if (_paintSettings.debugAreas) {
       if (_layoutSettings.hasHeader) {
         _forEachContentArea((area) => area.paintDebugAreas(
@@ -177,12 +133,18 @@ class TableLayoutRenderBoxExp extends RenderBox
             layoutSettings: _layoutSettings));
       }
     }
+    defaultPaint(context, offset);
   }
 
   void _forEachContentArea(_ContentAreaFunction function) {
     function(_leftPinnedContentArea);
     function(_unpinnedContentArea);
     function(_rightPinnedContentArea);
+  }
+
+  @override
+  bool hitTestChildren(BoxHitTestResult result, {required Offset position}) {
+    return defaultHitTestChildren(result, position: position);
   }
 }
 

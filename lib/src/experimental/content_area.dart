@@ -1,4 +1,5 @@
 import 'package:easy_table/src/experimental/content_area_id.dart';
+import 'package:easy_table/src/experimental/table_layout_parent_data_exp.dart';
 import 'package:easy_table/src/experimental/table_layout_settings.dart';
 import 'package:flutter/material.dart';
 
@@ -14,6 +15,19 @@ class ContentArea {
 
   Rect bounds = Rect.zero;
 
+  void layout(
+      {required TableLayoutSettings layoutSettings,
+      required RenderBox? scrollbar}) {
+    if (scrollbar != null) {
+      scrollbar.layout(
+          BoxConstraints.tightFor(
+              width: bounds.width, height: layoutSettings.scrollbarSize),
+          parentUsesSize: true);
+      scrollbar._parentData().offset =
+          Offset(bounds.left, bounds.bottom - layoutSettings.scrollbarSize);
+    }
+  }
+
   void paintDebugAreas(
       {required Canvas canvas,
       required Offset offset,
@@ -28,17 +42,24 @@ class ContentArea {
           paint);
     }
 
-    if (layoutSettings.hasScrollbar) {
+    if (layoutSettings.hasVerticalScrollbar) {
       Paint paint = Paint()
         ..style = PaintingStyle.fill
         ..color = scrollbarAreaDebugColor;
       canvas.drawRect(
           Rect.fromLTWH(
               offset.dx + bounds.left,
-              offset.dy + bounds.bottom - layoutSettings.scrollbarHeight,
+              offset.dy + bounds.bottom - layoutSettings.scrollbarSize,
               bounds.width,
-              layoutSettings.scrollbarHeight),
+              layoutSettings.scrollbarSize),
           paint);
     }
+  }
+}
+
+/// Utility extension to facilitate obtaining parent data.
+extension _TableLayoutParentDataGetter on RenderObject {
+  TableLayoutParentDataExp _parentData() {
+    return parentData as TableLayoutParentDataExp;
   }
 }

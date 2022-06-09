@@ -4,15 +4,19 @@ class TableLayoutSettings {
       required this.rowHeight,
       required this.hasHeader,
       required this.headerHeight,
-      required this.hasScrollbar,
-      required this.scrollbarHeight});
+      required this.hasVerticalScrollbar,
+      required this.scrollbarSize,
+      required this.columnsFit});
 
   final int? visibleRowsCount;
   final double rowHeight;
   final bool hasHeader;
   final double headerHeight;
-  final bool hasScrollbar;
-  final double scrollbarHeight;
+  final bool hasVerticalScrollbar;
+  final double scrollbarSize;
+  final bool columnsFit;
+
+  bool get allowHorizontalScrollbar => !columnsFit;
 
   @override
   bool operator ==(Object other) =>
@@ -23,8 +27,9 @@ class TableLayoutSettings {
           rowHeight == other.rowHeight &&
           hasHeader == other.hasHeader &&
           headerHeight == other.headerHeight &&
-          hasScrollbar == other.hasScrollbar &&
-          scrollbarHeight == other.scrollbarHeight;
+          hasVerticalScrollbar == other.hasVerticalScrollbar &&
+          scrollbarSize == other.scrollbarSize &&
+          columnsFit == other.columnsFit;
 
   @override
   int get hashCode =>
@@ -32,6 +37,7 @@ class TableLayoutSettings {
       rowHeight.hashCode ^
       hasHeader.hashCode ^
       headerHeight.hashCode ^
-      hasScrollbar.hashCode ^
-      scrollbarHeight.hashCode;
+      hasVerticalScrollbar.hashCode ^
+      scrollbarSize.hashCode ^
+      columnsFit.hashCode;
 }

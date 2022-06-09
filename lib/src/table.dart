@@ -165,7 +165,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
       double pinnedWidth = 0;
       double contentWidth;
       double pinnedContentWidth = 0;
-      final allowHorizontalScrollbar = !widget.columnsFit;
+      final bool allowHorizontalScrollbar = !widget.columnsFit;
       bool needHorizontalScrollbar = !theme.scrollbar.horizontalOnlyWhenNeeded;
       if (widget.columnsFit) {
         final double availableWidth =
