@@ -1,5 +1,6 @@
 docs/
 lib/src/internal/qa/
+lib/src/experimental/
 
 # Miscellaneous
 *.class
