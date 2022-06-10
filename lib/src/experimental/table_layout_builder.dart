@@ -1,12 +1,15 @@
 import 'dart:math' as math;
+import 'package:easy_table/src/cell_style.dart';
+import 'package:easy_table/src/column.dart';
 import 'package:easy_table/src/experimental/columns_metrics_exp.dart';
 import 'package:easy_table/src/experimental/content_area_id.dart';
-import 'package:easy_table/src/experimental/horizontal_scroll_bar_exp.dart';
+import 'package:easy_table/src/experimental/table_scroll_bar_exp.dart';
 import 'package:easy_table/src/experimental/layout_child.dart';
 import 'package:easy_table/src/experimental/table_layout_exp.dart';
 import 'package:easy_table/src/experimental/table_layout_settings.dart';
 import 'package:easy_table/src/experimental/table_paint_settings.dart';
 import 'package:easy_table/src/experimental/table_scroll_controllers.dart';
+import 'package:easy_table/src/internal/cell.dart';
 import 'package:easy_table/src/internal/columns_metrics.dart';
 import 'package:easy_table/src/model.dart';
 import 'package:easy_table/src/theme/header_theme_data.dart';
@@ -32,6 +35,22 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
   }
 
   Widget _builder(BuildContext context, BoxConstraints constraints) {
+    if (!constraints.hasBoundedHeight &&
+        layoutSettings.visibleRowsCount == null) {
+      throw FlutterError.fromParts(<DiagnosticsNode>[
+        ErrorSummary('EasyTable was given unbounded height.'),
+        ErrorDescription(
+            'EasyTable already is scrollable in the vertical axis.'),
+        ErrorHint(
+          'Consider using the "visibleRowsCount" property to limit the height'
+          ' or use it in another Widget like Expanded or SliverFillRemaining.',
+        ),
+      ]);
+    }
+    if (!constraints.hasBoundedWidth) {
+      throw FlutterError('EasyTable was given unbounded width.');
+    }
+
     TablePaintSettings paintSettings = TablePaintSettings(debugAreas: true);
     if (model != null) {
       return _buildTable(
@@ -52,13 +71,38 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
       required EasyTableModel<ROW> model,
       required TablePaintSettings paintSettings}) {
     final EasyTableThemeData theme = EasyTableTheme.of(context);
-    final HeaderThemeData headerTheme = theme.header;
 
-    ColumnsMetricsExp unpinnedColumnsMetrics =ColumnsMetricsExp.empty;
+    ColumnsMetricsExp<ROW> unpinnedColumnsMetrics = ColumnsMetricsExp.empty();
 
-    final List<ROW> rows =[];
+    final List<ROW> rows = [];
     final List<LayoutChild> children = [];
 
+    int visibleRowsCount = layoutSettings.visibleRowsCount ?? 0;
+    if (constraints.hasBoundedHeight) {
+      //TODO scrollbarSize should have separator
+      final double contentAvailableHeight = math.max(
+          0,
+          constraints.maxHeight -
+              layoutSettings.headerHeight -
+              layoutSettings.scrollbarSize);
+      visibleRowsCount = (contentAvailableHeight /
+              (layoutSettings.cellHeight + theme.row.dividerThickness))
+          .ceil();
+    }
+    layoutSettings.contentHeight =
+        (model.rowsLength * layoutSettings.cellHeight) +
+            (math.max(0, model.rowsLength - 1) * theme.row.dividerThickness);
+
+    children.add(LayoutChild.verticalScrollbar(
+        child: EasyTableScrollBarExp(
+            axis: Axis.vertical,
+            contentSize: layoutSettings.contentHeight,
+            scrollController: scrollControllers.vertical,
+            color: theme.scrollbar.verticalColor)));
+
+    final int firstRowIndex =
+        (scrollControllers.verticalOffset / layoutSettings.rowHeight).floor();
+    final int lastRowIndex = firstRowIndex + visibleRowsCount;
 
     final double contentTop = layoutSettings.headerHeight;
 
@@ -69,6 +113,7 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
     double unpinnedContentWidth;
     double pinnedWidth = 0;
     double pinnedContentWidth = 0;
+
     if (layoutSettings.columnsFit) {
       final double availableContentWidth =
           math.max(0, constraints.maxWidth - layoutSettings.scrollbarSize);
@@ -80,6 +125,44 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
           model: model,
           containerWidth: availableContentWidth,
           columnDividerThickness: theme.columnDividerThickness);
+
+      for (int rowIndex = firstRowIndex;
+          rowIndex < model.rowsLength && rowIndex < lastRowIndex;
+          rowIndex++) {
+        ROW row = model.visibleRowAt(rowIndex);
+        rows.add(row);
+        for (int columnIndex = 0;
+            columnIndex < unpinnedColumnsMetrics.columns.length;
+            columnIndex++) {
+          EasyTableColumn<ROW> column =
+              unpinnedColumnsMetrics.columns[columnIndex];
+          if (column.cellBuilder != null) {
+            Widget cellChild = column.cellBuilder!(context, row, rowIndex);
+            EdgeInsets? padding;
+            Alignment? alignment;
+            Color? background;
+            if (column.cellStyleBuilder != null) {
+              CellStyle? cellStyle = column.cellStyleBuilder!(row);
+              if (cellStyle != null) {
+                background = cellStyle.background;
+                alignment = cellStyle.alignment;
+                padding = cellStyle.padding;
+              }
+            }
+            Widget cell = ClipRect(
+                child: EasyTableCell(
+                    child: cellChild,
+                    alignment: alignment,
+                    padding: padding,
+                    background: background));
+            children.add(LayoutChild.cell(
+                contentAreaId: ContentAreaId.unpinned,
+                row: rowIndex,
+                column: columnIndex,
+                child: cell));
+          }
+        }
+      }
     } else {
       final int unpinnedColumnsLength = model.unpinnedColumnsLength;
       final int pinnedColumnsLength = model.pinnedColumnsLength;
@@ -120,11 +203,12 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
               filter: ColumnFilter.pinnedOnly)
           : null;
     }
+
     return TableLayoutExp(
         layoutSettings: layoutSettings,
         paintSettings: paintSettings,
         scrollControllers: scrollControllers,
-        unpinnedColumnsMetrics:unpinnedColumnsMetrics,
+        unpinnedColumnsMetrics: unpinnedColumnsMetrics,
         rows: rows,
         children: children);
   }
@@ -138,18 +222,26 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
     List<LayoutChild> children = [];
     if (layoutSettings.allowHorizontalScrollbar &&
         !theme.scrollbar.horizontalOnlyWhenNeeded) {
+      children.add(LayoutChild.verticalScrollbar(
+          child: EasyTableScrollBarExp(
+              axis: Axis.vertical,
+              contentSize: constraints.maxHeight,
+              scrollController: scrollControllers.vertical,
+              color: theme.scrollbar.verticalColor)));
       children.add(LayoutChild.horizontalScrollbar(
           contentAreaId: ContentAreaId.unpinned,
-          child: HorizontalScrollBarExp(
-              contentWidth: constraints.maxWidth,
-              scrollController: scrollControllers.unpinnedContentArea)));
+          child: EasyTableScrollBarExp(
+              axis: Axis.horizontal,
+              contentSize: constraints.maxWidth,
+              scrollController: scrollControllers.unpinnedContentArea,
+              color: theme.scrollbar.unpinnedHorizontalColor)));
     }
 
     return TableLayoutExp(
         layoutSettings: layoutSettings,
         paintSettings: paintSettings,
         scrollControllers: scrollControllers,
-        unpinnedColumnsMetrics:ColumnsMetricsExp.empty,
+        unpinnedColumnsMetrics: ColumnsMetricsExp.empty(),
         rows: const [],
         children: children);
   }

@@ -20,7 +20,7 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
       : _layoutSettings = layoutSettings,
         _paintSettings = paintSettings,
         _unpinnedColumnsMetrics = unpinnedColumnsMetrics,
-  _rows=rows;
+        _rows = rows;
 
   final ContentArea _leftPinnedContentArea = ContentArea(
       id: ContentAreaId.leftPinned,
@@ -35,8 +35,14 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
       headerAreaDebugColor: Colors.orange[300]!,
       scrollbarAreaDebugColor: Colors.orange[200]!);
 
+  late final Map<ContentAreaId, ContentArea> _contentAreaMap = {
+    ContentAreaId.leftPinned: _leftPinnedContentArea,
+    ContentAreaId.unpinned: _unpinnedContentArea,
+    ContentAreaId.rightPinned: _rightPinnedContentArea
+  };
+
   List<ROW> _rows;
-  set rows( List<ROW> value) {
+  set rows(List<ROW> value) {
     _rows = value;
   }
 
@@ -73,54 +79,51 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
 
   @override
   void performLayout() {
-    if (!constraints.hasBoundedHeight &&
-        _layoutSettings.visibleRowsCount == null) {
-      throw FlutterError.fromParts(<DiagnosticsNode>[
-        ErrorSummary('EasyTable was given unbounded height.'),
-        ErrorDescription(
-            'EasyTable already is scrollable in the vertical axis.'),
-        ErrorHint(
-          'Consider using the "visibleRowsCount" property to limit the height'
-          ' or use it in another Widget like Expanded or SliverFillRemaining.',
-        ),
-      ]);
-    }
-    if (!constraints.hasBoundedWidth) {
-      throw FlutterError('EasyTable was given unbounded width.');
-    }
+    _forEachContentArea((area) => area.clear());
 
-    RenderBox? unpinnedHorizontalScrollbar;
+    RenderBox? verticalScrollbar;
     List<RenderBox> children = [];
     visitChildren((child) {
       RenderBox renderBox = child as RenderBox;
       TableLayoutParentDataExp parentData = child._parentData();
-      if (parentData.type == LayoutChildType.horizontalScrollbar) {
+      if (parentData.type == LayoutChildType.cell) {
+        _contentAreaMap[parentData.contentAreaId]!.children.add(renderBox);
+      } else if (parentData.type == LayoutChildType.horizontalScrollbar) {
         if (parentData.contentAreaId == ContentAreaId.unpinned) {
-          unpinnedHorizontalScrollbar = renderBox;
-        } else {
-          //TODO error
+          _contentAreaMap[parentData.contentAreaId]!.scrollbar = renderBox;
         }
+      } else if (parentData.type == LayoutChildType.verticalScrollbar) {
+        verticalScrollbar = renderBox;
       }
       children.add(renderBox);
     });
 
-    _leftPinnedContentArea.bounds =
-        Rect.fromLTWH(0, 0, 100, constraints.maxHeight);
-    _unpinnedContentArea.bounds =
-        Rect.fromLTWH(150, 0, 100, constraints.maxHeight);
-    _rightPinnedContentArea.bounds =
-        Rect.fromLTWH(400, 0, 100, constraints.maxHeight);
-
+    double height = 0;
     if (constraints.hasBoundedHeight) {
-      size = Size(constraints.maxWidth, constraints.maxHeight);
+      height = constraints.maxHeight;
     } else {
       // unbounded height
-      size = Size(constraints.maxWidth, constraints.maxHeight);
+      height = _layoutSettings.headerHeight +
+          _layoutSettings.contentHeight +
+          _layoutSettings.scrollbarSize;
     }
 
-    _unpinnedContentArea.layout(
-        layoutSettings: _layoutSettings,
-        scrollbar: unpinnedHorizontalScrollbar);
+    // vertical scrollbar
+    verticalScrollbar!.layout(
+        BoxConstraints.tightFor(
+            width: _layoutSettings.scrollbarSize, height: height),
+        parentUsesSize: true);
+    verticalScrollbar!._parentData().offset =
+        Offset(constraints.maxWidth - _layoutSettings.scrollbarSize, 0);
+
+    _leftPinnedContentArea.bounds = Rect.fromLTWH(0, 0, 100, height);
+    _unpinnedContentArea.bounds = Rect.fromLTWH(150, 0, 100, height);
+    _rightPinnedContentArea.bounds = Rect.fromLTWH(400, 0, 100, height);
+
+    size = Size(constraints.maxWidth, height);
+
+    _forEachContentArea(
+        (area) => area.performLayout(layoutSettings: _layoutSettings));
   }
 
   @override
@@ -136,7 +139,7 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
   double computeMaxIntrinsicHeight(double width) {
     double height = computeMinIntrinsicHeight(width);
     if (_layoutSettings.visibleRowsCount != null) {
-      height += _layoutSettings.visibleRowsCount! * _layoutSettings.rowHeight;
+      height += _layoutSettings.visibleRowsCount! * _layoutSettings.cellHeight;
     }
     return height;
   }
@@ -152,7 +155,6 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
       }
     }
     defaultPaint(context, offset);
-
   }
 
   void _forEachContentArea(_ContentAreaFunction function) {

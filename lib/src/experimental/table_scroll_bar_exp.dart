@@ -5,21 +5,26 @@ import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
 @internal
-class HorizontalScrollBarExp extends StatelessWidget {
-  const HorizontalScrollBarExp(
-      {Key? key, required this.contentWidth, required this.scrollController})
+class EasyTableScrollBarExp extends StatelessWidget {
+  const EasyTableScrollBarExp(
+      {Key? key,
+      required this.contentSize,
+      required this.scrollController,
+      required this.axis,
+      required this.color})
       : super(key: key);
 
-  final double contentWidth;
+  final double contentSize;
   final ScrollController scrollController;
+  final Axis axis;
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
     EasyTableThemeData theme = EasyTableTheme.of(context);
     TableScrollbarThemeData scrollTheme = theme.scrollbar;
-
     return Container(
-        decoration: BoxDecoration(color: scrollTheme.unpinnedHorizontalColor),
+        decoration: BoxDecoration(color: color),
         child: Theme(
             data: ThemeData(
                 scrollbarTheme: ScrollbarThemeData(
@@ -35,8 +40,15 @@ class HorizontalScrollBarExp extends StatelessWidget {
                     behavior: ScrollConfiguration.of(context)
                         .copyWith(scrollbars: false),
                     child: SingleChildScrollView(
-                        child: Container(width: contentWidth),
+                        child: _sizedBox(),
                         controller: scrollController,
-                        scrollDirection: Axis.horizontal)))));
+                        scrollDirection: axis)))));
+  }
+
+  Widget _sizedBox() {
+    if (axis == Axis.vertical) {
+      return SizedBox(height: contentSize);
+    }
+    return SizedBox(width: contentSize);
   }
 }

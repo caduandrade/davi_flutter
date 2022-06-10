@@ -10,10 +10,13 @@ class TableLayoutSettings {
       required this.hasVerticalScrollbar,
       required this.columnsFit,
       required this.verticalScrollbarOffset}) {
-    rowHeight = cellContentHeight +
+    cellHeight = cellContentHeight +
         ((theme.cell.padding != null) ? theme.cell.padding!.vertical : 0);
+    rowHeight = cellHeight + theme.row.dividerThickness;
     scrollbarSize = theme.scrollbar.margin * 2 + theme.scrollbar.thickness;
-    headerHeight = theme.header.bottomBorderHeight + theme.headerCell.height;
+    headerHeight = hasHeader
+        ? theme.header.bottomBorderHeight + theme.headerCell.height
+        : 0;
   }
 
   final double cellContentHeight;
@@ -24,17 +27,16 @@ class TableLayoutSettings {
   final double verticalScrollbarOffset;
 
   /// Cell content and padding.
+  late final double cellHeight;
+
+  /// Cell height and divider thickness
   late final double rowHeight;
   late final double scrollbarSize;
   late final double headerHeight;
 
-  bool get allowHorizontalScrollbar => !columnsFit;
+  double contentHeight = 0;
 
-  double rowsHeight(
-      {required int rowsCount, required double rowDividerThickness}) {
-    return (rowHeight * rowsCount) +
-        (math.max(0, rowsCount - 1) * rowDividerThickness);
-  }
+  bool get allowHorizontalScrollbar => !columnsFit;
 
   @override
   bool operator ==(Object other) =>
@@ -47,9 +49,11 @@ class TableLayoutSettings {
           hasVerticalScrollbar == other.hasVerticalScrollbar &&
           columnsFit == other.columnsFit &&
           verticalScrollbarOffset == other.verticalScrollbarOffset &&
+          cellHeight == other.cellHeight &&
           rowHeight == other.rowHeight &&
           scrollbarSize == other.scrollbarSize &&
-          headerHeight == other.headerHeight;
+          headerHeight == other.headerHeight &&
+          contentHeight == other.contentHeight;
 
   @override
   int get hashCode =>
@@ -59,7 +63,9 @@ class TableLayoutSettings {
       hasVerticalScrollbar.hashCode ^
       columnsFit.hashCode ^
       verticalScrollbarOffset.hashCode ^
+      cellHeight.hashCode ^
       rowHeight.hashCode ^
       scrollbarSize.hashCode ^
-      headerHeight.hashCode;
+      headerHeight.hashCode ^
+      contentHeight.hashCode;
 }

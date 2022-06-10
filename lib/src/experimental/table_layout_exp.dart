@@ -17,8 +17,8 @@ class TableLayoutExp<ROW> extends MultiChildRenderObjectWidget {
       required this.layoutSettings,
       required this.paintSettings,
       required this.scrollControllers,
-        required this.unpinnedColumnsMetrics,
-        required this.rows,
+      required this.unpinnedColumnsMetrics,
+      required this.rows,
       required List<LayoutChild> children})
       : super(key: key, children: children);
 
@@ -31,7 +31,10 @@ class TableLayoutExp<ROW> extends MultiChildRenderObjectWidget {
   @override
   RenderObject createRenderObject(BuildContext context) {
     return TableLayoutRenderBoxExp<ROW>(
-        layoutSettings: layoutSettings, paintSettings: paintSettings,unpinnedColumnsMetrics:unpinnedColumnsMetrics, rows:rows);
+        layoutSettings: layoutSettings,
+        paintSettings: paintSettings,
+        unpinnedColumnsMetrics: unpinnedColumnsMetrics,
+        rows: rows);
   }
 
   @override
@@ -46,7 +49,7 @@ class TableLayoutExp<ROW> extends MultiChildRenderObjectWidget {
     renderObject
       ..layoutSettings = layoutSettings
       ..paintSettings = paintSettings
-    ..unpinnedColumnsMetrics=unpinnedColumnsMetrics
-    ..rows=rows;
+      ..unpinnedColumnsMetrics = unpinnedColumnsMetrics
+      ..rows = rows;
   }
 }

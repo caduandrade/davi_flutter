@@ -28,10 +28,11 @@ class ExampleApp extends StatelessWidget {
 }
 
 class Row {
-  Row({required this.s1, required this.i1});
+  Row({required this.string1, required this.string2, required this.int1});
 
-  final String s1;
-  final int i1;
+  final String string1;
+  final String string2;
+  final int int1;
 }
 
 class HomePage extends StatefulWidget {
@@ -51,11 +52,15 @@ class _HomePageState extends State<HomePage> {
     List<Row> rows = List<Row>.generate(
         100,
         (index) => Row(
-            s1: random.nextInt(9999999).toRadixString(16),
-            i1: random.nextInt(999)));
+            string1: random.nextInt(9999999).toRadixString(16),
+            string2: random.nextInt(9999999).toRadixString(16),
+            int1: random.nextInt(999)));
     _model = EasyTableModel(columns: [
-      EasyTableColumn(name: 's1', stringValue: (row) => row.s1),
-      EasyTableColumn(name: 'i1', intValue: (row) => row.i1)
+      EasyTableColumn(name: 'string1', stringValue: (row) => row.string1),
+      EasyTableColumn(
+          name: 'string2',
+          cellBuilder: (context, row, visibleRowIndex) => Text(row.string2)),
+      EasyTableColumn(name: 'int1', intValue: (row) => row.int1)
     ], rows: rows);
     super.initState();
   }

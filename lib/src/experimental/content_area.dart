@@ -13,17 +13,33 @@ class ContentArea {
   final Color headerAreaDebugColor;
   final Color scrollbarAreaDebugColor;
 
+  final List<RenderBox> children = [];
+  RenderBox? scrollbar;
+
   Rect bounds = Rect.zero;
 
-  void layout(
-      {required TableLayoutSettings layoutSettings,
-      required RenderBox? scrollbar}) {
+  void clear() {
+    children.clear();
+    scrollbar = null;
+  }
+
+  void performLayout({required TableLayoutSettings layoutSettings}) {
+    double y = 0;
+    for (RenderBox renderBox in children) {
+      final TableLayoutParentDataExp parentData = renderBox._parentData();
+      renderBox.layout(
+          BoxConstraints.tightFor(
+              width: 100, height: layoutSettings.cellHeight),
+          parentUsesSize: true);
+      parentData.offset = Offset(0, y);
+      y += layoutSettings.cellHeight;
+    }
     if (scrollbar != null) {
-      scrollbar.layout(
+      scrollbar!.layout(
           BoxConstraints.tightFor(
               width: bounds.width, height: layoutSettings.scrollbarSize),
           parentUsesSize: true);
-      scrollbar._parentData().offset =
+      scrollbar!._parentData().offset =
           Offset(bounds.left, bounds.bottom - layoutSettings.scrollbarSize);
     }
   }
@@ -56,9 +72,7 @@ class ContentArea {
     }
   }
 
-  void paintChildren({required Canvas canvas, required Offset offset}) {
-
-  }
+  void paintChildren({required Canvas canvas, required Offset offset}) {}
 }
 
 /// Utility extension to facilitate obtaining parent data.

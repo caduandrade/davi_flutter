@@ -5,11 +5,11 @@ class TableScrollControllers {
   ScrollController vertical = ScrollController();
 
   double get unpinnedContentAreaOffset {
-    return unpinnedContentArea.hasClients?unpinnedContentArea.offset:0;
+    return unpinnedContentArea.hasClients ? unpinnedContentArea.offset : 0;
   }
 
   double get verticalOffset {
-    return vertical.hasClients?vertical.offset:0;
+    return vertical.hasClients ? vertical.offset : 0;
   }
 
   void addListener(VoidCallback listener) {
