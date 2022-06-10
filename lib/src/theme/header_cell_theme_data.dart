@@ -7,6 +7,7 @@ class HeaderCellThemeData {
   /// Builds a theme data.
   const HeaderCellThemeData(
       {this.textStyle = HeaderCellThemeDataDefaults.textStyle,
+        this.height = HeaderCellThemeDataDefaults.height,
       this.padding = HeaderCellThemeDataDefaults.padding,
       this.alignment = HeaderCellThemeDataDefaults.alignment,
       this.ascendingIcon = HeaderCellThemeDataDefaults.ascendingIcon,
@@ -28,7 +29,7 @@ class HeaderCellThemeData {
   final Color sortIconColor;
   final double sortIconSize;
   final double sortOrderSize;
-
+  final double height;
   final double resizeAreaWidth;
   final Color? resizeAreaHoverColor;
   final bool expandableName;
@@ -40,6 +41,7 @@ class HeaderCellThemeData {
           runtimeType == other.runtimeType &&
           textStyle == other.textStyle &&
           padding == other.padding &&
+          height == other.height &&
           alignment == other.alignment &&
           ascendingIcon == other.ascendingIcon &&
           descendingIcon == other.descendingIcon &&
@@ -60,12 +62,14 @@ class HeaderCellThemeData {
       sortIconColor.hashCode ^
       sortIconSize.hashCode ^
       sortOrderSize.hashCode ^
+      height.hashCode ^
       resizeAreaWidth.hashCode ^
       resizeAreaHoverColor.hashCode ^
       expandableName.hashCode;
 }
 
 class HeaderCellThemeDataDefaults {
+  static const double height = 28;
   static const TextStyle textStyle = TextStyle(fontWeight: FontWeight.bold);
   static const EdgeInsets padding = EdgeInsets.fromLTRB(8, 4, 8, 4);
   static const Alignment alignment = Alignment.centerLeft;

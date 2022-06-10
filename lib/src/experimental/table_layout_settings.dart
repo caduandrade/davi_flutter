@@ -13,7 +13,7 @@ class TableLayoutSettings {
     rowHeight = cellContentHeight +
         ((theme.cell.padding != null) ? theme.cell.padding!.vertical : 0);
     scrollbarSize = theme.scrollbar.margin * 2 + theme.scrollbar.thickness;
-    headerHeight = theme.header.height;
+    headerHeight = theme.header.bottomBorderHeight + theme.headerCell.height;
   }
 
   final double cellContentHeight;

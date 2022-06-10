@@ -1,3 +1,9 @@
+## 2.0.0
+
+* Changes
+  * `HeaderThemeData.height` has been removed.
+  * `HeaderCellThemeData.height` has been added.
+
 ## 1.6.0
 
 * Multiple column sort.
