@@ -36,7 +36,6 @@ class TableLayoutSettings {
   /// Cell height and bottom border
   late final double headerHeight;
 
-  int firstRowIndex = 0;
   double contentHeight = 0;
   late bool needHorizontalScrollbar;
 
@@ -63,7 +62,6 @@ class TableLayoutSettings {
           rowHeight == other.rowHeight &&
           scrollbarSize == other.scrollbarSize &&
           headerHeight == other.headerHeight &&
-          firstRowIndex == other.firstRowIndex &&
           contentHeight == other.contentHeight &&
           needHorizontalScrollbar == other.needHorizontalScrollbar;
 
@@ -79,7 +77,6 @@ class TableLayoutSettings {
       rowHeight.hashCode ^
       scrollbarSize.hashCode ^
       headerHeight.hashCode ^
-      firstRowIndex.hashCode ^
       contentHeight.hashCode ^
       needHorizontalScrollbar.hashCode;
 }

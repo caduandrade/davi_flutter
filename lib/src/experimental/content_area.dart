@@ -2,6 +2,7 @@ import 'package:easy_table/src/experimental/columns_metrics_exp.dart';
 import 'package:easy_table/src/experimental/content_area_id.dart';
 import 'package:easy_table/src/experimental/table_layout_parent_data_exp.dart';
 import 'package:easy_table/src/experimental/table_layout_settings.dart';
+import 'package:easy_table/src/experimental/table_paint_settings.dart';
 import 'package:flutter/material.dart';
 
 class ContentArea {
@@ -33,8 +34,8 @@ class ContentArea {
       final TableLayoutParentDataExp parentData = renderBox._parentData();
       final int rowIndex = parentData.row!;
       final double y = layoutSettings.headerHeight +
-          ((rowIndex - layoutSettings.firstRowIndex) *
-              layoutSettings.rowHeight);
+          (rowIndex * layoutSettings.rowHeight) -
+          layoutSettings.verticalScrollbarOffset;
       final int columnIndex = parentData.column!;
       final double width = columnsMetrics.widths[columnIndex];
       final double offset = columnsMetrics.offsets[columnIndex];
@@ -51,6 +52,25 @@ class ContentArea {
           parentUsesSize: true);
       scrollbar!._parentData().offset =
           Offset(bounds.left, bounds.bottom - layoutSettings.scrollbarSize);
+    }
+  }
+
+  void paintHover(
+      {required Canvas canvas,
+      required Offset offset,
+      required TableLayoutSettings layoutSettings,
+      required TablePaintSettings paintSettings}) {
+    if (paintSettings.hoveredRowIndex != null) {
+      final double y = layoutSettings.headerHeight +
+          (paintSettings.hoveredRowIndex! * layoutSettings.rowHeight) -
+          layoutSettings.verticalScrollbarOffset;
+      Paint paint = Paint()
+        ..style = PaintingStyle.fill
+        ..color = Colors.lime;
+      canvas.drawRect(
+          Rect.fromLTWH(offset.dx, offset.dy + y, bounds.width,
+              layoutSettings.cellHeight),
+          paint);
     }
   }
 

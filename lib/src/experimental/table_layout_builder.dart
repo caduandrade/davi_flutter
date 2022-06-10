@@ -12,6 +12,7 @@ import 'package:easy_table/src/experimental/table_scroll_controllers.dart';
 import 'package:easy_table/src/internal/cell.dart';
 import 'package:easy_table/src/internal/columns_metrics.dart';
 import 'package:easy_table/src/model.dart';
+import 'package:easy_table/src/row_hover_listener.dart';
 import 'package:easy_table/src/theme/header_theme_data.dart';
 import 'package:easy_table/src/theme/theme.dart';
 import 'package:easy_table/src/theme/theme_data.dart';
@@ -20,11 +21,15 @@ import 'package:flutter/material.dart';
 class TableLayoutBuilder<ROW> extends StatelessWidget {
   const TableLayoutBuilder(
       {Key? key,
+      required this.onHoverListener,
+      required this.hoveredRowIndex,
       required this.layoutSettings,
       required this.scrollControllers,
       required this.model})
       : super(key: key);
 
+  final int? hoveredRowIndex;
+  final OnRowHoverListener onHoverListener;
   final TableScrollControllers scrollControllers;
   final TableLayoutSettings layoutSettings;
   final EasyTableModel<ROW>? model;
@@ -51,7 +56,8 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
       throw FlutterError('EasyTable was given unbounded width.');
     }
 
-    TablePaintSettings paintSettings = TablePaintSettings(debugAreas: true);
+    TablePaintSettings paintSettings =
+        TablePaintSettings(debugAreas: true, hoveredRowIndex: hoveredRowIndex);
     if (model != null) {
       return _buildTable(
           context: context,
@@ -103,9 +109,9 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
             scrollController: scrollControllers.vertical,
             color: theme.scrollbar.verticalColor)));
 
-    layoutSettings.firstRowIndex =
+    final int firstRowIndex =
         (scrollControllers.verticalOffset / layoutSettings.rowHeight).floor();
-    final int lastRowIndex = layoutSettings.firstRowIndex + visibleRowsCount;
+    final int lastRowIndex = firstRowIndex + visibleRowsCount;
 
     final double maxWidth =
         math.max(0, constraints.maxWidth - layoutSettings.scrollbarSize);
@@ -125,7 +131,7 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
           containerWidth: availableContentWidth,
           columnDividerThickness: theme.columnDividerThickness);
 
-      for (int rowIndex = layoutSettings.firstRowIndex;
+      for (int rowIndex = firstRowIndex;
           rowIndex < model.visibleRowsLength && rowIndex < lastRowIndex;
           rowIndex++) {
         ROW row = model.visibleRowAt(rowIndex);
@@ -205,9 +211,9 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
     }
 
     return TableLayoutExp(
+        onHoverListener: onHoverListener,
         layoutSettings: layoutSettings,
         paintSettings: paintSettings,
-        scrollControllers: scrollControllers,
         leftPinnedColumnsMetrics: leftPinnedColumnsMetrics,
         unpinnedColumnsMetrics: unpinnedColumnsMetrics,
         rightPinnedColumnsMetrics: rightPinnedColumnsMetrics,
@@ -240,9 +246,9 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
     }
 
     return TableLayoutExp(
+        onHoverListener: onHoverListener,
         layoutSettings: layoutSettings,
         paintSettings: paintSettings,
-        scrollControllers: scrollControllers,
         leftPinnedColumnsMetrics: ColumnsMetricsExp.empty(),
         unpinnedColumnsMetrics: ColumnsMetricsExp.empty(),
         rightPinnedColumnsMetrics: ColumnsMetricsExp.empty(),

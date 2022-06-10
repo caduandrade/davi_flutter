@@ -6,6 +6,8 @@ import 'package:easy_table/src/experimental/layout_child_type.dart';
 import 'package:easy_table/src/experimental/table_layout_parent_data_exp.dart';
 import 'package:easy_table/src/experimental/table_layout_settings.dart';
 import 'package:easy_table/src/experimental/table_paint_settings.dart';
+import 'package:easy_table/src/row_hover_listener.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
@@ -14,29 +16,32 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
         ContainerRenderObjectMixin<RenderBox, TableLayoutParentDataExp>,
         RenderBoxContainerDefaultsMixin<RenderBox, TableLayoutParentDataExp> {
   TableLayoutRenderBoxExp(
-      {required TableLayoutSettings layoutSettings,
+      {required OnRowHoverListener onHoverListener,
+      required TableLayoutSettings layoutSettings,
       required TablePaintSettings paintSettings,
       required ColumnsMetricsExp leftPinnedColumnsMetrics,
       required ColumnsMetricsExp unpinnedColumnsMetrics,
       required ColumnsMetricsExp rightPinnedColumnsMetrics,
       required List<ROW> rows})
-      : _layoutSettings = layoutSettings,
+      : _onHoverListener = onHoverListener,
+        _layoutSettings = layoutSettings,
         _paintSettings = paintSettings,
+        //TODO const colors
         _leftPinnedContentArea = ContentArea(
             id: ContentAreaId.leftPinned,
             columnsMetrics: leftPinnedColumnsMetrics,
-            headerAreaDebugColor: Colors.yellow[300]!,
-            scrollbarAreaDebugColor: Colors.yellow[200]!),
+            headerAreaDebugColor: Colors.yellow[300]!.withOpacity(.5),
+            scrollbarAreaDebugColor: Colors.yellow[200]!.withOpacity(.5)),
         _unpinnedContentArea = ContentArea(
             id: ContentAreaId.unpinned,
             columnsMetrics: unpinnedColumnsMetrics,
-            headerAreaDebugColor: Colors.lime[300]!,
-            scrollbarAreaDebugColor: Colors.lime[200]!),
+            headerAreaDebugColor: Colors.lime[300]!.withOpacity(.5),
+            scrollbarAreaDebugColor: Colors.lime[200]!.withOpacity(.5)),
         _rightPinnedContentArea = ContentArea(
             id: ContentAreaId.rightPinned,
             columnsMetrics: rightPinnedColumnsMetrics,
-            headerAreaDebugColor: Colors.orange[300]!,
-            scrollbarAreaDebugColor: Colors.orange[200]!),
+            headerAreaDebugColor: Colors.orange[300]!.withOpacity(.5),
+            scrollbarAreaDebugColor: Colors.orange[200]!.withOpacity(.5)),
         _rows = rows;
 
   final ContentArea _leftPinnedContentArea;
@@ -49,10 +54,18 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
     ContentAreaId.rightPinned: _rightPinnedContentArea
   };
 
+  Rect contentArea = Rect.zero;
+
   //TODO remove?
   List<ROW> _rows;
   set rows(List<ROW> value) {
+    MouseRegion r;
     _rows = value;
+  }
+
+  OnRowHoverListener _onHoverListener;
+  set onHoverListener(OnRowHoverListener value) {
+    _onHoverListener = value;
   }
 
   TableLayoutSettings _layoutSettings;
@@ -130,6 +143,12 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
           _layoutSettings.scrollbarHeight;
     }
 
+    contentArea = Rect.fromLTWH(
+        0,
+        _layoutSettings.headerHeight,
+        math.max(0, constraints.maxWidth - _layoutSettings.scrollbarWidth),
+        _layoutSettings.contentHeight);
+
     // vertical scrollbar
     //TODO scrollbarSize border?
     verticalScrollbar!.layout(
@@ -184,6 +203,11 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
 
   @override
   void paint(PaintingContext context, Offset offset) {
+    _forEachContentArea((area) => area.paintHover(
+        canvas: context.canvas,
+        offset: offset,
+        layoutSettings: _layoutSettings,
+        paintSettings: _paintSettings));
     defaultPaint(context, offset);
     if (_paintSettings.debugAreas) {
       if (_layoutSettings.hasHeader) {
@@ -199,6 +223,26 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
     function(_leftPinnedContentArea);
     function(_unpinnedContentArea);
     function(_rightPinnedContentArea);
+  }
+
+  @override
+  bool hitTestSelf(Offset position) => true;
+
+  @override
+  void handleEvent(PointerEvent event, HitTestEntry entry) {
+    assert(debugHandleEvent(event, entry));
+    if (event is PointerHoverEvent) {
+      //TODO only if exists hover color?
+      if (contentArea.contains(event.localPosition)) {
+        final double localY = event.localPosition.dy;
+        final double y = math.max(0, localY - _layoutSettings.headerHeight) +
+            _layoutSettings.verticalScrollbarOffset;
+        final int rowIndex = (y / _layoutSettings.rowHeight).floor();
+        _onHoverListener(rowIndex);
+      } else {
+        _onHoverListener(null);
+      }
+    }
   }
 
   @override

@@ -78,10 +78,10 @@ class _EasyTableExpState<ROW> extends State<EasyTableExp<ROW>> {
     if (_hoveredRowIndex != value) {
       setState(() {
         _hoveredRowIndex = value;
+        if (widget.onHoverListener != null) {
+          widget.onHoverListener!(_hoveredRowIndex);
+        }
       });
-      if (widget.onHoverListener != null) {
-        widget.onHoverListener!(_hoveredRowIndex);
-      }
     }
   }
 
@@ -128,9 +128,15 @@ class _EasyTableExpState<ROW> extends State<EasyTableExp<ROW>> {
 
     Widget table = ClipRect(
         child: TableLayoutBuilder(
+            onHoverListener: _setHoveredRowIndex,
+            hoveredRowIndex: _hoveredRowIndex,
             layoutSettings: layoutSettings,
             scrollControllers: _scrollControllers,
             model: widget.model));
+
+    //TODO only if exists hover color?
+    table =
+        MouseRegion(onExit: (event) => _setHoveredRowIndex(null), child: table);
 
     if (widget.focusable) {
       table = Focus(

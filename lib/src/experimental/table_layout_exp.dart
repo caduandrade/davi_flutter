@@ -5,6 +5,7 @@ import 'package:easy_table/src/experimental/table_layout_render_box_exp.dart';
 import 'package:easy_table/src/experimental/table_layout_settings.dart';
 import 'package:easy_table/src/experimental/table_paint_settings.dart';
 import 'package:easy_table/src/experimental/table_scroll_controllers.dart';
+import 'package:easy_table/src/row_hover_listener.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
@@ -14,9 +15,9 @@ import 'package:meta/meta.dart';
 class TableLayoutExp<ROW> extends MultiChildRenderObjectWidget {
   TableLayoutExp(
       {Key? key,
+      required this.onHoverListener,
       required this.layoutSettings,
       required this.paintSettings,
-      required this.scrollControllers,
       required this.leftPinnedColumnsMetrics,
       required this.unpinnedColumnsMetrics,
       required this.rightPinnedColumnsMetrics,
@@ -24,9 +25,9 @@ class TableLayoutExp<ROW> extends MultiChildRenderObjectWidget {
       required List<LayoutChild> children})
       : super(key: key, children: children);
 
+  final OnRowHoverListener onHoverListener;
   final TableLayoutSettings layoutSettings;
   final TablePaintSettings paintSettings;
-  final TableScrollControllers scrollControllers;
   final ColumnsMetricsExp leftPinnedColumnsMetrics;
   final ColumnsMetricsExp unpinnedColumnsMetrics;
   final ColumnsMetricsExp rightPinnedColumnsMetrics;
@@ -35,6 +36,7 @@ class TableLayoutExp<ROW> extends MultiChildRenderObjectWidget {
   @override
   RenderObject createRenderObject(BuildContext context) {
     return TableLayoutRenderBoxExp<ROW>(
+        onHoverListener: onHoverListener,
         layoutSettings: layoutSettings,
         paintSettings: paintSettings,
         leftPinnedColumnsMetrics: leftPinnedColumnsMetrics,
@@ -53,6 +55,7 @@ class TableLayoutExp<ROW> extends MultiChildRenderObjectWidget {
       BuildContext context, covariant TableLayoutRenderBoxExp renderObject) {
     super.updateRenderObject(context, renderObject);
     renderObject
+      ..onHoverListener = onHoverListener
       ..layoutSettings = layoutSettings
       ..paintSettings = paintSettings
       ..leftPinnedColumnsMetrics = leftPinnedColumnsMetrics
