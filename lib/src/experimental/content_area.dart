@@ -55,6 +55,10 @@ class ContentArea {
           paint);
     }
   }
+
+  void paintChildren({required Canvas canvas, required Offset offset}) {
+
+  }
 }
 
 /// Utility extension to facilitate obtaining parent data.

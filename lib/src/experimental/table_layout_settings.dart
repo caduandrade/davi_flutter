@@ -1,43 +1,65 @@
+import 'dart:math' as math;
+import 'package:easy_table/src/theme/theme_data.dart';
+
 class TableLayoutSettings {
   TableLayoutSettings(
-      {required this.visibleRowsCount,
-      required this.rowHeight,
+      {required EasyTableThemeData theme,
+      required this.cellContentHeight,
+      required this.visibleRowsCount,
       required this.hasHeader,
-      required this.headerHeight,
       required this.hasVerticalScrollbar,
-      required this.scrollbarSize,
-      required this.columnsFit});
+      required this.columnsFit,
+      required this.verticalScrollbarOffset}) {
+    rowHeight = cellContentHeight +
+        ((theme.cell.padding != null) ? theme.cell.padding!.vertical : 0);
+    scrollbarSize = theme.scrollbar.margin * 2 + theme.scrollbar.thickness;
+    headerHeight = theme.header.height;
+  }
 
+  final double cellContentHeight;
   final int? visibleRowsCount;
-  final double rowHeight;
   final bool hasHeader;
-  final double headerHeight;
   final bool hasVerticalScrollbar;
-  final double scrollbarSize;
   final bool columnsFit;
+  final double verticalScrollbarOffset;
+
+  /// Cell content and padding.
+  late final double rowHeight;
+  late final double scrollbarSize;
+  late final double headerHeight;
 
   bool get allowHorizontalScrollbar => !columnsFit;
+
+  double rowsHeight(
+      {required int rowsCount, required double rowDividerThickness}) {
+    return (rowHeight * rowsCount) +
+        (math.max(0, rowsCount - 1) * rowDividerThickness);
+  }
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is TableLayoutSettings &&
           runtimeType == other.runtimeType &&
+          cellContentHeight == other.cellContentHeight &&
           visibleRowsCount == other.visibleRowsCount &&
-          rowHeight == other.rowHeight &&
           hasHeader == other.hasHeader &&
-          headerHeight == other.headerHeight &&
           hasVerticalScrollbar == other.hasVerticalScrollbar &&
+          columnsFit == other.columnsFit &&
+          verticalScrollbarOffset == other.verticalScrollbarOffset &&
+          rowHeight == other.rowHeight &&
           scrollbarSize == other.scrollbarSize &&
-          columnsFit == other.columnsFit;
+          headerHeight == other.headerHeight;
 
   @override
   int get hashCode =>
+      cellContentHeight.hashCode ^
       visibleRowsCount.hashCode ^
-      rowHeight.hashCode ^
       hasHeader.hashCode ^
-      headerHeight.hashCode ^
       hasVerticalScrollbar.hashCode ^
+      columnsFit.hashCode ^
+      verticalScrollbarOffset.hashCode ^
+      rowHeight.hashCode ^
       scrollbarSize.hashCode ^
-      columnsFit.hashCode;
+      headerHeight.hashCode;
 }

@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'package:easy_table/src/experimental/columns_metrics_exp.dart';
 import 'package:easy_table/src/experimental/content_area_id.dart';
 import 'package:easy_table/src/experimental/horizontal_scroll_bar_exp.dart';
 import 'package:easy_table/src/experimental/layout_child.dart';
@@ -53,6 +54,14 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
     final EasyTableThemeData theme = EasyTableTheme.of(context);
     final HeaderThemeData headerTheme = theme.header;
 
+    ColumnsMetricsExp unpinnedColumnsMetrics =ColumnsMetricsExp.empty;
+
+    final List<ROW> rows =[];
+    final List<LayoutChild> children = [];
+
+
+    final double contentTop = layoutSettings.headerHeight;
+
     bool needHorizontalScrollbar = !theme.scrollbar.horizontalOnlyWhenNeeded;
 
     final double maxWidth =
@@ -61,12 +70,15 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
     double pinnedWidth = 0;
     double pinnedContentWidth = 0;
     if (layoutSettings.columnsFit) {
-      final double availableWidth =
+      final double availableContentWidth =
           math.max(0, constraints.maxWidth - layoutSettings.scrollbarSize);
-      unpinnedContentWidth = math.max(availableWidth, model.allColumnsWidth);
-      ColumnsMetrics columnsMetrics = ColumnsMetrics.columnsFit(
+
+      unpinnedContentWidth =
+          math.max(availableContentWidth, model.allColumnsWidth);
+
+      unpinnedColumnsMetrics = ColumnsMetricsExp.columnsFit(
           model: model,
-          containerWidth: availableWidth,
+          containerWidth: availableContentWidth,
           columnDividerThickness: theme.columnDividerThickness);
     } else {
       final int unpinnedColumnsLength = model.unpinnedColumnsLength;
@@ -112,7 +124,9 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
         layoutSettings: layoutSettings,
         paintSettings: paintSettings,
         scrollControllers: scrollControllers,
-        children: const []);
+        unpinnedColumnsMetrics:unpinnedColumnsMetrics,
+        rows: rows,
+        children: children);
   }
 
   Widget _buildEmptyTable(
@@ -135,6 +149,8 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
         layoutSettings: layoutSettings,
         paintSettings: paintSettings,
         scrollControllers: scrollControllers,
+        unpinnedColumnsMetrics:ColumnsMetricsExp.empty,
+        rows: const [],
         children: children);
   }
 }

@@ -70,6 +70,6 @@ class _HomePageState extends State<HomePage> {
             padding: const EdgeInsets.all(64),
             child: Container(
                 decoration: BoxDecoration(border: Border.all()),
-                child: EasyTableExp(null))));
+                child: EasyTableExp(_model, columnsFit: true))));
   }
 }

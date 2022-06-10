@@ -116,23 +116,15 @@ class _EasyTableExpState<ROW> extends State<EasyTableExp<ROW>> {
   @override
   Widget build(BuildContext context) {
     final EasyTableThemeData theme = EasyTableTheme.of(context);
-    final HeaderThemeData headerTheme = theme.header;
-
-    final double scrollbarSize =
-        theme.scrollbar.margin * 2 + theme.scrollbar.thickness;
-
-    final double rowHeight = widget.cellContentHeight +
-        theme.row.dividerThickness +
-        ((theme.cell.padding != null) ? theme.cell.padding!.vertical : 0);
 
     TableLayoutSettings layoutSettings = TableLayoutSettings(
+        theme: theme,
         visibleRowsCount: widget.visibleRowsCount,
-        rowHeight: rowHeight,
+        cellContentHeight: widget.cellContentHeight,
         hasHeader: true, // TODO allow hide
-        headerHeight: headerTheme.height,
         hasVerticalScrollbar: true, // TODO allow hide
-        scrollbarSize: scrollbarSize,
-        columnsFit: widget.columnsFit);
+        columnsFit: widget.columnsFit,
+        verticalScrollbarOffset:_scrollControllers.verticalOffset);
 
     Widget table = ClipRect(
         child: TableLayoutBuilder(
@@ -143,7 +135,7 @@ class _EasyTableExpState<ROW> extends State<EasyTableExp<ROW>> {
     if (widget.focusable) {
       table = Focus(
           focusNode: _focusNode,
-          onKey: (node, event) => _handleKeyPress(node, event, rowHeight),
+          onKey: (node, event) => _handleKeyPress(node, event, layoutSettings),
           child: table);
       table = Listener(
           child: table,
@@ -160,7 +152,8 @@ class _EasyTableExpState<ROW> extends State<EasyTableExp<ROW>> {
   }
 
   KeyEventResult _handleKeyPress(
-      FocusNode node, RawKeyEvent event, double rowHeight) {
+      FocusNode node, RawKeyEvent event, TableLayoutSettings layoutSettings) {
+    // layoutSettings - dividerThickness + rowHeight
     if (event is RawKeyUpEvent) {
       if (event.logicalKey == LogicalKeyboardKey.tab) {
         if (_focused) {

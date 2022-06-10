@@ -1,3 +1,4 @@
+import 'package:easy_table/src/experimental/columns_metrics_exp.dart';
 import 'package:easy_table/src/experimental/content_area.dart';
 import 'package:easy_table/src/experimental/content_area_id.dart';
 import 'package:easy_table/src/experimental/layout_child_type.dart';
@@ -7,15 +8,19 @@ import 'package:easy_table/src/experimental/table_paint_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
-class TableLayoutRenderBoxExp extends RenderBox
+class TableLayoutRenderBoxExp<ROW> extends RenderBox
     with
         ContainerRenderObjectMixin<RenderBox, TableLayoutParentDataExp>,
         RenderBoxContainerDefaultsMixin<RenderBox, TableLayoutParentDataExp> {
   TableLayoutRenderBoxExp(
       {required TableLayoutSettings layoutSettings,
-      required TablePaintSettings paintSettings})
+      required TablePaintSettings paintSettings,
+      required ColumnsMetricsExp unpinnedColumnsMetrics,
+      required List<ROW> rows})
       : _layoutSettings = layoutSettings,
-        _paintSettings = paintSettings;
+        _paintSettings = paintSettings,
+        _unpinnedColumnsMetrics = unpinnedColumnsMetrics,
+  _rows=rows;
 
   final ContentArea _leftPinnedContentArea = ContentArea(
       id: ContentAreaId.leftPinned,
@@ -30,6 +35,11 @@ class TableLayoutRenderBoxExp extends RenderBox
       headerAreaDebugColor: Colors.orange[300]!,
       scrollbarAreaDebugColor: Colors.orange[200]!);
 
+  List<ROW> _rows;
+  set rows( List<ROW> value) {
+    _rows = value;
+  }
+
   TableLayoutSettings _layoutSettings;
   set layoutSettings(TableLayoutSettings value) {
     if (_layoutSettings != value) {
@@ -43,6 +53,14 @@ class TableLayoutRenderBoxExp extends RenderBox
     if (_paintSettings != value) {
       _paintSettings = value;
       markNeedsPaint();
+    }
+  }
+
+  ColumnsMetricsExp _unpinnedColumnsMetrics;
+  set unpinnedColumnsMetrics(ColumnsMetricsExp value) {
+    if (_unpinnedColumnsMetrics != value) {
+      _unpinnedColumnsMetrics = value;
+      markNeedsLayout();
     }
   }
 
@@ -134,6 +152,7 @@ class TableLayoutRenderBoxExp extends RenderBox
       }
     }
     defaultPaint(context, offset);
+
   }
 
   void _forEachContentArea(_ContentAreaFunction function) {
