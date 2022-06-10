@@ -17,7 +17,9 @@ class TableLayoutExp<ROW> extends MultiChildRenderObjectWidget {
       required this.layoutSettings,
       required this.paintSettings,
       required this.scrollControllers,
+      required this.leftPinnedColumnsMetrics,
       required this.unpinnedColumnsMetrics,
+      required this.rightPinnedColumnsMetrics,
       required this.rows,
       required List<LayoutChild> children})
       : super(key: key, children: children);
@@ -25,7 +27,9 @@ class TableLayoutExp<ROW> extends MultiChildRenderObjectWidget {
   final TableLayoutSettings layoutSettings;
   final TablePaintSettings paintSettings;
   final TableScrollControllers scrollControllers;
+  final ColumnsMetricsExp leftPinnedColumnsMetrics;
   final ColumnsMetricsExp unpinnedColumnsMetrics;
+  final ColumnsMetricsExp rightPinnedColumnsMetrics;
   final List<ROW> rows;
 
   @override
@@ -33,7 +37,9 @@ class TableLayoutExp<ROW> extends MultiChildRenderObjectWidget {
     return TableLayoutRenderBoxExp<ROW>(
         layoutSettings: layoutSettings,
         paintSettings: paintSettings,
+        leftPinnedColumnsMetrics: leftPinnedColumnsMetrics,
         unpinnedColumnsMetrics: unpinnedColumnsMetrics,
+        rightPinnedColumnsMetrics: rightPinnedColumnsMetrics,
         rows: rows);
   }
 
@@ -49,7 +55,9 @@ class TableLayoutExp<ROW> extends MultiChildRenderObjectWidget {
     renderObject
       ..layoutSettings = layoutSettings
       ..paintSettings = paintSettings
+      ..leftPinnedColumnsMetrics = leftPinnedColumnsMetrics
       ..unpinnedColumnsMetrics = unpinnedColumnsMetrics
+      ..rightPinnedColumnsMetrics = rightPinnedColumnsMetrics
       ..rows = rows;
   }
 }

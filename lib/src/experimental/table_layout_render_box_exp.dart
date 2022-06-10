@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'package:easy_table/src/experimental/columns_metrics_exp.dart';
 import 'package:easy_table/src/experimental/content_area.dart';
 import 'package:easy_table/src/experimental/content_area_id.dart';
@@ -15,25 +16,32 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
   TableLayoutRenderBoxExp(
       {required TableLayoutSettings layoutSettings,
       required TablePaintSettings paintSettings,
+      required ColumnsMetricsExp leftPinnedColumnsMetrics,
       required ColumnsMetricsExp unpinnedColumnsMetrics,
+      required ColumnsMetricsExp rightPinnedColumnsMetrics,
       required List<ROW> rows})
       : _layoutSettings = layoutSettings,
         _paintSettings = paintSettings,
-        _unpinnedColumnsMetrics = unpinnedColumnsMetrics,
+        _leftPinnedContentArea = ContentArea(
+            id: ContentAreaId.leftPinned,
+            columnsMetrics: leftPinnedColumnsMetrics,
+            headerAreaDebugColor: Colors.yellow[300]!,
+            scrollbarAreaDebugColor: Colors.yellow[200]!),
+        _unpinnedContentArea = ContentArea(
+            id: ContentAreaId.unpinned,
+            columnsMetrics: unpinnedColumnsMetrics,
+            headerAreaDebugColor: Colors.lime[300]!,
+            scrollbarAreaDebugColor: Colors.lime[200]!),
+        _rightPinnedContentArea = ContentArea(
+            id: ContentAreaId.rightPinned,
+            columnsMetrics: rightPinnedColumnsMetrics,
+            headerAreaDebugColor: Colors.orange[300]!,
+            scrollbarAreaDebugColor: Colors.orange[200]!),
         _rows = rows;
 
-  final ContentArea _leftPinnedContentArea = ContentArea(
-      id: ContentAreaId.leftPinned,
-      headerAreaDebugColor: Colors.yellow[300]!,
-      scrollbarAreaDebugColor: Colors.yellow[200]!);
-  final ContentArea _unpinnedContentArea = ContentArea(
-      id: ContentAreaId.unpinned,
-      headerAreaDebugColor: Colors.lime[300]!,
-      scrollbarAreaDebugColor: Colors.lime[200]!);
-  final ContentArea _rightPinnedContentArea = ContentArea(
-      id: ContentAreaId.rightPinned,
-      headerAreaDebugColor: Colors.orange[300]!,
-      scrollbarAreaDebugColor: Colors.orange[200]!);
+  final ContentArea _leftPinnedContentArea;
+  final ContentArea _unpinnedContentArea;
+  final ContentArea _rightPinnedContentArea;
 
   late final Map<ContentAreaId, ContentArea> _contentAreaMap = {
     ContentAreaId.leftPinned: _leftPinnedContentArea,
@@ -62,10 +70,23 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
     }
   }
 
-  ColumnsMetricsExp _unpinnedColumnsMetrics;
+  set leftPinnedColumnsMetrics(ColumnsMetricsExp value) {
+    if (_leftPinnedContentArea.columnsMetrics != value) {
+      _leftPinnedContentArea.columnsMetrics = value;
+      markNeedsLayout();
+    }
+  }
+
   set unpinnedColumnsMetrics(ColumnsMetricsExp value) {
-    if (_unpinnedColumnsMetrics != value) {
-      _unpinnedColumnsMetrics = value;
+    if (_unpinnedContentArea.columnsMetrics != value) {
+      _unpinnedContentArea.columnsMetrics = value;
+      markNeedsLayout();
+    }
+  }
+
+  set rightPinnedColumnsMetrics(ColumnsMetricsExp value) {
+    if (_rightPinnedContentArea.columnsMetrics != value) {
+      _rightPinnedContentArea.columnsMetrics = value;
       markNeedsLayout();
     }
   }
@@ -109,12 +130,19 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
     }
 
     // vertical scrollbar
+    //TODO scrollbarSize border?
     verticalScrollbar!.layout(
         BoxConstraints.tightFor(
-            width: _layoutSettings.scrollbarSize, height: height),
+            width: _layoutSettings.scrollbarSize,
+            height: math.max(
+                0,
+                height -
+                    _layoutSettings.headerHeight -
+                    _layoutSettings.scrollbarSize)),
         parentUsesSize: true);
-    verticalScrollbar!._parentData().offset =
-        Offset(constraints.maxWidth - _layoutSettings.scrollbarSize, 0);
+    verticalScrollbar!._parentData().offset = Offset(
+        constraints.maxWidth - _layoutSettings.scrollbarSize,
+        _layoutSettings.headerHeight);
 
     _leftPinnedContentArea.bounds = Rect.fromLTWH(0, 0, 100, height);
     _unpinnedContentArea.bounds = Rect.fromLTWH(150, 0, 100, height);

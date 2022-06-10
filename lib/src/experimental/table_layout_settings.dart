@@ -32,8 +32,11 @@ class TableLayoutSettings {
   /// Cell height and divider thickness
   late final double rowHeight;
   late final double scrollbarSize;
+
+  /// Cell height and bottom border
   late final double headerHeight;
 
+  int firstRowIndex = 0;
   double contentHeight = 0;
 
   bool get allowHorizontalScrollbar => !columnsFit;

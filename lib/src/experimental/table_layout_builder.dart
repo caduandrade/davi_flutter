@@ -72,7 +72,10 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
       required TablePaintSettings paintSettings}) {
     final EasyTableThemeData theme = EasyTableTheme.of(context);
 
+    ColumnsMetricsExp<ROW> leftPinnedColumnsMetrics = ColumnsMetricsExp.empty();
     ColumnsMetricsExp<ROW> unpinnedColumnsMetrics = ColumnsMetricsExp.empty();
+    ColumnsMetricsExp<ROW> rightPinnedColumnsMetrics =
+        ColumnsMetricsExp.empty();
 
     final List<ROW> rows = [];
     final List<LayoutChild> children = [];
@@ -100,9 +103,9 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
             scrollController: scrollControllers.vertical,
             color: theme.scrollbar.verticalColor)));
 
-    final int firstRowIndex =
+    layoutSettings.firstRowIndex =
         (scrollControllers.verticalOffset / layoutSettings.rowHeight).floor();
-    final int lastRowIndex = firstRowIndex + visibleRowsCount;
+    final int lastRowIndex = layoutSettings.firstRowIndex + visibleRowsCount;
 
     final double contentTop = layoutSettings.headerHeight;
 
@@ -126,8 +129,8 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
           containerWidth: availableContentWidth,
           columnDividerThickness: theme.columnDividerThickness);
 
-      for (int rowIndex = firstRowIndex;
-          rowIndex < model.rowsLength && rowIndex < lastRowIndex;
+      for (int rowIndex = layoutSettings.firstRowIndex;
+          rowIndex < model.visibleRowsLength && rowIndex < lastRowIndex;
           rowIndex++) {
         ROW row = model.visibleRowAt(rowIndex);
         rows.add(row);
@@ -208,7 +211,9 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
         layoutSettings: layoutSettings,
         paintSettings: paintSettings,
         scrollControllers: scrollControllers,
+        leftPinnedColumnsMetrics: leftPinnedColumnsMetrics,
         unpinnedColumnsMetrics: unpinnedColumnsMetrics,
+        rightPinnedColumnsMetrics: rightPinnedColumnsMetrics,
         rows: rows,
         children: children);
   }
@@ -241,7 +246,9 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
         layoutSettings: layoutSettings,
         paintSettings: paintSettings,
         scrollControllers: scrollControllers,
+        leftPinnedColumnsMetrics: ColumnsMetricsExp.empty(),
         unpinnedColumnsMetrics: ColumnsMetricsExp.empty(),
+        rightPinnedColumnsMetrics: ColumnsMetricsExp.empty(),
         rows: const [],
         children: children);
   }

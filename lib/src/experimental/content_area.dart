@@ -1,3 +1,4 @@
+import 'package:easy_table/src/experimental/columns_metrics_exp.dart';
 import 'package:easy_table/src/experimental/content_area_id.dart';
 import 'package:easy_table/src/experimental/table_layout_parent_data_exp.dart';
 import 'package:easy_table/src/experimental/table_layout_settings.dart';
@@ -7,12 +8,13 @@ class ContentArea {
   ContentArea(
       {required this.id,
       required this.headerAreaDebugColor,
-      required this.scrollbarAreaDebugColor});
+      required this.scrollbarAreaDebugColor,
+      required this.columnsMetrics});
 
   final ContentAreaId id;
   final Color headerAreaDebugColor;
   final Color scrollbarAreaDebugColor;
-
+  ColumnsMetricsExp columnsMetrics;
   final List<RenderBox> children = [];
   RenderBox? scrollbar;
 
@@ -24,15 +26,20 @@ class ContentArea {
   }
 
   void performLayout({required TableLayoutSettings layoutSettings}) {
-    double y = 0;
     for (RenderBox renderBox in children) {
       final TableLayoutParentDataExp parentData = renderBox._parentData();
+      final int rowIndex = parentData.row!;
+      final double y = layoutSettings.headerHeight +
+          ((rowIndex - layoutSettings.firstRowIndex) *
+              layoutSettings.rowHeight);
+      final int columnIndex = parentData.column!;
+      final double width = columnsMetrics.widths[columnIndex];
+      final double offset = columnsMetrics.offsets[columnIndex];
       renderBox.layout(
           BoxConstraints.tightFor(
-              width: 100, height: layoutSettings.cellHeight),
+              width: width, height: layoutSettings.cellHeight),
           parentUsesSize: true);
-      parentData.offset = Offset(0, y);
-      y += layoutSettings.cellHeight;
+      parentData.offset = Offset(offset, y);
     }
     if (scrollbar != null) {
       scrollbar!.layout(

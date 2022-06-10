@@ -28,10 +28,25 @@ class ExampleApp extends StatelessWidget {
 }
 
 class Row {
-  Row({required this.string1, required this.string2, required this.int1});
+  Row(
+      {required this.index,
+      required this.string1,
+      required this.string2,
+      required this.string3,
+      required this.string4,
+      required this.string5,
+      required this.string6,
+      required this.string7,
+      required this.int1});
 
+  final int index;
   final String string1;
   final String string2;
+  final String string3;
+  final String string4;
+  final String string5;
+  final String string6;
+  final String string7;
   final int int1;
 }
 
@@ -52,15 +67,45 @@ class _HomePageState extends State<HomePage> {
     List<Row> rows = List<Row>.generate(
         100,
         (index) => Row(
+            index: index,
             string1: random.nextInt(9999999).toRadixString(16),
             string2: random.nextInt(9999999).toRadixString(16),
+            string3: random.nextInt(9999999).toRadixString(16),
+            string4: random.nextInt(9999999).toRadixString(16),
+            string5: random.nextInt(9999999).toRadixString(16),
+            string6: random.nextInt(9999999).toRadixString(16),
+            string7: random.nextInt(9999999).toRadixString(16),
             int1: random.nextInt(999)));
     _model = EasyTableModel(columns: [
-      EasyTableColumn(name: 'string1', stringValue: (row) => row.string1),
+      EasyTableColumn(
+          name: 'index',
+          cellBuilder: (context, row, visibleRowIndex) =>
+              Text(row.index.toString())),
+      EasyTableColumn(
+          name: 'string1',
+          cellBuilder: (context, row, visibleRowIndex) => Text(row.string1)),
       EasyTableColumn(
           name: 'string2',
           cellBuilder: (context, row, visibleRowIndex) => Text(row.string2)),
-      EasyTableColumn(name: 'int1', intValue: (row) => row.int1)
+      EasyTableColumn(
+          name: 'string3',
+          cellBuilder: (context, row, visibleRowIndex) => Text(row.string3)),
+      EasyTableColumn(
+          name: 'string4',
+          cellBuilder: (context, row, visibleRowIndex) => Text(row.string4)),
+      EasyTableColumn(
+          name: 'string5',
+          cellBuilder: (context, row, visibleRowIndex) => Text(row.string5)),
+      EasyTableColumn(
+          name: 'string6',
+          cellBuilder: (context, row, visibleRowIndex) => Text(row.string6)),
+      EasyTableColumn(
+          name: 'string7',
+          cellBuilder: (context, row, visibleRowIndex) => Text(row.string7)),
+      EasyTableColumn(
+          name: 'int1',
+          cellBuilder: (context, row, visibleRowIndex) =>
+              Text(row.int1.toString()))
     ], rows: rows);
     super.initState();
   }
