@@ -107,10 +107,6 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
         (scrollControllers.verticalOffset / layoutSettings.rowHeight).floor();
     final int lastRowIndex = layoutSettings.firstRowIndex + visibleRowsCount;
 
-    final double contentTop = layoutSettings.headerHeight;
-
-    bool needHorizontalScrollbar = !theme.scrollbar.horizontalOnlyWhenNeeded;
-
     final double maxWidth =
         math.max(0, constraints.maxWidth - layoutSettings.scrollbarSize);
     double unpinnedContentWidth;
@@ -182,14 +178,15 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
         unpinnedContentWidth =
             math.max(maxWidth - pinnedWidth, unpinnedContentWidth);
         if (theme.scrollbar.horizontalOnlyWhenNeeded) {
-          needHorizontalScrollbar =
+          layoutSettings.needHorizontalScrollbar =
               needPinnedHorizontalScroll || needUnpinnedHorizontalScroll;
         }
       } else {
         unpinnedContentWidth = model.allColumnsWidth +
             (model.columnsLength * theme.columnDividerThickness);
         if (theme.scrollbar.horizontalOnlyWhenNeeded) {
-          needHorizontalScrollbar = unpinnedContentWidth > maxWidth;
+          layoutSettings.needHorizontalScrollbar =
+              unpinnedContentWidth > maxWidth;
         }
         unpinnedContentWidth = math.max(maxWidth, unpinnedContentWidth);
       }

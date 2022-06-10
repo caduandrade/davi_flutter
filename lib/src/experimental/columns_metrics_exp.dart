@@ -91,6 +91,13 @@ class ColumnsMetricsExp<ROW> {
   final List<double> widths;
   final List<double> offsets;
 
+  double get maxWidth {
+    if (widths.isEmpty) {
+      return 0;
+    }
+    return offsets.last + widths.last;
+  }
+
   @override
   final int hashCode;
 

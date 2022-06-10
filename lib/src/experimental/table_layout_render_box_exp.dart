@@ -49,6 +49,7 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
     ContentAreaId.rightPinned: _rightPinnedContentArea
   };
 
+  //TODO remove?
   List<ROW> _rows;
   set rows(List<ROW> value) {
     _rows = value;
@@ -126,27 +127,36 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
       // unbounded height
       height = _layoutSettings.headerHeight +
           _layoutSettings.contentHeight +
-          _layoutSettings.scrollbarSize;
+          _layoutSettings.scrollbarHeight;
     }
 
     // vertical scrollbar
     //TODO scrollbarSize border?
     verticalScrollbar!.layout(
         BoxConstraints.tightFor(
-            width: _layoutSettings.scrollbarSize,
+            width: _layoutSettings.scrollbarWidth,
             height: math.max(
                 0,
                 height -
                     _layoutSettings.headerHeight -
-                    _layoutSettings.scrollbarSize)),
+                    _layoutSettings.scrollbarHeight)),
         parentUsesSize: true);
     verticalScrollbar!._parentData().offset = Offset(
-        constraints.maxWidth - _layoutSettings.scrollbarSize,
+        constraints.maxWidth - _layoutSettings.scrollbarWidth,
         _layoutSettings.headerHeight);
 
-    _leftPinnedContentArea.bounds = Rect.fromLTWH(0, 0, 100, height);
-    _unpinnedContentArea.bounds = Rect.fromLTWH(150, 0, 100, height);
-    _rightPinnedContentArea.bounds = Rect.fromLTWH(400, 0, 100, height);
+    _leftPinnedContentArea.bounds = Rect.fromLTWH(
+        0, 0, _leftPinnedContentArea.columnsMetrics.maxWidth, height);
+    _unpinnedContentArea.bounds = Rect.fromLTWH(
+        _leftPinnedContentArea.bounds.right,
+        0,
+        _unpinnedContentArea.columnsMetrics.maxWidth,
+        height);
+    _rightPinnedContentArea.bounds = Rect.fromLTWH(
+        _unpinnedContentArea.bounds.right,
+        0,
+        _rightPinnedContentArea.columnsMetrics.maxWidth,
+        height);
 
     size = Size(constraints.maxWidth, height);
 
@@ -174,6 +184,7 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
 
   @override
   void paint(PaintingContext context, Offset offset) {
+    defaultPaint(context, offset);
     if (_paintSettings.debugAreas) {
       if (_layoutSettings.hasHeader) {
         _forEachContentArea((area) => area.paintDebugAreas(
@@ -182,7 +193,6 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
             layoutSettings: _layoutSettings));
       }
     }
-    defaultPaint(context, offset);
   }
 
   void _forEachContentArea(_ContentAreaFunction function) {

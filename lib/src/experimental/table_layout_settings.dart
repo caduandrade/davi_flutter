@@ -1,4 +1,3 @@
-import 'dart:math' as math;
 import 'package:easy_table/src/theme/theme_data.dart';
 
 class TableLayoutSettings {
@@ -17,6 +16,7 @@ class TableLayoutSettings {
     headerHeight = hasHeader
         ? theme.header.bottomBorderHeight + theme.headerCell.height
         : 0;
+    needHorizontalScrollbar = !theme.scrollbar.horizontalOnlyWhenNeeded;
   }
 
   final double cellContentHeight;
@@ -38,8 +38,15 @@ class TableLayoutSettings {
 
   int firstRowIndex = 0;
   double contentHeight = 0;
+  late bool needHorizontalScrollbar;
 
   bool get allowHorizontalScrollbar => !columnsFit;
+
+  bool get hasHorizontalScrollbar =>
+      allowHorizontalScrollbar && needHorizontalScrollbar;
+
+  double get scrollbarWidth => scrollbarSize;
+  double get scrollbarHeight => hasHorizontalScrollbar ? scrollbarSize : 0;
 
   @override
   bool operator ==(Object other) =>
@@ -56,7 +63,9 @@ class TableLayoutSettings {
           rowHeight == other.rowHeight &&
           scrollbarSize == other.scrollbarSize &&
           headerHeight == other.headerHeight &&
-          contentHeight == other.contentHeight;
+          firstRowIndex == other.firstRowIndex &&
+          contentHeight == other.contentHeight &&
+          needHorizontalScrollbar == other.needHorizontalScrollbar;
 
   @override
   int get hashCode =>
@@ -70,5 +79,7 @@ class TableLayoutSettings {
       rowHeight.hashCode ^
       scrollbarSize.hashCode ^
       headerHeight.hashCode ^
-      contentHeight.hashCode;
+      firstRowIndex.hashCode ^
+      contentHeight.hashCode ^
+      needHorizontalScrollbar.hashCode;
 }

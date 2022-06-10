@@ -26,6 +26,9 @@ class ContentArea {
   }
 
   void performLayout({required TableLayoutSettings layoutSettings}) {
+    if (children.isEmpty) {
+      return;
+    }
     for (RenderBox renderBox in children) {
       final TableLayoutParentDataExp parentData = renderBox._parentData();
       final int rowIndex = parentData.row!;
@@ -55,6 +58,9 @@ class ContentArea {
       {required Canvas canvas,
       required Offset offset,
       required TableLayoutSettings layoutSettings}) {
+    if (children.isEmpty) {
+      return;
+    }
     if (layoutSettings.hasHeader) {
       Paint paint = Paint()
         ..style = PaintingStyle.fill
@@ -65,16 +71,16 @@ class ContentArea {
           paint);
     }
 
-    if (layoutSettings.hasVerticalScrollbar) {
+    if (layoutSettings.hasHorizontalScrollbar) {
       Paint paint = Paint()
         ..style = PaintingStyle.fill
         ..color = scrollbarAreaDebugColor;
       canvas.drawRect(
           Rect.fromLTWH(
               offset.dx + bounds.left,
-              offset.dy + bounds.bottom - layoutSettings.scrollbarSize,
+              offset.dy + bounds.bottom - layoutSettings.scrollbarHeight,
               bounds.width,
-              layoutSettings.scrollbarSize),
+              layoutSettings.scrollbarHeight),
           paint);
     }
   }
