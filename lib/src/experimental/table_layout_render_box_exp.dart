@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'package:easy_table/src/experimental/child_painter_mixin.dart';
 import 'package:easy_table/src/experimental/columns_metrics_exp.dart';
 import 'package:easy_table/src/experimental/content_area.dart';
 import 'package:easy_table/src/experimental/content_area_id.dart';
@@ -14,7 +15,8 @@ import 'package:flutter/rendering.dart';
 class TableLayoutRenderBoxExp<ROW> extends RenderBox
     with
         ContainerRenderObjectMixin<RenderBox, TableLayoutParentDataExp>,
-        RenderBoxContainerDefaultsMixin<RenderBox, TableLayoutParentDataExp> {
+        RenderBoxContainerDefaultsMixin<RenderBox, TableLayoutParentDataExp>,
+        ChildPainterMixin {
   TableLayoutRenderBoxExp(
       {required OnRowHoverListener onHoverListener,
       required TableLayoutSettings layoutSettings,
@@ -53,6 +55,8 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
     ContentAreaId.unpinned: _unpinnedContentArea,
     ContentAreaId.rightPinned: _rightPinnedContentArea
   };
+
+  RenderBox? _verticalScrollbar;
 
   Rect contentArea = Rect.zero;
 
@@ -116,7 +120,9 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
   void performLayout() {
     _forEachContentArea((area) => area.clear());
 
-    RenderBox? verticalScrollbar;
+    _verticalScrollbar = null;
+
+    //TODO list not necessary?
     List<RenderBox> children = [];
     visitChildren((child) {
       RenderBox renderBox = child as RenderBox;
@@ -128,7 +134,7 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
           _contentAreaMap[parentData.contentAreaId]!.scrollbar = renderBox;
         }
       } else if (parentData.type == LayoutChildType.verticalScrollbar) {
-        verticalScrollbar = renderBox;
+        _verticalScrollbar = renderBox;
       }
       children.add(renderBox);
     });
@@ -151,7 +157,7 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
 
     // vertical scrollbar
     //TODO scrollbarSize border?
-    verticalScrollbar!.layout(
+    _verticalScrollbar!.layout(
         BoxConstraints.tightFor(
             width: _layoutSettings.scrollbarWidth,
             height: math.max(
@@ -160,7 +166,7 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
                     _layoutSettings.headerHeight -
                     _layoutSettings.scrollbarHeight)),
         parentUsesSize: true);
-    verticalScrollbar!._parentData().offset = Offset(
+    _verticalScrollbar!._parentData().offset = Offset(
         constraints.maxWidth - _layoutSettings.scrollbarWidth,
         _layoutSettings.headerHeight);
 
@@ -203,18 +209,39 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
 
   @override
   void paint(PaintingContext context, Offset offset) {
-    _forEachContentArea((area) => area.paintHover(
-        canvas: context.canvas,
-        offset: offset,
-        layoutSettings: _layoutSettings,
-        paintSettings: _paintSettings));
-    defaultPaint(context, offset);
+    _paintHover(canvas: context.canvas, offset: offset);
+
+    _forEachContentArea((area) => area.paintChildren(
+        context: context, offset: offset, contentArea: contentArea));
+
+    paintChild(context: context, offset: offset, child: _verticalScrollbar);
+
     if (_paintSettings.debugAreas) {
       if (_layoutSettings.hasHeader) {
         _forEachContentArea((area) => area.paintDebugAreas(
             canvas: context.canvas,
             offset: offset,
             layoutSettings: _layoutSettings));
+      }
+    }
+  }
+
+  void _paintHover({required Canvas canvas, required Offset offset}) {
+    if (_paintSettings.hoveredColor != null &&
+        _paintSettings.hoveredRowIndex != null) {
+      Color? color =
+          _paintSettings.hoveredColor!(_paintSettings.hoveredRowIndex!);
+      if (color != null) {
+        final double y = _layoutSettings.headerHeight +
+            (_paintSettings.hoveredRowIndex! * _layoutSettings.rowHeight) -
+            _layoutSettings.verticalScrollbarOffset;
+        Paint paint = Paint()
+          ..style = PaintingStyle.fill
+          ..color = color;
+        canvas.drawRect(
+            Rect.fromLTWH(offset.dx, offset.dy + y, contentArea.width,
+                _layoutSettings.cellHeight),
+            paint);
       }
     }
   }

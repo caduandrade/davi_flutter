@@ -1,11 +1,11 @@
+import 'package:easy_table/src/experimental/child_painter_mixin.dart';
 import 'package:easy_table/src/experimental/columns_metrics_exp.dart';
 import 'package:easy_table/src/experimental/content_area_id.dart';
 import 'package:easy_table/src/experimental/table_layout_parent_data_exp.dart';
 import 'package:easy_table/src/experimental/table_layout_settings.dart';
-import 'package:easy_table/src/experimental/table_paint_settings.dart';
 import 'package:flutter/material.dart';
 
-class ContentArea {
+class ContentArea with ChildPainterMixin {
   ContentArea(
       {required this.id,
       required this.headerAreaDebugColor,
@@ -55,30 +55,6 @@ class ContentArea {
     }
   }
 
-  void paintHover(
-      {required Canvas canvas,
-      required Offset offset,
-      required TableLayoutSettings layoutSettings,
-      required TablePaintSettings paintSettings}) {
-    if (paintSettings.hoveredColor != null &&
-        paintSettings.hoveredRowIndex != null) {
-      Color? color =
-          paintSettings.hoveredColor!(paintSettings.hoveredRowIndex!);
-      if (color != null) {
-        final double y = layoutSettings.headerHeight +
-            (paintSettings.hoveredRowIndex! * layoutSettings.rowHeight) -
-            layoutSettings.verticalScrollbarOffset;
-        Paint paint = Paint()
-          ..style = PaintingStyle.fill
-          ..color = color;
-        canvas.drawRect(
-            Rect.fromLTWH(offset.dx, offset.dy + y, bounds.width,
-                layoutSettings.cellHeight),
-            paint);
-      }
-    }
-  }
-
   void paintDebugAreas(
       {required Canvas canvas,
       required Offset offset,
@@ -110,7 +86,18 @@ class ContentArea {
     }
   }
 
-  void paintChildren({required Canvas canvas, required Offset offset}) {}
+  void paintChildren(
+      {required PaintingContext context,
+      required Offset offset,
+      required Rect contentArea}) {
+    context.canvas.save();
+    context.canvas.clipRect(contentArea.translate(offset.dx, offset.dy));
+    for (RenderBox cell in children) {
+      paintChild(context: context, offset: offset, child: cell);
+    }
+    context.canvas.restore();
+    paintChild(context: context, offset: offset, child: scrollbar);
+  }
 }
 
 /// Utility extension to facilitate obtaining parent data.
