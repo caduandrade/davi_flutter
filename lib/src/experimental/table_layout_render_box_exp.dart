@@ -142,18 +142,30 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
     double height = 0;
     if (constraints.hasBoundedHeight) {
       height = constraints.maxHeight;
+
+      contentArea = Rect.fromLTWH(
+          0,
+          _layoutSettings.headerHeight,
+          math.max(0, constraints.maxWidth - _layoutSettings.scrollbarWidth),
+          math.max(
+              0,
+              constraints.maxHeight -
+                  _layoutSettings.headerHeight -
+                  (_layoutSettings.hasHorizontalScrollbar
+                      ? _layoutSettings.scrollbarSize
+                      : 0)));
     } else {
       // unbounded height
       height = _layoutSettings.headerHeight +
           _layoutSettings.contentHeight +
           _layoutSettings.scrollbarHeight;
-    }
 
-    contentArea = Rect.fromLTWH(
-        0,
-        _layoutSettings.headerHeight,
-        math.max(0, constraints.maxWidth - _layoutSettings.scrollbarWidth),
-        _layoutSettings.contentHeight);
+      contentArea = Rect.fromLTWH(
+          0,
+          _layoutSettings.headerHeight,
+          math.max(0, constraints.maxWidth - _layoutSettings.scrollbarWidth),
+          _layoutSettings.contentHeight);
+    }
 
     // vertical scrollbar
     //TODO scrollbarSize border?
@@ -171,12 +183,17 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
         _layoutSettings.headerHeight);
 
     _leftPinnedContentArea.bounds = Rect.fromLTWH(
-        0, 0, _leftPinnedContentArea.columnsMetrics.maxWidth, height);
+        0,
+        0,
+        math.min(
+            _leftPinnedContentArea.columnsMetrics.maxWidth, contentArea.width),
+        height);
     _unpinnedContentArea.bounds = Rect.fromLTWH(
         _leftPinnedContentArea.bounds.right,
         0,
-        _unpinnedContentArea.columnsMetrics.maxWidth,
+        math.max(0, contentArea.width - _leftPinnedContentArea.bounds.width),
         height);
+    //TODO need right width
     _rightPinnedContentArea.bounds = Rect.fromLTWH(
         _unpinnedContentArea.bounds.right,
         0,
@@ -227,6 +244,7 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
   }
 
   void _paintHover({required Canvas canvas, required Offset offset}) {
+    //TODO clip contentArea (showing in horizontal scroll area)
     if (_paintSettings.hoveredColor != null &&
         _paintSettings.hoveredRowIndex != null) {
       Color? color =

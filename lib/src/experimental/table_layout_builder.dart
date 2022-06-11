@@ -175,6 +175,7 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
                 color: theme.scrollbar.pinnedHorizontalColor,
                 contentSize: pinnedAreaWidth)));
 
+        //TODO build EasyTableScrollBarExp in LayoutChild.horizontalScrollbar
         children.add(LayoutChild.horizontalScrollbar(
             contentAreaId: ContentAreaId.unpinned,
             child: EasyTableScrollBarExp(
