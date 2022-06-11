@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'package:easy_table/src/experimental/table_layout_builder.dart';
 import 'package:easy_table/src/experimental/table_layout_settings.dart';
 import 'package:easy_table/src/experimental/table_scroll_controllers.dart';
@@ -150,7 +151,6 @@ class _EasyTableExpState<ROW> extends State<EasyTableExp<ROW>> {
 
   KeyEventResult _handleKeyPress(
       FocusNode node, RawKeyEvent event, TableLayoutSettings layoutSettings) {
-    // layoutSettings - dividerThickness + rowHeight
     if (event is RawKeyUpEvent) {
       if (event.logicalKey == LogicalKeyboardKey.tab) {
         if (_focused) {
@@ -160,9 +160,42 @@ class _EasyTableExpState<ROW> extends State<EasyTableExp<ROW>> {
           _focused = true;
         }
       } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+        if (_scrollControllers.vertical.hasClients) {
+          double target = math.min(
+              _scrollControllers.vertical.position.pixels +
+                  layoutSettings.rowHeight,
+              _scrollControllers.vertical.position.maxScrollExtent);
+          _scrollControllers.vertical.animateTo(target,
+              duration: const Duration(milliseconds: 30), curve: Curves.ease);
+        }
       } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+        if (_scrollControllers.vertical.hasClients) {
+          double target = math.max(
+              _scrollControllers.vertical.position.pixels -
+                  layoutSettings.rowHeight,
+              0);
+          _scrollControllers.vertical.animateTo(target,
+              duration: const Duration(milliseconds: 30), curve: Curves.ease);
+        }
       } else if (event.logicalKey == LogicalKeyboardKey.pageDown) {
-      } else if (event.logicalKey == LogicalKeyboardKey.pageUp) {}
+        if (_scrollControllers.vertical.hasClients) {
+          double target = math.min(
+              _scrollControllers.vertical.position.pixels +
+                  _scrollControllers.vertical.position.viewportDimension,
+              _scrollControllers.vertical.position.maxScrollExtent);
+          _scrollControllers.vertical.animateTo(target,
+              duration: const Duration(milliseconds: 30), curve: Curves.ease);
+        }
+      } else if (event.logicalKey == LogicalKeyboardKey.pageUp) {
+        if (_scrollControllers.vertical.hasClients) {
+          double target = math.max(
+              _scrollControllers.vertical.position.pixels -
+                  _scrollControllers.vertical.position.viewportDimension,
+              0);
+          _scrollControllers.vertical.animateTo(target,
+              duration: const Duration(milliseconds: 30), curve: Curves.ease);
+        }
+      }
     }
     return KeyEventResult.handled;
   }
