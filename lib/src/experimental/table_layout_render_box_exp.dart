@@ -128,7 +128,7 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
       RenderBox renderBox = child as RenderBox;
       TableLayoutParentDataExp parentData = child._parentData();
       if (parentData.type == LayoutChildType.cell) {
-        _contentAreaMap[parentData.contentAreaId]!.children.add(renderBox);
+        _contentAreaMap[parentData.contentAreaId]!.addCell(renderBox);
       } else if (parentData.type == LayoutChildType.horizontalScrollbar) {
         if (parentData.contentAreaId == ContentAreaId.unpinned) {
           _contentAreaMap[parentData.contentAreaId]!.scrollbar = renderBox;
