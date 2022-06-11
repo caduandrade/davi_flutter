@@ -2,7 +2,7 @@ import 'package:easy_table/src/theme/row_color.dart';
 
 class TablePaintSettings {
   TablePaintSettings(
-      {required this.debugAreas,
+      {this.debugAreas = false,
       required this.hoveredRowIndex,
       required this.hoveredColor});
 

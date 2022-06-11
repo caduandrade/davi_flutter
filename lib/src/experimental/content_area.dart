@@ -110,6 +110,7 @@ class ContentArea with ChildPainterMixin {
       required Offset offset,
       required Rect contentArea}) {
     for (RenderBox header in _headers) {
+      //TODO clip and/or do not build
       paintChild(context: context, offset: offset, child: header);
     }
     context.canvas.save();

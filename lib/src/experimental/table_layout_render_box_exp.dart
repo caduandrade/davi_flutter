@@ -122,7 +122,7 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
 
     _verticalScrollbar = null;
 
-    //TODO list not necessary?
+    //TODO list necessary?
     List<RenderBox> children = [];
     visitChildren((child) {
       RenderBox renderBox = child as RenderBox;
@@ -132,9 +132,7 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
       } else if (parentData.type == LayoutChildType.header) {
         _contentAreaMap[parentData.contentAreaId]!.addHeader(renderBox);
       } else if (parentData.type == LayoutChildType.horizontalScrollbar) {
-        if (parentData.contentAreaId == ContentAreaId.unpinned) {
-          _contentAreaMap[parentData.contentAreaId]!.scrollbar = renderBox;
-        }
+        _contentAreaMap[parentData.contentAreaId]!.scrollbar = renderBox;
       } else if (parentData.type == LayoutChildType.verticalScrollbar) {
         _verticalScrollbar = renderBox;
       }

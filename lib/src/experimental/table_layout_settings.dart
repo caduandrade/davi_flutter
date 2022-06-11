@@ -16,7 +16,8 @@ class TableLayoutSettings {
     headerCellHeight = theme.headerCell.height;
     headerHeight =
         hasHeader ? theme.header.bottomBorderHeight + headerCellHeight : 0;
-    needHorizontalScrollbar = !theme.scrollbar.horizontalOnlyWhenNeeded;
+    needUnpinnedHorizontalScrollbar = !theme.scrollbar.horizontalOnlyWhenNeeded;
+    needLeftPinnedHorizontalScrollbar = needUnpinnedHorizontalScrollbar;
   }
 
   final double cellContentHeight;
@@ -39,12 +40,14 @@ class TableLayoutSettings {
   late final double headerHeight;
 
   double contentHeight = 0;
-  late bool needHorizontalScrollbar;
+  late bool needUnpinnedHorizontalScrollbar;
+  late bool needLeftPinnedHorizontalScrollbar;
 
   bool get allowHorizontalScrollbar => !columnsFit;
 
   bool get hasHorizontalScrollbar =>
-      allowHorizontalScrollbar && needHorizontalScrollbar;
+      allowHorizontalScrollbar &&
+      (needUnpinnedHorizontalScrollbar || needLeftPinnedHorizontalScrollbar);
 
   double get scrollbarWidth => scrollbarSize;
   double get scrollbarHeight => hasHorizontalScrollbar ? scrollbarSize : 0;
@@ -66,7 +69,8 @@ class TableLayoutSettings {
           headerCellHeight == other.headerCellHeight &&
           headerHeight == other.headerHeight &&
           contentHeight == other.contentHeight &&
-          needHorizontalScrollbar == other.needHorizontalScrollbar;
+          needUnpinnedHorizontalScrollbar ==
+              other.needUnpinnedHorizontalScrollbar;
 
   @override
   int get hashCode =>
@@ -82,5 +86,5 @@ class TableLayoutSettings {
       headerCellHeight.hashCode ^
       headerHeight.hashCode ^
       contentHeight.hashCode ^
-      needHorizontalScrollbar.hashCode;
+      needUnpinnedHorizontalScrollbar.hashCode;
 }

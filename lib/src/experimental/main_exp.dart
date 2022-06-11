@@ -127,6 +127,6 @@ class _HomePageState extends State<HomePage> {
                     data: EasyTableThemeData(
                         row: RowThemeData(
                             hoveredColor: (index) => Colors.blue[50])),
-                    child: EasyTableExp(_model, columnsFit: true)))));
+                    child: EasyTableExp(_model)))));
   }
 }

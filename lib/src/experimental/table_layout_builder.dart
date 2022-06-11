@@ -12,6 +12,7 @@ import 'package:easy_table/src/experimental/table_scroll_controllers.dart';
 import 'package:easy_table/src/internal/cell.dart';
 import 'package:easy_table/src/internal/columns_metrics.dart';
 import 'package:easy_table/src/internal/header_cell.dart';
+import 'package:easy_table/src/internal/horizontal_scroll_bar.dart';
 import 'package:easy_table/src/model.dart';
 import 'package:easy_table/src/row_hover_listener.dart';
 import 'package:easy_table/src/theme/header_theme_data.dart';
@@ -63,9 +64,7 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
     final EasyTableThemeData theme = EasyTableTheme.of(context);
 
     TablePaintSettings paintSettings = TablePaintSettings(
-        debugAreas: true,
-        hoveredRowIndex: hoveredRowIndex,
-        hoveredColor: theme.row.hoveredColor);
+        hoveredRowIndex: hoveredRowIndex, hoveredColor: theme.row.hoveredColor);
     if (model != null) {
       return _buildTable(
           context: context,
@@ -121,108 +120,107 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
         (scrollControllers.verticalOffset / layoutSettings.rowHeight).floor();
     final int lastRowIndex = firstRowIndex + visibleRowsCount;
 
-    final double maxWidth =
+    final bool allowPin = !layoutSettings.columnsFit;
+
+    for (int columnIndex = 0;
+        columnIndex < model.columnsLength;
+        columnIndex++) {
+      EasyTableColumn<ROW> column = model.columnAt(columnIndex);
+      final ContentAreaId contentAreaId =
+          _contentAreaId(allowPin: allowPin, column: column);
+      children.add(LayoutChild.header(
+          contentAreaId: contentAreaId,
+          column: columnIndex,
+          child: EasyTableHeaderCell<ROW>(
+              model: model,
+              column: column,
+              resizable: !layoutSettings.columnsFit,
+              multiSortEnabled: multiSortEnabled)));
+    }
+
+    //TODO scrollbarSize border?
+    final double maxContentAreaWidth =
         math.max(0, constraints.maxWidth - layoutSettings.scrollbarSize);
-    double unpinnedContentWidth;
-    double pinnedWidth = 0;
-    double pinnedContentWidth = 0;
 
     if (layoutSettings.columnsFit) {
-      _addHeaders(
-          contentAreaId: ContentAreaId.unpinned,
-          columnFilter: ColumnFilter.all,
-          multiSortEnabled: multiSortEnabled,
-          model: model,
-          children: children);
-
-      final double availableContentWidth =
-          math.max(0, constraints.maxWidth - layoutSettings.scrollbarSize);
-
-      unpinnedContentWidth =
-          math.max(availableContentWidth, model.allColumnsWidth);
-
       unpinnedColumnsMetrics = ColumnsMetricsExp.columnsFit(
           model: model,
-          containerWidth: availableContentWidth,
+          containerWidth: maxContentAreaWidth,
           columnDividerThickness: theme.columnDividerThickness);
-
-      for (int rowIndex = firstRowIndex;
-          rowIndex < model.visibleRowsLength && rowIndex < lastRowIndex;
-          rowIndex++) {
-        ROW row = model.visibleRowAt(rowIndex);
-        rows.add(row);
-        for (int columnIndex = 0;
-            columnIndex < unpinnedColumnsMetrics.columns.length;
-            columnIndex++) {
-          EasyTableColumn<ROW> column =
-              unpinnedColumnsMetrics.columns[columnIndex];
-          if (column.cellBuilder != null) {
-            Widget cellChild = column.cellBuilder!(context, row, rowIndex);
-            EdgeInsets? padding;
-            Alignment? alignment;
-            Color? background;
-            if (column.cellStyleBuilder != null) {
-              CellStyle? cellStyle = column.cellStyleBuilder!(row);
-              if (cellStyle != null) {
-                background = cellStyle.background;
-                alignment = cellStyle.alignment;
-                padding = cellStyle.padding;
-              }
-            }
-            Widget cell = ClipRect(
-                child: EasyTableCell(
-                    child: cellChild,
-                    alignment: alignment,
-                    padding: padding,
-                    background: background));
-            children.add(LayoutChild.cell(
-                contentAreaId: ContentAreaId.unpinned,
-                row: rowIndex,
-                column: columnIndex,
-                child: cell));
-          }
-        }
-      }
     } else {
-      final int unpinnedColumnsLength = model.unpinnedColumnsLength;
-      final int pinnedColumnsLength = model.pinnedColumnsLength;
-      final bool hasPinned = pinnedColumnsLength > 0;
-      pinnedContentWidth = model.pinnedColumnsWidth +
-          (pinnedColumnsLength * theme.columnDividerThickness);
-      if (hasPinned) {
-        bool needPinnedHorizontalScroll = pinnedContentWidth > maxWidth;
-        pinnedWidth = math.min(pinnedContentWidth, maxWidth);
-        unpinnedContentWidth = model.unpinnedColumnsWidth +
-            (unpinnedColumnsLength * theme.columnDividerThickness);
-        bool needUnpinnedHorizontalScroll =
-            unpinnedContentWidth > maxWidth - pinnedWidth;
-        unpinnedContentWidth =
-            math.max(maxWidth - pinnedWidth, unpinnedContentWidth);
-        if (theme.scrollbar.horizontalOnlyWhenNeeded) {
-          layoutSettings.needHorizontalScrollbar =
-              needPinnedHorizontalScroll || needUnpinnedHorizontalScroll;
-        }
-      } else {
-        unpinnedContentWidth = model.allColumnsWidth +
-            (model.columnsLength * theme.columnDividerThickness);
-        if (theme.scrollbar.horizontalOnlyWhenNeeded) {
-          layoutSettings.needHorizontalScrollbar =
-              unpinnedContentWidth > maxWidth;
-        }
-        unpinnedContentWidth = math.max(maxWidth, unpinnedContentWidth);
-      }
-
-      ColumnsMetrics unpinnedColumnsMetrics = ColumnsMetrics.resizable(
+      leftPinnedColumnsMetrics = ColumnsMetricsExp.resizable(
           model: model,
           columnDividerThickness: theme.columnDividerThickness,
-          filter: hasPinned ? ColumnFilter.unpinnedOnly : ColumnFilter.all);
+          filter: ColumnFilterExp.pinnedOnly);
 
-      ColumnsMetrics? pinnedColumnsMetrics = hasPinned
-          ? ColumnsMetrics.resizable(
-              model: model,
-              columnDividerThickness: theme.columnDividerThickness,
-              filter: ColumnFilter.pinnedOnly)
-          : null;
+      unpinnedColumnsMetrics = ColumnsMetricsExp.resizable(
+          model: model,
+          columnDividerThickness: theme.columnDividerThickness,
+          filter: ColumnFilterExp.unpinnedOnly);
+
+      final double pinnedAreaWidth = leftPinnedColumnsMetrics.maxWidth;
+      layoutSettings.needLeftPinnedHorizontalScrollbar =
+          pinnedAreaWidth > maxContentAreaWidth;
+
+      final double unpinnedAreaWidth = unpinnedColumnsMetrics.maxWidth;
+      layoutSettings.needUnpinnedHorizontalScrollbar =
+          unpinnedAreaWidth > maxContentAreaWidth - pinnedAreaWidth;
+
+      if (layoutSettings.hasHorizontalScrollbar) {
+        children.add(LayoutChild.horizontalScrollbar(
+            contentAreaId: ContentAreaId.leftPinned,
+            child: EasyTableScrollBarExp(
+                axis: Axis.horizontal,
+                scrollController: scrollControllers.leftPinnedContentArea,
+                color: theme.scrollbar.pinnedHorizontalColor,
+                contentSize: pinnedAreaWidth)));
+
+        children.add(LayoutChild.horizontalScrollbar(
+            contentAreaId: ContentAreaId.unpinned,
+            child: EasyTableScrollBarExp(
+                axis: Axis.horizontal,
+                scrollController: scrollControllers.unpinnedContentArea,
+                color: theme.scrollbar.unpinnedHorizontalColor,
+                contentSize: unpinnedAreaWidth)));
+      }
+    }
+
+    for (int rowIndex = firstRowIndex;
+        rowIndex < model.visibleRowsLength && rowIndex < lastRowIndex;
+        rowIndex++) {
+      ROW row = model.visibleRowAt(rowIndex);
+      rows.add(row);
+      for (int columnIndex = 0;
+          columnIndex < unpinnedColumnsMetrics.columns.length;
+          columnIndex++) {
+        EasyTableColumn<ROW> column =
+            unpinnedColumnsMetrics.columns[columnIndex];
+        if (column.cellBuilder != null) {
+          Widget cellChild = column.cellBuilder!(context, row, rowIndex);
+          EdgeInsets? padding;
+          Alignment? alignment;
+          Color? background;
+          if (column.cellStyleBuilder != null) {
+            CellStyle? cellStyle = column.cellStyleBuilder!(row);
+            if (cellStyle != null) {
+              background = cellStyle.background;
+              alignment = cellStyle.alignment;
+              padding = cellStyle.padding;
+            }
+          }
+          Widget cell = ClipRect(
+              child: EasyTableCell(
+                  child: cellChild,
+                  alignment: alignment,
+                  padding: padding,
+                  background: background));
+          children.add(LayoutChild.cell(
+              contentAreaId: ContentAreaId.unpinned,
+              row: rowIndex,
+              column: columnIndex,
+              child: cell));
+        }
+      }
     }
 
     return TableLayoutExp(
@@ -234,6 +232,16 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
         rightPinnedColumnsMetrics: rightPinnedColumnsMetrics,
         rows: rows,
         children: children);
+  }
+
+  ContentAreaId _contentAreaId(
+      {required bool allowPin, required EasyTableColumn<ROW> column}) {
+    if (allowPin) {
+      if (column.pinned) {
+        return ContentAreaId.leftPinned;
+      }
+    }
+    return ContentAreaId.unpinned;
   }
 
   void _addHeaders(
