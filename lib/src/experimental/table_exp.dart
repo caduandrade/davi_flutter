@@ -121,6 +121,7 @@ class _EasyTableExpState<ROW> extends State<EasyTableExp<ROW>> {
         child: TableLayoutBuilder(
             onHoverListener: _setHoveredRowIndex,
             hoveredRowIndex: _hoveredRowIndex,
+            multiSortEnabled: widget.multiSortEnabled,
             layoutSettings: layoutSettings,
             scrollControllers: _scrollControllers,
             model: widget.model));

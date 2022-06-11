@@ -13,9 +13,9 @@ class TableLayoutSettings {
         ((theme.cell.padding != null) ? theme.cell.padding!.vertical : 0);
     rowHeight = cellHeight + theme.row.dividerThickness;
     scrollbarSize = theme.scrollbar.margin * 2 + theme.scrollbar.thickness;
-    headerHeight = hasHeader
-        ? theme.header.bottomBorderHeight + theme.headerCell.height
-        : 0;
+    headerCellHeight = theme.headerCell.height;
+    headerHeight =
+        hasHeader ? theme.header.bottomBorderHeight + headerCellHeight : 0;
     needHorizontalScrollbar = !theme.scrollbar.horizontalOnlyWhenNeeded;
   }
 
@@ -32,6 +32,8 @@ class TableLayoutSettings {
   /// Cell height and divider thickness
   late final double rowHeight;
   late final double scrollbarSize;
+
+  late final double headerCellHeight;
 
   /// Cell height and bottom border
   late final double headerHeight;
@@ -61,6 +63,7 @@ class TableLayoutSettings {
           cellHeight == other.cellHeight &&
           rowHeight == other.rowHeight &&
           scrollbarSize == other.scrollbarSize &&
+          headerCellHeight == other.headerCellHeight &&
           headerHeight == other.headerHeight &&
           contentHeight == other.contentHeight &&
           needHorizontalScrollbar == other.needHorizontalScrollbar;
@@ -76,6 +79,7 @@ class TableLayoutSettings {
       cellHeight.hashCode ^
       rowHeight.hashCode ^
       scrollbarSize.hashCode ^
+      headerCellHeight.hashCode ^
       headerHeight.hashCode ^
       contentHeight.hashCode ^
       needHorizontalScrollbar.hashCode;

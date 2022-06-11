@@ -16,23 +16,38 @@ class ContentArea with ChildPainterMixin {
   final Color headerAreaDebugColor;
   final Color scrollbarAreaDebugColor;
   ColumnsMetricsExp columnsMetrics;
+  final List<RenderBox> _headers = [];
   final List<RenderBox> _cells = [];
   RenderBox? scrollbar;
 
   Rect bounds = Rect.zero;
 
   void clear() {
+    _headers.clear();
     _cells.clear();
     scrollbar = null;
   }
-  
+
+  void addHeader(RenderBox header) {
+    _headers.add(header);
+  }
+
   void addCell(RenderBox cell) {
     _cells.add(cell);
   }
 
   void performLayout({required TableLayoutSettings layoutSettings}) {
-    if (_cells.isEmpty) {
-      return;
+    for (RenderBox renderBox in _headers) {
+      final TableLayoutParentDataExp parentData = renderBox._parentData();
+      final double y = bounds.top;
+      final int columnIndex = parentData.column!;
+      final double width = columnsMetrics.widths[columnIndex];
+      final double offset = columnsMetrics.offsets[columnIndex];
+      renderBox.layout(
+          BoxConstraints.tightFor(
+              width: width, height: layoutSettings.headerCellHeight),
+          parentUsesSize: true);
+      parentData.offset = Offset(offset, y);
     }
     for (RenderBox renderBox in _cells) {
       final TableLayoutParentDataExp parentData = renderBox._parentData();
@@ -94,6 +109,9 @@ class ContentArea with ChildPainterMixin {
       {required PaintingContext context,
       required Offset offset,
       required Rect contentArea}) {
+    for (RenderBox header in _headers) {
+      paintChild(context: context, offset: offset, child: header);
+    }
     context.canvas.save();
     context.canvas.clipRect(contentArea.translate(offset.dx, offset.dy));
     for (RenderBox cell in _cells) {

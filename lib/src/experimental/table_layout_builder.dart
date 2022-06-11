@@ -11,6 +11,7 @@ import 'package:easy_table/src/experimental/table_paint_settings.dart';
 import 'package:easy_table/src/experimental/table_scroll_controllers.dart';
 import 'package:easy_table/src/internal/cell.dart';
 import 'package:easy_table/src/internal/columns_metrics.dart';
+import 'package:easy_table/src/internal/header_cell.dart';
 import 'package:easy_table/src/model.dart';
 import 'package:easy_table/src/row_hover_listener.dart';
 import 'package:easy_table/src/theme/header_theme_data.dart';
@@ -26,6 +27,7 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
       required this.hoveredRowIndex,
       required this.layoutSettings,
       required this.scrollControllers,
+      required this.multiSortEnabled,
       required this.model})
       : super(key: key);
 
@@ -34,6 +36,7 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
   final TableScrollControllers scrollControllers;
   final TableLayoutSettings layoutSettings;
   final EasyTableModel<ROW>? model;
+  final bool multiSortEnabled;
 
   @override
   Widget build(BuildContext context) {
@@ -125,6 +128,13 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
     double pinnedContentWidth = 0;
 
     if (layoutSettings.columnsFit) {
+      _addHeaders(
+          contentAreaId: ContentAreaId.unpinned,
+          columnFilter: ColumnFilter.all,
+          multiSortEnabled: multiSortEnabled,
+          model: model,
+          children: children);
+
       final double availableContentWidth =
           math.max(0, constraints.maxWidth - layoutSettings.scrollbarSize);
 
@@ -224,6 +234,32 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
         rightPinnedColumnsMetrics: rightPinnedColumnsMetrics,
         rows: rows,
         children: children);
+  }
+
+  void _addHeaders(
+      {required ContentAreaId contentAreaId,
+      required ColumnFilter columnFilter,
+      required bool multiSortEnabled,
+      required EasyTableModel<ROW> model,
+      required List<LayoutChild> children}) {
+    for (int columnIndex = 0;
+        columnIndex < model.columnsLength;
+        columnIndex++) {
+      EasyTableColumn<ROW> column = model.columnAt(columnIndex);
+      if (columnFilter == ColumnFilter.all ||
+          (columnFilter == ColumnFilter.unpinnedOnly &&
+              column.pinned == false) ||
+          (columnFilter == ColumnFilter.pinnedOnly && column.pinned)) {
+        children.add(LayoutChild.header(
+            contentAreaId: contentAreaId,
+            column: columnIndex,
+            child: EasyTableHeaderCell<ROW>(
+                model: model,
+                column: column,
+                resizable: !layoutSettings.columnsFit,
+                multiSortEnabled: multiSortEnabled)));
+      }
+    }
   }
 
   Widget _buildEmptyTable(
