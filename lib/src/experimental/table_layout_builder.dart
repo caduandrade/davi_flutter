@@ -14,6 +14,7 @@ import 'package:easy_table/src/internal/columns_metrics.dart';
 import 'package:easy_table/src/model.dart';
 import 'package:easy_table/src/row_hover_listener.dart';
 import 'package:easy_table/src/theme/header_theme_data.dart';
+import 'package:easy_table/src/theme/row_color.dart';
 import 'package:easy_table/src/theme/theme.dart';
 import 'package:easy_table/src/theme/theme_data.dart';
 import 'package:flutter/material.dart';
@@ -56,8 +57,12 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
       throw FlutterError('EasyTable was given unbounded width.');
     }
 
-    TablePaintSettings paintSettings =
-        TablePaintSettings(debugAreas: true, hoveredRowIndex: hoveredRowIndex);
+    final EasyTableThemeData theme = EasyTableTheme.of(context);
+
+    TablePaintSettings paintSettings = TablePaintSettings(
+        debugAreas: true,
+        hoveredRowIndex: hoveredRowIndex,
+        hoveredColor: theme.row.hoveredColor);
     if (model != null) {
       return _buildTable(
           context: context,

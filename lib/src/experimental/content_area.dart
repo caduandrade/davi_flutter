@@ -60,17 +60,22 @@ class ContentArea {
       required Offset offset,
       required TableLayoutSettings layoutSettings,
       required TablePaintSettings paintSettings}) {
-    if (paintSettings.hoveredRowIndex != null) {
-      final double y = layoutSettings.headerHeight +
-          (paintSettings.hoveredRowIndex! * layoutSettings.rowHeight) -
-          layoutSettings.verticalScrollbarOffset;
-      Paint paint = Paint()
-        ..style = PaintingStyle.fill
-        ..color = Colors.lime;
-      canvas.drawRect(
-          Rect.fromLTWH(offset.dx, offset.dy + y, bounds.width,
-              layoutSettings.cellHeight),
-          paint);
+    if (paintSettings.hoveredColor != null &&
+        paintSettings.hoveredRowIndex != null) {
+      Color? color =
+          paintSettings.hoveredColor!(paintSettings.hoveredRowIndex!);
+      if (color != null) {
+        final double y = layoutSettings.headerHeight +
+            (paintSettings.hoveredRowIndex! * layoutSettings.rowHeight) -
+            layoutSettings.verticalScrollbarOffset;
+        Paint paint = Paint()
+          ..style = PaintingStyle.fill
+          ..color = color;
+        canvas.drawRect(
+            Rect.fromLTWH(offset.dx, offset.dy + y, bounds.width,
+                layoutSettings.cellHeight),
+            paint);
+      }
     }
   }
 

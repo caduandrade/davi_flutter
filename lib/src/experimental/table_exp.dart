@@ -1,20 +1,10 @@
-import 'dart:math' as math;
 import 'package:easy_table/src/experimental/table_layout_builder.dart';
 import 'package:easy_table/src/experimental/table_layout_settings.dart';
 import 'package:easy_table/src/experimental/table_scroll_controllers.dart';
-import 'package:easy_table/src/internal/columns_metrics.dart';
-import 'package:easy_table/src/internal/horizontal_scroll_bar.dart';
-import 'package:easy_table/src/internal/table_area_content_widget.dart';
-import 'package:easy_table/src/internal/table_area_layout.dart';
-import 'package:easy_table/src/internal/table_header_widget.dart';
-import 'package:easy_table/src/internal/table_layout.dart';
-import 'package:easy_table/src/internal/vertical_scroll_bar.dart';
 import 'package:easy_table/src/model.dart';
 import 'package:easy_table/src/last_visible_row_listener.dart';
 import 'package:easy_table/src/row_callbacks.dart';
 import 'package:easy_table/src/row_hover_listener.dart';
-import 'package:easy_table/src/internal/table_scrolls.dart';
-import 'package:easy_table/src/theme/header_theme_data.dart';
 import 'package:easy_table/src/theme/theme.dart';
 import 'package:easy_table/src/theme/theme_data.dart';
 import 'package:flutter/material.dart';
@@ -134,9 +124,10 @@ class _EasyTableExpState<ROW> extends State<EasyTableExp<ROW>> {
             scrollControllers: _scrollControllers,
             model: widget.model));
 
-    //TODO only if exists hover color?
-    table =
-        MouseRegion(onExit: (event) => _setHoveredRowIndex(null), child: table);
+    if (theme.row.hoveredColor != null) {
+      table = MouseRegion(
+          onExit: (event) => _setHoveredRowIndex(null), child: table);
+    }
 
     if (widget.focusable) {
       table = Focus(

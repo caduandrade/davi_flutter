@@ -8,6 +8,9 @@ import 'package:easy_table/src/experimental/table_layout_exp.dart';
 import 'package:easy_table/src/experimental/table_layout_settings.dart';
 import 'package:easy_table/src/experimental/table_paint_settings.dart';
 import 'package:easy_table/src/model.dart';
+import 'package:easy_table/src/theme/row_theme_data.dart';
+import 'package:easy_table/src/theme/theme.dart';
+import 'package:easy_table/src/theme/theme_data.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -120,6 +123,10 @@ class _HomePageState extends State<HomePage> {
             padding: const EdgeInsets.all(64),
             child: Container(
                 decoration: BoxDecoration(border: Border.all()),
-                child: EasyTableExp(_model, columnsFit: true))));
+                child: EasyTableTheme(
+                    data: EasyTableThemeData(
+                        row: RowThemeData(
+                            hoveredColor: (index) => Colors.blue[50])),
+                    child: EasyTableExp(_model, columnsFit: true)))));
   }
 }

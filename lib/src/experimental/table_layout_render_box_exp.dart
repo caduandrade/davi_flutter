@@ -226,13 +226,15 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
   }
 
   @override
-  bool hitTestSelf(Offset position) => true;
+  bool hitTestSelf(Offset position) => _paintSettings.hoveredColor != null;
 
   @override
   void handleEvent(PointerEvent event, HitTestEntry entry) {
     assert(debugHandleEvent(event, entry));
+    if (_paintSettings.hoveredColor == null) {
+      return;
+    }
     if (event is PointerHoverEvent) {
-      //TODO only if exists hover color?
       if (contentArea.contains(event.localPosition)) {
         final double localY = event.localPosition.dy;
         final double y = math.max(0, localY - _layoutSettings.headerHeight) +
