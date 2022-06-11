@@ -245,32 +245,6 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
     return ContentAreaId.unpinned;
   }
 
-  void _addHeaders(
-      {required ContentAreaId contentAreaId,
-      required ColumnFilter columnFilter,
-      required bool multiSortEnabled,
-      required EasyTableModel<ROW> model,
-      required List<LayoutChild> children}) {
-    for (int columnIndex = 0;
-        columnIndex < model.columnsLength;
-        columnIndex++) {
-      EasyTableColumn<ROW> column = model.columnAt(columnIndex);
-      if (columnFilter == ColumnFilter.all ||
-          (columnFilter == ColumnFilter.unpinnedOnly &&
-              column.pinned == false) ||
-          (columnFilter == ColumnFilter.pinnedOnly && column.pinned)) {
-        children.add(LayoutChild.header(
-            contentAreaId: contentAreaId,
-            column: columnIndex,
-            child: EasyTableHeaderCell<ROW>(
-                model: model,
-                column: column,
-                resizable: !layoutSettings.columnsFit,
-                multiSortEnabled: multiSortEnabled)));
-      }
-    }
-  }
-
   Widget _buildEmptyTable(
       {required BuildContext context,
       required BoxConstraints constraints,
