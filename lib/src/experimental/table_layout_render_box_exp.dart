@@ -123,11 +123,14 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
     }
   }
 
-  //TODO use _layoutSettings for dry layout
+  @override
+  Size computeDryLayout(BoxConstraints constraints) {
+    return Size(constraints.maxWidth, _layoutSettings.height);
+  }
 
   @override
   void performLayout() {
-    _forEachContentArea((area) => area.clear());
+    _forEachContentArea((area) => area.clearChildren());
 
     _verticalScrollbar = null;
 
@@ -163,10 +166,10 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
         constraints.maxWidth - _layoutSettings.scrollbarWidth,
         _layoutSettings.headerHeight);
 
-    size = Size(constraints.maxWidth, _layoutSettings.height);
-
     _forEachContentArea(
         (area) => area.performLayout(layoutSettings: _layoutSettings));
+
+    size = computeDryLayout(constraints);
   }
 
   @override

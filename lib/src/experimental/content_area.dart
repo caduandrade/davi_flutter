@@ -23,7 +23,7 @@ class ContentArea with ChildPainterMixin {
 
   RenderBox? scrollbar;
 
-  void clear() {
+  void clearChildren() {
     _headers.clear();
     _cells.clear();
     scrollbar = null;
