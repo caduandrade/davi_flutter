@@ -4,6 +4,7 @@ import 'package:easy_table/src/column.dart';
 import 'package:easy_table/src/experimental/table_exp.dart';
 import 'package:easy_table/src/model.dart';
 import 'package:easy_table/src/theme/header_cell_theme_data.dart';
+import 'package:easy_table/src/theme/header_theme_data.dart';
 import 'package:easy_table/src/theme/row_theme_data.dart';
 import 'package:easy_table/src/theme/theme.dart';
 import 'package:easy_table/src/theme/theme_data.dart';
@@ -64,6 +65,10 @@ class _HomePageState extends State<HomePage> {
   double _columnDividerThickness =
       EasyTableThemeDataDefaults.columnDividerThickness;
   double _headerCellHeight = HeaderCellThemeDataDefaults.height;
+  Color _headerColumnDividerColor = HeaderThemeDataDefaults.columnDividerColor;
+
+  Color _bottomBorderColor = HeaderThemeDataDefaults.bottomBorderColor;
+  double _bottomBorderHeight = HeaderThemeDataDefaults.bottomBorderHeight;
 
   @override
   void initState() {
@@ -134,7 +139,13 @@ class _HomePageState extends State<HomePage> {
                       child: const Text('columnDividerColor')),
                   ElevatedButton(
                       onPressed: _changeHeaderCellHeight,
-                      child: const Text('headerCellHeight'))
+                      child: const Text('headerCellHeight')),
+                  ElevatedButton(
+                      onPressed: _changeHeaderColumnDividerColor,
+                      child: const Text('headerColumnDividerColor')),
+                  ElevatedButton(
+                      onPressed: _changeBottomBorder,
+                      child: const Text('bottomBorder'))
                 ])),
             Expanded(child: _tableArea())
           ],
@@ -143,13 +154,17 @@ class _HomePageState extends State<HomePage> {
 
   Widget _tableArea() {
     return Padding(
-        padding: const EdgeInsets.all(64),
+        padding: const EdgeInsets.all(32),
         child: Container(
             decoration: BoxDecoration(border: Border.all()),
             child: EasyTableTheme(
                 data: EasyTableThemeData(
                     columnDividerThickness: _columnDividerThickness,
                     columnDividerColor: _columnDividerColor,
+                    header: HeaderThemeData(
+                        bottomBorderColor: _bottomBorderColor,
+                        bottomBorderHeight: _bottomBorderHeight,
+                        columnDividerColor: _headerColumnDividerColor),
                     headerCell: HeaderCellThemeData(height: _headerCellHeight),
                     row:
                         RowThemeData(hoveredColor: (index) => Colors.blue[50])),
@@ -175,5 +190,26 @@ class _HomePageState extends State<HomePage> {
         _headerCellHeight == HeaderCellThemeDataDefaults.height
             ? 40
             : HeaderCellThemeDataDefaults.height);
+  }
+
+  void _changeHeaderColumnDividerColor() {
+    setState(() => _headerColumnDividerColor =
+        _headerColumnDividerColor == HeaderThemeDataDefaults.columnDividerColor
+            ? Colors.green
+            : HeaderThemeDataDefaults.columnDividerColor);
+  }
+
+  void _changeBottomBorder() {
+    setState(() {
+      _bottomBorderColor =
+          _bottomBorderColor == HeaderThemeDataDefaults.bottomBorderColor
+              ? Colors.blue
+              : HeaderThemeDataDefaults.bottomBorderColor;
+
+      _bottomBorderHeight =
+          _bottomBorderHeight == HeaderThemeDataDefaults.bottomBorderHeight
+              ? 4
+              : HeaderThemeDataDefaults.bottomBorderHeight;
+    });
   }
 }

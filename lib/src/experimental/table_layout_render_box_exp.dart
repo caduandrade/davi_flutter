@@ -200,6 +200,13 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
 
     paintChild(context: context, offset: offset, child: _verticalScrollbar);
 
+    _forEachContentArea((area) => area.paint(
+        context: context,
+        offset: offset,
+        layoutSettings: _layoutSettings,
+        paintSettings: _paintSettings,
+        theme: _theme));
+
     if (_paintSettings.debugAreas) {
       if (_layoutSettings.hasHeader) {
         _forEachContentArea((area) => area.paintDebugAreas(

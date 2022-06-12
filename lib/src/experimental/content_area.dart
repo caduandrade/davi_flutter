@@ -130,19 +130,64 @@ class ContentArea with ChildPainterMixin {
 
     // scrollbar
     paintChild(context: context, offset: offset, child: scrollbar);
+  }
 
+  void paint(
+      {required PaintingContext context,
+      required Offset offset,
+      required TableLayoutSettings layoutSettings,
+      required TablePaintSettings paintSettings,
+      required EasyTableThemeData theme}) {
     // column dividers
-    if (theme.columnDividerColor != null) {
-      Paint paint = Paint()..color = theme.columnDividerColor!;
-      final double height =
-          layoutSettings.headerBounds.height + layoutSettings.cellsBound.height;
-      for (int i = 1; i < columnsMetrics.offsets.length; i++) {
-        double x = columnsMetrics.offsets[i] - theme.columnDividerThickness;
-        context.canvas.drawRect(
-            Rect.fromLTWH(
-                x + offset.dx, offset.dy, theme.columnDividerThickness, height),
-            paint);
+    if (theme.columnDividerThickness > 0) {
+      if (layoutSettings.headerHeight > 0 &&
+          theme.header.columnDividerColor != null) {
+        _paintColumnDividers(
+            context: context,
+            offset: offset,
+            theme: theme,
+            color: theme.header.columnDividerColor!,
+            dy: 0,
+            height: theme.headerCell.height);
       }
+      if (theme.columnDividerColor != null) {
+        _paintColumnDividers(
+            context: context,
+            offset: offset,
+            theme: theme,
+            color: theme.columnDividerColor!,
+            dy: layoutSettings.headerHeight,
+            height: layoutSettings.cellsBound.height);
+      }
+    }
+
+    if (theme.header.bottomBorderHeight > 0 &&
+        theme.header.bottomBorderColor != null) {
+      Paint paint = Paint()..color = theme.header.bottomBorderColor!;
+      context.canvas.drawRect(
+          Rect.fromLTWH(
+              offset.dx,
+              offset.dy + theme.headerCell.height,
+              layoutSettings.headerBounds.width,
+              theme.header.bottomBorderHeight),
+          paint);
+    }
+  }
+
+  void _paintColumnDividers(
+      {required PaintingContext context,
+      required Offset offset,
+      required EasyTableThemeData theme,
+      required double height,
+      required Color color,
+      required double dy}) {
+    Paint paint = Paint()..color = color;
+    for (int i = 1; i < columnsMetrics.offsets.length; i++) {
+      double x = columnsMetrics.offsets[i] - theme.columnDividerThickness;
+      context.canvas.drawRect(
+          Rect.fromLTWH(x + offset.dx, offset.dy + dy,
+              theme.columnDividerThickness, height),
+          paint);
     }
   }
 }
