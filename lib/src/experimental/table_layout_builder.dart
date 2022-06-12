@@ -190,7 +190,7 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
     }
 
     for (int rowIndex = firstRowIndex;
-        rowIndex < model.visibleRowsLength && rowIndex < lastRowIndex;
+        rowIndex < model.visibleRowsLength && rowIndex <= lastRowIndex;
         rowIndex++) {
       ROW row = model.visibleRowAt(rowIndex);
       rows.add(row);

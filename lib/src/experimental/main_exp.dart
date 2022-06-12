@@ -61,6 +61,8 @@ class _HomePageState extends State<HomePage> {
   late final EasyTableModel<Value> _model;
   late final List<Value> rows;
 
+  bool _columnsFit = false;
+
   Color _columnDividerColor = EasyTableThemeDataDefaults.columnDividerColor;
   double _columnDividerThickness =
       EasyTableThemeDataDefaults.columnDividerThickness;
@@ -132,6 +134,9 @@ class _HomePageState extends State<HomePage> {
                 padding: const EdgeInsets.all(8),
                 child: Wrap(spacing: 8, runSpacing: 8, children: [
                   ElevatedButton(
+                      onPressed: _changeColumnsFit,
+                      child: const Text('columnsFit')),
+                  ElevatedButton(
                       onPressed: _changeColumnDividerThickness,
                       child: const Text('columnDividerThickness')),
                   ElevatedButton(
@@ -168,7 +173,11 @@ class _HomePageState extends State<HomePage> {
                     headerCell: HeaderCellThemeData(height: _headerCellHeight),
                     row:
                         RowThemeData(hoveredColor: (index) => Colors.blue[50])),
-                child: EasyTableExp(_model))));
+                child: EasyTableExp(_model, columnsFit: _columnsFit))));
+  }
+
+  void _changeColumnsFit() {
+    setState(() => _columnsFit = !_columnsFit);
   }
 
   void _changeColumnDividerThickness() {
