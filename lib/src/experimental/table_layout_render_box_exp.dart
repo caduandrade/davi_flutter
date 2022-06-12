@@ -210,7 +210,6 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
   }
 
   void _paintHover({required Canvas canvas, required Offset offset}) {
-    //TODO clip contentArea (showing in horizontal scroll area)
     if (_paintSettings.hoveredColor != null &&
         _paintSettings.hoveredRowIndex != null) {
       Color? color =
@@ -219,6 +218,9 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
         final double y = _layoutSettings.headerHeight +
             (_paintSettings.hoveredRowIndex! * _layoutSettings.rowHeight) -
             _layoutSettings.verticalScrollbarOffset;
+        canvas.save();
+        canvas.clipRect(
+            _layoutSettings.contentBounds.translate(offset.dx, offset.dy));
         Paint paint = Paint()
           ..style = PaintingStyle.fill
           ..color = color;
@@ -229,6 +231,7 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
                 _layoutSettings.contentBounds.width,
                 _layoutSettings.cellHeight),
             paint);
+        canvas.restore();
       }
     }
   }
