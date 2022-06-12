@@ -145,24 +145,24 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
 
       contentArea = Rect.fromLTWH(
           0,
-          _layoutSettings.headerBounds.height,
+          _layoutSettings.headerHeight,
           math.max(0, constraints.maxWidth - _layoutSettings.scrollbarWidth),
           math.max(
               0,
               constraints.maxHeight -
-                  _layoutSettings.headerBounds.height -
+                  _layoutSettings.headerHeight -
                   (_layoutSettings.hasHorizontalScrollbar
                       ? _layoutSettings.scrollbarSize
                       : 0)));
     } else {
       // unbounded height
-      height = _layoutSettings.headerBounds.height +
+      height = _layoutSettings.headerHeight +
           _layoutSettings.contentFullHeight +
           _layoutSettings.scrollbarHeight;
 
       contentArea = Rect.fromLTWH(
           0,
-          _layoutSettings.headerBounds.height,
+          _layoutSettings.headerHeight,
           math.max(0, constraints.maxWidth - _layoutSettings.scrollbarWidth),
           _layoutSettings.contentFullHeight);
     }
@@ -175,12 +175,12 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
             height: math.max(
                 0,
                 height -
-                    _layoutSettings.headerBounds.height -
+                    _layoutSettings.headerHeight -
                     _layoutSettings.scrollbarHeight)),
         parentUsesSize: true);
     _verticalScrollbar!._parentData().offset = Offset(
         constraints.maxWidth - _layoutSettings.scrollbarWidth,
-        _layoutSettings.headerBounds.height);
+        _layoutSettings.headerHeight);
 
     _leftPinnedContentArea.bounds = Rect.fromLTWH(
         0,
@@ -210,7 +210,7 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
   double computeMinIntrinsicHeight(double width) {
     double height = 0;
     if (_layoutSettings.hasHeader) {
-      height += _layoutSettings.headerBounds.height;
+      height += _layoutSettings.headerHeight;
     }
     return height;
   }
@@ -250,7 +250,7 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
       Color? color =
           _paintSettings.hoveredColor!(_paintSettings.hoveredRowIndex!);
       if (color != null) {
-        final double y = _layoutSettings.headerBounds.height +
+        final double y = _layoutSettings.headerHeight +
             (_paintSettings.hoveredRowIndex! * _layoutSettings.rowHeight) -
             _layoutSettings.verticalScrollbarOffset;
         Paint paint = Paint()
@@ -282,9 +282,8 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
     if (event is PointerHoverEvent) {
       if (contentArea.contains(event.localPosition)) {
         final double localY = event.localPosition.dy;
-        final double y =
-            math.max(0, localY - _layoutSettings.headerBounds.height) +
-                _layoutSettings.verticalScrollbarOffset;
+        final double y = math.max(0, localY - _layoutSettings.headerHeight) +
+            _layoutSettings.verticalScrollbarOffset;
         final int rowIndex = (y / _layoutSettings.rowHeight).floor();
         _onHoverListener(rowIndex);
       } else {

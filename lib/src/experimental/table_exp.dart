@@ -108,21 +108,22 @@ class _EasyTableExpState<ROW> extends State<EasyTableExp<ROW>> {
   Widget build(BuildContext context) {
     final EasyTableThemeData theme = EasyTableTheme.of(context);
 
-    TableLayoutSettings layoutSettings = TableLayoutSettings(
-        theme: theme,
-        visibleRowsCount: widget.visibleRowsCount,
-        cellContentHeight: widget.cellContentHeight,
-        hasHeader: true, // TODO allow hide
-        rowsLength: widget.model != null ? widget.model!.rowsLength : 0,
-        columnsFit: widget.columnsFit,
-        verticalScrollbarOffset: _scrollControllers.verticalOffset);
+    TableLayoutSettingsBuilder layoutSettingsBuilder =
+        TableLayoutSettingsBuilder(
+            theme: theme,
+            visibleRowsCount: widget.visibleRowsCount,
+            cellContentHeight: widget.cellContentHeight,
+            hasHeader: true, // TODO allow hide
+            rowsLength: widget.model != null ? widget.model!.rowsLength : 0,
+            columnsFit: widget.columnsFit,
+            verticalScrollbarOffset: _scrollControllers.verticalOffset);
 
     Widget table = ClipRect(
         child: TableLayoutBuilder(
             onHoverListener: _setHoveredRowIndex,
             hoveredRowIndex: _hoveredRowIndex,
             multiSortEnabled: widget.multiSortEnabled,
-            layoutSettings: layoutSettings,
+            layoutSettingsBuilder: layoutSettingsBuilder,
             scrollControllers: _scrollControllers,
             model: widget.model));
 
@@ -134,7 +135,8 @@ class _EasyTableExpState<ROW> extends State<EasyTableExp<ROW>> {
     if (widget.focusable) {
       table = Focus(
           focusNode: _focusNode,
-          onKey: (node, event) => _handleKeyPress(node, event, layoutSettings),
+          onKey: (node, event) =>
+              _handleKeyPress(node, event, layoutSettingsBuilder.rowHeight),
           child: table);
       table = Listener(
           child: table,
@@ -151,7 +153,7 @@ class _EasyTableExpState<ROW> extends State<EasyTableExp<ROW>> {
   }
 
   KeyEventResult _handleKeyPress(
-      FocusNode node, RawKeyEvent event, TableLayoutSettings layoutSettings) {
+      FocusNode node, RawKeyEvent event, double rowHeight) {
     if (event is RawKeyUpEvent) {
       if (event.logicalKey == LogicalKeyboardKey.tab) {
         if (_focused) {
@@ -163,8 +165,7 @@ class _EasyTableExpState<ROW> extends State<EasyTableExp<ROW>> {
       } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
         if (_scrollControllers.vertical.hasClients) {
           double target = math.min(
-              _scrollControllers.vertical.position.pixels +
-                  layoutSettings.rowHeight,
+              _scrollControllers.vertical.position.pixels + rowHeight,
               _scrollControllers.vertical.position.maxScrollExtent);
           _scrollControllers.vertical.animateTo(target,
               duration: const Duration(milliseconds: 30), curve: Curves.ease);
@@ -172,9 +173,7 @@ class _EasyTableExpState<ROW> extends State<EasyTableExp<ROW>> {
       } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
         if (_scrollControllers.vertical.hasClients) {
           double target = math.max(
-              _scrollControllers.vertical.position.pixels -
-                  layoutSettings.rowHeight,
-              0);
+              _scrollControllers.vertical.position.pixels - rowHeight, 0);
           _scrollControllers.vertical.animateTo(target,
               duration: const Duration(milliseconds: 30), curve: Curves.ease);
         }

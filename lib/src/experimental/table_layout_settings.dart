@@ -2,8 +2,8 @@ import 'dart:math' as math;
 import 'package:easy_table/src/theme/theme_data.dart';
 import 'package:flutter/rendering.dart';
 
-class TableLayoutSettings {
-  factory TableLayoutSettings(
+class TableLayoutSettingsBuilder {
+  factory TableLayoutSettingsBuilder(
       {required EasyTableThemeData theme,
       required int? visibleRowsCount,
       required double cellContentHeight,
@@ -17,22 +17,14 @@ class TableLayoutSettings {
     final double scrollbarSize =
         theme.scrollbar.margin * 2 + theme.scrollbar.thickness;
     final double headerCellHeight = theme.headerCell.height;
-    final bool needUnpinnedHorizontalScrollbar =
-        !theme.scrollbar.horizontalOnlyWhenNeeded;
-    final bool needLeftPinnedHorizontalScrollbar =
-        needUnpinnedHorizontalScrollbar;
-    final Rect headerBounds = Rect.fromLTWH(0, 0, 0,
-        hasHeader ? theme.header.bottomBorderHeight + headerCellHeight : 0);
-
+    final bool horizontalOnlyWhenNeeded =
+        theme.scrollbar.horizontalOnlyWhenNeeded;
+    final double headerHeight =
+        hasHeader ? theme.header.bottomBorderHeight + headerCellHeight : 0;
     final double contentFullHeight = (rowsLength * cellHeight) +
         (math.max(0, rowsLength - 1) * theme.row.dividerThickness);
-
-    return TableLayoutSettings._(
-        headerBounds: headerBounds,
-        contentBounds: Rect.zero,
-        leftPinnedBounds: Rect.zero,
-        unpinnedBounds: Rect.zero,
-        rightPinnedBounds: Rect.zero,
+    return TableLayoutSettingsBuilder._(
+        headerHeight: headerHeight,
         cellContentHeight: cellContentHeight,
         visibleRowsCount: visibleRowsCount,
         hasHeader: hasHeader,
@@ -43,16 +35,11 @@ class TableLayoutSettings {
         scrollbarSize: scrollbarSize,
         headerCellHeight: headerCellHeight,
         contentFullHeight: contentFullHeight,
-        needUnpinnedHorizontalScrollbar: needUnpinnedHorizontalScrollbar,
-        needLeftPinnedHorizontalScrollbar: needLeftPinnedHorizontalScrollbar);
+        horizontalOnlyWhenNeeded: horizontalOnlyWhenNeeded);
   }
 
-  TableLayoutSettings._(
-      {required this.headerBounds,
-      required this.contentBounds,
-      required this.leftPinnedBounds,
-      required this.unpinnedBounds,
-      required this.rightPinnedBounds,
+  TableLayoutSettingsBuilder._(
+      {required this.headerHeight,
       required this.cellContentHeight,
       required this.visibleRowsCount,
       required this.hasHeader,
@@ -63,18 +50,10 @@ class TableLayoutSettings {
       required this.scrollbarSize,
       required this.headerCellHeight,
       required this.contentFullHeight,
-      required bool needUnpinnedHorizontalScrollbar,
-      required bool needLeftPinnedHorizontalScrollbar})
-      : _needUnpinnedHorizontalScrollbar = needUnpinnedHorizontalScrollbar,
-        _needLeftPinnedHorizontalScrollbar = needLeftPinnedHorizontalScrollbar;
+      required this.horizontalOnlyWhenNeeded});
 
   /// Including cell height and bottom border
-  final Rect headerBounds;
-
-  final Rect contentBounds;
-  final Rect leftPinnedBounds;
-  final Rect unpinnedBounds;
-  final Rect rightPinnedBounds;
+  final double headerHeight;
 
   final double cellContentHeight;
   final int? visibleRowsCount;
@@ -94,26 +73,118 @@ class TableLayoutSettings {
   /// Height from all rows (including scrollable viewport hidden ones).
   final double contentFullHeight;
 
-  bool _needUnpinnedHorizontalScrollbar;
-  bool get needUnpinnedHorizontalScrollbar => _needUnpinnedHorizontalScrollbar;
+  final bool horizontalOnlyWhenNeeded;
 
-  bool _needLeftPinnedHorizontalScrollbar;
-  bool get needLeftPinnedHorizontalScrollbar =>
-      _needLeftPinnedHorizontalScrollbar;
+  double get scrollbarWidth => scrollbarSize;
 
-  void updatesHorizontalScrollbarsNeeds(
-      {required bool needLeftPinnedHorizontalScrollbar,
-      required bool needUnpinnedHorizontalScrollbar}) {
-    _needLeftPinnedHorizontalScrollbar = needLeftPinnedHorizontalScrollbar;
-    _needUnpinnedHorizontalScrollbar = needUnpinnedHorizontalScrollbar;
+  TableLayoutSettings build(
+      {
+      //required Rect headerBounds,
+      //required Rect contentBounds,
+      //required Rect leftPinnedBounds,
+      //required Rect unpinnedBounds,
+      //required Rect rightPinnedBounds,
+      required bool hasHorizontalScrollbar}) {
+    return TableLayoutSettings(
+        // headerBounds: headerBounds,
+        //contentBounds: contentBounds,
+        //leftPinnedBounds: leftPinnedBounds,
+        //unpinnedBounds: unpinnedBounds,
+        //rightPinnedBounds: rightPinnedBounds,
+        headerHeight: headerHeight,
+        cellContentHeight: cellContentHeight,
+        visibleRowsCount: visibleRowsCount,
+        hasHeader: hasHeader,
+        verticalScrollbarOffset: verticalScrollbarOffset,
+        cellHeight: cellHeight,
+        rowHeight: rowHeight,
+        scrollbarSize: scrollbarSize,
+        headerCellHeight: headerCellHeight,
+        contentFullHeight: contentFullHeight,
+        hasHorizontalScrollbar: hasHorizontalScrollbar);
   }
+}
 
-  bool get allowHorizontalScrollbar => !columnsFit;
+class TableLayoutSettings {
+  TableLayoutSettings(
+      {
+      //required this.headerBounds,
+      //required this.contentBounds,
+      //required this.leftPinnedBounds,
+      //required this.unpinnedBounds,
+      //required this.rightPinnedBounds,
+      required this.headerHeight,
+      required this.cellContentHeight,
+      required this.visibleRowsCount,
+      required this.hasHeader,
+      required this.verticalScrollbarOffset,
+      required this.cellHeight,
+      required this.rowHeight,
+      required this.scrollbarSize,
+      required this.headerCellHeight,
+      required this.contentFullHeight,
+      required this.hasHorizontalScrollbar});
 
-  bool get hasHorizontalScrollbar =>
-      allowHorizontalScrollbar &&
-      (needUnpinnedHorizontalScrollbar || needLeftPinnedHorizontalScrollbar);
+  /*
+  /// Including cell height and bottom border
+  final Rect headerBounds;
+  final Rect contentBounds;
+  final Rect leftPinnedBounds;
+  final Rect unpinnedBounds;
+  final Rect rightPinnedBounds;
+*/
+  /// Including cell height and bottom border
+  final double headerHeight;
+  final double cellContentHeight;
+  final int? visibleRowsCount;
+  final bool hasHeader;
+  final double verticalScrollbarOffset;
+
+  /// Cell content and padding.
+  final double cellHeight;
+
+  /// Cell height and divider thickness
+  final double rowHeight;
+  final double scrollbarSize;
+
+  final double headerCellHeight;
+
+  /// Height from all rows (including scrollable viewport hidden ones).
+  final double contentFullHeight;
+
+  final bool hasHorizontalScrollbar;
 
   double get scrollbarWidth => scrollbarSize;
   double get scrollbarHeight => hasHorizontalScrollbar ? scrollbarSize : 0;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is TableLayoutSettings &&
+          runtimeType == other.runtimeType &&
+          headerHeight == other.headerHeight &&
+          cellContentHeight == other.cellContentHeight &&
+          visibleRowsCount == other.visibleRowsCount &&
+          hasHeader == other.hasHeader &&
+          verticalScrollbarOffset == other.verticalScrollbarOffset &&
+          cellHeight == other.cellHeight &&
+          rowHeight == other.rowHeight &&
+          scrollbarSize == other.scrollbarSize &&
+          headerCellHeight == other.headerCellHeight &&
+          contentFullHeight == other.contentFullHeight &&
+          hasHorizontalScrollbar == other.hasHorizontalScrollbar;
+
+  @override
+  int get hashCode =>
+      headerHeight.hashCode ^
+      cellContentHeight.hashCode ^
+      visibleRowsCount.hashCode ^
+      hasHeader.hashCode ^
+      verticalScrollbarOffset.hashCode ^
+      cellHeight.hashCode ^
+      rowHeight.hashCode ^
+      scrollbarSize.hashCode ^
+      headerCellHeight.hashCode ^
+      contentFullHeight.hashCode ^
+      hasHorizontalScrollbar.hashCode;
 }
