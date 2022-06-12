@@ -28,25 +28,18 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
       : _onHoverListener = onHoverListener,
         _layoutSettings = layoutSettings,
         _paintSettings = paintSettings,
-        //TODO const colors
         _leftPinnedContentArea = ContentArea(
             id: ContentAreaId.leftPinned,
             bounds: layoutSettings.leftPinnedBounds,
-            columnsMetrics: leftPinnedColumnsMetrics,
-            headerAreaDebugColor: Colors.yellow[300]!.withOpacity(.5),
-            scrollbarAreaDebugColor: Colors.yellow[200]!.withOpacity(.5)),
+            columnsMetrics: leftPinnedColumnsMetrics),
         _unpinnedContentArea = ContentArea(
             id: ContentAreaId.unpinned,
             bounds: layoutSettings.unpinnedBounds,
-            columnsMetrics: unpinnedColumnsMetrics,
-            headerAreaDebugColor: Colors.lime[300]!.withOpacity(.5),
-            scrollbarAreaDebugColor: Colors.lime[200]!.withOpacity(.5)),
+            columnsMetrics: unpinnedColumnsMetrics),
         _rightPinnedContentArea = ContentArea(
             id: ContentAreaId.rightPinned,
             bounds: layoutSettings.rightPinnedBounds,
-            columnsMetrics: rightPinnedColumnsMetrics,
-            headerAreaDebugColor: Colors.orange[300]!.withOpacity(.5),
-            scrollbarAreaDebugColor: Colors.orange[200]!.withOpacity(.5)),
+            columnsMetrics: rightPinnedColumnsMetrics),
         _rows = rows;
 
   final ContentArea _leftPinnedContentArea;
@@ -134,8 +127,6 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
 
     _verticalScrollbar = null;
 
-    //TODO list necessary?
-    List<RenderBox> children = [];
     visitChildren((child) {
       RenderBox renderBox = child as RenderBox;
       TableLayoutParentDataExp parentData = child._parentData();
@@ -148,7 +139,6 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
       } else if (parentData.type == LayoutChildType.verticalScrollbar) {
         _verticalScrollbar = renderBox;
       }
-      children.add(renderBox);
     });
 
     // vertical scrollbar

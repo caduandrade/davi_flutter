@@ -1,21 +1,16 @@
 import 'package:easy_table/src/experimental/child_painter_mixin.dart';
 import 'package:easy_table/src/experimental/columns_metrics_exp.dart';
 import 'package:easy_table/src/experimental/content_area_id.dart';
+import 'package:easy_table/src/experimental/debug_colors.dart';
 import 'package:easy_table/src/experimental/table_layout_parent_data_exp.dart';
 import 'package:easy_table/src/experimental/table_layout_settings.dart';
 import 'package:flutter/material.dart';
 
 class ContentArea with ChildPainterMixin {
   ContentArea(
-      {required this.id,
-      required this.bounds,
-      required this.headerAreaDebugColor,
-      required this.scrollbarAreaDebugColor,
-      required this.columnsMetrics});
+      {required this.id, required this.bounds, required this.columnsMetrics});
 
   final ContentAreaId id;
-  final Color headerAreaDebugColor;
-  final Color scrollbarAreaDebugColor;
   final List<RenderBox> _headers = [];
   final List<RenderBox> _cells = [];
   ColumnsMetricsExp columnsMetrics;
@@ -79,23 +74,22 @@ class ContentArea with ChildPainterMixin {
       {required Canvas canvas,
       required Offset offset,
       required TableLayoutSettings layoutSettings}) {
-    if (_cells.isEmpty) {
+    if (bounds.isEmpty) {
       return;
     }
     if (layoutSettings.hasHeader) {
       Paint paint = Paint()
         ..style = PaintingStyle.fill
-        ..color = headerAreaDebugColor;
+        ..color = DebugColors.headerArea(id);
       canvas.drawRect(
           Rect.fromLTWH(offset.dx + bounds.left, offset.dy + bounds.top,
               bounds.width, layoutSettings.headerHeight),
           paint);
     }
-
     if (layoutSettings.hasHorizontalScrollbar) {
       Paint paint = Paint()
         ..style = PaintingStyle.fill
-        ..color = scrollbarAreaDebugColor;
+        ..color = DebugColors.horizontalScrollbarArea(id);
       canvas.drawRect(
           Rect.fromLTWH(
               offset.dx + bounds.left,
