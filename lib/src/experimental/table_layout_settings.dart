@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 import 'package:easy_table/src/experimental/columns_metrics_exp.dart';
+import 'package:easy_table/src/experimental/scroll_offsets.dart';
 import 'package:easy_table/src/theme/theme_data.dart';
 import 'package:flutter/rendering.dart';
 
@@ -10,7 +11,7 @@ class TableLayoutSettingsBuilder {
       required double cellContentHeight,
       required bool hasHeader,
       required bool columnsFit,
-      required double verticalScrollbarOffset,
+      required TableScrollOffsets offsets,
       required int rowsLength}) {
     final double cellHeight = cellContentHeight +
         ((theme.cell.padding != null) ? theme.cell.padding!.vertical : 0);
@@ -28,7 +29,7 @@ class TableLayoutSettingsBuilder {
         visibleRowsCount: visibleRowsCount,
         hasHeader: hasHeader,
         columnsFit: columnsFit,
-        verticalScrollbarOffset: verticalScrollbarOffset,
+        offsets: offsets,
         cellHeight: cellHeight,
         rowHeight: rowHeight,
         scrollbarSize: scrollbarSize,
@@ -42,7 +43,7 @@ class TableLayoutSettingsBuilder {
       required this.visibleRowsCount,
       required this.hasHeader,
       required this.columnsFit,
-      required this.verticalScrollbarOffset,
+      required this.offsets,
       required this.cellHeight,
       required this.rowHeight,
       required this.scrollbarSize,
@@ -56,7 +57,7 @@ class TableLayoutSettingsBuilder {
   final int? visibleRowsCount;
   final bool hasHeader;
   final bool columnsFit;
-  final double verticalScrollbarOffset;
+  final TableScrollOffsets offsets;
 
   /// Cell content and padding.
   final double cellHeight;
@@ -99,7 +100,7 @@ class TableLayoutSettingsBuilder {
         cellContentHeight: cellContentHeight,
         visibleRowsCount: visibleRowsCount,
         hasHeader: hasHeader,
-        verticalScrollbarOffset: verticalScrollbarOffset,
+        offsets: offsets,
         cellHeight: cellHeight,
         rowHeight: rowHeight,
         scrollbarWidth: scrollbarSize,
@@ -121,7 +122,7 @@ class TableLayoutSettings {
       required this.visibleRowsCount,
       required this.hasHeader,
       required this.height,
-      required this.verticalScrollbarOffset,
+      required this.offsets,
       required this.cellHeight,
       required this.rowHeight,
       required this.scrollbarWidth,
@@ -145,7 +146,7 @@ class TableLayoutSettings {
   final double cellContentHeight;
   final int? visibleRowsCount;
   final bool hasHeader;
-  final double verticalScrollbarOffset;
+  final TableScrollOffsets offsets;
 
   /// Cell content and padding.
   final double cellHeight;
@@ -178,7 +179,7 @@ class TableLayoutSettings {
           cellContentHeight == other.cellContentHeight &&
           visibleRowsCount == other.visibleRowsCount &&
           hasHeader == other.hasHeader &&
-          verticalScrollbarOffset == other.verticalScrollbarOffset &&
+          offsets == other.offsets &&
           cellHeight == other.cellHeight &&
           rowHeight == other.rowHeight &&
           cellsFullHeight == other.cellsFullHeight &&
@@ -198,7 +199,7 @@ class TableLayoutSettings {
       cellContentHeight.hashCode ^
       visibleRowsCount.hashCode ^
       hasHeader.hashCode ^
-      verticalScrollbarOffset.hashCode ^
+      offsets.hashCode ^
       cellHeight.hashCode ^
       rowHeight.hashCode ^
       cellsFullHeight.hashCode ^

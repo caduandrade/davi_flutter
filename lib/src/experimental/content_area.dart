@@ -10,13 +10,17 @@ import 'package:flutter/material.dart';
 
 class ContentArea with ChildPainterMixin {
   ContentArea(
-      {required this.id, required this.bounds, required this.columnsMetrics});
+      {required this.id,
+      required this.bounds,
+      required this.scrollOffset,
+      required this.columnsMetrics});
 
   final ContentAreaId id;
   final List<RenderBox> _headers = [];
   final List<RenderBox> _cells = [];
   ColumnsMetricsExp columnsMetrics;
   Rect bounds;
+  double scrollOffset;
 
   RenderBox? scrollbar;
 
@@ -37,6 +41,7 @@ class ContentArea with ChildPainterMixin {
   void performLayout(
       {required TableLayoutSettings layoutSettings,
       required EasyTableThemeData theme}) {
+    // headers
     for (RenderBox renderBox in _headers) {
       final TableLayoutParentDataExp parentData = renderBox._parentData();
       final double y = bounds.top;
@@ -47,14 +52,15 @@ class ContentArea with ChildPainterMixin {
           BoxConstraints.tightFor(
               width: width, height: theme.headerCell.height),
           parentUsesSize: true);
-      parentData.offset = Offset(offset, y);
+      parentData.offset = Offset(offset - scrollOffset, y);
     }
+    // cells
     for (RenderBox renderBox in _cells) {
       final TableLayoutParentDataExp parentData = renderBox._parentData();
       final int rowIndex = parentData.row!;
       final double y = layoutSettings.headerHeight +
           (rowIndex * layoutSettings.rowHeight) -
-          layoutSettings.verticalScrollbarOffset;
+          layoutSettings.offsets.vertical;
       final int columnIndex = parentData.column!;
       final double width = columnsMetrics.widths[columnIndex];
       final double offset = columnsMetrics.offsets[columnIndex];
@@ -62,8 +68,9 @@ class ContentArea with ChildPainterMixin {
           BoxConstraints.tightFor(
               width: width, height: layoutSettings.cellHeight),
           parentUsesSize: true);
-      parentData.offset = Offset(offset, y);
+      parentData.offset = Offset(offset - scrollOffset, y);
     }
+    // horizontal scrollbar
     if (scrollbar != null) {
       scrollbar!.layout(
           BoxConstraints.tightFor(
@@ -142,6 +149,9 @@ class ContentArea with ChildPainterMixin {
     if (theme.columnDividerThickness > 0) {
       if (layoutSettings.headerHeight > 0 &&
           theme.header.columnDividerColor != null) {
+        context.canvas.save();
+        context.canvas.clipRect(
+            layoutSettings.headerBounds.translate(offset.dx, offset.dy));
         _paintColumnDividers(
             context: context,
             offset: offset,
@@ -149,8 +159,12 @@ class ContentArea with ChildPainterMixin {
             color: theme.header.columnDividerColor!,
             dy: 0,
             height: theme.headerCell.height);
+        context.canvas.restore();
       }
       if (theme.columnDividerColor != null) {
+        context.canvas.save();
+        context.canvas.clipRect(
+            layoutSettings.cellsBound.translate(offset.dx, offset.dy));
         _paintColumnDividers(
             context: context,
             offset: offset,
@@ -158,6 +172,7 @@ class ContentArea with ChildPainterMixin {
             color: theme.columnDividerColor!,
             dy: layoutSettings.headerHeight,
             height: layoutSettings.cellsBound.height);
+        context.canvas.restore();
       }
     }
 
@@ -185,7 +200,7 @@ class ContentArea with ChildPainterMixin {
     for (int i = 1; i < columnsMetrics.offsets.length; i++) {
       double x = columnsMetrics.offsets[i] - theme.columnDividerThickness;
       context.canvas.drawRect(
-          Rect.fromLTWH(x + offset.dx, offset.dy + dy,
+          Rect.fromLTWH(x + offset.dx - scrollOffset, offset.dy + dy,
               theme.columnDividerThickness, height),
           paint);
     }

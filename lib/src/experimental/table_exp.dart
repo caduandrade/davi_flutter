@@ -116,7 +116,7 @@ class _EasyTableExpState<ROW> extends State<EasyTableExp<ROW>> {
             hasHeader: true, // TODO allow hide
             rowsLength: widget.model != null ? widget.model!.rowsLength : 0,
             columnsFit: widget.columnsFit,
-            verticalScrollbarOffset: _scrollControllers.verticalOffset);
+            offsets: _scrollControllers.offsets);
 
     Widget table = ClipRect(
         child: TableLayoutBuilder(

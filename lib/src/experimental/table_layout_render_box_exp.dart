@@ -32,14 +32,17 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
         _leftPinnedContentArea = ContentArea(
             id: ContentAreaId.leftPinned,
             bounds: layoutSettings.leftPinnedBounds,
+            scrollOffset: layoutSettings.offsets.leftPinnedContentArea,
             columnsMetrics: leftPinnedColumnsMetrics),
         _unpinnedContentArea = ContentArea(
             id: ContentAreaId.unpinned,
             bounds: layoutSettings.unpinnedBounds,
+            scrollOffset: layoutSettings.offsets.unpinnedContentArea,
             columnsMetrics: unpinnedColumnsMetrics),
         _rightPinnedContentArea = ContentArea(
             id: ContentAreaId.rightPinned,
             bounds: layoutSettings.rightPinnedBounds,
+            scrollOffset: layoutSettings.offsets.rightPinnedContentArea,
             columnsMetrics: rightPinnedColumnsMetrics),
         _theme = theme,
         _rows = rows;
@@ -82,6 +85,10 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
       _leftPinnedContentArea.bounds = value.leftPinnedBounds;
       _unpinnedContentArea.bounds = value.unpinnedBounds;
       _rightPinnedContentArea.bounds = value.rightPinnedBounds;
+      _leftPinnedContentArea.scrollOffset = value.offsets.leftPinnedContentArea;
+      _unpinnedContentArea.scrollOffset = value.offsets.unpinnedContentArea;
+      _rightPinnedContentArea.scrollOffset =
+          value.offsets.rightPinnedContentArea;
       markNeedsLayout();
     }
   }
@@ -224,7 +231,7 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
       if (color != null) {
         final double y = _layoutSettings.headerHeight +
             (_paintSettings.hoveredRowIndex! * _layoutSettings.rowHeight) -
-            _layoutSettings.verticalScrollbarOffset;
+            _layoutSettings.offsets.vertical;
         canvas.save();
         canvas.clipRect(
             _layoutSettings.cellsBound.translate(offset.dx, offset.dy));
@@ -260,7 +267,7 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
       if (_layoutSettings.cellsBound.contains(event.localPosition)) {
         final double localY = event.localPosition.dy;
         final double y = math.max(0, localY - _layoutSettings.headerHeight) +
-            _layoutSettings.verticalScrollbarOffset;
+            _layoutSettings.offsets.vertical;
         final int rowIndex = (y / _layoutSettings.rowHeight).floor();
         _onHoverListener(rowIndex);
       } else {

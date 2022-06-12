@@ -130,7 +130,7 @@ class _HomePageState extends State<HomePage> {
           children: [
             Padding(
                 padding: const EdgeInsets.all(8),
-                child: Wrap(spacing: 8, children: [
+                child: Wrap(spacing: 8, runSpacing: 8, children: [
                   ElevatedButton(
                       onPressed: _changeColumnDividerThickness,
                       child: const Text('columnDividerThickness')),

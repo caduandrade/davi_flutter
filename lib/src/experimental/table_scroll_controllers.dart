@@ -1,3 +1,4 @@
+import 'package:easy_table/src/experimental/scroll_offsets.dart';
 import 'package:flutter/widgets.dart';
 
 class TableScrollControllers {
@@ -16,6 +17,12 @@ class TableScrollControllers {
   double get verticalOffset {
     return vertical.hasClients ? vertical.offset : 0;
   }
+
+  TableScrollOffsets get offsets => TableScrollOffsets(
+      leftPinnedContentArea: leftPinnedContentAreaOffset,
+      unpinnedContentArea: unpinnedContentAreaOffset,
+      rightPinnedContentArea: 0,
+      vertical: verticalOffset);
 
   void addListener(VoidCallback listener) {
     leftPinnedContentArea.addListener(listener);
