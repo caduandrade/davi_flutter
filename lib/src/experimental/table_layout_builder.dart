@@ -10,13 +10,9 @@ import 'package:easy_table/src/experimental/table_layout_settings.dart';
 import 'package:easy_table/src/experimental/table_paint_settings.dart';
 import 'package:easy_table/src/experimental/table_scroll_controllers.dart';
 import 'package:easy_table/src/internal/cell.dart';
-import 'package:easy_table/src/internal/columns_metrics.dart';
 import 'package:easy_table/src/internal/header_cell.dart';
-import 'package:easy_table/src/internal/horizontal_scroll_bar.dart';
 import 'package:easy_table/src/model.dart';
 import 'package:easy_table/src/row_hover_listener.dart';
-import 'package:easy_table/src/theme/header_theme_data.dart';
-import 'package:easy_table/src/theme/row_color.dart';
 import 'package:easy_table/src/theme/theme.dart';
 import 'package:easy_table/src/theme/theme_data.dart';
 import 'package:flutter/material.dart';
@@ -64,7 +60,9 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
     final EasyTableThemeData theme = EasyTableTheme.of(context);
 
     TablePaintSettings paintSettings = TablePaintSettings(
-        hoveredRowIndex: hoveredRowIndex, hoveredColor: theme.row.hoveredColor);
+        hoveredRowIndex: hoveredRowIndex,
+        hoveredColor: theme.row.hoveredColor,
+        columnDividerColor: theme.columnDividerColor);
     if (model != null) {
       return _buildTable(
           context: context,
@@ -109,7 +107,7 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
     children.add(LayoutChild.verticalScrollbar(
         child: EasyTableScrollBarExp(
             axis: Axis.vertical,
-            contentSize: layoutSettingsBuilder.contentFullHeight,
+            contentSize: layoutSettingsBuilder.rowsFullHeight,
             scrollController: scrollControllers.vertical,
             color: theme.scrollbar.verticalColor)));
 
@@ -239,11 +237,11 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
         hasHorizontalScrollbar ? layoutSettingsBuilder.scrollbarSize : 0;
 
     final double height;
-    final Rect contentBounds;
+    final Rect cellsBound;
     if (constraints.hasBoundedHeight) {
       height = constraints.maxHeight;
 
-      contentBounds = Rect.fromLTWH(
+      cellsBound = Rect.fromLTWH(
           0,
           layoutSettingsBuilder.headerHeight,
           math.max(
@@ -258,20 +256,20 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
     } else {
       // unbounded height
       height = layoutSettingsBuilder.headerHeight +
-          layoutSettingsBuilder.contentFullHeight +
+          layoutSettingsBuilder.rowsFullHeight +
           scrollbarHeight;
 
-      contentBounds = Rect.fromLTWH(
+      cellsBound = Rect.fromLTWH(
           0,
           layoutSettingsBuilder.headerHeight,
           math.max(
               0, constraints.maxWidth - layoutSettingsBuilder.scrollbarSize),
-          layoutSettingsBuilder.contentFullHeight);
+          layoutSettingsBuilder.rowsFullHeight);
     }
 
     TableLayoutSettings layoutSettings = layoutSettingsBuilder.build(
         height: height,
-        contentBounds: contentBounds,
+        cellsBound: cellsBound,
         hasHorizontalScrollbar: hasHorizontalScrollbar,
         scrollbarHeight: scrollbarHeight,
         leftPinnedColumnsMetrics: leftPinnedColumnsMetrics,
@@ -328,11 +326,11 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
     }
 
     final double height;
-    final Rect contentBounds;
+    final Rect cellsBound;
     if (constraints.hasBoundedHeight) {
       height = constraints.maxHeight;
 
-      contentBounds = Rect.fromLTWH(
+      cellsBound = Rect.fromLTWH(
           0,
           layoutSettingsBuilder.headerHeight,
           math.max(
@@ -347,22 +345,22 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
     } else {
       // unbounded height
       height = layoutSettingsBuilder.headerHeight +
-          layoutSettingsBuilder.contentFullHeight +
+          layoutSettingsBuilder.rowsFullHeight +
           scrollbarHeight;
 
-      contentBounds = Rect.fromLTWH(
+      cellsBound = Rect.fromLTWH(
           0,
           layoutSettingsBuilder.headerHeight,
           math.max(
               0, constraints.maxWidth - layoutSettingsBuilder.scrollbarSize),
-          layoutSettingsBuilder.contentFullHeight);
+          layoutSettingsBuilder.rowsFullHeight);
     }
 
     final ColumnsMetricsExp emptyColumnsMetrics = ColumnsMetricsExp.empty();
 
     TableLayoutSettings layoutSettings = layoutSettingsBuilder.build(
         height: height,
-        contentBounds: contentBounds,
+        cellsBound: cellsBound,
         hasHorizontalScrollbar: hasHorizontalScrollbar,
         scrollbarHeight: scrollbarHeight,
         leftPinnedColumnsMetrics: emptyColumnsMetrics,

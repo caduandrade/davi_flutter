@@ -4,6 +4,7 @@ import 'package:easy_table/src/experimental/content_area_id.dart';
 import 'package:easy_table/src/experimental/debug_colors.dart';
 import 'package:easy_table/src/experimental/table_layout_parent_data_exp.dart';
 import 'package:easy_table/src/experimental/table_layout_settings.dart';
+import 'package:easy_table/src/experimental/table_paint_settings.dart';
 import 'package:flutter/material.dart';
 
 class ContentArea with ChildPainterMixin {
@@ -103,7 +104,9 @@ class ContentArea with ChildPainterMixin {
   void paintChildren(
       {required PaintingContext context,
       required Offset offset,
-      required TableLayoutSettings layoutSettings}) {
+      required TableLayoutSettings layoutSettings,
+      required TablePaintSettings paintSettings}) {
+    // headers
     for (RenderBox header in _headers) {
       context.canvas.save();
       context.canvas.clipRect(
@@ -111,14 +114,33 @@ class ContentArea with ChildPainterMixin {
       paintChild(context: context, offset: offset, child: header);
       context.canvas.restore();
     }
+
+    // cells
     context.canvas.save();
     context.canvas
-        .clipRect(layoutSettings.contentBounds.translate(offset.dx, offset.dy));
+        .clipRect(layoutSettings.cellsBound.translate(offset.dx, offset.dy));
     for (RenderBox cell in _cells) {
       paintChild(context: context, offset: offset, child: cell);
     }
     context.canvas.restore();
+
+    // scrollbar
     paintChild(context: context, offset: offset, child: scrollbar);
+
+    // column dividers
+    if (paintSettings.columnDividerColor != null) {
+      Paint paint = Paint()..color = paintSettings.columnDividerColor!;
+      final double height =
+          layoutSettings.headerBounds.height + layoutSettings.cellsBound.height;
+      for (int i = 1; i < columnsMetrics.offsets.length; i++) {
+        double x =
+            columnsMetrics.offsets[i] - layoutSettings.columnDividerThickness;
+        context.canvas.drawRect(
+            Rect.fromLTWH(x + offset.dx, offset.dy,
+                layoutSettings.columnDividerThickness, height),
+            paint);
+      }
+    }
   }
 }
 

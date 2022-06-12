@@ -22,7 +22,7 @@ class TableLayoutSettingsBuilder {
         theme.scrollbar.horizontalOnlyWhenNeeded;
     final double headerHeight =
         hasHeader ? theme.header.bottomBorderHeight + headerCellHeight : 0;
-    final double contentFullHeight = (rowsLength * cellHeight) +
+    final double rowsFullHeight = (rowsLength * cellHeight) +
         (math.max(0, rowsLength - 1) * theme.row.dividerThickness);
     return TableLayoutSettingsBuilder._(
         headerHeight: headerHeight,
@@ -35,8 +35,9 @@ class TableLayoutSettingsBuilder {
         rowHeight: rowHeight,
         scrollbarSize: scrollbarSize,
         headerCellHeight: headerCellHeight,
-        contentFullHeight: contentFullHeight,
-        horizontalOnlyWhenNeeded: horizontalOnlyWhenNeeded);
+        rowsFullHeight: rowsFullHeight,
+        horizontalOnlyWhenNeeded: horizontalOnlyWhenNeeded,
+        columnDividerThickness: theme.columnDividerThickness);
   }
 
   TableLayoutSettingsBuilder._(
@@ -50,8 +51,9 @@ class TableLayoutSettingsBuilder {
       required this.rowHeight,
       required this.scrollbarSize,
       required this.headerCellHeight,
-      required this.contentFullHeight,
-      required this.horizontalOnlyWhenNeeded});
+      required this.rowsFullHeight,
+      required this.horizontalOnlyWhenNeeded,
+      required this.columnDividerThickness});
 
   /// Including cell height and bottom border
   final double headerHeight;
@@ -72,12 +74,14 @@ class TableLayoutSettingsBuilder {
   final double headerCellHeight;
 
   /// Height from all rows (including scrollable viewport hidden ones).
-  final double contentFullHeight;
+  final double rowsFullHeight;
 
   final bool horizontalOnlyWhenNeeded;
 
+  final double columnDividerThickness;
+
   TableLayoutSettings build(
-      {required Rect contentBounds,
+      {required Rect cellsBound,
       required ColumnsMetricsExp leftPinnedColumnsMetrics,
       required final ColumnsMetricsExp unpinnedColumnsMetrics,
       required final ColumnsMetricsExp rightPinnedColumnsMetrics,
@@ -85,20 +89,17 @@ class TableLayoutSettingsBuilder {
       required double scrollbarHeight,
       required bool hasHorizontalScrollbar}) {
     final Rect headerBounds =
-        Rect.fromLTWH(0, 0, contentBounds.width, headerHeight);
-    final Rect leftPinnedBounds = Rect.fromLTWH(
-        0,
-        0,
-        math.min(leftPinnedColumnsMetrics.maxWidth, contentBounds.width),
-        height);
+        Rect.fromLTWH(0, 0, cellsBound.width, headerHeight);
+    final Rect leftPinnedBounds = Rect.fromLTWH(0, 0,
+        math.min(leftPinnedColumnsMetrics.maxWidth, cellsBound.width), height);
     final Rect unpinnedBounds = Rect.fromLTWH(leftPinnedBounds.right, 0,
-        math.max(0, contentBounds.width - leftPinnedBounds.width), height);
+        math.max(0, cellsBound.width - leftPinnedBounds.width), height);
     //TODO need right width
     final Rect rightPinnedBounds = Rect.fromLTWH(
         unpinnedBounds.right, 0, rightPinnedColumnsMetrics.maxWidth, height);
 
     return TableLayoutSettings(
-        contentBounds: contentBounds,
+        cellsBound: cellsBound,
         headerBounds: headerBounds,
         leftPinnedBounds: leftPinnedBounds,
         unpinnedBounds: unpinnedBounds,
@@ -114,8 +115,9 @@ class TableLayoutSettingsBuilder {
         scrollbarWidth: scrollbarSize,
         scrollbarHeight: scrollbarHeight,
         headerCellHeight: headerCellHeight,
-        contentFullHeight: contentFullHeight,
-        hasHorizontalScrollbar: hasHorizontalScrollbar);
+        cellsFullHeight: rowsFullHeight,
+        hasHorizontalScrollbar: hasHorizontalScrollbar,
+        columnDividerThickness: columnDividerThickness);
   }
 }
 
@@ -125,7 +127,7 @@ class TableLayoutSettings {
       required this.leftPinnedBounds,
       required this.unpinnedBounds,
       required this.rightPinnedBounds,
-      required this.contentBounds,
+      required this.cellsBound,
       required this.headerHeight,
       required this.cellContentHeight,
       required this.visibleRowsCount,
@@ -137,12 +139,13 @@ class TableLayoutSettings {
       required this.scrollbarWidth,
       required this.scrollbarHeight,
       required this.headerCellHeight,
-      required this.contentFullHeight,
-      required this.hasHorizontalScrollbar});
+      required this.cellsFullHeight,
+      required this.hasHorizontalScrollbar,
+      required this.columnDividerThickness});
 
   final Rect headerBounds;
 
-  final Rect contentBounds;
+  final Rect cellsBound;
 
   /// Including cell height and bottom border
   //final Rect headerBounds;
@@ -166,8 +169,9 @@ class TableLayoutSettings {
 
   final double headerCellHeight;
 
-  /// Height from all rows (including scrollable viewport hidden ones).
-  final double contentFullHeight;
+  /// Height from all rows, including scrollable viewport hidden ones
+  /// (cell + divider).
+  final double cellsFullHeight;
 
   final bool hasHorizontalScrollbar;
 
@@ -176,13 +180,15 @@ class TableLayoutSettings {
 
   final double height;
 
+  final double columnDividerThickness;
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is TableLayoutSettings &&
           runtimeType == other.runtimeType &&
           headerBounds == other.headerBounds &&
-          contentBounds == other.contentBounds &&
+          cellsBound == other.cellsBound &&
           leftPinnedBounds == other.leftPinnedBounds &&
           unpinnedBounds == other.unpinnedBounds &&
           rightPinnedBounds == other.rightPinnedBounds &&
@@ -194,16 +200,17 @@ class TableLayoutSettings {
           cellHeight == other.cellHeight &&
           rowHeight == other.rowHeight &&
           headerCellHeight == other.headerCellHeight &&
-          contentFullHeight == other.contentFullHeight &&
+          cellsFullHeight == other.cellsFullHeight &&
           hasHorizontalScrollbar == other.hasHorizontalScrollbar &&
           scrollbarWidth == other.scrollbarWidth &&
           scrollbarHeight == other.scrollbarHeight &&
-          height == other.height;
+          height == other.height &&
+          columnDividerThickness == other.columnDividerThickness;
 
   @override
   int get hashCode =>
       headerBounds.hashCode ^
-      contentBounds.hashCode ^
+      cellsBound.hashCode ^
       leftPinnedBounds.hashCode ^
       unpinnedBounds.hashCode ^
       rightPinnedBounds.hashCode ^
@@ -215,9 +222,10 @@ class TableLayoutSettings {
       cellHeight.hashCode ^
       rowHeight.hashCode ^
       headerCellHeight.hashCode ^
-      contentFullHeight.hashCode ^
+      cellsFullHeight.hashCode ^
       hasHorizontalScrollbar.hashCode ^
       scrollbarWidth.hashCode ^
       scrollbarHeight.hashCode ^
-      height.hashCode;
+      height.hashCode ^
+      columnDividerThickness.hashCode;
 }

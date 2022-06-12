@@ -9,7 +9,6 @@ import 'package:easy_table/src/experimental/table_layout_settings.dart';
 import 'package:easy_table/src/experimental/table_paint_settings.dart';
 import 'package:easy_table/src/row_hover_listener.dart';
 import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
 class TableLayoutRenderBoxExp<ROW> extends RenderBox
@@ -185,7 +184,10 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
     _paintHover(canvas: context.canvas, offset: offset);
 
     _forEachContentArea((area) => area.paintChildren(
-        context: context, offset: offset, layoutSettings: _layoutSettings));
+        context: context,
+        offset: offset,
+        layoutSettings: _layoutSettings,
+        paintSettings: _paintSettings));
 
     paintChild(context: context, offset: offset, child: _verticalScrollbar);
 
@@ -210,16 +212,13 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
             _layoutSettings.verticalScrollbarOffset;
         canvas.save();
         canvas.clipRect(
-            _layoutSettings.contentBounds.translate(offset.dx, offset.dy));
+            _layoutSettings.cellsBound.translate(offset.dx, offset.dy));
         Paint paint = Paint()
           ..style = PaintingStyle.fill
           ..color = color;
         canvas.drawRect(
-            Rect.fromLTWH(
-                offset.dx,
-                offset.dy + y,
-                _layoutSettings.contentBounds.width,
-                _layoutSettings.cellHeight),
+            Rect.fromLTWH(offset.dx, offset.dy + y,
+                _layoutSettings.cellsBound.width, _layoutSettings.cellHeight),
             paint);
         canvas.restore();
       }
@@ -242,7 +241,8 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
       return;
     }
     if (event is PointerHoverEvent) {
-      if (_layoutSettings.contentBounds.contains(event.localPosition)) {
+      //TODO check null listener?
+      if (_layoutSettings.cellsBound.contains(event.localPosition)) {
         final double localY = event.localPosition.dy;
         final double y = math.max(0, localY - _layoutSettings.headerHeight) +
             _layoutSettings.verticalScrollbarOffset;
