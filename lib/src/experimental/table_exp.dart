@@ -113,7 +113,7 @@ class _EasyTableExpState<ROW> extends State<EasyTableExp<ROW>> {
         visibleRowsCount: widget.visibleRowsCount,
         cellContentHeight: widget.cellContentHeight,
         hasHeader: true, // TODO allow hide
-        hasVerticalScrollbar: true, // TODO allow hide
+        rowsLength: widget.model != null ? widget.model!.rowsLength : 0,
         columnsFit: widget.columnsFit,
         verticalScrollbarOffset: _scrollControllers.verticalOffset);
 

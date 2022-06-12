@@ -99,20 +99,17 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
       final double contentAvailableHeight = math.max(
           0,
           constraints.maxHeight -
-              layoutSettings.headerHeight -
+              layoutSettings.headerBounds.height -
               layoutSettings.scrollbarSize);
       visibleRowsCount = (contentAvailableHeight /
               (layoutSettings.cellHeight + theme.row.dividerThickness))
           .ceil();
     }
-    layoutSettings.contentHeight =
-        (model.rowsLength * layoutSettings.cellHeight) +
-            (math.max(0, model.rowsLength - 1) * theme.row.dividerThickness);
 
     children.add(LayoutChild.verticalScrollbar(
         child: EasyTableScrollBarExp(
             axis: Axis.vertical,
-            contentSize: layoutSettings.contentHeight,
+            contentSize: layoutSettings.contentFullHeight,
             scrollController: scrollControllers.vertical,
             color: theme.scrollbar.verticalColor)));
 
@@ -161,12 +158,12 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
           filter: ColumnFilterExp.unpinnedOnly);
 
       final double pinnedAreaWidth = leftPinnedColumnsMetrics.maxWidth;
-      layoutSettings.needLeftPinnedHorizontalScrollbar =
-          pinnedAreaWidth > maxContentAreaWidth;
-
       final double unpinnedAreaWidth = unpinnedColumnsMetrics.maxWidth;
-      layoutSettings.needUnpinnedHorizontalScrollbar =
-          unpinnedAreaWidth > maxContentAreaWidth - pinnedAreaWidth;
+      layoutSettings.updatesHorizontalScrollbarsNeeds(
+          needLeftPinnedHorizontalScrollbar:
+              pinnedAreaWidth > maxContentAreaWidth,
+          needUnpinnedHorizontalScrollbar:
+              unpinnedAreaWidth > maxContentAreaWidth - pinnedAreaWidth);
 
       if (layoutSettings.hasHorizontalScrollbar) {
         children.add(LayoutChild.horizontalScrollbar(

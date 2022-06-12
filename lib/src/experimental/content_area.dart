@@ -52,7 +52,7 @@ class ContentArea with ChildPainterMixin {
     for (RenderBox renderBox in _cells) {
       final TableLayoutParentDataExp parentData = renderBox._parentData();
       final int rowIndex = parentData.row!;
-      final double y = layoutSettings.headerHeight +
+      final double y = layoutSettings.headerBounds.height +
           (rowIndex * layoutSettings.rowHeight) -
           layoutSettings.verticalScrollbarOffset;
       final int columnIndex = parentData.column!;
@@ -87,7 +87,7 @@ class ContentArea with ChildPainterMixin {
         ..color = headerAreaDebugColor;
       canvas.drawRect(
           Rect.fromLTWH(offset.dx + bounds.left, offset.dy + bounds.top,
-              bounds.width, layoutSettings.headerHeight),
+              bounds.width, layoutSettings.headerBounds.height),
           paint);
     }
 

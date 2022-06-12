@@ -1,47 +1,112 @@
+import 'dart:math' as math;
 import 'package:easy_table/src/theme/theme_data.dart';
+import 'package:flutter/rendering.dart';
 
 class TableLayoutSettings {
-  TableLayoutSettings(
+  factory TableLayoutSettings(
       {required EasyTableThemeData theme,
+      required int? visibleRowsCount,
+      required double cellContentHeight,
+      required bool hasHeader,
+      required bool columnsFit,
+      required double verticalScrollbarOffset,
+      required int rowsLength}) {
+    final double cellHeight = cellContentHeight +
+        ((theme.cell.padding != null) ? theme.cell.padding!.vertical : 0);
+    final double rowHeight = cellHeight + theme.row.dividerThickness;
+    final double scrollbarSize =
+        theme.scrollbar.margin * 2 + theme.scrollbar.thickness;
+    final double headerCellHeight = theme.headerCell.height;
+    final bool needUnpinnedHorizontalScrollbar =
+        !theme.scrollbar.horizontalOnlyWhenNeeded;
+    final bool needLeftPinnedHorizontalScrollbar =
+        needUnpinnedHorizontalScrollbar;
+    final Rect headerBounds = Rect.fromLTWH(0, 0, 0,
+        hasHeader ? theme.header.bottomBorderHeight + headerCellHeight : 0);
+
+    final double contentFullHeight = (rowsLength * cellHeight) +
+        (math.max(0, rowsLength - 1) * theme.row.dividerThickness);
+
+    return TableLayoutSettings._(
+        headerBounds: headerBounds,
+        contentBounds: Rect.zero,
+        leftPinnedBounds: Rect.zero,
+        unpinnedBounds: Rect.zero,
+        rightPinnedBounds: Rect.zero,
+        cellContentHeight: cellContentHeight,
+        visibleRowsCount: visibleRowsCount,
+        hasHeader: hasHeader,
+        columnsFit: columnsFit,
+        verticalScrollbarOffset: verticalScrollbarOffset,
+        cellHeight: cellHeight,
+        rowHeight: rowHeight,
+        scrollbarSize: scrollbarSize,
+        headerCellHeight: headerCellHeight,
+        contentFullHeight: contentFullHeight,
+        needUnpinnedHorizontalScrollbar: needUnpinnedHorizontalScrollbar,
+        needLeftPinnedHorizontalScrollbar: needLeftPinnedHorizontalScrollbar);
+  }
+
+  TableLayoutSettings._(
+      {required this.headerBounds,
+      required this.contentBounds,
+      required this.leftPinnedBounds,
+      required this.unpinnedBounds,
+      required this.rightPinnedBounds,
       required this.cellContentHeight,
       required this.visibleRowsCount,
       required this.hasHeader,
-      required this.hasVerticalScrollbar,
       required this.columnsFit,
-      required this.verticalScrollbarOffset}) {
-    cellHeight = cellContentHeight +
-        ((theme.cell.padding != null) ? theme.cell.padding!.vertical : 0);
-    rowHeight = cellHeight + theme.row.dividerThickness;
-    scrollbarSize = theme.scrollbar.margin * 2 + theme.scrollbar.thickness;
-    headerCellHeight = theme.headerCell.height;
-    headerHeight =
-        hasHeader ? theme.header.bottomBorderHeight + headerCellHeight : 0;
-    needUnpinnedHorizontalScrollbar = !theme.scrollbar.horizontalOnlyWhenNeeded;
-    needLeftPinnedHorizontalScrollbar = needUnpinnedHorizontalScrollbar;
-  }
+      required this.verticalScrollbarOffset,
+      required this.cellHeight,
+      required this.rowHeight,
+      required this.scrollbarSize,
+      required this.headerCellHeight,
+      required this.contentFullHeight,
+      required bool needUnpinnedHorizontalScrollbar,
+      required bool needLeftPinnedHorizontalScrollbar})
+      : _needUnpinnedHorizontalScrollbar = needUnpinnedHorizontalScrollbar,
+        _needLeftPinnedHorizontalScrollbar = needLeftPinnedHorizontalScrollbar;
+
+  /// Including cell height and bottom border
+  final Rect headerBounds;
+
+  final Rect contentBounds;
+  final Rect leftPinnedBounds;
+  final Rect unpinnedBounds;
+  final Rect rightPinnedBounds;
 
   final double cellContentHeight;
   final int? visibleRowsCount;
   final bool hasHeader;
-  final bool hasVerticalScrollbar;
   final bool columnsFit;
   final double verticalScrollbarOffset;
 
   /// Cell content and padding.
-  late final double cellHeight;
+  final double cellHeight;
 
   /// Cell height and divider thickness
-  late final double rowHeight;
-  late final double scrollbarSize;
+  final double rowHeight;
+  final double scrollbarSize;
 
-  late final double headerCellHeight;
+  final double headerCellHeight;
 
-  /// Cell height and bottom border
-  late final double headerHeight;
+  /// Height from all rows (including scrollable viewport hidden ones).
+  final double contentFullHeight;
 
-  double contentHeight = 0;
-  late bool needUnpinnedHorizontalScrollbar;
-  late bool needLeftPinnedHorizontalScrollbar;
+  bool _needUnpinnedHorizontalScrollbar;
+  bool get needUnpinnedHorizontalScrollbar => _needUnpinnedHorizontalScrollbar;
+
+  bool _needLeftPinnedHorizontalScrollbar;
+  bool get needLeftPinnedHorizontalScrollbar =>
+      _needLeftPinnedHorizontalScrollbar;
+
+  void updatesHorizontalScrollbarsNeeds(
+      {required bool needLeftPinnedHorizontalScrollbar,
+      required bool needUnpinnedHorizontalScrollbar}) {
+    _needLeftPinnedHorizontalScrollbar = needLeftPinnedHorizontalScrollbar;
+    _needUnpinnedHorizontalScrollbar = needUnpinnedHorizontalScrollbar;
+  }
 
   bool get allowHorizontalScrollbar => !columnsFit;
 
@@ -51,40 +116,4 @@ class TableLayoutSettings {
 
   double get scrollbarWidth => scrollbarSize;
   double get scrollbarHeight => hasHorizontalScrollbar ? scrollbarSize : 0;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is TableLayoutSettings &&
-          runtimeType == other.runtimeType &&
-          cellContentHeight == other.cellContentHeight &&
-          visibleRowsCount == other.visibleRowsCount &&
-          hasHeader == other.hasHeader &&
-          hasVerticalScrollbar == other.hasVerticalScrollbar &&
-          columnsFit == other.columnsFit &&
-          verticalScrollbarOffset == other.verticalScrollbarOffset &&
-          cellHeight == other.cellHeight &&
-          rowHeight == other.rowHeight &&
-          scrollbarSize == other.scrollbarSize &&
-          headerCellHeight == other.headerCellHeight &&
-          headerHeight == other.headerHeight &&
-          contentHeight == other.contentHeight &&
-          needUnpinnedHorizontalScrollbar ==
-              other.needUnpinnedHorizontalScrollbar;
-
-  @override
-  int get hashCode =>
-      cellContentHeight.hashCode ^
-      visibleRowsCount.hashCode ^
-      hasHeader.hashCode ^
-      hasVerticalScrollbar.hashCode ^
-      columnsFit.hashCode ^
-      verticalScrollbarOffset.hashCode ^
-      cellHeight.hashCode ^
-      rowHeight.hashCode ^
-      scrollbarSize.hashCode ^
-      headerCellHeight.hashCode ^
-      headerHeight.hashCode ^
-      contentHeight.hashCode ^
-      needUnpinnedHorizontalScrollbar.hashCode;
 }
