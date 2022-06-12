@@ -128,14 +128,16 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
       EasyTableColumn<ROW> column = model.columnAt(columnIndex);
       final ContentAreaId contentAreaId =
           _contentAreaId(allowPin: allowPin, column: column);
-      children.add(LayoutChild.header(
-          contentAreaId: contentAreaId,
-          column: columnIndex,
-          child: EasyTableHeaderCell<ROW>(
-              model: model,
-              column: column,
-              resizable: !layoutSettings.columnsFit,
-              multiSortEnabled: multiSortEnabled)));
+      children.insert(
+          0,
+          LayoutChild.header(
+              contentAreaId: contentAreaId,
+              column: columnIndex,
+              child: EasyTableHeaderCell<ROW>(
+                  model: model,
+                  column: column,
+                  resizable: !layoutSettings.columnsFit,
+                  multiSortEnabled: multiSortEnabled)));
     }
 
     //TODO scrollbarSize border?
@@ -215,11 +217,13 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
                   alignment: alignment,
                   padding: padding,
                   background: background));
-          children.add(LayoutChild.cell(
-              contentAreaId: ContentAreaId.unpinned,
-              row: rowIndex,
-              column: columnIndex,
-              child: cell));
+          children.insert(
+              0,
+              LayoutChild.cell(
+                  contentAreaId: ContentAreaId.unpinned,
+                  row: rowIndex,
+                  column: columnIndex,
+                  child: cell));
         }
       }
     }
