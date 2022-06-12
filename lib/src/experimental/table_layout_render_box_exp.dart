@@ -31,16 +31,19 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
         //TODO const colors
         _leftPinnedContentArea = ContentArea(
             id: ContentAreaId.leftPinned,
+            bounds: layoutSettings.leftPinnedBounds,
             columnsMetrics: leftPinnedColumnsMetrics,
             headerAreaDebugColor: Colors.yellow[300]!.withOpacity(.5),
             scrollbarAreaDebugColor: Colors.yellow[200]!.withOpacity(.5)),
         _unpinnedContentArea = ContentArea(
             id: ContentAreaId.unpinned,
+            bounds: layoutSettings.unpinnedBounds,
             columnsMetrics: unpinnedColumnsMetrics,
             headerAreaDebugColor: Colors.lime[300]!.withOpacity(.5),
             scrollbarAreaDebugColor: Colors.lime[200]!.withOpacity(.5)),
         _rightPinnedContentArea = ContentArea(
             id: ContentAreaId.rightPinned,
+            bounds: layoutSettings.rightPinnedBounds,
             columnsMetrics: rightPinnedColumnsMetrics,
             headerAreaDebugColor: Colors.orange[300]!.withOpacity(.5),
             scrollbarAreaDebugColor: Colors.orange[200]!.withOpacity(.5)),
@@ -62,7 +65,6 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
   List<ROW> _rows;
 
   set rows(List<ROW> value) {
-    MouseRegion r;
     _rows = value;
   }
 
@@ -77,6 +79,9 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
   set layoutSettings(TableLayoutSettings value) {
     if (_layoutSettings != value) {
       _layoutSettings = value;
+      _leftPinnedContentArea.bounds = value.leftPinnedBounds;
+      _unpinnedContentArea.bounds = value.unpinnedBounds;
+      _rightPinnedContentArea.bounds = value.rightPinnedBounds;
       markNeedsLayout();
     }
   }
@@ -157,27 +162,6 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
     _verticalScrollbar!._parentData().offset = Offset(
         constraints.maxWidth - _layoutSettings.scrollbarWidth,
         _layoutSettings.headerHeight);
-
-    _leftPinnedContentArea.bounds = Rect.fromLTWH(
-        0,
-        0,
-        math.min(_leftPinnedContentArea.columnsMetrics.maxWidth,
-            _layoutSettings.contentArea.width),
-        _layoutSettings.height);
-    _unpinnedContentArea.bounds = Rect.fromLTWH(
-        _leftPinnedContentArea.bounds.right,
-        0,
-        math.max(
-            0,
-            _layoutSettings.contentArea.width -
-                _leftPinnedContentArea.bounds.width),
-        _layoutSettings.height);
-    //TODO need right width
-    _rightPinnedContentArea.bounds = Rect.fromLTWH(
-        _unpinnedContentArea.bounds.right,
-        0,
-        _rightPinnedContentArea.columnsMetrics.maxWidth,
-        _layoutSettings.height);
 
     size = Size(constraints.maxWidth, _layoutSettings.height);
 

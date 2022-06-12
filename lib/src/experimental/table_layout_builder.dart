@@ -273,7 +273,10 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
         height: height,
         contentBounds: contentBounds,
         hasHorizontalScrollbar: hasHorizontalScrollbar,
-        scrollbarHeight: scrollbarHeight);
+        scrollbarHeight: scrollbarHeight,
+        leftPinnedColumnsMetrics: leftPinnedColumnsMetrics,
+        unpinnedColumnsMetrics: unpinnedColumnsMetrics,
+        rightPinnedColumnsMetrics: rightPinnedColumnsMetrics);
 
     return TableLayoutExp(
         onHoverListener: onHoverListener,
@@ -355,19 +358,24 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
           layoutSettingsBuilder.contentFullHeight);
     }
 
+    final ColumnsMetricsExp emptyColumnsMetrics = ColumnsMetricsExp.empty();
+
     TableLayoutSettings layoutSettings = layoutSettingsBuilder.build(
         height: height,
         contentBounds: contentBounds,
         hasHorizontalScrollbar: hasHorizontalScrollbar,
-        scrollbarHeight: scrollbarHeight);
+        scrollbarHeight: scrollbarHeight,
+        leftPinnedColumnsMetrics: emptyColumnsMetrics,
+        unpinnedColumnsMetrics: emptyColumnsMetrics,
+        rightPinnedColumnsMetrics: emptyColumnsMetrics);
 
     return TableLayoutExp(
         onHoverListener: onHoverListener,
         layoutSettings: layoutSettings,
         paintSettings: paintSettings,
-        leftPinnedColumnsMetrics: ColumnsMetricsExp.empty(),
-        unpinnedColumnsMetrics: ColumnsMetricsExp.empty(),
-        rightPinnedColumnsMetrics: ColumnsMetricsExp.empty(),
+        leftPinnedColumnsMetrics: emptyColumnsMetrics,
+        unpinnedColumnsMetrics: emptyColumnsMetrics,
+        rightPinnedColumnsMetrics: emptyColumnsMetrics,
         rows: const [],
         children: children);
   }

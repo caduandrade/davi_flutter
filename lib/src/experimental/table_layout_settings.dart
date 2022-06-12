@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'package:easy_table/src/experimental/columns_metrics_exp.dart';
 import 'package:easy_table/src/theme/theme_data.dart';
 import 'package:flutter/rendering.dart';
 
@@ -79,18 +80,29 @@ class TableLayoutSettingsBuilder {
       {
       //required Rect headerBounds,
       required Rect contentBounds,
-      //required Rect leftPinnedBounds,
-      //required Rect unpinnedBounds,
-      //required Rect rightPinnedBounds,
+      required ColumnsMetricsExp leftPinnedColumnsMetrics,
+      required final ColumnsMetricsExp unpinnedColumnsMetrics,
+      required final ColumnsMetricsExp rightPinnedColumnsMetrics,
       required double height,
       required double scrollbarHeight,
       required bool hasHorizontalScrollbar}) {
+    final Rect leftPinnedBounds = Rect.fromLTWH(
+        0,
+        0,
+        math.min(leftPinnedColumnsMetrics.maxWidth, contentBounds.width),
+        height);
+    final Rect unpinnedBounds = Rect.fromLTWH(leftPinnedBounds.right, 0,
+        math.max(0, contentBounds.width - leftPinnedBounds.width), height);
+    //TODO need right width
+    final Rect rightPinnedBounds = Rect.fromLTWH(
+        unpinnedBounds.right, 0, rightPinnedColumnsMetrics.maxWidth, height);
+
     return TableLayoutSettings(
         contentArea: contentBounds,
         // headerBounds: headerBounds,
-        //leftPinnedBounds: leftPinnedBounds,
-        //unpinnedBounds: unpinnedBounds,
-        //rightPinnedBounds: rightPinnedBounds,
+        leftPinnedBounds: leftPinnedBounds,
+        unpinnedBounds: unpinnedBounds,
+        rightPinnedBounds: rightPinnedBounds,
         height: height,
         headerHeight: headerHeight,
         cellContentHeight: cellContentHeight,
@@ -111,9 +123,9 @@ class TableLayoutSettings {
   TableLayoutSettings(
       {
       //required this.headerBounds,
-      //required this.leftPinnedBounds,
-      //required this.unpinnedBounds,
-      //required this.rightPinnedBounds,
+      required this.leftPinnedBounds,
+      required this.unpinnedBounds,
+      required this.rightPinnedBounds,
       required this.contentArea,
       required this.headerHeight,
       required this.cellContentHeight,
@@ -130,13 +142,14 @@ class TableLayoutSettings {
       required this.hasHorizontalScrollbar});
 
   final Rect contentArea;
-  /*
+
   /// Including cell height and bottom border
-  final Rect headerBounds;
+  //final Rect headerBounds;
+
   final Rect leftPinnedBounds;
   final Rect unpinnedBounds;
   final Rect rightPinnedBounds;
-*/
+
   /// Including cell height and bottom border
   final double headerHeight;
   final double cellContentHeight;
@@ -168,6 +181,9 @@ class TableLayoutSettings {
       other is TableLayoutSettings &&
           runtimeType == other.runtimeType &&
           contentArea == other.contentArea &&
+          leftPinnedBounds == other.leftPinnedBounds &&
+          unpinnedBounds == other.unpinnedBounds &&
+          rightPinnedBounds == other.rightPinnedBounds &&
           headerHeight == other.headerHeight &&
           cellContentHeight == other.cellContentHeight &&
           visibleRowsCount == other.visibleRowsCount &&
@@ -179,12 +195,15 @@ class TableLayoutSettings {
           contentFullHeight == other.contentFullHeight &&
           hasHorizontalScrollbar == other.hasHorizontalScrollbar &&
           scrollbarWidth == other.scrollbarWidth &&
-          height == other.height &&
-          scrollbarHeight == other.scrollbarHeight;
+          scrollbarHeight == other.scrollbarHeight &&
+          height == other.height;
 
   @override
   int get hashCode =>
       contentArea.hashCode ^
+      leftPinnedBounds.hashCode ^
+      unpinnedBounds.hashCode ^
+      rightPinnedBounds.hashCode ^
       headerHeight.hashCode ^
       cellContentHeight.hashCode ^
       visibleRowsCount.hashCode ^
@@ -192,10 +211,10 @@ class TableLayoutSettings {
       verticalScrollbarOffset.hashCode ^
       cellHeight.hashCode ^
       rowHeight.hashCode ^
-      height.hashCode ^
       headerCellHeight.hashCode ^
       contentFullHeight.hashCode ^
       hasHorizontalScrollbar.hashCode ^
       scrollbarWidth.hashCode ^
-      scrollbarHeight.hashCode;
+      scrollbarHeight.hashCode ^
+      height.hashCode;
 }

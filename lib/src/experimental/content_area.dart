@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 class ContentArea with ChildPainterMixin {
   ContentArea(
       {required this.id,
+      required this.bounds,
       required this.headerAreaDebugColor,
       required this.scrollbarAreaDebugColor,
       required this.columnsMetrics});
@@ -15,12 +16,12 @@ class ContentArea with ChildPainterMixin {
   final ContentAreaId id;
   final Color headerAreaDebugColor;
   final Color scrollbarAreaDebugColor;
-  ColumnsMetricsExp columnsMetrics;
   final List<RenderBox> _headers = [];
   final List<RenderBox> _cells = [];
-  RenderBox? scrollbar;
+  ColumnsMetricsExp columnsMetrics;
+  Rect bounds;
 
-  Rect bounds = Rect.zero;
+  RenderBox? scrollbar;
 
   void clear() {
     _headers.clear();
