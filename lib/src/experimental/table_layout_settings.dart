@@ -75,19 +75,18 @@ class TableLayoutSettingsBuilder {
 
   final bool horizontalOnlyWhenNeeded;
 
-  double get scrollbarWidth => scrollbarSize;
-
   TableLayoutSettings build(
       {
       //required Rect headerBounds,
-      //required Rect contentBounds,
+      required Rect contentBounds,
       //required Rect leftPinnedBounds,
       //required Rect unpinnedBounds,
       //required Rect rightPinnedBounds,
+      required double scrollbarHeight,
       required bool hasHorizontalScrollbar}) {
     return TableLayoutSettings(
+        contentArea: contentBounds,
         // headerBounds: headerBounds,
-        //contentBounds: contentBounds,
         //leftPinnedBounds: leftPinnedBounds,
         //unpinnedBounds: unpinnedBounds,
         //rightPinnedBounds: rightPinnedBounds,
@@ -98,7 +97,8 @@ class TableLayoutSettingsBuilder {
         verticalScrollbarOffset: verticalScrollbarOffset,
         cellHeight: cellHeight,
         rowHeight: rowHeight,
-        scrollbarSize: scrollbarSize,
+        scrollbarWidth: scrollbarSize,
+        scrollbarHeight: scrollbarHeight,
         headerCellHeight: headerCellHeight,
         contentFullHeight: contentFullHeight,
         hasHorizontalScrollbar: hasHorizontalScrollbar);
@@ -109,10 +109,10 @@ class TableLayoutSettings {
   TableLayoutSettings(
       {
       //required this.headerBounds,
-      //required this.contentBounds,
       //required this.leftPinnedBounds,
       //required this.unpinnedBounds,
       //required this.rightPinnedBounds,
+      required this.contentArea,
       required this.headerHeight,
       required this.cellContentHeight,
       required this.visibleRowsCount,
@@ -120,15 +120,16 @@ class TableLayoutSettings {
       required this.verticalScrollbarOffset,
       required this.cellHeight,
       required this.rowHeight,
-      required this.scrollbarSize,
+      required this.scrollbarWidth,
+      required this.scrollbarHeight,
       required this.headerCellHeight,
       required this.contentFullHeight,
       required this.hasHorizontalScrollbar});
 
+  final Rect contentArea;
   /*
   /// Including cell height and bottom border
   final Rect headerBounds;
-  final Rect contentBounds;
   final Rect leftPinnedBounds;
   final Rect unpinnedBounds;
   final Rect rightPinnedBounds;
@@ -145,7 +146,6 @@ class TableLayoutSettings {
 
   /// Cell height and divider thickness
   final double rowHeight;
-  final double scrollbarSize;
 
   final double headerCellHeight;
 
@@ -154,14 +154,15 @@ class TableLayoutSettings {
 
   final bool hasHorizontalScrollbar;
 
-  double get scrollbarWidth => scrollbarSize;
-  double get scrollbarHeight => hasHorizontalScrollbar ? scrollbarSize : 0;
+  final double scrollbarWidth;
+  final double scrollbarHeight;
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is TableLayoutSettings &&
           runtimeType == other.runtimeType &&
+          contentArea == other.contentArea &&
           headerHeight == other.headerHeight &&
           cellContentHeight == other.cellContentHeight &&
           visibleRowsCount == other.visibleRowsCount &&
@@ -169,13 +170,15 @@ class TableLayoutSettings {
           verticalScrollbarOffset == other.verticalScrollbarOffset &&
           cellHeight == other.cellHeight &&
           rowHeight == other.rowHeight &&
-          scrollbarSize == other.scrollbarSize &&
           headerCellHeight == other.headerCellHeight &&
           contentFullHeight == other.contentFullHeight &&
-          hasHorizontalScrollbar == other.hasHorizontalScrollbar;
+          hasHorizontalScrollbar == other.hasHorizontalScrollbar &&
+          scrollbarWidth == other.scrollbarWidth &&
+          scrollbarHeight == other.scrollbarHeight;
 
   @override
   int get hashCode =>
+      contentArea.hashCode ^
       headerHeight.hashCode ^
       cellContentHeight.hashCode ^
       visibleRowsCount.hashCode ^
@@ -183,8 +186,9 @@ class TableLayoutSettings {
       verticalScrollbarOffset.hashCode ^
       cellHeight.hashCode ^
       rowHeight.hashCode ^
-      scrollbarSize.hashCode ^
       headerCellHeight.hashCode ^
       contentFullHeight.hashCode ^
-      hasHorizontalScrollbar.hashCode;
+      hasHorizontalScrollbar.hashCode ^
+      scrollbarWidth.hashCode ^
+      scrollbarHeight.hashCode;
 }

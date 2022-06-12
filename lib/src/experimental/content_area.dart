@@ -67,10 +67,10 @@ class ContentArea with ChildPainterMixin {
     if (scrollbar != null) {
       scrollbar!.layout(
           BoxConstraints.tightFor(
-              width: bounds.width, height: layoutSettings.scrollbarSize),
+              width: bounds.width, height: layoutSettings.scrollbarHeight),
           parentUsesSize: true);
       scrollbar!._parentData().offset =
-          Offset(bounds.left, bounds.bottom - layoutSettings.scrollbarSize);
+          Offset(bounds.left, bounds.bottom - layoutSettings.scrollbarHeight);
     }
   }
 
@@ -108,13 +108,13 @@ class ContentArea with ChildPainterMixin {
   void paintChildren(
       {required PaintingContext context,
       required Offset offset,
-      required Rect contentArea}) {
+      required Rect contentBounds}) {
     for (RenderBox header in _headers) {
       //TODO clip and/or do not build
       paintChild(context: context, offset: offset, child: header);
     }
     context.canvas.save();
-    context.canvas.clipRect(contentArea.translate(offset.dx, offset.dy));
+    context.canvas.clipRect(contentBounds.translate(offset.dx, offset.dy));
     for (RenderBox cell in _cells) {
       paintChild(context: context, offset: offset, child: cell);
     }

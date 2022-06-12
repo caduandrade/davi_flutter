@@ -58,8 +58,6 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
 
   RenderBox? _verticalScrollbar;
 
-  Rect contentArea = Rect.zero;
-
   //TODO remove?
   List<ROW> _rows;
   set rows(List<ROW> value) {
@@ -142,29 +140,11 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
     double height = 0;
     if (constraints.hasBoundedHeight) {
       height = constraints.maxHeight;
-
-      contentArea = Rect.fromLTWH(
-          0,
-          _layoutSettings.headerHeight,
-          math.max(0, constraints.maxWidth - _layoutSettings.scrollbarWidth),
-          math.max(
-              0,
-              constraints.maxHeight -
-                  _layoutSettings.headerHeight -
-                  (_layoutSettings.hasHorizontalScrollbar
-                      ? _layoutSettings.scrollbarSize
-                      : 0)));
     } else {
       // unbounded height
       height = _layoutSettings.headerHeight +
           _layoutSettings.contentFullHeight +
           _layoutSettings.scrollbarHeight;
-
-      contentArea = Rect.fromLTWH(
-          0,
-          _layoutSettings.headerHeight,
-          math.max(0, constraints.maxWidth - _layoutSettings.scrollbarWidth),
-          _layoutSettings.contentFullHeight);
     }
 
     // vertical scrollbar
@@ -185,13 +165,16 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
     _leftPinnedContentArea.bounds = Rect.fromLTWH(
         0,
         0,
-        math.min(
-            _leftPinnedContentArea.columnsMetrics.maxWidth, contentArea.width),
+        math.min(_leftPinnedContentArea.columnsMetrics.maxWidth,
+            _layoutSettings.contentArea.width),
         height);
     _unpinnedContentArea.bounds = Rect.fromLTWH(
         _leftPinnedContentArea.bounds.right,
         0,
-        math.max(0, contentArea.width - _leftPinnedContentArea.bounds.width),
+        math.max(
+            0,
+            _layoutSettings.contentArea.width -
+                _leftPinnedContentArea.bounds.width),
         height);
     //TODO need right width
     _rightPinnedContentArea.bounds = Rect.fromLTWH(
@@ -229,7 +212,9 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
     _paintHover(canvas: context.canvas, offset: offset);
 
     _forEachContentArea((area) => area.paintChildren(
-        context: context, offset: offset, contentArea: contentArea));
+        context: context,
+        offset: offset,
+        contentBounds: _layoutSettings.contentArea));
 
     paintChild(context: context, offset: offset, child: _verticalScrollbar);
 
@@ -257,8 +242,8 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
           ..style = PaintingStyle.fill
           ..color = color;
         canvas.drawRect(
-            Rect.fromLTWH(offset.dx, offset.dy + y, contentArea.width,
-                _layoutSettings.cellHeight),
+            Rect.fromLTWH(offset.dx, offset.dy + y,
+                _layoutSettings.contentArea.width, _layoutSettings.cellHeight),
             paint);
       }
     }
@@ -280,7 +265,7 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
       return;
     }
     if (event is PointerHoverEvent) {
-      if (contentArea.contains(event.localPosition)) {
+      if (_layoutSettings.contentArea.contains(event.localPosition)) {
         final double localY = event.localPosition.dy;
         final double y = math.max(0, localY - _layoutSettings.headerHeight) +
             _layoutSettings.verticalScrollbarOffset;

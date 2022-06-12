@@ -142,7 +142,7 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
     final double maxContentAreaWidth =
         math.max(0, constraints.maxWidth - layoutSettingsBuilder.scrollbarSize);
 
-    bool hasHorizontalScrollbar;
+    final bool hasHorizontalScrollbar;
     if (layoutSettingsBuilder.columnsFit) {
       unpinnedColumnsMetrics = ColumnsMetricsExp.columnsFit(
           model: model,
@@ -235,8 +235,44 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
       }
     }
 
+    final double scrollbarHeight =
+        hasHorizontalScrollbar ? layoutSettingsBuilder.scrollbarSize : 0;
+
+    final double height;
+    final Rect contentBounds;
+    if (constraints.hasBoundedHeight) {
+      height = constraints.maxHeight;
+
+      contentBounds = Rect.fromLTWH(
+          0,
+          layoutSettingsBuilder.headerHeight,
+          math.max(
+              0, constraints.maxWidth - layoutSettingsBuilder.scrollbarSize),
+          math.max(
+              0,
+              constraints.maxHeight -
+                  layoutSettingsBuilder.headerHeight -
+                  (hasHorizontalScrollbar
+                      ? layoutSettingsBuilder.scrollbarSize
+                      : 0)));
+    } else {
+      // unbounded height
+      height = layoutSettingsBuilder.headerHeight +
+          layoutSettingsBuilder.contentFullHeight +
+          scrollbarHeight;
+
+      contentBounds = Rect.fromLTWH(
+          0,
+          layoutSettingsBuilder.headerHeight,
+          math.max(
+              0, constraints.maxWidth - layoutSettingsBuilder.scrollbarSize),
+          layoutSettingsBuilder.contentFullHeight);
+    }
+
     TableLayoutSettings layoutSettings = layoutSettingsBuilder.build(
-        hasHorizontalScrollbar: hasHorizontalScrollbar);
+        contentBounds: contentBounds,
+        hasHorizontalScrollbar: hasHorizontalScrollbar,
+        scrollbarHeight: scrollbarHeight);
 
     return TableLayoutExp(
         onHoverListener: onHoverListener,
@@ -268,6 +304,8 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
     List<LayoutChild> children = [];
     final bool hasHorizontalScrollbar = !layoutSettingsBuilder.columnsFit &&
         !theme.scrollbar.horizontalOnlyWhenNeeded;
+    final double scrollbarHeight =
+        hasHorizontalScrollbar ? layoutSettingsBuilder.scrollbarSize : 0;
     if (hasHorizontalScrollbar) {
       children.add(LayoutChild.verticalScrollbar(
           child: EasyTableScrollBarExp(
@@ -283,9 +321,22 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
               scrollController: scrollControllers.unpinnedContentArea,
               color: theme.scrollbar.unpinnedHorizontalColor)));
     }
+    final Rect contentBounds = Rect.fromLTWH(
+        0,
+        layoutSettingsBuilder.headerHeight,
+        math.max(0, constraints.maxWidth - layoutSettingsBuilder.scrollbarSize),
+        math.max(
+            0,
+            constraints.maxHeight -
+                layoutSettingsBuilder.headerHeight -
+                (hasHorizontalScrollbar
+                    ? layoutSettingsBuilder.scrollbarSize
+                    : 0)));
 
     TableLayoutSettings layoutSettings = layoutSettingsBuilder.build(
-        hasHorizontalScrollbar: hasHorizontalScrollbar);
+        contentBounds: contentBounds,
+        hasHorizontalScrollbar: hasHorizontalScrollbar,
+        scrollbarHeight: scrollbarHeight);
 
     return TableLayoutExp(
         onHoverListener: onHoverListener,
