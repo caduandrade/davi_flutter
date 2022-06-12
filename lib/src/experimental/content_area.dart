@@ -5,6 +5,7 @@ import 'package:easy_table/src/experimental/debug_colors.dart';
 import 'package:easy_table/src/experimental/table_layout_parent_data_exp.dart';
 import 'package:easy_table/src/experimental/table_layout_settings.dart';
 import 'package:easy_table/src/experimental/table_paint_settings.dart';
+import 'package:easy_table/src/theme/theme_data.dart';
 import 'package:flutter/material.dart';
 
 class ContentArea with ChildPainterMixin {
@@ -33,7 +34,9 @@ class ContentArea with ChildPainterMixin {
     _cells.add(cell);
   }
 
-  void performLayout({required TableLayoutSettings layoutSettings}) {
+  void performLayout(
+      {required TableLayoutSettings layoutSettings,
+      required EasyTableThemeData theme}) {
     for (RenderBox renderBox in _headers) {
       final TableLayoutParentDataExp parentData = renderBox._parentData();
       final double y = bounds.top;
@@ -42,7 +45,7 @@ class ContentArea with ChildPainterMixin {
       final double offset = columnsMetrics.offsets[columnIndex];
       renderBox.layout(
           BoxConstraints.tightFor(
-              width: width, height: layoutSettings.headerCellHeight),
+              width: width, height: theme.headerCell.height),
           parentUsesSize: true);
       parentData.offset = Offset(offset, y);
     }
@@ -105,7 +108,8 @@ class ContentArea with ChildPainterMixin {
       {required PaintingContext context,
       required Offset offset,
       required TableLayoutSettings layoutSettings,
-      required TablePaintSettings paintSettings}) {
+      required TablePaintSettings paintSettings,
+      required EasyTableThemeData theme}) {
     // headers
     for (RenderBox header in _headers) {
       context.canvas.save();
@@ -128,16 +132,15 @@ class ContentArea with ChildPainterMixin {
     paintChild(context: context, offset: offset, child: scrollbar);
 
     // column dividers
-    if (paintSettings.columnDividerColor != null) {
-      Paint paint = Paint()..color = paintSettings.columnDividerColor!;
+    if (theme.columnDividerColor != null) {
+      Paint paint = Paint()..color = theme.columnDividerColor!;
       final double height =
           layoutSettings.headerBounds.height + layoutSettings.cellsBound.height;
       for (int i = 1; i < columnsMetrics.offsets.length; i++) {
-        double x =
-            columnsMetrics.offsets[i] - layoutSettings.columnDividerThickness;
+        double x = columnsMetrics.offsets[i] - theme.columnDividerThickness;
         context.canvas.drawRect(
-            Rect.fromLTWH(x + offset.dx, offset.dy,
-                layoutSettings.columnDividerThickness, height),
+            Rect.fromLTWH(
+                x + offset.dx, offset.dy, theme.columnDividerThickness, height),
             paint);
       }
     }

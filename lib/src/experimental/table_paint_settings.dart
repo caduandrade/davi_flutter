@@ -1,17 +1,8 @@
-import 'package:easy_table/src/theme/row_color.dart';
-import 'package:flutter/material.dart';
-
 class TablePaintSettings {
-  TablePaintSettings(
-      {this.debugAreas = false,
-      required this.hoveredRowIndex,
-      required this.hoveredColor,
-      required this.columnDividerColor});
+  TablePaintSettings({this.debugAreas = false, required this.hoveredRowIndex});
 
   final bool debugAreas;
   final int? hoveredRowIndex;
-  final EasyTableRowColor? hoveredColor;
-  final Color? columnDividerColor;
 
   @override
   bool operator ==(Object other) =>
@@ -19,14 +10,8 @@ class TablePaintSettings {
       other is TablePaintSettings &&
           runtimeType == other.runtimeType &&
           debugAreas == other.debugAreas &&
-          hoveredRowIndex == other.hoveredRowIndex &&
-          hoveredColor == other.hoveredColor &&
-          columnDividerColor == other.columnDividerColor;
+          hoveredRowIndex == other.hoveredRowIndex;
 
   @override
-  int get hashCode =>
-      debugAreas.hashCode ^
-      hoveredRowIndex.hashCode ^
-      hoveredColor.hashCode ^
-      columnDividerColor.hashCode;
+  int get hashCode => debugAreas.hashCode ^ hoveredRowIndex.hashCode;
 }

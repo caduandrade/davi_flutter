@@ -57,12 +57,8 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
       ]);
     }
 
-    final EasyTableThemeData theme = EasyTableTheme.of(context);
-
-    TablePaintSettings paintSettings = TablePaintSettings(
-        hoveredRowIndex: hoveredRowIndex,
-        hoveredColor: theme.row.hoveredColor,
-        columnDividerColor: theme.columnDividerColor);
+    TablePaintSettings paintSettings =
+        TablePaintSettings(hoveredRowIndex: hoveredRowIndex);
     if (model != null) {
       return _buildTable(
           context: context,
@@ -169,7 +165,7 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
       final bool needHorizontalScrollbar =
           needUnpinnedHorizontalScrollbar || needLeftPinnedHorizontalScrollbar;
 
-      hasHorizontalScrollbar = layoutSettingsBuilder.horizontalOnlyWhenNeeded
+      hasHorizontalScrollbar = theme.scrollbar.horizontalOnlyWhenNeeded
           ? needHorizontalScrollbar
           : true;
 
@@ -283,6 +279,7 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
         leftPinnedColumnsMetrics: leftPinnedColumnsMetrics,
         unpinnedColumnsMetrics: unpinnedColumnsMetrics,
         rightPinnedColumnsMetrics: rightPinnedColumnsMetrics,
+        theme: theme,
         rows: rows,
         children: children);
   }
@@ -374,6 +371,7 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
         leftPinnedColumnsMetrics: emptyColumnsMetrics,
         unpinnedColumnsMetrics: emptyColumnsMetrics,
         rightPinnedColumnsMetrics: emptyColumnsMetrics,
+        theme: theme,
         rows: const [],
         children: children);
   }

@@ -8,6 +8,7 @@ import 'package:easy_table/src/experimental/table_layout_parent_data_exp.dart';
 import 'package:easy_table/src/experimental/table_layout_settings.dart';
 import 'package:easy_table/src/experimental/table_paint_settings.dart';
 import 'package:easy_table/src/row_hover_listener.dart';
+import 'package:easy_table/src/theme/theme_data.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/rendering.dart';
 
@@ -23,6 +24,7 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
       required ColumnsMetricsExp leftPinnedColumnsMetrics,
       required ColumnsMetricsExp unpinnedColumnsMetrics,
       required ColumnsMetricsExp rightPinnedColumnsMetrics,
+      required EasyTableThemeData theme,
       required List<ROW> rows})
       : _onHoverListener = onHoverListener,
         _layoutSettings = layoutSettings,
@@ -39,6 +41,7 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
             id: ContentAreaId.rightPinned,
             bounds: layoutSettings.rightPinnedBounds,
             columnsMetrics: rightPinnedColumnsMetrics),
+        _theme = theme,
         _rows = rows;
 
   final ContentArea _leftPinnedContentArea;
@@ -58,6 +61,11 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
 
   set rows(List<ROW> value) {
     _rows = value;
+  }
+
+  EasyTableThemeData _theme;
+  set theme(EasyTableThemeData value) {
+    _theme = value;
   }
 
   OnRowHoverListener _onHoverListener;
@@ -155,8 +163,8 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
         constraints.maxWidth - _layoutSettings.scrollbarWidth,
         _layoutSettings.headerHeight);
 
-    _forEachContentArea(
-        (area) => area.performLayout(layoutSettings: _layoutSettings));
+    _forEachContentArea((area) =>
+        area.performLayout(layoutSettings: _layoutSettings, theme: _theme));
 
     size = computeDryLayout(constraints);
   }
@@ -187,7 +195,8 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
         context: context,
         offset: offset,
         layoutSettings: _layoutSettings,
-        paintSettings: _paintSettings));
+        paintSettings: _paintSettings,
+        theme: _theme));
 
     paintChild(context: context, offset: offset, child: _verticalScrollbar);
 
@@ -202,10 +211,9 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
   }
 
   void _paintHover({required Canvas canvas, required Offset offset}) {
-    if (_paintSettings.hoveredColor != null &&
+    if (_theme.row.hoveredColor != null &&
         _paintSettings.hoveredRowIndex != null) {
-      Color? color =
-          _paintSettings.hoveredColor!(_paintSettings.hoveredRowIndex!);
+      Color? color = _theme.row.hoveredColor!(_paintSettings.hoveredRowIndex!);
       if (color != null) {
         final double y = _layoutSettings.headerHeight +
             (_paintSettings.hoveredRowIndex! * _layoutSettings.rowHeight) -
@@ -232,12 +240,12 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
   }
 
   @override
-  bool hitTestSelf(Offset position) => _paintSettings.hoveredColor != null;
+  bool hitTestSelf(Offset position) => _theme.row.hoveredColor != null;
 
   @override
   void handleEvent(PointerEvent event, HitTestEntry entry) {
     assert(debugHandleEvent(event, entry));
-    if (_paintSettings.hoveredColor == null) {
+    if (_theme.row.hoveredColor == null) {
       return;
     }
     if (event is PointerHoverEvent) {

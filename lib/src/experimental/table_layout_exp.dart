@@ -4,8 +4,8 @@ import 'package:easy_table/src/experimental/table_layout_element_exp.dart';
 import 'package:easy_table/src/experimental/table_layout_render_box_exp.dart';
 import 'package:easy_table/src/experimental/table_layout_settings.dart';
 import 'package:easy_table/src/experimental/table_paint_settings.dart';
-import 'package:easy_table/src/experimental/table_scroll_controllers.dart';
 import 'package:easy_table/src/row_hover_listener.dart';
+import 'package:easy_table/src/theme/theme_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
@@ -21,6 +21,7 @@ class TableLayoutExp<ROW> extends MultiChildRenderObjectWidget {
       required this.leftPinnedColumnsMetrics,
       required this.unpinnedColumnsMetrics,
       required this.rightPinnedColumnsMetrics,
+      required this.theme,
       required this.rows,
       required List<LayoutChild> children})
       : super(key: key, children: children);
@@ -31,6 +32,7 @@ class TableLayoutExp<ROW> extends MultiChildRenderObjectWidget {
   final ColumnsMetricsExp leftPinnedColumnsMetrics;
   final ColumnsMetricsExp unpinnedColumnsMetrics;
   final ColumnsMetricsExp rightPinnedColumnsMetrics;
+  final EasyTableThemeData theme;
   final List<ROW> rows;
 
   @override
@@ -42,6 +44,7 @@ class TableLayoutExp<ROW> extends MultiChildRenderObjectWidget {
         leftPinnedColumnsMetrics: leftPinnedColumnsMetrics,
         unpinnedColumnsMetrics: unpinnedColumnsMetrics,
         rightPinnedColumnsMetrics: rightPinnedColumnsMetrics,
+        theme: theme,
         rows: rows);
   }
 
@@ -61,6 +64,7 @@ class TableLayoutExp<ROW> extends MultiChildRenderObjectWidget {
       ..leftPinnedColumnsMetrics = leftPinnedColumnsMetrics
       ..unpinnedColumnsMetrics = unpinnedColumnsMetrics
       ..rightPinnedColumnsMetrics = rightPinnedColumnsMetrics
+      ..theme = theme
       ..rows = rows;
   }
 }
