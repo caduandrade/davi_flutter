@@ -195,9 +195,7 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
     _paintHover(canvas: context.canvas, offset: offset);
 
     _forEachContentArea((area) => area.paintChildren(
-        context: context,
-        offset: offset,
-        contentBounds: _layoutSettings.contentArea));
+        context: context, offset: offset, layoutSettings: _layoutSettings));
 
     paintChild(context: context, offset: offset, child: _verticalScrollbar);
 
@@ -225,8 +223,11 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
           ..style = PaintingStyle.fill
           ..color = color;
         canvas.drawRect(
-            Rect.fromLTWH(offset.dx, offset.dy + y,
-                _layoutSettings.contentArea.width, _layoutSettings.cellHeight),
+            Rect.fromLTWH(
+                offset.dx,
+                offset.dy + y,
+                _layoutSettings.contentBounds.width,
+                _layoutSettings.cellHeight),
             paint);
       }
     }
@@ -248,7 +249,7 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
       return;
     }
     if (event is PointerHoverEvent) {
-      if (_layoutSettings.contentArea.contains(event.localPosition)) {
+      if (_layoutSettings.contentBounds.contains(event.localPosition)) {
         final double localY = event.localPosition.dy;
         final double y = math.max(0, localY - _layoutSettings.headerHeight) +
             _layoutSettings.verticalScrollbarOffset;

@@ -77,15 +77,15 @@ class TableLayoutSettingsBuilder {
   final bool horizontalOnlyWhenNeeded;
 
   TableLayoutSettings build(
-      {
-      //required Rect headerBounds,
-      required Rect contentBounds,
+      {required Rect contentBounds,
       required ColumnsMetricsExp leftPinnedColumnsMetrics,
       required final ColumnsMetricsExp unpinnedColumnsMetrics,
       required final ColumnsMetricsExp rightPinnedColumnsMetrics,
       required double height,
       required double scrollbarHeight,
       required bool hasHorizontalScrollbar}) {
+    final Rect headerBounds =
+        Rect.fromLTWH(0, 0, contentBounds.width, headerHeight);
     final Rect leftPinnedBounds = Rect.fromLTWH(
         0,
         0,
@@ -98,8 +98,8 @@ class TableLayoutSettingsBuilder {
         unpinnedBounds.right, 0, rightPinnedColumnsMetrics.maxWidth, height);
 
     return TableLayoutSettings(
-        contentArea: contentBounds,
-        // headerBounds: headerBounds,
+        contentBounds: contentBounds,
+        headerBounds: headerBounds,
         leftPinnedBounds: leftPinnedBounds,
         unpinnedBounds: unpinnedBounds,
         rightPinnedBounds: rightPinnedBounds,
@@ -121,12 +121,11 @@ class TableLayoutSettingsBuilder {
 
 class TableLayoutSettings {
   TableLayoutSettings(
-      {
-      //required this.headerBounds,
+      {required this.headerBounds,
       required this.leftPinnedBounds,
       required this.unpinnedBounds,
       required this.rightPinnedBounds,
-      required this.contentArea,
+      required this.contentBounds,
       required this.headerHeight,
       required this.cellContentHeight,
       required this.visibleRowsCount,
@@ -141,7 +140,9 @@ class TableLayoutSettings {
       required this.contentFullHeight,
       required this.hasHorizontalScrollbar});
 
-  final Rect contentArea;
+  final Rect headerBounds;
+
+  final Rect contentBounds;
 
   /// Including cell height and bottom border
   //final Rect headerBounds;
@@ -180,7 +181,8 @@ class TableLayoutSettings {
       identical(this, other) ||
       other is TableLayoutSettings &&
           runtimeType == other.runtimeType &&
-          contentArea == other.contentArea &&
+          headerBounds == other.headerBounds &&
+          contentBounds == other.contentBounds &&
           leftPinnedBounds == other.leftPinnedBounds &&
           unpinnedBounds == other.unpinnedBounds &&
           rightPinnedBounds == other.rightPinnedBounds &&
@@ -200,7 +202,8 @@ class TableLayoutSettings {
 
   @override
   int get hashCode =>
-      contentArea.hashCode ^
+      headerBounds.hashCode ^
+      contentBounds.hashCode ^
       leftPinnedBounds.hashCode ^
       unpinnedBounds.hashCode ^
       rightPinnedBounds.hashCode ^

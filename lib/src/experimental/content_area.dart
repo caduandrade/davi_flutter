@@ -109,13 +109,17 @@ class ContentArea with ChildPainterMixin {
   void paintChildren(
       {required PaintingContext context,
       required Offset offset,
-      required Rect contentBounds}) {
+      required TableLayoutSettings layoutSettings}) {
     for (RenderBox header in _headers) {
-      //TODO clip and/or do not build
+      context.canvas.save();
+      context.canvas.clipRect(
+          layoutSettings.headerBounds.translate(offset.dx, offset.dy));
       paintChild(context: context, offset: offset, child: header);
+      context.canvas.restore();
     }
     context.canvas.save();
-    context.canvas.clipRect(contentBounds.translate(offset.dx, offset.dy));
+    context.canvas
+        .clipRect(layoutSettings.contentBounds.translate(offset.dx, offset.dy));
     for (RenderBox cell in _cells) {
       paintChild(context: context, offset: offset, child: cell);
     }
