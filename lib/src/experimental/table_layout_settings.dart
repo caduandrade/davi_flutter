@@ -82,6 +82,7 @@ class TableLayoutSettingsBuilder {
       //required Rect leftPinnedBounds,
       //required Rect unpinnedBounds,
       //required Rect rightPinnedBounds,
+      required double height,
       required double scrollbarHeight,
       required bool hasHorizontalScrollbar}) {
     return TableLayoutSettings(
@@ -90,6 +91,7 @@ class TableLayoutSettingsBuilder {
         //leftPinnedBounds: leftPinnedBounds,
         //unpinnedBounds: unpinnedBounds,
         //rightPinnedBounds: rightPinnedBounds,
+        height: height,
         headerHeight: headerHeight,
         cellContentHeight: cellContentHeight,
         visibleRowsCount: visibleRowsCount,
@@ -117,6 +119,7 @@ class TableLayoutSettings {
       required this.cellContentHeight,
       required this.visibleRowsCount,
       required this.hasHeader,
+      required this.height,
       required this.verticalScrollbarOffset,
       required this.cellHeight,
       required this.rowHeight,
@@ -157,6 +160,8 @@ class TableLayoutSettings {
   final double scrollbarWidth;
   final double scrollbarHeight;
 
+  final double height;
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -174,6 +179,7 @@ class TableLayoutSettings {
           contentFullHeight == other.contentFullHeight &&
           hasHorizontalScrollbar == other.hasHorizontalScrollbar &&
           scrollbarWidth == other.scrollbarWidth &&
+          height == other.height &&
           scrollbarHeight == other.scrollbarHeight;
 
   @override
@@ -186,6 +192,7 @@ class TableLayoutSettings {
       verticalScrollbarOffset.hashCode ^
       cellHeight.hashCode ^
       rowHeight.hashCode ^
+      height.hashCode ^
       headerCellHeight.hashCode ^
       contentFullHeight.hashCode ^
       hasHorizontalScrollbar.hashCode ^

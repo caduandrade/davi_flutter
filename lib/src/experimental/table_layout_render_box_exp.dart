@@ -60,17 +60,20 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
 
   //TODO remove?
   List<ROW> _rows;
+
   set rows(List<ROW> value) {
     MouseRegion r;
     _rows = value;
   }
 
   OnRowHoverListener _onHoverListener;
+
   set onHoverListener(OnRowHoverListener value) {
     _onHoverListener = value;
   }
 
   TableLayoutSettings _layoutSettings;
+
   set layoutSettings(TableLayoutSettings value) {
     if (_layoutSettings != value) {
       _layoutSettings = value;
@@ -79,6 +82,7 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
   }
 
   TablePaintSettings _paintSettings;
+
   set paintSettings(TablePaintSettings value) {
     if (_paintSettings != value) {
       _paintSettings = value;
@@ -114,6 +118,8 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
     }
   }
 
+  //TODO use _layoutSettings for dry layout
+
   @override
   void performLayout() {
     _forEachContentArea((area) => area.clear());
@@ -137,16 +143,6 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
       children.add(renderBox);
     });
 
-    double height = 0;
-    if (constraints.hasBoundedHeight) {
-      height = constraints.maxHeight;
-    } else {
-      // unbounded height
-      height = _layoutSettings.headerHeight +
-          _layoutSettings.contentFullHeight +
-          _layoutSettings.scrollbarHeight;
-    }
-
     // vertical scrollbar
     //TODO scrollbarSize border?
     _verticalScrollbar!.layout(
@@ -154,7 +150,7 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
             width: _layoutSettings.scrollbarWidth,
             height: math.max(
                 0,
-                height -
+                _layoutSettings.height -
                     _layoutSettings.headerHeight -
                     _layoutSettings.scrollbarHeight)),
         parentUsesSize: true);
@@ -167,7 +163,7 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
         0,
         math.min(_leftPinnedContentArea.columnsMetrics.maxWidth,
             _layoutSettings.contentArea.width),
-        height);
+        _layoutSettings.height);
     _unpinnedContentArea.bounds = Rect.fromLTWH(
         _leftPinnedContentArea.bounds.right,
         0,
@@ -175,15 +171,15 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
             0,
             _layoutSettings.contentArea.width -
                 _leftPinnedContentArea.bounds.width),
-        height);
+        _layoutSettings.height);
     //TODO need right width
     _rightPinnedContentArea.bounds = Rect.fromLTWH(
         _unpinnedContentArea.bounds.right,
         0,
         _rightPinnedContentArea.columnsMetrics.maxWidth,
-        height);
+        _layoutSettings.height);
 
-    size = Size(constraints.maxWidth, height);
+    size = Size(constraints.maxWidth, _layoutSettings.height);
 
     _forEachContentArea(
         (area) => area.performLayout(layoutSettings: _layoutSettings));

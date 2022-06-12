@@ -270,6 +270,7 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
     }
 
     TableLayoutSettings layoutSettings = layoutSettingsBuilder.build(
+        height: height,
         contentBounds: contentBounds,
         hasHorizontalScrollbar: hasHorizontalScrollbar,
         scrollbarHeight: scrollbarHeight);
@@ -299,6 +300,7 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
       {required BuildContext context,
       required BoxConstraints constraints,
       required TablePaintSettings paintSettings}) {
+    //TODO avoid code repetition
     final EasyTableThemeData theme = EasyTableTheme.of(context);
 
     List<LayoutChild> children = [];
@@ -321,19 +323,40 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
               scrollController: scrollControllers.unpinnedContentArea,
               color: theme.scrollbar.unpinnedHorizontalColor)));
     }
-    final Rect contentBounds = Rect.fromLTWH(
-        0,
-        layoutSettingsBuilder.headerHeight,
-        math.max(0, constraints.maxWidth - layoutSettingsBuilder.scrollbarSize),
-        math.max(
-            0,
-            constraints.maxHeight -
-                layoutSettingsBuilder.headerHeight -
-                (hasHorizontalScrollbar
-                    ? layoutSettingsBuilder.scrollbarSize
-                    : 0)));
+
+    final double height;
+    final Rect contentBounds;
+    if (constraints.hasBoundedHeight) {
+      height = constraints.maxHeight;
+
+      contentBounds = Rect.fromLTWH(
+          0,
+          layoutSettingsBuilder.headerHeight,
+          math.max(
+              0, constraints.maxWidth - layoutSettingsBuilder.scrollbarSize),
+          math.max(
+              0,
+              constraints.maxHeight -
+                  layoutSettingsBuilder.headerHeight -
+                  (hasHorizontalScrollbar
+                      ? layoutSettingsBuilder.scrollbarSize
+                      : 0)));
+    } else {
+      // unbounded height
+      height = layoutSettingsBuilder.headerHeight +
+          layoutSettingsBuilder.contentFullHeight +
+          scrollbarHeight;
+
+      contentBounds = Rect.fromLTWH(
+          0,
+          layoutSettingsBuilder.headerHeight,
+          math.max(
+              0, constraints.maxWidth - layoutSettingsBuilder.scrollbarSize),
+          layoutSettingsBuilder.contentFullHeight);
+    }
 
     TableLayoutSettings layoutSettings = layoutSettingsBuilder.build(
+        height: height,
         contentBounds: contentBounds,
         hasHorizontalScrollbar: hasHorizontalScrollbar,
         scrollbarHeight: scrollbarHeight);
