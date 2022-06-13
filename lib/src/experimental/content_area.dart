@@ -140,8 +140,8 @@ class ContentArea with ChildPainterMixin {
       }
     }
 
-    //TODO check is has header?
-    if (theme.header.bottomBorderHeight > 0 &&
+    if (layoutSettings.hasHeader &&
+        theme.header.bottomBorderHeight > 0 &&
         theme.header.bottomBorderColor != null) {
       Paint paint = Paint()..color = theme.header.bottomBorderColor!;
       context.canvas.drawRect(

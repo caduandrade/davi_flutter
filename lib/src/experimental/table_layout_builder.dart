@@ -60,23 +60,18 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
 
     TablePaintSettings paintSettings =
         TablePaintSettings(hoveredRowIndex: hoveredRowIndex);
-    if (model != null) {
-      return _buildTable(
-          context: context,
-          constraints: constraints,
-          model: model!,
-          paintSettings: paintSettings);
-    }
-    return _buildEmptyTable(
+
+    return _buildTable(
         context: context,
         constraints: constraints,
+        model: model,
         paintSettings: paintSettings);
   }
 
   Widget _buildTable(
       {required BuildContext context,
       required BoxConstraints constraints,
-      required EasyTableModel<ROW> model,
+      required EasyTableModel<ROW>? model,
       required TablePaintSettings paintSettings}) {
     final EasyTableThemeData theme = EasyTableTheme.of(context);
 
@@ -118,59 +113,65 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
 
     final bool hasHorizontalScrollbar;
     final double pinnedAreaDivisorWidth;
-    if (layoutSettingsBuilder.columnsFit) {
-      unpinnedColumnsMetrics = ColumnsMetricsExp.columnsFit(
-          model: model,
-          containerWidth: maxContentAreaWidth,
-          columnDividerThickness: theme.columnDividerThickness);
+    if (model != null) {
+      if (layoutSettingsBuilder.columnsFit) {
+        unpinnedColumnsMetrics = ColumnsMetricsExp.columnsFit(
+            model: model,
+            containerWidth: maxContentAreaWidth,
+            columnDividerThickness: theme.columnDividerThickness);
+        hasHorizontalScrollbar = false;
+        pinnedAreaDivisorWidth = 0;
+      } else {
+        leftPinnedColumnsMetrics = ColumnsMetricsExp.resizable(
+            model: model,
+            columnDividerThickness: theme.columnDividerThickness,
+            contentAreaId: ContentAreaId.leftPinned);
+
+        unpinnedColumnsMetrics = ColumnsMetricsExp.resizable(
+            model: model,
+            columnDividerThickness: theme.columnDividerThickness,
+            contentAreaId: ContentAreaId.unpinned);
+
+        final double pinnedAreaWidth = leftPinnedColumnsMetrics.maxWidth;
+        pinnedAreaDivisorWidth =
+            pinnedAreaWidth > 0 ? theme.columnDividerThickness : 0;
+        final bool needLeftPinnedHorizontalScrollbar =
+            pinnedAreaWidth > maxContentAreaWidth;
+
+        final double unpinnedAreaWidth = unpinnedColumnsMetrics.maxWidth;
+        final bool needUnpinnedHorizontalScrollbar = unpinnedAreaWidth >
+            maxContentAreaWidth - pinnedAreaWidth - pinnedAreaDivisorWidth;
+
+        final bool needHorizontalScrollbar = needUnpinnedHorizontalScrollbar ||
+            needLeftPinnedHorizontalScrollbar;
+
+        hasHorizontalScrollbar = theme.scrollbar.horizontalOnlyWhenNeeded
+            ? needHorizontalScrollbar
+            : true;
+
+        if (hasHorizontalScrollbar) {
+          children.add(LayoutChild.horizontalScrollbar(
+              contentAreaId: ContentAreaId.leftPinned,
+              child: EasyTableScrollBarExp(
+                  axis: Axis.horizontal,
+                  scrollController: scrollControllers.leftPinnedContentArea,
+                  color: theme.scrollbar.pinnedHorizontalColor,
+                  contentSize: pinnedAreaWidth)));
+
+          //TODO build EasyTableScrollBarExp in LayoutChild.horizontalScrollbar
+          children.add(LayoutChild.horizontalScrollbar(
+              contentAreaId: ContentAreaId.unpinned,
+              child: EasyTableScrollBarExp(
+                  axis: Axis.horizontal,
+                  scrollController: scrollControllers.unpinnedContentArea,
+                  color: theme.scrollbar.unpinnedHorizontalColor,
+                  contentSize: unpinnedAreaWidth)));
+        }
+      }
+    } else {
+      // empty table (no model)
       hasHorizontalScrollbar = false;
       pinnedAreaDivisorWidth = 0;
-    } else {
-      leftPinnedColumnsMetrics = ColumnsMetricsExp.resizable(
-          model: model,
-          columnDividerThickness: theme.columnDividerThickness,
-          contentAreaId: ContentAreaId.leftPinned);
-
-      unpinnedColumnsMetrics = ColumnsMetricsExp.resizable(
-          model: model,
-          columnDividerThickness: theme.columnDividerThickness,
-          contentAreaId: ContentAreaId.unpinned);
-
-      final double pinnedAreaWidth = leftPinnedColumnsMetrics.maxWidth;
-      pinnedAreaDivisorWidth =
-          pinnedAreaWidth > 0 ? theme.columnDividerThickness : 0;
-      final bool needLeftPinnedHorizontalScrollbar =
-          pinnedAreaWidth > maxContentAreaWidth;
-
-      final double unpinnedAreaWidth = unpinnedColumnsMetrics.maxWidth;
-      final bool needUnpinnedHorizontalScrollbar = unpinnedAreaWidth >
-          maxContentAreaWidth - pinnedAreaWidth - pinnedAreaDivisorWidth;
-
-      final bool needHorizontalScrollbar =
-          needUnpinnedHorizontalScrollbar || needLeftPinnedHorizontalScrollbar;
-
-      hasHorizontalScrollbar = theme.scrollbar.horizontalOnlyWhenNeeded
-          ? needHorizontalScrollbar
-          : true;
-
-      if (hasHorizontalScrollbar) {
-        children.add(LayoutChild.horizontalScrollbar(
-            contentAreaId: ContentAreaId.leftPinned,
-            child: EasyTableScrollBarExp(
-                axis: Axis.horizontal,
-                scrollController: scrollControllers.leftPinnedContentArea,
-                color: theme.scrollbar.pinnedHorizontalColor,
-                contentSize: pinnedAreaWidth)));
-
-        //TODO build EasyTableScrollBarExp in LayoutChild.horizontalScrollbar
-        children.add(LayoutChild.horizontalScrollbar(
-            contentAreaId: ContentAreaId.unpinned,
-            child: EasyTableScrollBarExp(
-                axis: Axis.horizontal,
-                scrollController: scrollControllers.unpinnedContentArea,
-                color: theme.scrollbar.unpinnedHorizontalColor,
-                contentSize: unpinnedAreaWidth)));
-      }
     }
 
     Map<ContentAreaId, ColumnsMetricsExp<ROW>> columnMetricsMap = {
@@ -179,42 +180,44 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
       ContentAreaId.rightPinned: rightPinnedColumnsMetrics
     };
 
-    columnMetricsMap.forEach((contentAreaId, columnsMetrics) {
-      for (int columnIndex = 0;
-          columnIndex < columnsMetrics.columns.length;
-          columnIndex++) {
-        EasyTableColumn<ROW> column = columnsMetrics.columns[columnIndex];
+    if (model != null) {
+      columnMetricsMap.forEach((contentAreaId, columnsMetrics) {
+        for (int columnIndex = 0;
+            columnIndex < columnsMetrics.columns.length;
+            columnIndex++) {
+          EasyTableColumn<ROW> column = columnsMetrics.columns[columnIndex];
 
-        children.insert(
-            0,
-            LayoutChild.header(
-                contentAreaId: contentAreaId,
-                column: columnIndex,
-                child: EasyTableHeaderCell<ROW>(
-                    model: model,
-                    column: column,
-                    resizable: !layoutSettingsBuilder.columnsFit,
-                    multiSortEnabled: multiSortEnabled)));
-
-        for (int rowIndex = firstRowIndex;
-            rowIndex < model.visibleRowsLength && rowIndex <= lastRowIndex;
-            rowIndex++) {
-          ROW row = model.visibleRowAt(rowIndex);
           children.insert(
               0,
-              LayoutChild.cell(
+              LayoutChild.header(
                   contentAreaId: contentAreaId,
-                  row: rowIndex,
                   column: columnIndex,
-                  child: _buildCellWidget(
-                      context: context,
-                      row: row,
-                      rowIndex: rowIndex,
+                  child: EasyTableHeaderCell<ROW>(
+                      model: model,
                       column: column,
-                      theme: theme)));
+                      resizable: !layoutSettingsBuilder.columnsFit,
+                      multiSortEnabled: multiSortEnabled)));
+
+          for (int rowIndex = firstRowIndex;
+              rowIndex < model.visibleRowsLength && rowIndex <= lastRowIndex;
+              rowIndex++) {
+            ROW row = model.visibleRowAt(rowIndex);
+            children.insert(
+                0,
+                LayoutChild.cell(
+                    contentAreaId: contentAreaId,
+                    row: rowIndex,
+                    column: columnIndex,
+                    child: _buildCellWidget(
+                        context: context,
+                        row: row,
+                        rowIndex: rowIndex,
+                        column: column,
+                        theme: theme)));
+          }
         }
-      }
-    });
+      });
+    }
 
     final double scrollbarHeight =
         hasHorizontalScrollbar ? layoutSettingsBuilder.scrollbarSize : 0;

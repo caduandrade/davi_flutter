@@ -67,7 +67,7 @@ class _EasyTableExpState<ROW> extends State<EasyTableExp<ROW>> {
   bool _focused = false;
 
   void _setHoveredRowIndex(int? value) {
-    if (_hoveredRowIndex != value) {
+    if (widget.model != null && _hoveredRowIndex != value) {
       setState(() {
         _hoveredRowIndex = value;
         if (widget.onHoverListener != null) {
@@ -114,7 +114,7 @@ class _EasyTableExpState<ROW> extends State<EasyTableExp<ROW>> {
             theme: theme,
             visibleRowsCount: widget.visibleRowsCount,
             cellContentHeight: widget.cellContentHeight,
-            hasHeader: true, // TODO allow hide
+            hasHeader: widget.model != null, // TODO allow hide
             rowsLength: widget.model != null ? widget.model!.rowsLength : 0,
             columnsFit: widget.columnsFit,
             offsets: _scrollControllers.offsets);
@@ -128,29 +128,31 @@ class _EasyTableExpState<ROW> extends State<EasyTableExp<ROW>> {
             scrollControllers: _scrollControllers,
             model: widget.model));
 
-    if (theme.row.hoveredColor != null) {
-      table = MouseRegion(
-          onExit: (event) => _setHoveredRowIndex(null), child: table);
-    }
+    if (widget.model != null) {
+      if (theme.row.hoveredColor != null) {
+        table = MouseRegion(
+            onExit: (event) => _setHoveredRowIndex(null), child: table);
+      }
 
-    if (widget.focusable) {
-      table = Focus(
-          focusNode: _focusNode,
-          onKey: (node, event) =>
-              _handleKeyPress(node, event, layoutSettingsBuilder.rowHeight),
-          child: table);
-      table = Listener(
-        child: table,
-        onPointerDown: (pointer) {
-          _focusNode.requestFocus();
-          _focused = true;
-        },
-        onPointerSignal: (pointerSignal) {
-          if (pointerSignal is PointerScrollEvent) {
-            _onPointerScroll(pointerSignal, layoutSettingsBuilder.rowHeight);
-          }
-        },
-      );
+      if (widget.focusable) {
+        table = Focus(
+            focusNode: _focusNode,
+            onKey: (node, event) =>
+                _handleKeyPress(node, event, layoutSettingsBuilder.rowHeight),
+            child: table);
+        table = Listener(
+          child: table,
+          onPointerDown: (pointer) {
+            _focusNode.requestFocus();
+            _focused = true;
+          },
+          onPointerSignal: (pointerSignal) {
+            if (pointerSignal is PointerScrollEvent) {
+              _onPointerScroll(pointerSignal, layoutSettingsBuilder.rowHeight);
+            }
+          },
+        );
+      }
     }
 
     if (theme.decoration != null) {
