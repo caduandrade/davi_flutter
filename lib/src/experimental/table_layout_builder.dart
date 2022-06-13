@@ -83,11 +83,14 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
 
     int visibleRowsCount = layoutSettingsBuilder.visibleRowsCount ?? 0;
     if (constraints.hasBoundedHeight) {
-      //TODO scrollbarSize should have separator
+      // Without the data, it is not possible to know if horizontal scrolling
+      // will be necessary. The calculation must be done considering
+      // that it is not visible.
       final double contentAvailableHeight = math.max(
           0,
           constraints.maxHeight -
               layoutSettingsBuilder.headerHeight -
+              theme.scrollbar.borderThickness-
               layoutSettingsBuilder.scrollbarSize);
       visibleRowsCount = (contentAvailableHeight /
               (layoutSettingsBuilder.cellHeight + theme.row.dividerThickness))
@@ -99,14 +102,15 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
             axis: Axis.vertical,
             contentSize: layoutSettingsBuilder.rowsFullHeight,
             scrollController: scrollControllers.vertical,
-            color: theme.scrollbar.verticalColor)));
+            color: theme.scrollbar.verticalColor,
+        borderColor: theme.scrollbar.verticalBorderColor)));
 
     final int firstRowIndex =
         (scrollControllers.verticalOffset / layoutSettingsBuilder.rowHeight)
             .floor();
     final int lastRowIndex = firstRowIndex + visibleRowsCount;
 
-    //TODO scrollbarSize border?
+    //TODO vertical scrollbarSize border?
     final double maxContentAreaWidth =
         math.max(0, constraints.maxWidth - layoutSettingsBuilder.scrollbarSize);
 
@@ -155,6 +159,7 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
                   axis: Axis.horizontal,
                   scrollController: scrollControllers.leftPinnedContentArea,
                   color: theme.scrollbar.pinnedHorizontalColor,
+                  borderColor: theme.scrollbar.pinnedHorizontalBorderColor,
                   contentSize: pinnedAreaWidth)));
 
           //TODO build EasyTableScrollBarExp in LayoutChild.horizontalScrollbar
@@ -164,6 +169,7 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
                   axis: Axis.horizontal,
                   scrollController: scrollControllers.unpinnedContentArea,
                   color: theme.scrollbar.unpinnedHorizontalColor,
+                  borderColor: theme.scrollbar.unpinnedHorizontalBorderColor,
                   contentSize: unpinnedAreaWidth)));
         }
       }
@@ -219,7 +225,7 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
     }
 
     final double scrollbarHeight =
-        hasHorizontalScrollbar ? layoutSettingsBuilder.scrollbarSize : 0;
+        hasHorizontalScrollbar ? layoutSettingsBuilder.scrollbarSize + theme.scrollbar.borderThickness : 0;
 
     final double height;
     final Rect cellsBound;
@@ -230,13 +236,13 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
           0,
           layoutSettingsBuilder.headerHeight,
           math.max(
-              0, constraints.maxWidth - layoutSettingsBuilder.scrollbarSize),
+              0, constraints.maxWidth - layoutSettingsBuilder.scrollbarSize), //TODO vertical scrollbar border
           math.max(
               0,
               constraints.maxHeight -
                   layoutSettingsBuilder.headerHeight -
                   (hasHorizontalScrollbar
-                      ? layoutSettingsBuilder.scrollbarSize
+                      ? scrollbarHeight
                       : 0)));
     } else {
       // unbounded height
@@ -248,7 +254,7 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
           0,
           layoutSettingsBuilder.headerHeight,
           math.max(
-              0, constraints.maxWidth - layoutSettingsBuilder.scrollbarSize),
+              0, constraints.maxWidth - layoutSettingsBuilder.scrollbarSize), //TODO vertical scrollbar border
           layoutSettingsBuilder.rowsFullHeight);
     }
 

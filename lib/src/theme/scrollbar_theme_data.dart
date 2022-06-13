@@ -29,7 +29,7 @@ class TableScrollbarThemeData {
   final Radius? radius;
   final double margin;
   final double thickness;
-  final double borderThickness = 10;
+  final double borderThickness = 1;
   final Color verticalBorderColor;
   final Color verticalColor;
   final Color pinnedHorizontalBorderColor;
