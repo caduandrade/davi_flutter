@@ -56,6 +56,8 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
   };
 
   RenderBox? _verticalScrollbar;
+  RenderBox? _topCorner;
+  RenderBox? _bottomCorner;
 
   EasyTableThemeData _theme;
   set theme(EasyTableThemeData value) {
@@ -131,6 +133,8 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
     _forEachContentArea((area) => area.clearChildren());
 
     _verticalScrollbar = null;
+    _topCorner = null;
+    _bottomCorner = null;
 
     visitChildren((child) {
       RenderBox renderBox = child as RenderBox;
@@ -143,11 +147,14 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
         _contentAreaMap[parentData.contentAreaId]!.scrollbar = renderBox;
       } else if (parentData.type == LayoutChildType.verticalScrollbar) {
         _verticalScrollbar = renderBox;
+      } else if (parentData.type == LayoutChildType.topCorner) {
+        _topCorner = renderBox;
+      } else if (parentData.type == LayoutChildType.bottomCorner) {
+        _bottomCorner = renderBox;
       }
     });
 
     // vertical scrollbar
-    //TODO scrollbarSize border?
     _verticalScrollbar!.layout(
         BoxConstraints.tightFor(
             width: _layoutSettings.scrollbarWidth,
@@ -160,6 +167,29 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
     _verticalScrollbar!._parentData().offset = Offset(
         constraints.maxWidth - _layoutSettings.scrollbarWidth,
         _layoutSettings.headerHeight);
+
+    // top corner
+    if (_topCorner != null) {
+      _topCorner!.layout(
+          BoxConstraints.tightFor(
+              width: _layoutSettings.scrollbarWidth,
+              height: _layoutSettings.headerHeight),
+          parentUsesSize: true);
+      _topCorner!._parentData().offset =
+          Offset(constraints.maxWidth - _layoutSettings.scrollbarWidth, 0);
+    }
+
+    // bottom corner
+    if (_bottomCorner != null) {
+      _bottomCorner!.layout(
+          BoxConstraints.tightFor(
+              width: _layoutSettings.scrollbarWidth,
+              height: _layoutSettings.scrollbarHeight),
+          parentUsesSize: true);
+      _bottomCorner!._parentData().offset = Offset(
+          constraints.maxWidth - _layoutSettings.scrollbarWidth,
+          _layoutSettings.height - _layoutSettings.scrollbarHeight);
+    }
 
     _forEachContentArea((area) =>
         area.performLayout(layoutSettings: _layoutSettings, theme: _theme));
@@ -197,6 +227,8 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
         theme: _theme));
 
     paintChild(context: context, offset: offset, child: _verticalScrollbar);
+    paintChild(context: context, offset: offset, child: _topCorner);
+    paintChild(context: context, offset: offset, child: _bottomCorner);
 
     _forEachContentArea((area) => area.paint(
         context: context,
@@ -236,7 +268,7 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
                 paint);
           }
         }
-// column
+        // column
         if (_theme.columnDividerColor != null) {
           _paintPinnedColumnDividers(
               context: context,

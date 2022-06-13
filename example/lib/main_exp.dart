@@ -56,7 +56,7 @@ class _HomePageState extends State<HomePage> {
 
   bool _columnsFit = false;
 
-  final bool _pinned = true;
+  final bool _pinned = false;
 
   Color _columnDividerColor = EasyTableThemeDataDefaults.columnDividerColor;
   double _columnDividerThickness =
@@ -148,6 +148,8 @@ class _HomePageState extends State<HomePage> {
             decoration: BoxDecoration(border: Border.all()),
             child: EasyTableTheme(
                 data: EasyTableThemeData(
+                    scrollbar: const TableScrollbarThemeData(
+                        horizontalOnlyWhenNeeded: true),
                     cell: CellThemeData(
                         nullValueColor: (rowIndex) => Colors.grey[300]),
                     columnDividerThickness: _columnDividerThickness,

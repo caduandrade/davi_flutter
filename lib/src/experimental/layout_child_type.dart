@@ -1,1 +1,8 @@
-enum LayoutChildType { header, cell, horizontalScrollbar, verticalScrollbar }
+enum LayoutChildType {
+  header,
+  cell,
+  horizontalScrollbar,
+  verticalScrollbar,
+  topCorner,
+  bottomCorner
+}

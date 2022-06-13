@@ -105,6 +105,10 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
             color: theme.scrollbar.verticalColor,
             borderColor: theme.scrollbar.verticalBorderColor)));
 
+    if (layoutSettingsBuilder.hasHeader) {
+      children.add(LayoutChild.topCorner());
+    }
+
     final int firstRowIndex =
         (scrollControllers.verticalOffset / layoutSettingsBuilder.rowHeight)
             .floor();
@@ -173,6 +177,8 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
                   color: theme.scrollbar.unpinnedHorizontalColor,
                   borderColor: theme.scrollbar.unpinnedHorizontalBorderColor,
                   contentSize: unpinnedAreaWidth)));
+
+          children.add(LayoutChild.bottomCorner());
         }
       }
     } else {

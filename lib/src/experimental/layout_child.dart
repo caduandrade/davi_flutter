@@ -2,6 +2,7 @@ import 'package:easy_table/src/experimental/content_area_id.dart';
 import 'package:easy_table/src/experimental/scroll_bar_exp.dart';
 import 'package:easy_table/src/experimental/layout_child_key.dart';
 import 'package:easy_table/src/experimental/layout_child_type.dart';
+import 'package:easy_table/src/experimental/table_corner.dart';
 import 'package:easy_table/src/experimental/table_layout_exp.dart';
 import 'package:easy_table/src/experimental/table_layout_parent_data_exp.dart';
 import 'package:flutter/foundation.dart';
@@ -31,6 +32,24 @@ class LayoutChild extends ParentDataWidget<TableLayoutParentDataExp> {
         row: row,
         column: column,
         child: child);
+  }
+
+  factory LayoutChild.bottomCorner() {
+    return LayoutChild._(
+        type: LayoutChildType.bottomCorner,
+        contentAreaId: null,
+        row: null,
+        column: null,
+        child: const TableCorner(top: false));
+  }
+
+  factory LayoutChild.topCorner() {
+    return LayoutChild._(
+        type: LayoutChildType.topCorner,
+        contentAreaId: null,
+        row: null,
+        column: null,
+        child: const TableCorner(top: true));
   }
 
   factory LayoutChild.horizontalScrollbar(
