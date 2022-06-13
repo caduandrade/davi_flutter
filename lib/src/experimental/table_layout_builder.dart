@@ -13,6 +13,7 @@ import 'package:easy_table/src/experimental/table_scroll_controllers.dart';
 import 'package:easy_table/src/internal/header_cell.dart';
 import 'package:easy_table/src/model.dart';
 import 'package:easy_table/src/row_hover_listener.dart';
+import 'package:easy_table/src/theme/row_color.dart';
 import 'package:easy_table/src/theme/theme.dart';
 import 'package:easy_table/src/theme/theme_data.dart';
 import 'package:flutter/material.dart';
@@ -281,6 +282,7 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
     Color? background;
     TextStyle? textStyle;
     TextOverflow? overflow;
+
     if (column.cellStyleBuilder != null) {
       CellStyle? cellStyle = column.cellStyleBuilder!(row);
       if (cellStyle != null) {
@@ -314,6 +316,8 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
         child = Text(value,
             overflow: overflow ?? theme.cell.overflow,
             style: textStyle ?? theme.cell.textStyle);
+      } else if (background == null && theme.cell.nullValueColor != null) {
+        background = theme.cell.nullValueColor!(rowIndex);
       }
     }
     if (child != null) {
