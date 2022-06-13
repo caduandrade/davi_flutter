@@ -10,6 +10,7 @@ import 'package:easy_table/src/experimental/table_paint_settings.dart';
 import 'package:easy_table/src/row_hover_listener.dart';
 import 'package:easy_table/src/theme/theme_data.dart';
 import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
 class TableLayoutRenderBoxExp<ROW> extends RenderBox
@@ -293,6 +294,32 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
         }
         context.canvas.restore();
       }
+    }
+
+    // rows divider
+    if (_theme.row.dividerThickness > 0 && _theme.row.dividerColor != null) {
+      context.canvas.save();
+      context.canvas
+          .clipRect(_layoutSettings.cellsBound.translate(offset.dx, offset.dy));
+      Paint paint = Paint()
+        ..style = PaintingStyle.fill
+        ..color = _theme.row.dividerColor!;
+      int firstRowIndex =
+          (_layoutSettings.offsets.vertical / _layoutSettings.rowHeight)
+              .floor();
+      double y = _layoutSettings.headerHeight +
+          offset.dy +
+          _layoutSettings.cellHeight +
+          (firstRowIndex * _layoutSettings.rowHeight) -
+          _layoutSettings.offsets.vertical;
+      while (y < _layoutSettings.height + offset.dy) {
+        context.canvas.drawRect(
+            Rect.fromLTWH(offset.dx, y, _layoutSettings.cellsBound.width,
+                _theme.row.dividerThickness),
+            paint);
+        y += _layoutSettings.rowHeight;
+      }
+      context.canvas.restore();
     }
 
     if (_paintSettings.debugAreas) {
