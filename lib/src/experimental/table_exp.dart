@@ -8,6 +8,7 @@ import 'package:easy_table/src/row_callbacks.dart';
 import 'package:easy_table/src/row_hover_listener.dart';
 import 'package:easy_table/src/theme/theme.dart';
 import 'package:easy_table/src/theme/theme_data.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -139,17 +140,42 @@ class _EasyTableExpState<ROW> extends State<EasyTableExp<ROW>> {
               _handleKeyPress(node, event, layoutSettingsBuilder.rowHeight),
           child: table);
       table = Listener(
-          child: table,
-          onPointerDown: (pointer) {
-            _focusNode.requestFocus();
-            _focused = true;
-          });
+        child: table,
+        onPointerDown: (pointer) {
+          _focusNode.requestFocus();
+          _focused = true;
+        },
+        onPointerSignal: (pointerSignal) {
+          if (pointerSignal is PointerScrollEvent) {
+            _onPointerScroll(pointerSignal, layoutSettingsBuilder.rowHeight);
+          }
+        },
+      );
     }
 
     if (theme.decoration != null) {
       table = Container(child: table, decoration: theme.decoration);
     }
     return table;
+  }
+
+  void _onPointerScroll(PointerScrollEvent event, double rowHeight) {
+    if (event.scrollDelta.dy > 0) {
+      if (_scrollControllers.vertical.hasClients) {
+        double target = math.min(
+            _scrollControllers.vertical.position.pixels + rowHeight,
+            _scrollControllers.vertical.position.maxScrollExtent);
+        _scrollControllers.vertical.animateTo(target,
+            duration: const Duration(milliseconds: 30), curve: Curves.ease);
+      }
+    } else if (event.scrollDelta.dy < 0) {
+      if (_scrollControllers.vertical.hasClients) {
+        double target = math.max(
+            _scrollControllers.vertical.position.pixels - rowHeight, 0);
+        _scrollControllers.vertical.animateTo(target,
+            duration: const Duration(milliseconds: 30), curve: Curves.ease);
+      }
+    }
   }
 
   KeyEventResult _handleKeyPress(

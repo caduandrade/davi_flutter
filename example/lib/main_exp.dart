@@ -153,7 +153,7 @@ class _HomePageState extends State<HomePage> {
                     headerCell: HeaderCellThemeData(height: _headerCellHeight),
                     row:
                         RowThemeData(hoveredColor: (index) => Colors.blue[50])),
-                child: EasyTableExp(_model, columnsFit: _columnsFit))));
+                child: EasyTableExp(_model, columnsFit: _columnsFit, multiSortEnabled: true))));
   }
 
   void _changeColumnsFit() {
