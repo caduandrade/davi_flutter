@@ -4,7 +4,7 @@ import 'package:easy_table/src/cell_style.dart';
 import 'package:easy_table/src/column.dart';
 import 'package:easy_table/src/experimental/columns_metrics_exp.dart';
 import 'package:easy_table/src/experimental/content_area_id.dart';
-import 'package:easy_table/src/experimental/table_scroll_bar_exp.dart';
+import 'package:easy_table/src/experimental/scroll_bar_exp.dart';
 import 'package:easy_table/src/experimental/layout_child.dart';
 import 'package:easy_table/src/experimental/table_layout_exp.dart';
 import 'package:easy_table/src/experimental/table_layout_settings.dart';

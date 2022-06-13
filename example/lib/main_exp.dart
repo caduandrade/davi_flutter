@@ -163,7 +163,7 @@ class _HomePageState extends State<HomePage> {
   void _changeColumnDividerThickness() {
     setState(() => _columnDividerThickness = _columnDividerThickness ==
             EasyTableThemeDataDefaults.columnDividerThickness
-        ? 3
+        ? 20
         : EasyTableThemeDataDefaults.columnDividerThickness);
   }
 

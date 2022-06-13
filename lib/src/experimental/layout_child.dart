@@ -1,5 +1,5 @@
 import 'package:easy_table/src/experimental/content_area_id.dart';
-import 'package:easy_table/src/experimental/table_scroll_bar_exp.dart';
+import 'package:easy_table/src/experimental/scroll_bar_exp.dart';
 import 'package:easy_table/src/experimental/layout_child_key.dart';
 import 'package:easy_table/src/experimental/layout_child_type.dart';
 import 'package:easy_table/src/experimental/table_layout_exp.dart';

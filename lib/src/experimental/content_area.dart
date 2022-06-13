@@ -197,11 +197,17 @@ class ContentArea with ChildPainterMixin {
       required Color color,
       required double dy}) {
     Paint paint = Paint()..color = color;
-    for (int i = 1; i < columnsMetrics.offsets.length; i++) {
-      double x = columnsMetrics.offsets[i] - theme.columnDividerThickness;
+    for (int i = 0; i < columnsMetrics.offsets.length; i++) {
       context.canvas.drawRect(
-          Rect.fromLTWH(bounds.left + x + offset.dx - scrollOffset,
-              offset.dy + dy, theme.columnDividerThickness, height),
+          Rect.fromLTWH(
+              bounds.left +
+                  columnsMetrics.offsets[i] +
+                  columnsMetrics.widths[i] +
+                  offset.dx -
+                  scrollOffset,
+              offset.dy + dy,
+              theme.columnDividerThickness,
+              height),
           paint);
     }
   }

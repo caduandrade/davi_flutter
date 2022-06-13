@@ -39,6 +39,39 @@ class EasyTableThemeData {
   final Color topCornerColor;
   final Color bottomCornerBorderColor;
   final Color bottomCornerColor;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EasyTableThemeData &&
+          runtimeType == other.runtimeType &&
+          columnDividerThickness == other.columnDividerThickness &&
+          columnDividerColor == other.columnDividerColor &&
+          decoration == other.decoration &&
+          cell == other.cell &&
+          header == other.header &&
+          headerCell == other.headerCell &&
+          row == other.row &&
+          scrollbar == other.scrollbar &&
+          topCornerBorderColor == other.topCornerBorderColor &&
+          topCornerColor == other.topCornerColor &&
+          bottomCornerBorderColor == other.bottomCornerBorderColor &&
+          bottomCornerColor == other.bottomCornerColor;
+
+  @override
+  int get hashCode =>
+      columnDividerThickness.hashCode ^
+      columnDividerColor.hashCode ^
+      decoration.hashCode ^
+      cell.hashCode ^
+      header.hashCode ^
+      headerCell.hashCode ^
+      row.hashCode ^
+      scrollbar.hashCode ^
+      topCornerBorderColor.hashCode ^
+      topCornerColor.hashCode ^
+      bottomCornerBorderColor.hashCode ^
+      bottomCornerColor.hashCode;
 }
 
 class EasyTableThemeDataDefaults {

@@ -34,6 +34,38 @@ class TableScrollbarThemeData {
   final Color unpinnedHorizontalColor;
   final Color thumbColor;
   final bool horizontalOnlyWhenNeeded;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is TableScrollbarThemeData &&
+          runtimeType == other.runtimeType &&
+          radius == other.radius &&
+          margin == other.margin &&
+          thickness == other.thickness &&
+          verticalBorderColor == other.verticalBorderColor &&
+          verticalColor == other.verticalColor &&
+          pinnedHorizontalBorderColor == other.pinnedHorizontalBorderColor &&
+          pinnedHorizontalColor == other.pinnedHorizontalColor &&
+          unpinnedHorizontalBorderColor ==
+              other.unpinnedHorizontalBorderColor &&
+          unpinnedHorizontalColor == other.unpinnedHorizontalColor &&
+          thumbColor == other.thumbColor &&
+          horizontalOnlyWhenNeeded == other.horizontalOnlyWhenNeeded;
+
+  @override
+  int get hashCode =>
+      radius.hashCode ^
+      margin.hashCode ^
+      thickness.hashCode ^
+      verticalBorderColor.hashCode ^
+      verticalColor.hashCode ^
+      pinnedHorizontalBorderColor.hashCode ^
+      pinnedHorizontalColor.hashCode ^
+      unpinnedHorizontalBorderColor.hashCode ^
+      unpinnedHorizontalColor.hashCode ^
+      thumbColor.hashCode ^
+      horizontalOnlyWhenNeeded.hashCode;
 }
 
 class TableScrollbarThemeDataDefaults {

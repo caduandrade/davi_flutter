@@ -33,8 +33,7 @@ class TableLayoutSettingsBuilder {
         cellHeight: cellHeight,
         rowHeight: rowHeight,
         scrollbarSize: scrollbarSize,
-        rowsFullHeight: rowsFullHeight,
-        columnDividerThickness: theme.columnDividerThickness);
+        rowsFullHeight: rowsFullHeight);
   }
 
   TableLayoutSettingsBuilder._(
@@ -47,8 +46,7 @@ class TableLayoutSettingsBuilder {
       required this.cellHeight,
       required this.rowHeight,
       required this.scrollbarSize,
-      required this.rowsFullHeight,
-      required this.columnDividerThickness});
+      required this.rowsFullHeight});
 
   /// Including cell height and bottom border
   final double headerHeight;
@@ -68,8 +66,6 @@ class TableLayoutSettingsBuilder {
 
   /// Height from all rows (including scrollable viewport hidden ones).
   final double rowsFullHeight;
-
-  final double columnDividerThickness;
 
   TableLayoutSettings build(
       {required Rect cellsBound,
