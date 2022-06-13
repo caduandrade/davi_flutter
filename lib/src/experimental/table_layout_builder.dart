@@ -13,7 +13,6 @@ import 'package:easy_table/src/experimental/table_scroll_controllers.dart';
 import 'package:easy_table/src/internal/header_cell.dart';
 import 'package:easy_table/src/model.dart';
 import 'package:easy_table/src/row_hover_listener.dart';
-import 'package:easy_table/src/theme/row_color.dart';
 import 'package:easy_table/src/theme/theme.dart';
 import 'package:easy_table/src/theme/theme_data.dart';
 import 'package:flutter/material.dart';
@@ -356,87 +355,5 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
       return column.objectValueMapper!(row)?.toString();
     }
     return null;
-  }
-
-  Widget _buildEmptyTable(
-      {required BuildContext context,
-      required BoxConstraints constraints,
-      required TablePaintSettings paintSettings}) {
-    //TODO avoid code repetition
-    final EasyTableThemeData theme = EasyTableTheme.of(context);
-
-    List<LayoutChild> children = [];
-    final bool hasHorizontalScrollbar = !layoutSettingsBuilder.columnsFit &&
-        !theme.scrollbar.horizontalOnlyWhenNeeded;
-    final double scrollbarHeight =
-        hasHorizontalScrollbar ? layoutSettingsBuilder.scrollbarSize : 0;
-    if (hasHorizontalScrollbar) {
-      children.add(LayoutChild.verticalScrollbar(
-          child: EasyTableScrollBarExp(
-              axis: Axis.vertical,
-              contentSize: constraints.maxHeight,
-              scrollController: scrollControllers.vertical,
-              color: theme.scrollbar.verticalColor)));
-      children.add(LayoutChild.horizontalScrollbar(
-          contentAreaId: ContentAreaId.unpinned,
-          child: EasyTableScrollBarExp(
-              axis: Axis.horizontal,
-              contentSize: constraints.maxWidth,
-              scrollController: scrollControllers.unpinnedContentArea,
-              color: theme.scrollbar.unpinnedHorizontalColor)));
-    }
-
-    final double height;
-    final Rect cellsBound;
-    if (constraints.hasBoundedHeight) {
-      height = constraints.maxHeight;
-
-      cellsBound = Rect.fromLTWH(
-          0,
-          layoutSettingsBuilder.headerHeight,
-          math.max(
-              0, constraints.maxWidth - layoutSettingsBuilder.scrollbarSize),
-          math.max(
-              0,
-              constraints.maxHeight -
-                  layoutSettingsBuilder.headerHeight -
-                  (hasHorizontalScrollbar
-                      ? layoutSettingsBuilder.scrollbarSize
-                      : 0)));
-    } else {
-      // unbounded height
-      height = layoutSettingsBuilder.headerHeight +
-          layoutSettingsBuilder.rowsFullHeight +
-          scrollbarHeight;
-
-      cellsBound = Rect.fromLTWH(
-          0,
-          layoutSettingsBuilder.headerHeight,
-          math.max(
-              0, constraints.maxWidth - layoutSettingsBuilder.scrollbarSize),
-          layoutSettingsBuilder.rowsFullHeight);
-    }
-
-    final ColumnsMetricsExp emptyColumnsMetrics = ColumnsMetricsExp.empty();
-
-    TableLayoutSettings layoutSettings = layoutSettingsBuilder.build(
-        height: height,
-        cellsBound: cellsBound,
-        hasHorizontalScrollbar: hasHorizontalScrollbar,
-        scrollbarHeight: scrollbarHeight,
-        pinnedAreaDivisorWidth: 0,
-        leftPinnedColumnsMetrics: emptyColumnsMetrics,
-        unpinnedColumnsMetrics: emptyColumnsMetrics,
-        rightPinnedColumnsMetrics: emptyColumnsMetrics);
-
-    return TableLayoutExp(
-        onHoverListener: onHoverListener,
-        layoutSettings: layoutSettings,
-        paintSettings: paintSettings,
-        leftPinnedColumnsMetrics: emptyColumnsMetrics,
-        unpinnedColumnsMetrics: emptyColumnsMetrics,
-        rightPinnedColumnsMetrics: emptyColumnsMetrics,
-        theme: theme,
-        children: children);
   }
 }
