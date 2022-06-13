@@ -1,12 +1,10 @@
 import 'dart:math' as math;
 
 import 'package:easy_table/src/column.dart';
+import 'package:easy_table/src/experimental/content_area_id.dart';
 import 'package:easy_table/src/model.dart';
 import 'package:meta/meta.dart';
 import 'package:collection/collection.dart';
-
-@internal
-enum ColumnFilterExp { all, pinnedOnly, unpinnedOnly }
 
 @internal
 class ColumnsMetricsExp<ROW> {
@@ -18,7 +16,7 @@ class ColumnsMetricsExp<ROW> {
   factory ColumnsMetricsExp.resizable(
       {required EasyTableModel<ROW> model,
       required double columnDividerThickness,
-      required ColumnFilterExp filter}) {
+      required ContentAreaId contentAreaId}) {
     final List<EasyTableColumn<ROW>> columns = [];
     final List<double> widths = [];
     final List<double> offsets = [];
@@ -27,9 +25,8 @@ class ColumnsMetricsExp<ROW> {
     double maxWidth = 0;
     for (int i = 0; i < model.columnsLength; i++) {
       final EasyTableColumn<ROW> column = model.columnAt(i);
-      if (filter == ColumnFilterExp.all ||
-          (filter == ColumnFilterExp.unpinnedOnly && column.pinned == false) ||
-          (filter == ColumnFilterExp.pinnedOnly && column.pinned)) {
+      if ((contentAreaId == ContentAreaId.unpinned && column.pinned == false) ||
+          (contentAreaId == ContentAreaId.leftPinned && column.pinned)) {
         columns.add(column);
         widths.add(column.width);
         offsets.add(offset);
@@ -37,7 +34,7 @@ class ColumnsMetricsExp<ROW> {
         offset += column.width + columnDividerThickness;
       }
     }
-    if (maxWidth > 0) {
+    if (maxWidth > 0 && contentAreaId == ContentAreaId.unpinned) {
       maxWidth += columnDividerThickness;
     }
 

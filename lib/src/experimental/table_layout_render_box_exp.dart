@@ -205,6 +205,64 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
         paintSettings: _paintSettings,
         theme: _theme));
 
+    // pinned content area divisors
+    if (_theme.columnDividerThickness > 0) {
+      if (_leftPinnedContentArea.bounds.width > 0) {
+        context.canvas.save();
+        context.canvas.clipRect(Rect.fromLTWH(offset.dx, offset.dy,
+            _layoutSettings.cellsBound.width, _layoutSettings.height));
+        if (_layoutSettings.headerHeight > 0) {
+          // header
+          if (_theme.header.columnDividerColor != null) {
+            _paintPinnedColumnDividers(
+                context: context,
+                offset: offset,
+                theme: _theme,
+                color: _theme.header.columnDividerColor!,
+                top: 0,
+                left: _leftPinnedContentArea.bounds.width,
+                height: _theme.headerCell.height);
+          }
+          if (_theme.header.bottomBorderHeight > 0 &&
+              _theme.header.bottomBorderColor != null) {
+            Paint paint = Paint()..color = _theme.header.bottomBorderColor!;
+            // header border
+            context.canvas.drawRect(
+                Rect.fromLTWH(
+                    offset.dx + _leftPinnedContentArea.bounds.width,
+                    offset.dy + _theme.headerCell.height,
+                    _layoutSettings.headerBounds.width,
+                    _theme.header.bottomBorderHeight),
+                paint);
+          }
+        }
+// column
+        if (_theme.columnDividerColor != null) {
+          _paintPinnedColumnDividers(
+              context: context,
+              offset: offset,
+              theme: _theme,
+              color: _theme.columnDividerColor!,
+              left: _leftPinnedContentArea.bounds.width,
+              top: _layoutSettings.headerHeight,
+              height: _layoutSettings.cellsBound.height);
+        }
+        // scrollbar
+        if (_theme.scrollbar.columnDividerColor != null) {
+          _paintPinnedColumnDividers(
+              context: context,
+              offset: offset,
+              theme: _theme,
+              color: _theme.scrollbar.columnDividerColor!,
+              left: _leftPinnedContentArea.bounds.width,
+              top: _layoutSettings.headerHeight +
+                  _layoutSettings.cellsBound.height,
+              height: _layoutSettings.scrollbarHeight);
+        }
+        context.canvas.restore();
+      }
+    }
+
     if (_paintSettings.debugAreas) {
       if (_layoutSettings.hasHeader) {
         _forEachContentArea((area) => area.paintDebugAreas(
@@ -213,6 +271,21 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
             layoutSettings: _layoutSettings));
       }
     }
+  }
+
+  void _paintPinnedColumnDividers(
+      {required PaintingContext context,
+      required Offset offset,
+      required EasyTableThemeData theme,
+      required double height,
+      required Color color,
+      required double left,
+      required double top}) {
+    Paint paint = Paint()..color = color;
+    context.canvas.drawRect(
+        Rect.fromLTWH(left + offset.dx, offset.dy + top,
+            theme.columnDividerThickness, height),
+        paint);
   }
 
   void _paintHover({required Canvas canvas, required Offset offset}) {

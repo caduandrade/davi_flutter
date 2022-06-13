@@ -21,7 +21,8 @@ class TableScrollbarThemeData {
           TableScrollbarThemeDataDefaults.unpinnedHorizontalColor,
       this.thumbColor = TableScrollbarThemeDataDefaults.thumbColor,
       this.horizontalOnlyWhenNeeded =
-          TableScrollbarThemeDataDefaults.horizontalOnlyWhenNeeded});
+          TableScrollbarThemeDataDefaults.horizontalOnlyWhenNeeded,
+        this.columnDividerColor = TableScrollbarThemeDataDefaults.columnDividerColor,});
 
   final Radius? radius;
   final double margin;
@@ -34,6 +35,7 @@ class TableScrollbarThemeData {
   final Color unpinnedHorizontalColor;
   final Color thumbColor;
   final bool horizontalOnlyWhenNeeded;
+  final Color? columnDividerColor;
 
   @override
   bool operator ==(Object other) =>
@@ -51,7 +53,8 @@ class TableScrollbarThemeData {
               other.unpinnedHorizontalBorderColor &&
           unpinnedHorizontalColor == other.unpinnedHorizontalColor &&
           thumbColor == other.thumbColor &&
-          horizontalOnlyWhenNeeded == other.horizontalOnlyWhenNeeded;
+          horizontalOnlyWhenNeeded == other.horizontalOnlyWhenNeeded&&
+  columnDividerColor==other.columnDividerColor;
 
   @override
   int get hashCode =>
@@ -65,7 +68,8 @@ class TableScrollbarThemeData {
       unpinnedHorizontalBorderColor.hashCode ^
       unpinnedHorizontalColor.hashCode ^
       thumbColor.hashCode ^
-      horizontalOnlyWhenNeeded.hashCode;
+      horizontalOnlyWhenNeeded.hashCode^
+      columnDividerColor.hashCode;
 }
 
 class TableScrollbarThemeDataDefaults {
@@ -79,4 +83,5 @@ class TableScrollbarThemeDataDefaults {
   static const Color pinnedHorizontalBorderColor = Colors.grey;
   static const Color pinnedHorizontalColor = Color(0xFFE0E0E0);
   static const Color thumbColor = Color(0xFF616161);
+  static const Color columnDividerColor = Colors.grey;
 }

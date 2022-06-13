@@ -74,13 +74,18 @@ class TableLayoutSettingsBuilder {
       required final ColumnsMetricsExp rightPinnedColumnsMetrics,
       required double height,
       required double scrollbarHeight,
-      required bool hasHorizontalScrollbar}) {
+      required bool hasHorizontalScrollbar,
+      required double pinnedAreaDivisorWidth}) {
     final Rect headerBounds =
         Rect.fromLTWH(0, 0, cellsBound.width, headerHeight);
     final Rect leftPinnedBounds = Rect.fromLTWH(0, 0,
         math.min(leftPinnedColumnsMetrics.maxWidth, cellsBound.width), height);
-    final Rect unpinnedBounds = Rect.fromLTWH(leftPinnedBounds.right, 0,
-        math.max(0, cellsBound.width - leftPinnedBounds.width), height);
+    final Rect unpinnedBounds = Rect.fromLTWH(
+        leftPinnedBounds.right + pinnedAreaDivisorWidth,
+        0,
+        math.max(0,
+            cellsBound.width - leftPinnedBounds.width - pinnedAreaDivisorWidth),
+        height);
     //TODO need right width
     final Rect rightPinnedBounds = Rect.fromLTWH(
         unpinnedBounds.right, 0, rightPinnedColumnsMetrics.maxWidth, height);
@@ -102,6 +107,7 @@ class TableLayoutSettingsBuilder {
         scrollbarWidth: scrollbarSize,
         scrollbarHeight: scrollbarHeight,
         cellsFullHeight: rowsFullHeight,
+        pinnedAreaDivisorWidth: pinnedAreaDivisorWidth,
         hasHorizontalScrollbar: hasHorizontalScrollbar);
   }
 }
@@ -124,6 +130,7 @@ class TableLayoutSettings {
       required this.scrollbarWidth,
       required this.scrollbarHeight,
       required this.cellsFullHeight,
+      required this.pinnedAreaDivisorWidth,
       required this.hasHorizontalScrollbar});
 
   final Rect headerBounds;
@@ -161,6 +168,8 @@ class TableLayoutSettings {
 
   final double height;
 
+  final double pinnedAreaDivisorWidth;
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -182,7 +191,8 @@ class TableLayoutSettings {
           hasHorizontalScrollbar == other.hasHorizontalScrollbar &&
           scrollbarWidth == other.scrollbarWidth &&
           scrollbarHeight == other.scrollbarHeight &&
-          height == other.height;
+          height == other.height &&
+          pinnedAreaDivisorWidth == other.pinnedAreaDivisorWidth;
 
   @override
   int get hashCode =>
@@ -202,5 +212,6 @@ class TableLayoutSettings {
       hasHorizontalScrollbar.hashCode ^
       scrollbarWidth.hashCode ^
       scrollbarHeight.hashCode ^
-      height.hashCode;
+      height.hashCode ^
+      pinnedAreaDivisorWidth.hashCode;
 }

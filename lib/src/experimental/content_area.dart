@@ -81,55 +81,27 @@ class ContentArea with ChildPainterMixin {
     }
   }
 
-  void paintDebugAreas(
-      {required Canvas canvas,
-      required Offset offset,
-      required TableLayoutSettings layoutSettings}) {
-    if (bounds.isEmpty) {
-      return;
-    }
-    if (layoutSettings.hasHeader) {
-      Paint paint = Paint()
-        ..style = PaintingStyle.fill
-        ..color = DebugColors.headerArea(id);
-      canvas.drawRect(
-          Rect.fromLTWH(offset.dx + bounds.left, offset.dy + bounds.top,
-              bounds.width, layoutSettings.headerHeight),
-          paint);
-    }
-    if (layoutSettings.hasHorizontalScrollbar) {
-      Paint paint = Paint()
-        ..style = PaintingStyle.fill
-        ..color = DebugColors.horizontalScrollbarArea(id);
-      canvas.drawRect(
-          Rect.fromLTWH(
-              offset.dx + bounds.left,
-              offset.dy + bounds.bottom - layoutSettings.scrollbarHeight,
-              bounds.width,
-              layoutSettings.scrollbarHeight),
-          paint);
-    }
-  }
-
   void paintChildren(
       {required PaintingContext context,
       required Offset offset,
       required TableLayoutSettings layoutSettings,
       required TablePaintSettings paintSettings,
       required EasyTableThemeData theme}) {
+    // headers
     context.canvas.save();
     context.canvas.clipRect(bounds.translate(offset.dx, offset.dy));
-
-    // headers
     for (RenderBox header in _headers) {
       paintChild(context: context, offset: offset, child: header);
     }
+    context.canvas.restore();
 
     // cells
+    context.canvas.save();
+    context.canvas.clipRect(
+        bounds.translate(offset.dx, offset.dy + layoutSettings.headerHeight));
     for (RenderBox cell in _cells) {
       paintChild(context: context, offset: offset, child: cell);
     }
-
     context.canvas.restore();
 
     // scrollbar
@@ -168,6 +140,7 @@ class ContentArea with ChildPainterMixin {
       }
     }
 
+    //TODO check is has header?
     if (theme.header.bottomBorderHeight > 0 &&
         theme.header.bottomBorderColor != null) {
       Paint paint = Paint()..color = theme.header.bottomBorderColor!;
@@ -191,7 +164,8 @@ class ContentArea with ChildPainterMixin {
       required Color color,
       required double dy}) {
     Paint paint = Paint()..color = color;
-    for (int i = 0; i < columnsMetrics.offsets.length; i++) {
+    int less = id == ContentAreaId.leftPinned ? 1 : 0;
+    for (int i = 0; i < columnsMetrics.widths.length - less; i++) {
       context.canvas.drawRect(
           Rect.fromLTWH(
               bounds.left +
@@ -202,6 +176,36 @@ class ContentArea with ChildPainterMixin {
               offset.dy + dy,
               theme.columnDividerThickness,
               height),
+          paint);
+    }
+  }
+
+  void paintDebugAreas(
+      {required Canvas canvas,
+      required Offset offset,
+      required TableLayoutSettings layoutSettings}) {
+    if (bounds.isEmpty) {
+      return;
+    }
+    if (layoutSettings.hasHeader) {
+      Paint paint = Paint()
+        ..style = PaintingStyle.fill
+        ..color = DebugColors.headerArea(id);
+      canvas.drawRect(
+          Rect.fromLTWH(offset.dx + bounds.left, offset.dy + bounds.top,
+              bounds.width, layoutSettings.headerHeight),
+          paint);
+    }
+    if (layoutSettings.hasHorizontalScrollbar) {
+      Paint paint = Paint()
+        ..style = PaintingStyle.fill
+        ..color = DebugColors.horizontalScrollbarArea(id);
+      canvas.drawRect(
+          Rect.fromLTWH(
+              offset.dx + bounds.left,
+              offset.dy + bounds.bottom - layoutSettings.scrollbarHeight,
+              bounds.width,
+              layoutSettings.scrollbarHeight),
           paint);
     }
   }

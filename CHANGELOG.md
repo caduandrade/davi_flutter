@@ -3,6 +3,7 @@
 * Changes
   * `HeaderThemeData.height` has been removed.
   * `HeaderCellThemeData.height` has been added.
+  * `TableScrollbarThemeData.columnDividerColor` has been added.
 
 ## 1.6.0
 

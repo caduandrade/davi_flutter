@@ -116,30 +116,34 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
         math.max(0, constraints.maxWidth - layoutSettingsBuilder.scrollbarSize);
 
     final bool hasHorizontalScrollbar;
+    final double pinnedAreaDivisorWidth;
     if (layoutSettingsBuilder.columnsFit) {
       unpinnedColumnsMetrics = ColumnsMetricsExp.columnsFit(
           model: model,
           containerWidth: maxContentAreaWidth,
           columnDividerThickness: theme.columnDividerThickness);
       hasHorizontalScrollbar = false;
+      pinnedAreaDivisorWidth = 0;
     } else {
       leftPinnedColumnsMetrics = ColumnsMetricsExp.resizable(
           model: model,
           columnDividerThickness: theme.columnDividerThickness,
-          filter: ColumnFilterExp.pinnedOnly);
+          contentAreaId: ContentAreaId.leftPinned);
 
       unpinnedColumnsMetrics = ColumnsMetricsExp.resizable(
           model: model,
           columnDividerThickness: theme.columnDividerThickness,
-          filter: ColumnFilterExp.unpinnedOnly);
+          contentAreaId: ContentAreaId.unpinned);
 
       final double pinnedAreaWidth = leftPinnedColumnsMetrics.maxWidth;
+      pinnedAreaDivisorWidth =
+          pinnedAreaWidth > 0 ? theme.columnDividerThickness : 0;
       final bool needLeftPinnedHorizontalScrollbar =
           pinnedAreaWidth > maxContentAreaWidth;
 
       final double unpinnedAreaWidth = unpinnedColumnsMetrics.maxWidth;
-      final bool needUnpinnedHorizontalScrollbar =
-          unpinnedAreaWidth > maxContentAreaWidth - pinnedAreaWidth;
+      final bool needUnpinnedHorizontalScrollbar = unpinnedAreaWidth >
+          maxContentAreaWidth - pinnedAreaWidth - pinnedAreaDivisorWidth;
 
       final bool needHorizontalScrollbar =
           needUnpinnedHorizontalScrollbar || needLeftPinnedHorizontalScrollbar;
@@ -250,6 +254,7 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
         cellsBound: cellsBound,
         hasHorizontalScrollbar: hasHorizontalScrollbar,
         scrollbarHeight: scrollbarHeight,
+        pinnedAreaDivisorWidth: pinnedAreaDivisorWidth,
         leftPinnedColumnsMetrics: leftPinnedColumnsMetrics,
         unpinnedColumnsMetrics: unpinnedColumnsMetrics,
         rightPinnedColumnsMetrics: rightPinnedColumnsMetrics);
@@ -408,6 +413,7 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
         cellsBound: cellsBound,
         hasHorizontalScrollbar: hasHorizontalScrollbar,
         scrollbarHeight: scrollbarHeight,
+        pinnedAreaDivisorWidth: 0,
         leftPinnedColumnsMetrics: emptyColumnsMetrics,
         unpinnedColumnsMetrics: emptyColumnsMetrics,
         rightPinnedColumnsMetrics: emptyColumnsMetrics);
