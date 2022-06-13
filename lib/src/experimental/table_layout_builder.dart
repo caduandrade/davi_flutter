@@ -90,7 +90,7 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
           0,
           constraints.maxHeight -
               layoutSettingsBuilder.headerHeight -
-              theme.scrollbar.borderThickness-
+              theme.scrollbar.borderThickness -
               layoutSettingsBuilder.scrollbarSize);
       visibleRowsCount = (contentAvailableHeight /
               (layoutSettingsBuilder.cellHeight + theme.row.dividerThickness))
@@ -103,16 +103,18 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
             contentSize: layoutSettingsBuilder.rowsFullHeight,
             scrollController: scrollControllers.vertical,
             color: theme.scrollbar.verticalColor,
-        borderColor: theme.scrollbar.verticalBorderColor)));
+            borderColor: theme.scrollbar.verticalBorderColor)));
 
     final int firstRowIndex =
         (scrollControllers.verticalOffset / layoutSettingsBuilder.rowHeight)
             .floor();
     final int lastRowIndex = firstRowIndex + visibleRowsCount;
 
-    //TODO vertical scrollbarSize border?
+    final double scrollbarWidth =
+        layoutSettingsBuilder.scrollbarSize + theme.scrollbar.borderThickness;
+
     final double maxContentAreaWidth =
-        math.max(0, constraints.maxWidth - layoutSettingsBuilder.scrollbarSize);
+        math.max(0, constraints.maxWidth - scrollbarWidth);
 
     final bool hasHorizontalScrollbar;
     final double pinnedAreaDivisorWidth;
@@ -224,8 +226,9 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
       });
     }
 
-    final double scrollbarHeight =
-        hasHorizontalScrollbar ? layoutSettingsBuilder.scrollbarSize + theme.scrollbar.borderThickness : 0;
+    final double scrollbarHeight = hasHorizontalScrollbar
+        ? layoutSettingsBuilder.scrollbarSize + theme.scrollbar.borderThickness
+        : 0;
 
     final double height;
     final Rect cellsBound;
@@ -235,15 +238,12 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
       cellsBound = Rect.fromLTWH(
           0,
           layoutSettingsBuilder.headerHeight,
-          math.max(
-              0, constraints.maxWidth - layoutSettingsBuilder.scrollbarSize), //TODO vertical scrollbar border
+          math.max(0, constraints.maxWidth - scrollbarWidth),
           math.max(
               0,
               constraints.maxHeight -
                   layoutSettingsBuilder.headerHeight -
-                  (hasHorizontalScrollbar
-                      ? scrollbarHeight
-                      : 0)));
+                  (hasHorizontalScrollbar ? scrollbarHeight : 0)));
     } else {
       // unbounded height
       height = layoutSettingsBuilder.headerHeight +
@@ -253,8 +253,7 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
       cellsBound = Rect.fromLTWH(
           0,
           layoutSettingsBuilder.headerHeight,
-          math.max(
-              0, constraints.maxWidth - layoutSettingsBuilder.scrollbarSize), //TODO vertical scrollbar border
+          math.max(0, constraints.maxWidth - scrollbarWidth),
           layoutSettingsBuilder.rowsFullHeight);
     }
 
@@ -262,6 +261,7 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
         height: height,
         cellsBound: cellsBound,
         hasHorizontalScrollbar: hasHorizontalScrollbar,
+        scrollbarWidth: scrollbarWidth,
         scrollbarHeight: scrollbarHeight,
         pinnedAreaDivisorWidth: pinnedAreaDivisorWidth,
         leftPinnedColumnsMetrics: leftPinnedColumnsMetrics,

@@ -73,6 +73,7 @@ class TableLayoutSettingsBuilder {
       required final ColumnsMetricsExp unpinnedColumnsMetrics,
       required final ColumnsMetricsExp rightPinnedColumnsMetrics,
       required double height,
+      required double scrollbarWidth,
       required double scrollbarHeight,
       required bool hasHorizontalScrollbar,
       required double pinnedAreaDivisorWidth}) {
@@ -104,7 +105,7 @@ class TableLayoutSettingsBuilder {
         offsets: offsets,
         cellHeight: cellHeight,
         rowHeight: rowHeight,
-        scrollbarWidth: scrollbarSize,
+        scrollbarWidth: scrollbarWidth,
         scrollbarHeight: scrollbarHeight,
         cellsFullHeight: rowsFullHeight,
         pinnedAreaDivisorWidth: pinnedAreaDivisorWidth,

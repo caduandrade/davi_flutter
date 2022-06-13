@@ -6,6 +6,7 @@
   * `TableScrollbarThemeData.columnDividerColor` has been added.
   * `CellThemeData.overflow` has been added.
   * `CellStyle.overflow` has been added.
+  * `TableScrollbarThemeData.borderThickness` has been added.
 
 ## 1.6.0
 

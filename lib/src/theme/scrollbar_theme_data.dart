@@ -7,6 +7,7 @@ class TableScrollbarThemeData {
   const TableScrollbarThemeData({
     this.radius,
     this.margin = TableScrollbarThemeDataDefaults.margin,
+    this.borderThickness = TableScrollbarThemeDataDefaults.borderThickness,
     this.thickness = TableScrollbarThemeDataDefaults.thickness,
     this.verticalBorderColor =
         TableScrollbarThemeDataDefaults.verticalBorderColor,
@@ -29,7 +30,7 @@ class TableScrollbarThemeData {
   final Radius? radius;
   final double margin;
   final double thickness;
-  final double borderThickness = 1;
+  final double borderThickness;
   final Color verticalBorderColor;
   final Color verticalColor;
   final Color pinnedHorizontalBorderColor;
@@ -79,6 +80,7 @@ class TableScrollbarThemeDataDefaults {
   static const horizontalOnlyWhenNeeded = false;
   static const double margin = 0;
   static const double thickness = 10;
+  static const double borderThickness = 1;
   static const Color verticalBorderColor = Colors.grey;
   static const Color verticalColor = Color(0xFFE0E0E0);
   static const Color unpinnedHorizontalBorderColor = Colors.grey;

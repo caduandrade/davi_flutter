@@ -12,7 +12,7 @@ class EasyTableScrollBarExp extends StatelessWidget {
       required this.scrollController,
       required this.axis,
       required this.color,
-        required this.borderColor})
+      required this.borderColor})
       : super(key: key);
 
   final double contentSize;
@@ -26,11 +26,15 @@ class EasyTableScrollBarExp extends StatelessWidget {
     EasyTableThemeData theme = EasyTableTheme.of(context);
     TableScrollbarThemeData scrollTheme = theme.scrollbar;
     BoxBorder? border;
-    if(theme.scrollbar.borderThickness>0) {
+    if (theme.scrollbar.borderThickness > 0) {
       if (axis == Axis.horizontal) {
-        border = Border(top: BorderSide(
-            color: borderColor,
-            width: theme.scrollbar.borderThickness));
+        border = Border(
+            top: BorderSide(
+                color: borderColor, width: theme.scrollbar.borderThickness));
+      } else if (axis == Axis.vertical) {
+        border = Border(
+            left: BorderSide(
+                color: borderColor, width: theme.scrollbar.borderThickness));
       }
     }
     return Container(
