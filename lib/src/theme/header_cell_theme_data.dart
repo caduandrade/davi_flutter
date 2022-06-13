@@ -7,7 +7,7 @@ class HeaderCellThemeData {
   /// Builds a theme data.
   const HeaderCellThemeData(
       {this.textStyle = HeaderCellThemeDataDefaults.textStyle,
-        this.height = HeaderCellThemeDataDefaults.height,
+      this.height = HeaderCellThemeDataDefaults.height,
       this.padding = HeaderCellThemeDataDefaults.padding,
       this.alignment = HeaderCellThemeDataDefaults.alignment,
       this.ascendingIcon = HeaderCellThemeDataDefaults.ascendingIcon,

@@ -280,6 +280,7 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
     Alignment? alignment;
     Color? background;
     TextStyle? textStyle;
+    TextOverflow? overflow;
     if (column.cellStyleBuilder != null) {
       CellStyle? cellStyle = column.cellStyleBuilder!(row);
       if (cellStyle != null) {
@@ -287,6 +288,7 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
         alignment = cellStyle.alignment;
         padding = cellStyle.padding;
         textStyle = cellStyle.textStyle;
+        overflow = cellStyle.overflow;
       }
     }
 
@@ -309,7 +311,9 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
     } else {
       String? value = _stringValue(column: column, row: row);
       if (value != null) {
-        child = Text(value, style: textStyle ?? theme.cell.textStyle);
+        child = Text(value,
+            overflow: overflow ?? theme.cell.overflow,
+            style: textStyle ?? theme.cell.textStyle);
       }
     }
     if (child != null) {

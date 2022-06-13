@@ -152,7 +152,8 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
       }
       rowHeight += theme.row.dividerThickness;
 
-      final double headerHeight = headerTheme.bottomBorderHeight + theme.headerCell.height;
+      final double headerHeight =
+          headerTheme.bottomBorderHeight + theme.headerCell.height;
       final double scrollbarWidth =
           math.min(scrollbarSize, constraints.maxWidth);
       final double maxWidth =

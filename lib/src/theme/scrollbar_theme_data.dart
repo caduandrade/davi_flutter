@@ -4,25 +4,27 @@ import 'package:flutter/material.dart';
 /// Defines the configuration of the overall visual [TableScrollbarThemeData] for a widget subtree within the app.
 class TableScrollbarThemeData {
   /// Builds a theme data.
-  const TableScrollbarThemeData(
-      {this.radius,
-      this.margin = TableScrollbarThemeDataDefaults.margin,
-      this.thickness = TableScrollbarThemeDataDefaults.thickness,
-      this.verticalBorderColor =
-          TableScrollbarThemeDataDefaults.verticalBorderColor,
-      this.verticalColor = TableScrollbarThemeDataDefaults.verticalColor,
-      this.pinnedHorizontalBorderColor =
-          TableScrollbarThemeDataDefaults.pinnedHorizontalBorderColor,
-      this.pinnedHorizontalColor =
-          TableScrollbarThemeDataDefaults.pinnedHorizontalColor,
-      this.unpinnedHorizontalBorderColor =
-          TableScrollbarThemeDataDefaults.unpinnedHorizontalBorderColor,
-      this.unpinnedHorizontalColor =
-          TableScrollbarThemeDataDefaults.unpinnedHorizontalColor,
-      this.thumbColor = TableScrollbarThemeDataDefaults.thumbColor,
-      this.horizontalOnlyWhenNeeded =
-          TableScrollbarThemeDataDefaults.horizontalOnlyWhenNeeded,
-        this.columnDividerColor = TableScrollbarThemeDataDefaults.columnDividerColor,});
+  const TableScrollbarThemeData({
+    this.radius,
+    this.margin = TableScrollbarThemeDataDefaults.margin,
+    this.thickness = TableScrollbarThemeDataDefaults.thickness,
+    this.verticalBorderColor =
+        TableScrollbarThemeDataDefaults.verticalBorderColor,
+    this.verticalColor = TableScrollbarThemeDataDefaults.verticalColor,
+    this.pinnedHorizontalBorderColor =
+        TableScrollbarThemeDataDefaults.pinnedHorizontalBorderColor,
+    this.pinnedHorizontalColor =
+        TableScrollbarThemeDataDefaults.pinnedHorizontalColor,
+    this.unpinnedHorizontalBorderColor =
+        TableScrollbarThemeDataDefaults.unpinnedHorizontalBorderColor,
+    this.unpinnedHorizontalColor =
+        TableScrollbarThemeDataDefaults.unpinnedHorizontalColor,
+    this.thumbColor = TableScrollbarThemeDataDefaults.thumbColor,
+    this.horizontalOnlyWhenNeeded =
+        TableScrollbarThemeDataDefaults.horizontalOnlyWhenNeeded,
+    this.columnDividerColor =
+        TableScrollbarThemeDataDefaults.columnDividerColor,
+  });
 
   final Radius? radius;
   final double margin;
@@ -53,8 +55,8 @@ class TableScrollbarThemeData {
               other.unpinnedHorizontalBorderColor &&
           unpinnedHorizontalColor == other.unpinnedHorizontalColor &&
           thumbColor == other.thumbColor &&
-          horizontalOnlyWhenNeeded == other.horizontalOnlyWhenNeeded&&
-  columnDividerColor==other.columnDividerColor;
+          horizontalOnlyWhenNeeded == other.horizontalOnlyWhenNeeded &&
+          columnDividerColor == other.columnDividerColor;
 
   @override
   int get hashCode =>
@@ -68,7 +70,7 @@ class TableScrollbarThemeData {
       unpinnedHorizontalBorderColor.hashCode ^
       unpinnedHorizontalColor.hashCode ^
       thumbColor.hashCode ^
-      horizontalOnlyWhenNeeded.hashCode^
+      horizontalOnlyWhenNeeded.hashCode ^
       columnDividerColor.hashCode;
 }
 

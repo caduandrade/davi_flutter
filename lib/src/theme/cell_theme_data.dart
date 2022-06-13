@@ -8,6 +8,7 @@ class CellThemeData {
   const CellThemeData(
       {this.textStyle,
       this.nullValueColor,
+      this.overflow = CellThemeDataDefaults.overflow,
       this.alignment = CellThemeDataDefaults.alignment,
       this.padding = CellThemeDataDefaults.padding});
 
@@ -19,6 +20,8 @@ class CellThemeData {
   final EdgeInsets? padding;
 
   final Alignment alignment;
+
+  final TextOverflow? overflow;
 
   /// Defines a background when the cell value is null.
   /// It is ignoring when [CellStyle.background] is not null.
@@ -32,6 +35,7 @@ class CellThemeData {
           textStyle == other.textStyle &&
           padding == other.padding &&
           alignment == other.alignment &&
+          overflow == other.overflow &&
           nullValueColor == other.nullValueColor;
 
   @override
@@ -39,10 +43,12 @@ class CellThemeData {
       textStyle.hashCode ^
       padding.hashCode ^
       alignment.hashCode ^
+      overflow.hashCode ^
       nullValueColor.hashCode;
 }
 
 class CellThemeDataDefaults {
+  static const TextOverflow overflow = TextOverflow.ellipsis;
   static const EdgeInsets padding = EdgeInsets.only(left: 8, right: 8);
   static const Alignment alignment = Alignment.centerLeft;
 }
