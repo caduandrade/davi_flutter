@@ -24,8 +24,7 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
       required ColumnsMetricsExp leftPinnedColumnsMetrics,
       required ColumnsMetricsExp unpinnedColumnsMetrics,
       required ColumnsMetricsExp rightPinnedColumnsMetrics,
-      required EasyTableThemeData theme,
-      required List<ROW> rows})
+      required EasyTableThemeData theme})
       : _onHoverListener = onHoverListener,
         _layoutSettings = layoutSettings,
         _paintSettings = paintSettings,
@@ -44,8 +43,7 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
             bounds: layoutSettings.rightPinnedBounds,
             scrollOffset: layoutSettings.offsets.rightPinnedContentArea,
             columnsMetrics: rightPinnedColumnsMetrics),
-        _theme = theme,
-        _rows = rows;
+        _theme = theme;
 
   final ContentArea _leftPinnedContentArea;
   final ContentArea _unpinnedContentArea;
@@ -58,13 +56,6 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
   };
 
   RenderBox? _verticalScrollbar;
-
-  //TODO remove?
-  List<ROW> _rows;
-
-  set rows(List<ROW> value) {
-    _rows = value;
-  }
 
   EasyTableThemeData _theme;
   set theme(EasyTableThemeData value) {

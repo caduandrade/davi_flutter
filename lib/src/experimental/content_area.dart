@@ -52,7 +52,7 @@ class ContentArea with ChildPainterMixin {
           BoxConstraints.tightFor(
               width: width, height: theme.headerCell.height),
           parentUsesSize: true);
-      parentData.offset = Offset(offset - scrollOffset, y);
+      parentData.offset = Offset(bounds.left + offset - scrollOffset, y);
     }
     // cells
     for (RenderBox renderBox in _cells) {
@@ -68,7 +68,7 @@ class ContentArea with ChildPainterMixin {
           BoxConstraints.tightFor(
               width: width, height: layoutSettings.cellHeight),
           parentUsesSize: true);
-      parentData.offset = Offset(offset - scrollOffset, y);
+      parentData.offset = Offset(bounds.left + offset - scrollOffset, y);
     }
     // horizontal scrollbar
     if (scrollbar != null) {
@@ -200,8 +200,8 @@ class ContentArea with ChildPainterMixin {
     for (int i = 1; i < columnsMetrics.offsets.length; i++) {
       double x = columnsMetrics.offsets[i] - theme.columnDividerThickness;
       context.canvas.drawRect(
-          Rect.fromLTWH(x + offset.dx - scrollOffset, offset.dy + dy,
-              theme.columnDividerThickness, height),
+          Rect.fromLTWH(bounds.left + x + offset.dx - scrollOffset,
+              offset.dy + dy, theme.columnDividerThickness, height),
           paint);
     }
   }

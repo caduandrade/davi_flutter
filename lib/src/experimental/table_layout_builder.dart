@@ -84,7 +84,6 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
     ColumnsMetricsExp<ROW> rightPinnedColumnsMetrics =
         ColumnsMetricsExp.empty();
 
-    final List<ROW> rows = [];
     final List<LayoutChild> children = [];
 
     int visibleRowsCount = layoutSettingsBuilder.visibleRowsCount ?? 0;
@@ -111,26 +110,6 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
         (scrollControllers.verticalOffset / layoutSettingsBuilder.rowHeight)
             .floor();
     final int lastRowIndex = firstRowIndex + visibleRowsCount;
-
-    final bool allowPin = !layoutSettingsBuilder.columnsFit;
-
-    for (int columnIndex = 0;
-        columnIndex < model.columnsLength;
-        columnIndex++) {
-      EasyTableColumn<ROW> column = model.columnAt(columnIndex);
-      final ContentAreaId contentAreaId =
-          _contentAreaId(allowPin: allowPin, column: column);
-      children.insert(
-          0,
-          LayoutChild.header(
-              contentAreaId: contentAreaId,
-              column: columnIndex,
-              child: EasyTableHeaderCell<ROW>(
-                  model: model,
-                  column: column,
-                  resizable: !layoutSettingsBuilder.columnsFit,
-                  multiSortEnabled: multiSortEnabled)));
-    }
 
     //TODO scrollbarSize border?
     final double maxContentAreaWidth =
@@ -189,31 +168,48 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
       }
     }
 
-    for (int columnIndex = 0;
-        columnIndex < unpinnedColumnsMetrics.columns.length;
-        columnIndex++) {
-      EasyTableColumn<ROW> column = unpinnedColumnsMetrics.columns[columnIndex];
-      final ContentAreaId contentAreaId =
-          _contentAreaId(allowPin: allowPin, column: column);
-      for (int rowIndex = firstRowIndex;
-          rowIndex < model.visibleRowsLength && rowIndex <= lastRowIndex;
-          rowIndex++) {
-        ROW row = model.visibleRowAt(rowIndex);
-        rows.add(row);
+    Map<ContentAreaId, ColumnsMetricsExp<ROW>> columnMetricsMap = {
+      ContentAreaId.leftPinned: leftPinnedColumnsMetrics,
+      ContentAreaId.unpinned: unpinnedColumnsMetrics,
+      ContentAreaId.rightPinned: rightPinnedColumnsMetrics
+    };
+
+    columnMetricsMap.forEach((contentAreaId, columnsMetrics) {
+      for (int columnIndex = 0;
+          columnIndex < columnsMetrics.columns.length;
+          columnIndex++) {
+        EasyTableColumn<ROW> column = columnsMetrics.columns[columnIndex];
+
         children.insert(
             0,
-            LayoutChild.cell(
+            LayoutChild.header(
                 contentAreaId: contentAreaId,
-                row: rowIndex,
                 column: columnIndex,
-                child: _buildCellWidget(
-                    context: context,
-                    row: row,
-                    rowIndex: rowIndex,
+                child: EasyTableHeaderCell<ROW>(
+                    model: model,
                     column: column,
-                    theme: theme)));
+                    resizable: !layoutSettingsBuilder.columnsFit,
+                    multiSortEnabled: multiSortEnabled)));
+
+        for (int rowIndex = firstRowIndex;
+            rowIndex < model.visibleRowsLength && rowIndex <= lastRowIndex;
+            rowIndex++) {
+          ROW row = model.visibleRowAt(rowIndex);
+          children.insert(
+              0,
+              LayoutChild.cell(
+                  contentAreaId: contentAreaId,
+                  row: rowIndex,
+                  column: columnIndex,
+                  child: _buildCellWidget(
+                      context: context,
+                      row: row,
+                      rowIndex: rowIndex,
+                      column: column,
+                      theme: theme)));
+        }
       }
-    }
+    });
 
     final double scrollbarHeight =
         hasHorizontalScrollbar ? layoutSettingsBuilder.scrollbarSize : 0;
@@ -266,7 +262,6 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
         unpinnedColumnsMetrics: unpinnedColumnsMetrics,
         rightPinnedColumnsMetrics: rightPinnedColumnsMetrics,
         theme: theme,
-        rows: rows,
         children: children);
   }
 
@@ -347,16 +342,6 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
     return null;
   }
 
-  ContentAreaId _contentAreaId(
-      {required bool allowPin, required EasyTableColumn<ROW> column}) {
-    if (allowPin) {
-      if (column.pinned) {
-        return ContentAreaId.leftPinned;
-      }
-    }
-    return ContentAreaId.unpinned;
-  }
-
   Widget _buildEmptyTable(
       {required BuildContext context,
       required BoxConstraints constraints,
@@ -435,7 +420,6 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
         unpinnedColumnsMetrics: emptyColumnsMetrics,
         rightPinnedColumnsMetrics: emptyColumnsMetrics,
         theme: theme,
-        rows: const [],
         children: children);
   }
 }

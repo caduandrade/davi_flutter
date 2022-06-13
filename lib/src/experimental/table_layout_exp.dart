@@ -22,7 +22,6 @@ class TableLayoutExp<ROW> extends MultiChildRenderObjectWidget {
       required this.unpinnedColumnsMetrics,
       required this.rightPinnedColumnsMetrics,
       required this.theme,
-      required this.rows,
       required List<LayoutChild> children})
       : super(key: key, children: children);
 
@@ -33,7 +32,6 @@ class TableLayoutExp<ROW> extends MultiChildRenderObjectWidget {
   final ColumnsMetricsExp unpinnedColumnsMetrics;
   final ColumnsMetricsExp rightPinnedColumnsMetrics;
   final EasyTableThemeData theme;
-  final List<ROW> rows;
 
   @override
   RenderObject createRenderObject(BuildContext context) {
@@ -44,8 +42,7 @@ class TableLayoutExp<ROW> extends MultiChildRenderObjectWidget {
         leftPinnedColumnsMetrics: leftPinnedColumnsMetrics,
         unpinnedColumnsMetrics: unpinnedColumnsMetrics,
         rightPinnedColumnsMetrics: rightPinnedColumnsMetrics,
-        theme: theme,
-        rows: rows);
+        theme: theme);
   }
 
   @override
@@ -64,7 +61,6 @@ class TableLayoutExp<ROW> extends MultiChildRenderObjectWidget {
       ..leftPinnedColumnsMetrics = leftPinnedColumnsMetrics
       ..unpinnedColumnsMetrics = unpinnedColumnsMetrics
       ..rightPinnedColumnsMetrics = rightPinnedColumnsMetrics
-      ..theme = theme
-      ..rows = rows;
+      ..theme = theme;
   }
 }

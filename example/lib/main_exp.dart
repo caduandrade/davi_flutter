@@ -56,7 +56,7 @@ class _HomePageState extends State<HomePage> {
 
   bool _columnsFit = false;
 
-  bool _pinned =false;
+  final bool _pinned = true;
 
   Color _columnDividerColor = EasyTableThemeDataDefaults.columnDividerColor;
   double _columnDividerThickness =
@@ -83,8 +83,10 @@ class _HomePageState extends State<HomePage> {
             string7: random.nextInt(9999999).toRadixString(16),
             int1: random.nextInt(999)));
     _model = EasyTableModel(columns: [
-      EasyTableColumn(name: 'index', pinned: _pinned, intValue: (row) => row.index),
-      EasyTableColumn(name: 'string1',pinned: _pinned, stringValue: (row) => row.string1),
+      EasyTableColumn(
+          name: 'index', pinned: _pinned, intValue: (row) => row.index),
+      EasyTableColumn(
+          name: 'string1', pinned: _pinned, stringValue: (row) => row.string1),
       EasyTableColumn(name: 'string2', stringValue: (row) => row.string2),
       EasyTableColumn(name: 'string3', stringValue: (row) => row.string3),
       EasyTableColumn(name: 'string4', stringValue: (row) => row.string4),
@@ -155,7 +157,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _changeColumnsFit() {
-    print('a');
     setState(() => _columnsFit = !_columnsFit);
   }
 
