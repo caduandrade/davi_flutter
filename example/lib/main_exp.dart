@@ -1,13 +1,6 @@
 import 'dart:math';
 
-import 'package:easy_table/src/column.dart';
-import 'package:easy_table/src/experimental/table_exp.dart';
-import 'package:easy_table/src/model.dart';
-import 'package:easy_table/src/theme/header_cell_theme_data.dart';
-import 'package:easy_table/src/theme/header_theme_data.dart';
-import 'package:easy_table/src/theme/row_theme_data.dart';
-import 'package:easy_table/src/theme/theme.dart';
-import 'package:easy_table/src/theme/theme_data.dart';
+import 'package:easy_table/easy_table.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -63,6 +56,8 @@ class _HomePageState extends State<HomePage> {
 
   bool _columnsFit = false;
 
+  bool _pinned =false;
+
   Color _columnDividerColor = EasyTableThemeDataDefaults.columnDividerColor;
   double _columnDividerThickness =
       EasyTableThemeDataDefaults.columnDividerThickness;
@@ -88,35 +83,15 @@ class _HomePageState extends State<HomePage> {
             string7: random.nextInt(9999999).toRadixString(16),
             int1: random.nextInt(999)));
     _model = EasyTableModel(columns: [
-      EasyTableColumn(
-          name: 'index',
-          cellBuilder: (context, row, visibleRowIndex) =>
-              Text(row.index.toString())),
-      EasyTableColumn(
-          name: 'string1',
-          cellBuilder: (context, row, visibleRowIndex) => Text(row.string1)),
-      EasyTableColumn(
-          name: 'string2',
-          cellBuilder: (context, row, visibleRowIndex) => Text(row.string2)),
-      EasyTableColumn(
-          name: 'string3',
-          cellBuilder: (context, row, visibleRowIndex) => Text(row.string3)),
-      EasyTableColumn(
-          name: 'string4',
-          cellBuilder: (context, row, visibleRowIndex) => Text(row.string4)),
-      EasyTableColumn(
-          name: 'string5',
-          cellBuilder: (context, row, visibleRowIndex) => Text(row.string5)),
-      EasyTableColumn(
-          name: 'string6',
-          cellBuilder: (context, row, visibleRowIndex) => Text(row.string6)),
-      EasyTableColumn(
-          name: 'string7',
-          cellBuilder: (context, row, visibleRowIndex) => Text(row.string7)),
-      EasyTableColumn(
-          name: 'int1',
-          cellBuilder: (context, row, visibleRowIndex) =>
-              Text(row.int1.toString()))
+      EasyTableColumn(name: 'index', pinned: _pinned, intValue: (row) => row.index),
+      EasyTableColumn(name: 'string1',pinned: _pinned, stringValue: (row) => row.string1),
+      EasyTableColumn(name: 'string2', stringValue: (row) => row.string2),
+      EasyTableColumn(name: 'string3', stringValue: (row) => row.string3),
+      EasyTableColumn(name: 'string4', stringValue: (row) => row.string4),
+      EasyTableColumn(name: 'string5', stringValue: (row) => row.string5),
+      EasyTableColumn(name: 'string6', stringValue: (row) => row.string6),
+      EasyTableColumn(name: 'string7', stringValue: (row) => row.string7),
+      EasyTableColumn(name: 'int1', intValue: (row) => row.int1)
     ], rows: rows);
     super.initState();
   }
@@ -133,9 +108,12 @@ class _HomePageState extends State<HomePage> {
             Padding(
                 padding: const EdgeInsets.all(8),
                 child: Wrap(spacing: 8, runSpacing: 8, children: [
-                  ElevatedButton(
-                      onPressed: _changeColumnsFit,
-                      child: const Text('columnsFit')),
+                  IntrinsicWidth(
+                      child: CheckboxListTile(
+                          title: const Text('columnsFit'),
+                          value: _columnsFit,
+                          onChanged: (newValue) => _changeColumnsFit(),
+                          controlAffinity: ListTileControlAffinity.leading)),
                   ElevatedButton(
                       onPressed: _changeColumnDividerThickness,
                       child: const Text('columnDividerThickness')),
@@ -149,8 +127,8 @@ class _HomePageState extends State<HomePage> {
                       onPressed: _changeHeaderColumnDividerColor,
                       child: const Text('headerColumnDividerColor')),
                   ElevatedButton(
-                      onPressed: _changeBottomBorder,
-                      child: const Text('bottomBorder'))
+                      onPressed: _changeHeaderBottomBorder,
+                      child: const Text('headerBottomBorder'))
                 ])),
             Expanded(child: _tableArea())
           ],
@@ -177,6 +155,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _changeColumnsFit() {
+    print('a');
     setState(() => _columnsFit = !_columnsFit);
   }
 
@@ -208,7 +187,7 @@ class _HomePageState extends State<HomePage> {
             : HeaderThemeDataDefaults.columnDividerColor);
   }
 
-  void _changeBottomBorder() {
+  void _changeHeaderBottomBorder() {
     setState(() {
       _bottomBorderColor =
           _bottomBorderColor == HeaderThemeDataDefaults.bottomBorderColor

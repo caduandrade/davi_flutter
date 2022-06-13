@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'package:easy_table/src/cell_icon.dart';
 import 'package:easy_table/src/cell_style.dart';
 import 'package:easy_table/src/column.dart';
 import 'package:easy_table/src/experimental/columns_metrics_exp.dart';
@@ -9,7 +10,6 @@ import 'package:easy_table/src/experimental/table_layout_exp.dart';
 import 'package:easy_table/src/experimental/table_layout_settings.dart';
 import 'package:easy_table/src/experimental/table_paint_settings.dart';
 import 'package:easy_table/src/experimental/table_scroll_controllers.dart';
-import 'package:easy_table/src/internal/cell.dart';
 import 'package:easy_table/src/internal/header_cell.dart';
 import 'package:easy_table/src/model.dart';
 import 'package:easy_table/src/row_hover_listener.dart';
@@ -189,43 +189,29 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
       }
     }
 
-    for (int rowIndex = firstRowIndex;
-        rowIndex < model.visibleRowsLength && rowIndex <= lastRowIndex;
-        rowIndex++) {
-      ROW row = model.visibleRowAt(rowIndex);
-      rows.add(row);
-      for (int columnIndex = 0;
-          columnIndex < unpinnedColumnsMetrics.columns.length;
-          columnIndex++) {
-        EasyTableColumn<ROW> column =
-            unpinnedColumnsMetrics.columns[columnIndex];
-        if (column.cellBuilder != null) {
-          Widget cellChild = column.cellBuilder!(context, row, rowIndex);
-          EdgeInsets? padding;
-          Alignment? alignment;
-          Color? background;
-          if (column.cellStyleBuilder != null) {
-            CellStyle? cellStyle = column.cellStyleBuilder!(row);
-            if (cellStyle != null) {
-              background = cellStyle.background;
-              alignment = cellStyle.alignment;
-              padding = cellStyle.padding;
-            }
-          }
-          Widget cell = ClipRect(
-              child: EasyTableCell(
-                  child: cellChild,
-                  alignment: alignment,
-                  padding: padding,
-                  background: background));
-          children.insert(
-              0,
-              LayoutChild.cell(
-                  contentAreaId: ContentAreaId.unpinned,
-                  row: rowIndex,
-                  column: columnIndex,
-                  child: cell));
-        }
+    for (int columnIndex = 0;
+        columnIndex < unpinnedColumnsMetrics.columns.length;
+        columnIndex++) {
+      EasyTableColumn<ROW> column = unpinnedColumnsMetrics.columns[columnIndex];
+      final ContentAreaId contentAreaId =
+          _contentAreaId(allowPin: allowPin, column: column);
+      for (int rowIndex = firstRowIndex;
+          rowIndex < model.visibleRowsLength && rowIndex <= lastRowIndex;
+          rowIndex++) {
+        ROW row = model.visibleRowAt(rowIndex);
+        rows.add(row);
+        children.insert(
+            0,
+            LayoutChild.cell(
+                contentAreaId: contentAreaId,
+                row: rowIndex,
+                column: columnIndex,
+                child: _buildCellWidget(
+                    context: context,
+                    row: row,
+                    rowIndex: rowIndex,
+                    column: column,
+                    theme: theme)));
       }
     }
 
@@ -282,6 +268,83 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
         theme: theme,
         rows: rows,
         children: children);
+  }
+
+  Widget _buildCellWidget(
+      {required BuildContext context,
+      required ROW row,
+      required int rowIndex,
+      required EasyTableColumn<ROW> column,
+      required EasyTableThemeData theme}) {
+    EdgeInsets? padding;
+    Alignment? alignment;
+    Color? background;
+    TextStyle? textStyle;
+    if (column.cellStyleBuilder != null) {
+      CellStyle? cellStyle = column.cellStyleBuilder!(row);
+      if (cellStyle != null) {
+        background = cellStyle.background;
+        alignment = cellStyle.alignment;
+        padding = cellStyle.padding;
+        textStyle = cellStyle.textStyle;
+      }
+    }
+
+    Widget? child;
+    if (column.cellBuilder != null) {
+      child = column.cellBuilder!(context, row, rowIndex);
+    } else if (column.iconValueMapper != null) {
+      CellIcon? cellIcon = column.iconValueMapper!(row);
+      if (cellIcon != null) {
+        if (cellIcon.alignment != null) {
+          //TODO check
+          //alignment = cellIcon.alignment!;
+        }
+        if (cellIcon.background != null) {
+          //TODO check
+          // background = cellIcon.background;
+        }
+        child = Icon(cellIcon.icon, color: cellIcon.color, size: cellIcon.size);
+      }
+    } else {
+      String? value = _stringValue(column: column, row: row);
+      if (value != null) {
+        child = Text(value, style: textStyle ?? theme.cell.textStyle);
+      }
+    }
+    if (child != null) {
+      child = Align(child: child, alignment: alignment ?? theme.cell.alignment);
+      EdgeInsetsGeometry? p = padding ?? theme.cell.padding;
+      if (p != null) {
+        child = Padding(padding: p, child: child);
+      }
+    }
+    if (background != null) {
+      child = Container(child: child, color: background);
+    }
+    //TODO optional clip?
+    return ClipRect(child: child);
+  }
+
+  String? _stringValue(
+      {required EasyTableColumn<ROW> column, required ROW row}) {
+    if (column.stringValueMapper != null) {
+      return column.stringValueMapper!(row);
+    } else if (column.intValueMapper != null) {
+      return column.intValueMapper!(row)?.toString();
+    } else if (column.doubleValueMapper != null) {
+      final double? doubleValue = column.doubleValueMapper!(row);
+      if (doubleValue != null) {
+        if (column.fractionDigits != null) {
+          return doubleValue.toStringAsFixed(column.fractionDigits!);
+        } else {
+          return doubleValue.toString();
+        }
+      }
+    } else if (column.objectValueMapper != null) {
+      return column.objectValueMapper!(row)?.toString();
+    }
+    return null;
   }
 
   ContentAreaId _contentAreaId(
