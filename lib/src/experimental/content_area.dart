@@ -117,22 +117,19 @@ class ContentArea with ChildPainterMixin {
       required TableLayoutSettings layoutSettings,
       required TablePaintSettings paintSettings,
       required EasyTableThemeData theme}) {
+    context.canvas.save();
+    context.canvas.clipRect(bounds.translate(offset.dx, offset.dy));
+
     // headers
     for (RenderBox header in _headers) {
-      context.canvas.save();
-      context.canvas.clipRect(
-          layoutSettings.headerBounds.translate(offset.dx, offset.dy));
       paintChild(context: context, offset: offset, child: header);
-      context.canvas.restore();
     }
 
     // cells
-    context.canvas.save();
-    context.canvas
-        .clipRect(layoutSettings.cellsBound.translate(offset.dx, offset.dy));
     for (RenderBox cell in _cells) {
       paintChild(context: context, offset: offset, child: cell);
     }
+
     context.canvas.restore();
 
     // scrollbar
@@ -145,13 +142,13 @@ class ContentArea with ChildPainterMixin {
       required TableLayoutSettings layoutSettings,
       required TablePaintSettings paintSettings,
       required EasyTableThemeData theme}) {
+    context.canvas.save();
+    context.canvas.clipRect(bounds.translate(offset.dx, offset.dy));
+
     // column dividers
     if (theme.columnDividerThickness > 0) {
       if (layoutSettings.headerHeight > 0 &&
           theme.header.columnDividerColor != null) {
-        context.canvas.save();
-        context.canvas.clipRect(
-            layoutSettings.headerBounds.translate(offset.dx, offset.dy));
         _paintColumnDividers(
             context: context,
             offset: offset,
@@ -159,12 +156,8 @@ class ContentArea with ChildPainterMixin {
             color: theme.header.columnDividerColor!,
             dy: 0,
             height: theme.headerCell.height);
-        context.canvas.restore();
       }
       if (theme.columnDividerColor != null) {
-        context.canvas.save();
-        context.canvas.clipRect(
-            layoutSettings.cellsBound.translate(offset.dx, offset.dy));
         _paintColumnDividers(
             context: context,
             offset: offset,
@@ -172,7 +165,6 @@ class ContentArea with ChildPainterMixin {
             color: theme.columnDividerColor!,
             dy: layoutSettings.headerHeight,
             height: layoutSettings.cellsBound.height);
-        context.canvas.restore();
       }
     }
 
@@ -187,6 +179,8 @@ class ContentArea with ChildPainterMixin {
               theme.header.bottomBorderHeight),
           paint);
     }
+
+    context.canvas.restore();
   }
 
   void _paintColumnDividers(
