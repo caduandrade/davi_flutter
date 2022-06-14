@@ -2,7 +2,7 @@ import 'dart:math' as math;
 import 'package:easy_table/src/experimental/layout_v2/child_painter_mixin_v2.dart';
 import 'package:easy_table/src/experimental/columns_metrics_exp.dart';
 import 'package:easy_table/src/experimental/layout_v2/content_area_v2.dart';
-import 'package:easy_table/src/experimental/column_pin.dart';
+import 'package:easy_table/src/experimental/pin_status.dart';
 import 'package:easy_table/src/experimental/layout_v2/layout_child_type_v2.dart';
 import 'package:easy_table/src/experimental/row_callbacks.dart';
 import 'package:easy_table/src/experimental/layout_v2/table_layout_parent_data_v2.dart';
@@ -31,17 +31,17 @@ class TableLayoutRenderBoxV2<ROW> extends RenderBox
         _layoutSettings = layoutSettings,
         _paintSettings = paintSettings,
         _leftPinnedContentArea = ContentAreaV2(
-            id: ColumnPin.leftPinned,
+            pinStatus: PinStatus.leftPinned,
             bounds: layoutSettings.leftPinnedBounds,
             scrollOffset: layoutSettings.offsets.leftPinnedContentArea,
             columnsMetrics: leftPinnedColumnsMetrics),
         _unpinnedContentArea = ContentAreaV2(
-            id: ColumnPin.unpinned,
+            pinStatus: PinStatus.unpinned,
             bounds: layoutSettings.unpinnedBounds,
             scrollOffset: layoutSettings.offsets.unpinnedContentArea,
             columnsMetrics: unpinnedColumnsMetrics),
         _rightPinnedContentArea = ContentAreaV2(
-            id: ColumnPin.rightPinned,
+            pinStatus: PinStatus.rightPinned,
             bounds: layoutSettings.rightPinnedBounds,
             scrollOffset: layoutSettings.offsets.rightPinnedContentArea,
             columnsMetrics: rightPinnedColumnsMetrics),
@@ -55,10 +55,10 @@ class TableLayoutRenderBoxV2<ROW> extends RenderBox
   final ContentAreaV2 _unpinnedContentArea;
   final ContentAreaV2 _rightPinnedContentArea;
 
-  late final Map<ColumnPin, ContentAreaV2> _contentAreaMap = {
-    ColumnPin.leftPinned: _leftPinnedContentArea,
-    ColumnPin.unpinned: _unpinnedContentArea,
-    ColumnPin.rightPinned: _rightPinnedContentArea
+  late final Map<PinStatus, ContentAreaV2> _contentAreaMap = {
+    PinStatus.leftPinned: _leftPinnedContentArea,
+    PinStatus.unpinned: _unpinnedContentArea,
+    PinStatus.rightPinned: _rightPinnedContentArea
   };
 
   RenderBox? _verticalScrollbar;
@@ -182,11 +182,11 @@ class TableLayoutRenderBoxV2<ROW> extends RenderBox
       RenderBox renderBox = child as RenderBox;
       TableLayoutParentDataV2 parentData = child._parentData();
       if (parentData.type == LayoutChildTypeV2.cell) {
-        _contentAreaMap[parentData.contentAreaId]!.addCell(renderBox);
+        _contentAreaMap[parentData.pinStatus]!.addCell(renderBox);
       } else if (parentData.type == LayoutChildTypeV2.header) {
-        _contentAreaMap[parentData.contentAreaId]!.addHeader(renderBox);
+        _contentAreaMap[parentData.pinStatus]!.addHeader(renderBox);
       } else if (parentData.type == LayoutChildTypeV2.horizontalScrollbar) {
-        _contentAreaMap[parentData.contentAreaId]!.scrollbar = renderBox;
+        _contentAreaMap[parentData.pinStatus]!.scrollbar = renderBox;
       } else if (parentData.type == LayoutChildTypeV2.verticalScrollbar) {
         _verticalScrollbar = renderBox;
       } else if (parentData.type == LayoutChildTypeV2.topCorner) {

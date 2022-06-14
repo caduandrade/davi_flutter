@@ -3,7 +3,7 @@ import 'package:easy_table/src/cell_icon.dart';
 import 'package:easy_table/src/cell_style.dart';
 import 'package:easy_table/src/column.dart';
 import 'package:easy_table/src/experimental/columns_metrics_exp.dart';
-import 'package:easy_table/src/experimental/column_pin.dart';
+import 'package:easy_table/src/experimental/pin_status.dart';
 import 'package:easy_table/src/experimental/row_callbacks.dart';
 import 'package:easy_table/src/experimental/layout_v2/layout_child_v2.dart';
 import 'package:easy_table/src/experimental/layout_v2/table_layout_v2.dart';
@@ -149,12 +149,12 @@ class TableLayoutBuilderV2<ROW> extends StatelessWidget {
         leftPinnedColumnsMetrics = ColumnsMetricsExp.resizable(
             model: model,
             columnDividerThickness: theme.columnDividerThickness,
-            contentAreaId: ColumnPin.leftPinned);
+            pinStatus: PinStatus.leftPinned);
 
         unpinnedColumnsMetrics = ColumnsMetricsExp.resizable(
             model: model,
             columnDividerThickness: theme.columnDividerThickness,
-            contentAreaId: ColumnPin.unpinned);
+            pinStatus: PinStatus.unpinned);
 
         final double pinnedAreaWidth = leftPinnedColumnsMetrics.maxWidth;
         pinnedAreaDivisorWidth =
@@ -175,7 +175,7 @@ class TableLayoutBuilderV2<ROW> extends StatelessWidget {
 
         if (hasHorizontalScrollbar) {
           children.add(LayoutChildV2.horizontalScrollbar(
-              contentAreaId: ColumnPin.leftPinned,
+              pinStatus: PinStatus.leftPinned,
               child: TableScrollbar(
                   axis: Axis.horizontal,
                   scrollController: scrollControllers.leftPinnedContentArea,
@@ -185,7 +185,7 @@ class TableLayoutBuilderV2<ROW> extends StatelessWidget {
 
           //TODO build EasyTableScrollBarExp in LayoutChild.horizontalScrollbar
           children.add(LayoutChildV2.horizontalScrollbar(
-              contentAreaId: ColumnPin.unpinned,
+              pinStatus: PinStatus.unpinned,
               child: TableScrollbar(
                   axis: Axis.horizontal,
                   scrollController: scrollControllers.unpinnedContentArea,
@@ -202,14 +202,14 @@ class TableLayoutBuilderV2<ROW> extends StatelessWidget {
       pinnedAreaDivisorWidth = 0;
     }
 
-    Map<ColumnPin, ColumnsMetricsExp<ROW>> columnMetricsMap = {
-      ColumnPin.leftPinned: leftPinnedColumnsMetrics,
-      ColumnPin.unpinned: unpinnedColumnsMetrics,
-      ColumnPin.rightPinned: rightPinnedColumnsMetrics
+    Map<PinStatus, ColumnsMetricsExp<ROW>> columnMetricsMap = {
+      PinStatus.leftPinned: leftPinnedColumnsMetrics,
+      PinStatus.unpinned: unpinnedColumnsMetrics,
+      PinStatus.rightPinned: rightPinnedColumnsMetrics
     };
 
     if (model != null) {
-      columnMetricsMap.forEach((contentAreaId, columnsMetrics) {
+      columnMetricsMap.forEach((pinStatus, columnsMetrics) {
         for (int columnIndex = 0;
             columnIndex < columnsMetrics.columns.length;
             columnIndex++) {
@@ -218,7 +218,7 @@ class TableLayoutBuilderV2<ROW> extends StatelessWidget {
           children.insert(
               0,
               LayoutChildV2.header(
-                  contentAreaId: contentAreaId,
+                  pinStatus: pinStatus,
                   column: columnIndex,
                   child: EasyTableHeaderCell<ROW>(
                       model: model,
@@ -233,7 +233,7 @@ class TableLayoutBuilderV2<ROW> extends StatelessWidget {
             children.insert(
                 0,
                 LayoutChildV2.cell(
-                    contentAreaId: contentAreaId,
+                    pinStatus: pinStatus,
                     row: rowIndex,
                     column: columnIndex,
                     child: _buildCellWidget(

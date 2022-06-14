@@ -1,6 +1,6 @@
 import 'package:easy_table/src/experimental/layout_v2/child_painter_mixin_v2.dart';
 import 'package:easy_table/src/experimental/columns_metrics_exp.dart';
-import 'package:easy_table/src/experimental/column_pin.dart';
+import 'package:easy_table/src/experimental/pin_status.dart';
 import 'package:easy_table/src/experimental/layout_v2/debug_colors_v2.dart';
 import 'package:easy_table/src/experimental/layout_v2/table_layout_parent_data_v2.dart';
 import 'package:easy_table/src/experimental/table_layout_settings.dart';
@@ -10,12 +10,12 @@ import 'package:flutter/material.dart';
 
 class ContentAreaV2 with ChildPainterMixinV2 {
   ContentAreaV2(
-      {required this.id,
+      {required this.pinStatus,
       required this.bounds,
       required this.scrollOffset,
       required this.columnsMetrics});
 
-  final ColumnPin id;
+  final PinStatus pinStatus;
   final List<RenderBox> _headers = [];
   final List<RenderBox> _cells = [];
   ColumnsMetricsExp columnsMetrics;
@@ -164,7 +164,7 @@ class ContentAreaV2 with ChildPainterMixinV2 {
       required Color color,
       required double dy}) {
     Paint paint = Paint()..color = color;
-    int less = id == ColumnPin.leftPinned ? 1 : 0;
+    int less = pinStatus == PinStatus.leftPinned ? 1 : 0;
     for (int i = 0; i < columnsMetrics.widths.length - less; i++) {
       context.canvas.drawRect(
           Rect.fromLTWH(
@@ -190,7 +190,7 @@ class ContentAreaV2 with ChildPainterMixinV2 {
     if (layoutSettings.hasHeader) {
       Paint paint = Paint()
         ..style = PaintingStyle.fill
-        ..color = DebugColorsV2.headerArea(id);
+        ..color = DebugColorsV2.headerArea(pinStatus);
       canvas.drawRect(
           Rect.fromLTWH(offset.dx + bounds.left, offset.dy + bounds.top,
               bounds.width, layoutSettings.headerHeight),
@@ -199,7 +199,7 @@ class ContentAreaV2 with ChildPainterMixinV2 {
     if (layoutSettings.hasHorizontalScrollbar) {
       Paint paint = Paint()
         ..style = PaintingStyle.fill
-        ..color = DebugColorsV2.horizontalScrollbarArea(id);
+        ..color = DebugColorsV2.horizontalScrollbarArea(pinStatus);
       canvas.drawRect(
           Rect.fromLTWH(
               offset.dx + bounds.left,
