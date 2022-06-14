@@ -101,6 +101,16 @@ class _EasyTableExpState<ROW> extends State<EasyTableExp<ROW>> {
     }
   }
 
+  void _onLastVisibleRowListener(int lastVisibleRowIndex) {
+    if (widget.onLastVisibleRowListener != null) {
+      if (_lastVisibleRow != lastVisibleRowIndex) {
+        _lastVisibleRow = lastVisibleRowIndex;
+        Future.microtask(
+            () => widget.onLastVisibleRowListener!(lastVisibleRowIndex));
+      }
+    }
+  }
+
   void _rebuild() {
     setState(() {});
   }
@@ -126,6 +136,9 @@ class _EasyTableExpState<ROW> extends State<EasyTableExp<ROW>> {
             multiSortEnabled: widget.multiSortEnabled,
             layoutSettingsBuilder: layoutSettingsBuilder,
             scrollControllers: _scrollControllers,
+            onLastVisibleRowListener: widget.onLastVisibleRowListener != null
+                ? _onLastVisibleRowListener
+                : null,
             model: widget.model));
 
     if (widget.model != null) {

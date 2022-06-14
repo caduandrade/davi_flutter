@@ -18,6 +18,10 @@ class TableScrollControllers {
     return vertical.hasClients ? vertical.offset : 0;
   }
 
+  double get verticalViewportDimension {
+    return vertical.hasClients ? vertical.position.viewportDimension : 0;
+  }
+
   TableScrollOffsets get offsets => TableScrollOffsets(
       leftPinnedContentArea: leftPinnedContentAreaOffset,
       unpinnedContentArea: unpinnedContentAreaOffset,

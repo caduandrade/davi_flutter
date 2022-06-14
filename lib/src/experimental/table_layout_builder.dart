@@ -11,6 +11,7 @@ import 'package:easy_table/src/experimental/table_layout_settings.dart';
 import 'package:easy_table/src/experimental/table_paint_settings.dart';
 import 'package:easy_table/src/experimental/table_scroll_controllers.dart';
 import 'package:easy_table/src/internal/header_cell.dart';
+import 'package:easy_table/src/last_visible_row_listener.dart';
 import 'package:easy_table/src/model.dart';
 import 'package:easy_table/src/row_hover_listener.dart';
 import 'package:easy_table/src/theme/theme.dart';
@@ -25,10 +26,12 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
       required this.layoutSettingsBuilder,
       required this.scrollControllers,
       required this.multiSortEnabled,
+      required this.onLastVisibleRowListener,
       required this.model})
       : super(key: key);
 
   final int? hoveredRowIndex;
+  final OnLastVisibleRowListener? onLastVisibleRowListener;
   final OnRowHoverListener onHoverListener;
   final TableScrollControllers scrollControllers;
   final TableLayoutSettingsBuilder layoutSettingsBuilder;
@@ -59,6 +62,16 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
 
     TablePaintSettings paintSettings =
         TablePaintSettings(hoveredRowIndex: hoveredRowIndex);
+
+    if (onLastVisibleRowListener != null && model != null) {
+      double maxPixels = scrollControllers.verticalOffset +
+          scrollControllers.verticalViewportDimension;
+      int index = math.max(
+          math.min((maxPixels / layoutSettingsBuilder.rowHeight).ceil() - 1,
+              model!.rowsLength - 1),
+          0);
+      onLastVisibleRowListener!(index);
+    }
 
     return _buildTable(
         context: context,

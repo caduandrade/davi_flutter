@@ -161,7 +161,7 @@ class _HomePageState extends State<HomePage> {
                     headerCell: HeaderCellThemeData(height: _headerCellHeight),
                     row:
                         RowThemeData(hoveredColor: (index) => Colors.blue[50])),
-                child: EasyTableExp(_model,
+                child: EasyTableExp(_model,onLastVisibleRowListener: _onLastVisibleRowListener,
                     columnsFit: _columnsFit, multiSortEnabled: true))));
   }
 
@@ -209,5 +209,9 @@ class _HomePageState extends State<HomePage> {
               ? 4
               : HeaderThemeDataDefaults.bottomBorderHeight;
     });
+  }
+
+  void _onLastVisibleRowListener(int lastVisibleRowIndex) {
+    print('lastVisibleRowIndex: $lastVisibleRowIndex');
   }
 }
