@@ -1,10 +1,11 @@
 import 'dart:math' as math;
+import 'package:easy_table/src/experimental/row_callbacks.dart';
 import 'package:easy_table/src/experimental/table_layout_builder.dart';
 import 'package:easy_table/src/experimental/table_layout_settings.dart';
 import 'package:easy_table/src/experimental/table_scroll_controllers.dart';
 import 'package:easy_table/src/model.dart';
 import 'package:easy_table/src/last_visible_row_listener.dart';
-import 'package:easy_table/src/row_callbacks.dart';
+import 'package:easy_table/src/row_callback_typedefs.dart';
 import 'package:easy_table/src/row_hover_listener.dart';
 import 'package:easy_table/src/theme/theme.dart';
 import 'package:easy_table/src/theme/theme_data.dart';
@@ -139,7 +140,8 @@ class _EasyTableExpState<ROW> extends State<EasyTableExp<ROW>> {
             onLastVisibleRowListener: widget.onLastVisibleRowListener != null
                 ? _onLastVisibleRowListener
                 : null,
-            model: widget.model));
+            model: widget.model,
+            rowCallbacks: _rowCallbacks()));
 
     if (widget.model != null) {
       if (theme.row.hoveredColor != null) {
@@ -239,5 +241,35 @@ class _EasyTableExpState<ROW> extends State<EasyTableExp<ROW>> {
       }
     }
     return KeyEventResult.handled;
+  }
+
+  RowCallbacks? _rowCallbacks() {
+    if (widget.onRowTap != null ||
+        widget.onRowDoubleTap != null ||
+        widget.onRowSecondaryTap != null) {
+      return RowCallbacks(
+          onRowDoubleTap: _onRowDoubleTap,
+          onRowTap: _onRowTap,
+          onRowSecondaryTap: _onRowSecondaryTap);
+    }
+    return null;
+  }
+
+  void _onRowTap(int rowIndex) {
+    if (widget.onRowTap != null && widget.model != null) {
+      widget.onRowTap!(widget.model!.visibleRowAt(rowIndex));
+    }
+  }
+
+  void _onRowDoubleTap(int rowIndex) {
+    if (widget.onRowDoubleTap != null && widget.model != null) {
+      widget.onRowDoubleTap!(widget.model!.visibleRowAt(rowIndex));
+    }
+  }
+
+  void _onRowSecondaryTap(int rowIndex) {
+    if (widget.onRowSecondaryTap != null && widget.model != null) {
+      widget.onRowSecondaryTap!(widget.model!.visibleRowAt(rowIndex));
+    }
   }
 }

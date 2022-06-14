@@ -4,13 +4,13 @@ import 'package:easy_table/src/experimental/columns_metrics_exp.dart';
 import 'package:easy_table/src/experimental/content_area.dart';
 import 'package:easy_table/src/experimental/content_area_id.dart';
 import 'package:easy_table/src/experimental/layout_child_type.dart';
+import 'package:easy_table/src/experimental/row_callbacks.dart';
 import 'package:easy_table/src/experimental/table_layout_parent_data_exp.dart';
 import 'package:easy_table/src/experimental/table_layout_settings.dart';
 import 'package:easy_table/src/experimental/table_paint_settings.dart';
 import 'package:easy_table/src/row_hover_listener.dart';
 import 'package:easy_table/src/theme/theme_data.dart';
 import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
 class TableLayoutRenderBoxExp<ROW> extends RenderBox
@@ -25,7 +25,8 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
       required ColumnsMetricsExp leftPinnedColumnsMetrics,
       required ColumnsMetricsExp unpinnedColumnsMetrics,
       required ColumnsMetricsExp rightPinnedColumnsMetrics,
-      required EasyTableThemeData theme})
+      required EasyTableThemeData theme,
+      required RowCallbacks? rowCallbacks})
       : _onHoverListener = onHoverListener,
         _layoutSettings = layoutSettings,
         _paintSettings = paintSettings,
@@ -44,7 +45,11 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
             bounds: layoutSettings.rightPinnedBounds,
             scrollOffset: layoutSettings.offsets.rightPinnedContentArea,
             columnsMetrics: rightPinnedColumnsMetrics),
-        _theme = theme;
+        _theme = theme,
+        _rowCallbacks = rowCallbacks;
+
+  late final TapGestureRecognizer _tapGestureRecognizer;
+  late final DoubleTapGestureRecognizer _doubleTapGestureRecognizer;
 
   final ContentArea _leftPinnedContentArea;
   final ContentArea _unpinnedContentArea;
@@ -96,6 +101,11 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
     }
   }
 
+  RowCallbacks? _rowCallbacks;
+  set rowCallbacks(RowCallbacks? value) {
+    _rowCallbacks = value;
+  }
+
   set leftPinnedColumnsMetrics(ColumnsMetricsExp value) {
     if (_leftPinnedContentArea.columnsMetrics != value) {
       _leftPinnedContentArea.columnsMetrics = value;
@@ -114,6 +124,37 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
     if (_rightPinnedContentArea.columnsMetrics != value) {
       _rightPinnedContentArea.columnsMetrics = value;
       markNeedsLayout();
+    }
+  }
+
+  int? _lastRowIndex;
+
+  @override
+  void attach(PipelineOwner owner) {
+    super.attach(owner);
+    _tapGestureRecognizer = TapGestureRecognizer(debugOwner: this);
+    _tapGestureRecognizer.onTap = _onRowTap;
+    _tapGestureRecognizer.onSecondaryTap = _onRowSecondaryTap;
+
+    _doubleTapGestureRecognizer = DoubleTapGestureRecognizer(debugOwner: this);
+    _doubleTapGestureRecognizer.onDoubleTap = _onRowDoubleTap;
+  }
+
+  void _onRowTap() {
+    if (_lastRowIndex != null) {
+      _rowCallbacks?.onRowTap(_lastRowIndex!);
+    }
+  }
+
+  void _onRowDoubleTap() {
+    if (_lastRowIndex != null) {
+      _rowCallbacks?.onRowDoubleTap(_lastRowIndex!);
+    }
+  }
+
+  void _onRowSecondaryTap() {
+    if (_lastRowIndex != null) {
+      _rowCallbacks?.onRowSecondaryTap(_lastRowIndex!);
     }
   }
 
@@ -209,11 +250,9 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
 
   @override
   double computeMaxIntrinsicHeight(double width) {
-    double height = computeMinIntrinsicHeight(width);
-    if (_layoutSettings.visibleRowsCount != null) {
-      height += _layoutSettings.visibleRowsCount! * _layoutSettings.cellHeight;
-    }
-    return height;
+    return computeMinIntrinsicHeight(width) +
+        (_layoutSettings.visibleRowsCount * _layoutSettings.cellHeight) +
+        _layoutSettings.scrollbarHeight;
   }
 
   @override
@@ -377,31 +416,48 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
   }
 
   @override
-  bool hitTestSelf(Offset position) => _theme.row.hoveredColor != null;
+  bool hitTestSelf(Offset position) => true;
 
   @override
   void handleEvent(PointerEvent event, HitTestEntry entry) {
     assert(debugHandleEvent(event, entry));
-    if (_theme.row.hoveredColor == null) {
-      return;
-    }
+
     if (event is PointerHoverEvent) {
-      //TODO check null listener?
       if (_layoutSettings.cellsBound.contains(event.localPosition)) {
         final double localY = event.localPosition.dy;
         final double y = math.max(0, localY - _layoutSettings.headerHeight) +
             _layoutSettings.offsets.vertical;
-        final int rowIndex = (y / _layoutSettings.rowHeight).floor();
-        _onHoverListener(rowIndex);
+        final double rowLocation = y / _layoutSettings.rowHeight;
+        final double cellArea =
+            _layoutSettings.cellHeight / _layoutSettings.rowHeight;
+        int rowIndex = rowLocation.floor();
+        if (rowIndex <= _layoutSettings.rowsLength - 1 &&
+            rowLocation < rowIndex + cellArea) {
+          // ignoring divisor area
+          _lastRowIndex = rowIndex;
+        } else {
+          _lastRowIndex = null;
+        }
       } else {
-        _onHoverListener(null);
+        _lastRowIndex = null;
       }
+      _onHoverListener(_lastRowIndex);
+    } else if (event is PointerDownEvent) {
+      _tapGestureRecognizer.addPointer(event);
+      _doubleTapGestureRecognizer.addPointer(event);
     }
   }
 
   @override
   bool hitTestChildren(BoxHitTestResult result, {required Offset position}) {
     return defaultHitTestChildren(result, position: position);
+  }
+
+  @override
+  void detach() {
+    _tapGestureRecognizer.dispose();
+    _doubleTapGestureRecognizer.dispose();
+    super.detach();
   }
 }
 

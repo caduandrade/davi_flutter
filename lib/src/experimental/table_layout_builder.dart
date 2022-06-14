@@ -4,6 +4,7 @@ import 'package:easy_table/src/cell_style.dart';
 import 'package:easy_table/src/column.dart';
 import 'package:easy_table/src/experimental/columns_metrics_exp.dart';
 import 'package:easy_table/src/experimental/content_area_id.dart';
+import 'package:easy_table/src/experimental/row_callbacks.dart';
 import 'package:easy_table/src/experimental/scroll_bar_exp.dart';
 import 'package:easy_table/src/experimental/layout_child.dart';
 import 'package:easy_table/src/experimental/table_layout_exp.dart';
@@ -27,7 +28,8 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
       required this.scrollControllers,
       required this.multiSortEnabled,
       required this.onLastVisibleRowListener,
-      required this.model})
+      required this.model,
+      required this.rowCallbacks})
       : super(key: key);
 
   final int? hoveredRowIndex;
@@ -37,6 +39,7 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
   final TableLayoutSettingsBuilder layoutSettingsBuilder;
   final EasyTableModel<ROW>? model;
   final bool multiSortEnabled;
+  final RowCallbacks? rowCallbacks;
 
   @override
   Widget build(BuildContext context) {
@@ -105,9 +108,8 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
               layoutSettingsBuilder.headerHeight -
               theme.scrollbar.borderThickness -
               layoutSettingsBuilder.scrollbarSize);
-      visibleRowsCount = (contentAvailableHeight /
-              (layoutSettingsBuilder.cellHeight + theme.row.dividerThickness))
-          .ceil();
+      visibleRowsCount =
+          (contentAvailableHeight / layoutSettingsBuilder.rowHeight).ceil();
     }
 
     children.add(LayoutChild.verticalScrollbar(
@@ -278,6 +280,7 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
 
     TableLayoutSettings layoutSettings = layoutSettingsBuilder.build(
         height: height,
+        visibleRowsCount: visibleRowsCount,
         cellsBound: cellsBound,
         hasHorizontalScrollbar: hasHorizontalScrollbar,
         scrollbarWidth: scrollbarWidth,
@@ -285,7 +288,8 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
         pinnedAreaDivisorWidth: pinnedAreaDivisorWidth,
         leftPinnedColumnsMetrics: leftPinnedColumnsMetrics,
         unpinnedColumnsMetrics: unpinnedColumnsMetrics,
-        rightPinnedColumnsMetrics: rightPinnedColumnsMetrics);
+        rightPinnedColumnsMetrics: rightPinnedColumnsMetrics,
+        rowsLength: model != null ? model.visibleRowsLength : 0);
 
     return TableLayoutExp(
         onHoverListener: onHoverListener,
@@ -295,6 +299,7 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
         unpinnedColumnsMetrics: unpinnedColumnsMetrics,
         rightPinnedColumnsMetrics: rightPinnedColumnsMetrics,
         theme: theme,
+        rowCallbacks: rowCallbacks,
         children: children);
   }
 

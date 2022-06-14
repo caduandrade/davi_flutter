@@ -45,5 +45,5 @@ class RowThemeData {
 
 class RowThemeDataDefaults {
   static const Color dividerColor = Colors.grey;
-  static const double dividerThickness = 0;
+  static const double dividerThickness = 20;
 }

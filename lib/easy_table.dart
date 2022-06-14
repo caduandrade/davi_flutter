@@ -15,7 +15,7 @@ export 'src/theme/scrollbar_theme_data.dart';
 export 'src/theme/row_theme_data.dart';
 export 'src/column.dart';
 export 'src/row_hover_listener.dart';
-export 'src/row_callbacks.dart';
+export 'src/row_callback_typedefs.dart';
 export 'src/cell_style.dart';
 export 'src/cell_icon.dart';
 export 'src/column_sort.dart';

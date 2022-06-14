@@ -8,7 +8,7 @@ import 'package:easy_table/src/internal/set_hovered_row_index.dart';
 import 'package:easy_table/src/internal/table_row_layout_delegate.dart';
 import 'package:easy_table/src/internal/table_row_painter.dart';
 import 'package:easy_table/src/model.dart';
-import 'package:easy_table/src/row_callbacks.dart';
+import 'package:easy_table/src/row_callback_typedefs.dart';
 import 'package:easy_table/src/theme/theme.dart';
 import 'package:easy_table/src/theme/theme_data.dart';
 import 'package:flutter/material.dart';

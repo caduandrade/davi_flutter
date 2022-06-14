@@ -71,7 +71,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     Random random = Random();
     List<Value> rows = List<Value>.generate(
-        100,
+        5,
         (index) => Value(
             index: index,
             string1: random.nextInt(9999999).toRadixString(16),
@@ -159,10 +159,16 @@ class _HomePageState extends State<HomePage> {
                         bottomBorderHeight: _bottomBorderHeight,
                         columnDividerColor: _headerColumnDividerColor),
                     headerCell: HeaderCellThemeData(height: _headerCellHeight),
-                    row:
-                        RowThemeData(hoveredColor: (index) => Colors.blue[50])),
-                child: EasyTableExp(_model,onLastVisibleRowListener: _onLastVisibleRowListener,
-                    columnsFit: _columnsFit, multiSortEnabled: true))));
+                    row:       RowThemeData(hoveredColor: (index) => Colors.blue[50])
+                ),
+                child: EasyTableExp(_model,
+                    onLastVisibleRowListener: _onLastVisibleRowListener,
+                    columnsFit: _columnsFit,
+                    multiSortEnabled: true,
+                    onRowTap: _onRowTap,
+                    onRowDoubleTap: _onRowDoubleTap,
+                    onRowSecondaryTap: _onRowSecondaryTap
+                ))));
   }
 
   void _changeColumnsFit() {
@@ -212,6 +218,18 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _onLastVisibleRowListener(int lastVisibleRowIndex) {
-    print('lastVisibleRowIndex: $lastVisibleRowIndex');
+    // print('lastVisibleRowIndex: $lastVisibleRowIndex');
+  }
+
+  void _onRowTap(Value row) {
+    print('rowTap: ${row.index}');
+  }
+
+  void _onRowDoubleTap(Value row) {
+    print('rowDoubleTap: ${row.index}');
+  }
+
+  void _onRowSecondaryTap(Value row) {
+    print('rowSecondaryTap: ${row.index}');
   }
 }

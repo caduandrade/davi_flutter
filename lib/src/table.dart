@@ -8,7 +8,7 @@ import 'package:easy_table/src/internal/table_layout.dart';
 import 'package:easy_table/src/internal/vertical_scroll_bar.dart';
 import 'package:easy_table/src/model.dart';
 import 'package:easy_table/src/last_visible_row_listener.dart';
-import 'package:easy_table/src/row_callbacks.dart';
+import 'package:easy_table/src/row_callback_typedefs.dart';
 import 'package:easy_table/src/row_hover_listener.dart';
 import 'package:easy_table/src/internal/table_scrolls.dart';
 import 'package:easy_table/src/theme/header_theme_data.dart';
