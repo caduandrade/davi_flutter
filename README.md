@@ -7,11 +7,10 @@
 * Ready for a large number of data. Building cells on demand.
 * Focused on Web/Desktop Applications.
 * Bidirectional scroll bars.
-* Sortable.
 * Resizable.
 * Highly customized.
 * Pinned columns.
-* Multiple column sort.
+* Multiple sortable.
 
 ## Usage
 
