@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 import 'package:easy_table/src/experimental/row_callbacks.dart';
-import 'package:easy_table/src/experimental/table_layout_builder.dart';
+import 'package:easy_table/src/experimental/layout_v2/table_layout_builder_v2.dart';
 import 'package:easy_table/src/experimental/table_layout_settings.dart';
 import 'package:easy_table/src/experimental/table_scroll_controllers.dart';
 import 'package:easy_table/src/model.dart';
@@ -131,7 +131,7 @@ class _EasyTableExpState<ROW> extends State<EasyTableExp<ROW>> {
             offsets: _scrollControllers.offsets);
 
     Widget table = ClipRect(
-        child: TableLayoutBuilder(
+        child: TableLayoutBuilderV2(
             onHoverListener: _setHoveredRowIndex,
             hoveredRowIndex: _hoveredRowIndex,
             multiSortEnabled: widget.multiSortEnabled,

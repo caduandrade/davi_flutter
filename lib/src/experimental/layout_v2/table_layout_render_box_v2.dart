@@ -1,11 +1,11 @@
 import 'dart:math' as math;
-import 'package:easy_table/src/experimental/child_painter_mixin.dart';
+import 'package:easy_table/src/experimental/layout_v2/child_painter_mixin_v2.dart';
 import 'package:easy_table/src/experimental/columns_metrics_exp.dart';
-import 'package:easy_table/src/experimental/content_area.dart';
-import 'package:easy_table/src/experimental/content_area_id.dart';
-import 'package:easy_table/src/experimental/layout_child_type.dart';
+import 'package:easy_table/src/experimental/layout_v2/content_area_v2.dart';
+import 'package:easy_table/src/experimental/column_pin.dart';
+import 'package:easy_table/src/experimental/layout_v2/layout_child_type_v2.dart';
 import 'package:easy_table/src/experimental/row_callbacks.dart';
-import 'package:easy_table/src/experimental/table_layout_parent_data_exp.dart';
+import 'package:easy_table/src/experimental/layout_v2/table_layout_parent_data_v2.dart';
 import 'package:easy_table/src/experimental/table_layout_settings.dart';
 import 'package:easy_table/src/experimental/table_paint_settings.dart';
 import 'package:easy_table/src/row_hover_listener.dart';
@@ -13,12 +13,12 @@ import 'package:easy_table/src/theme/theme_data.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/rendering.dart';
 
-class TableLayoutRenderBoxExp<ROW> extends RenderBox
+class TableLayoutRenderBoxV2<ROW> extends RenderBox
     with
-        ContainerRenderObjectMixin<RenderBox, TableLayoutParentDataExp>,
-        RenderBoxContainerDefaultsMixin<RenderBox, TableLayoutParentDataExp>,
-        ChildPainterMixin {
-  TableLayoutRenderBoxExp(
+        ContainerRenderObjectMixin<RenderBox, TableLayoutParentDataV2>,
+        RenderBoxContainerDefaultsMixin<RenderBox, TableLayoutParentDataV2>,
+        ChildPainterMixinV2 {
+  TableLayoutRenderBoxV2(
       {required OnRowHoverListener onHoverListener,
       required TableLayoutSettings layoutSettings,
       required TablePaintSettings paintSettings,
@@ -30,18 +30,18 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
       : _onHoverListener = onHoverListener,
         _layoutSettings = layoutSettings,
         _paintSettings = paintSettings,
-        _leftPinnedContentArea = ContentArea(
-            id: ContentAreaId.leftPinned,
+        _leftPinnedContentArea = ContentAreaV2(
+            id: ColumnPin.leftPinned,
             bounds: layoutSettings.leftPinnedBounds,
             scrollOffset: layoutSettings.offsets.leftPinnedContentArea,
             columnsMetrics: leftPinnedColumnsMetrics),
-        _unpinnedContentArea = ContentArea(
-            id: ContentAreaId.unpinned,
+        _unpinnedContentArea = ContentAreaV2(
+            id: ColumnPin.unpinned,
             bounds: layoutSettings.unpinnedBounds,
             scrollOffset: layoutSettings.offsets.unpinnedContentArea,
             columnsMetrics: unpinnedColumnsMetrics),
-        _rightPinnedContentArea = ContentArea(
-            id: ContentAreaId.rightPinned,
+        _rightPinnedContentArea = ContentAreaV2(
+            id: ColumnPin.rightPinned,
             bounds: layoutSettings.rightPinnedBounds,
             scrollOffset: layoutSettings.offsets.rightPinnedContentArea,
             columnsMetrics: rightPinnedColumnsMetrics),
@@ -51,14 +51,14 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
   late final TapGestureRecognizer _tapGestureRecognizer;
   late final DoubleTapGestureRecognizer _doubleTapGestureRecognizer;
 
-  final ContentArea _leftPinnedContentArea;
-  final ContentArea _unpinnedContentArea;
-  final ContentArea _rightPinnedContentArea;
+  final ContentAreaV2 _leftPinnedContentArea;
+  final ContentAreaV2 _unpinnedContentArea;
+  final ContentAreaV2 _rightPinnedContentArea;
 
-  late final Map<ContentAreaId, ContentArea> _contentAreaMap = {
-    ContentAreaId.leftPinned: _leftPinnedContentArea,
-    ContentAreaId.unpinned: _unpinnedContentArea,
-    ContentAreaId.rightPinned: _rightPinnedContentArea
+  late final Map<ColumnPin, ContentAreaV2> _contentAreaMap = {
+    ColumnPin.leftPinned: _leftPinnedContentArea,
+    ColumnPin.unpinned: _unpinnedContentArea,
+    ColumnPin.rightPinned: _rightPinnedContentArea
   };
 
   RenderBox? _verticalScrollbar;
@@ -160,8 +160,8 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
 
   @override
   void setupParentData(RenderBox child) {
-    if (child.parentData is! TableLayoutParentDataExp) {
-      child.parentData = TableLayoutParentDataExp();
+    if (child.parentData is! TableLayoutParentDataV2) {
+      child.parentData = TableLayoutParentDataV2();
     }
   }
 
@@ -180,18 +180,18 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
 
     visitChildren((child) {
       RenderBox renderBox = child as RenderBox;
-      TableLayoutParentDataExp parentData = child._parentData();
-      if (parentData.type == LayoutChildType.cell) {
+      TableLayoutParentDataV2 parentData = child._parentData();
+      if (parentData.type == LayoutChildTypeV2.cell) {
         _contentAreaMap[parentData.contentAreaId]!.addCell(renderBox);
-      } else if (parentData.type == LayoutChildType.header) {
+      } else if (parentData.type == LayoutChildTypeV2.header) {
         _contentAreaMap[parentData.contentAreaId]!.addHeader(renderBox);
-      } else if (parentData.type == LayoutChildType.horizontalScrollbar) {
+      } else if (parentData.type == LayoutChildTypeV2.horizontalScrollbar) {
         _contentAreaMap[parentData.contentAreaId]!.scrollbar = renderBox;
-      } else if (parentData.type == LayoutChildType.verticalScrollbar) {
+      } else if (parentData.type == LayoutChildTypeV2.verticalScrollbar) {
         _verticalScrollbar = renderBox;
-      } else if (parentData.type == LayoutChildType.topCorner) {
+      } else if (parentData.type == LayoutChildTypeV2.topCorner) {
         _topCorner = renderBox;
-      } else if (parentData.type == LayoutChildType.bottomCorner) {
+      } else if (parentData.type == LayoutChildTypeV2.bottomCorner) {
         _bottomCorner = renderBox;
       }
     });
@@ -461,11 +461,11 @@ class TableLayoutRenderBoxExp<ROW> extends RenderBox
   }
 }
 
-typedef _ContentAreaFunction = void Function(ContentArea area);
+typedef _ContentAreaFunction = void Function(ContentAreaV2 area);
 
 /// Utility extension to facilitate obtaining parent data.
 extension _TableLayoutParentDataGetter on RenderObject {
-  TableLayoutParentDataExp _parentData() {
-    return parentData as TableLayoutParentDataExp;
+  TableLayoutParentDataV2 _parentData() {
+    return parentData as TableLayoutParentDataV2;
   }
 }

@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
 @internal
-class EasyTableScrollBarExp extends StatelessWidget {
-  const EasyTableScrollBarExp(
+class TableScrollbar extends StatelessWidget {
+  const TableScrollbar(
       {Key? key,
       required this.contentSize,
       required this.scrollController,

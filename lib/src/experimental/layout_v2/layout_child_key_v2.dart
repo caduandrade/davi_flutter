@@ -1,23 +1,23 @@
-import 'package:easy_table/src/experimental/content_area_id.dart';
-import 'package:easy_table/src/experimental/layout_child_type.dart';
+import 'package:easy_table/src/experimental/column_pin.dart';
+import 'package:easy_table/src/experimental/layout_v2/layout_child_type_v2.dart';
 import 'package:flutter/widgets.dart';
 
-class LayoutChildKey extends LocalKey {
-  const LayoutChildKey(
+class LayoutChildKeyV2 extends LocalKey {
+  const LayoutChildKeyV2(
       {required this.type,
       required this.contentAreaId,
       required this.row,
       required this.column});
 
-  final LayoutChildType type;
-  final ContentAreaId? contentAreaId;
+  final LayoutChildTypeV2 type;
+  final ColumnPin? contentAreaId;
   final int? row;
   final int? column;
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is LayoutChildKey &&
+      other is LayoutChildKeyV2 &&
           runtimeType == other.runtimeType &&
           type == other.type &&
           contentAreaId == other.contentAreaId &&

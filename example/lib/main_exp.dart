@@ -56,7 +56,7 @@ class _HomePageState extends State<HomePage> {
 
   bool _columnsFit = false;
 
-  final bool _pinned = false;
+  final bool _pinned = true;
 
   Color _columnDividerColor = EasyTableThemeDataDefaults.columnDividerColor;
   double _columnDividerThickness =
@@ -71,7 +71,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     Random random = Random();
     List<Value> rows = List<Value>.generate(
-        5,
+        5000,
         (index) => Value(
             index: index,
             string1: random.nextInt(9999999).toRadixString(16),

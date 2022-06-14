@@ -1,8 +1,8 @@
 import 'package:easy_table/src/experimental/columns_metrics_exp.dart';
-import 'package:easy_table/src/experimental/layout_child.dart';
+import 'package:easy_table/src/experimental/layout_v2/layout_child_v2.dart';
 import 'package:easy_table/src/experimental/row_callbacks.dart';
-import 'package:easy_table/src/experimental/table_layout_element_exp.dart';
-import 'package:easy_table/src/experimental/table_layout_render_box_exp.dart';
+import 'package:easy_table/src/experimental/layout_v2/table_layout_element_v2.dart';
+import 'package:easy_table/src/experimental/layout_v2/table_layout_render_box_v2.dart';
 import 'package:easy_table/src/experimental/table_layout_settings.dart';
 import 'package:easy_table/src/experimental/table_paint_settings.dart';
 import 'package:easy_table/src/row_hover_listener.dart';
@@ -13,8 +13,8 @@ import 'package:meta/meta.dart';
 
 /// [EasyTable] table layout.
 @internal
-class TableLayoutExp<ROW> extends MultiChildRenderObjectWidget {
-  TableLayoutExp(
+class TableLayoutV2<ROW> extends MultiChildRenderObjectWidget {
+  TableLayoutV2(
       {Key? key,
       required this.onHoverListener,
       required this.layoutSettings,
@@ -24,7 +24,7 @@ class TableLayoutExp<ROW> extends MultiChildRenderObjectWidget {
       required this.rightPinnedColumnsMetrics,
       required this.theme,
       required this.rowCallbacks,
-      required List<LayoutChild> children})
+      required List<LayoutChildV2> children})
       : super(key: key, children: children);
 
   final OnRowHoverListener onHoverListener;
@@ -38,7 +38,7 @@ class TableLayoutExp<ROW> extends MultiChildRenderObjectWidget {
 
   @override
   RenderObject createRenderObject(BuildContext context) {
-    return TableLayoutRenderBoxExp<ROW>(
+    return TableLayoutRenderBoxV2<ROW>(
         onHoverListener: onHoverListener,
         layoutSettings: layoutSettings,
         paintSettings: paintSettings,
@@ -51,12 +51,12 @@ class TableLayoutExp<ROW> extends MultiChildRenderObjectWidget {
 
   @override
   MultiChildRenderObjectElement createElement() {
-    return TableLayoutElementExp(this);
+    return TableLayoutElementV2(this);
   }
 
   @override
   void updateRenderObject(
-      BuildContext context, covariant TableLayoutRenderBoxExp renderObject) {
+      BuildContext context, covariant TableLayoutRenderBoxV2 renderObject) {
     super.updateRenderObject(context, renderObject);
     renderObject
       ..onHoverListener = onHoverListener

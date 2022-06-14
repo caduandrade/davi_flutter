@@ -1,21 +1,21 @@
-import 'package:easy_table/src/experimental/child_painter_mixin.dart';
+import 'package:easy_table/src/experimental/layout_v2/child_painter_mixin_v2.dart';
 import 'package:easy_table/src/experimental/columns_metrics_exp.dart';
-import 'package:easy_table/src/experimental/content_area_id.dart';
-import 'package:easy_table/src/experimental/debug_colors.dart';
-import 'package:easy_table/src/experimental/table_layout_parent_data_exp.dart';
+import 'package:easy_table/src/experimental/column_pin.dart';
+import 'package:easy_table/src/experimental/layout_v2/debug_colors_v2.dart';
+import 'package:easy_table/src/experimental/layout_v2/table_layout_parent_data_v2.dart';
 import 'package:easy_table/src/experimental/table_layout_settings.dart';
 import 'package:easy_table/src/experimental/table_paint_settings.dart';
 import 'package:easy_table/src/theme/theme_data.dart';
 import 'package:flutter/material.dart';
 
-class ContentArea with ChildPainterMixin {
-  ContentArea(
+class ContentAreaV2 with ChildPainterMixinV2 {
+  ContentAreaV2(
       {required this.id,
       required this.bounds,
       required this.scrollOffset,
       required this.columnsMetrics});
 
-  final ContentAreaId id;
+  final ColumnPin id;
   final List<RenderBox> _headers = [];
   final List<RenderBox> _cells = [];
   ColumnsMetricsExp columnsMetrics;
@@ -43,7 +43,7 @@ class ContentArea with ChildPainterMixin {
       required EasyTableThemeData theme}) {
     // headers
     for (RenderBox renderBox in _headers) {
-      final TableLayoutParentDataExp parentData = renderBox._parentData();
+      final TableLayoutParentDataV2 parentData = renderBox._parentData();
       final double y = bounds.top;
       final int columnIndex = parentData.column!;
       final double width = columnsMetrics.widths[columnIndex];
@@ -56,7 +56,7 @@ class ContentArea with ChildPainterMixin {
     }
     // cells
     for (RenderBox renderBox in _cells) {
-      final TableLayoutParentDataExp parentData = renderBox._parentData();
+      final TableLayoutParentDataV2 parentData = renderBox._parentData();
       final int rowIndex = parentData.row!;
       final double y = layoutSettings.headerHeight +
           (rowIndex * layoutSettings.rowHeight) -
@@ -164,7 +164,7 @@ class ContentArea with ChildPainterMixin {
       required Color color,
       required double dy}) {
     Paint paint = Paint()..color = color;
-    int less = id == ContentAreaId.leftPinned ? 1 : 0;
+    int less = id == ColumnPin.leftPinned ? 1 : 0;
     for (int i = 0; i < columnsMetrics.widths.length - less; i++) {
       context.canvas.drawRect(
           Rect.fromLTWH(
@@ -190,7 +190,7 @@ class ContentArea with ChildPainterMixin {
     if (layoutSettings.hasHeader) {
       Paint paint = Paint()
         ..style = PaintingStyle.fill
-        ..color = DebugColors.headerArea(id);
+        ..color = DebugColorsV2.headerArea(id);
       canvas.drawRect(
           Rect.fromLTWH(offset.dx + bounds.left, offset.dy + bounds.top,
               bounds.width, layoutSettings.headerHeight),
@@ -199,7 +199,7 @@ class ContentArea with ChildPainterMixin {
     if (layoutSettings.hasHorizontalScrollbar) {
       Paint paint = Paint()
         ..style = PaintingStyle.fill
-        ..color = DebugColors.horizontalScrollbarArea(id);
+        ..color = DebugColorsV2.horizontalScrollbarArea(id);
       canvas.drawRect(
           Rect.fromLTWH(
               offset.dx + bounds.left,
@@ -213,7 +213,7 @@ class ContentArea with ChildPainterMixin {
 
 /// Utility extension to facilitate obtaining parent data.
 extension _TableLayoutParentDataGetter on RenderObject {
-  TableLayoutParentDataExp _parentData() {
-    return parentData as TableLayoutParentDataExp;
+  TableLayoutParentDataV2 _parentData() {
+    return parentData as TableLayoutParentDataV2;
   }
 }

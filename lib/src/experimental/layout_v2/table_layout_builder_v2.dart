@@ -3,14 +3,14 @@ import 'package:easy_table/src/cell_icon.dart';
 import 'package:easy_table/src/cell_style.dart';
 import 'package:easy_table/src/column.dart';
 import 'package:easy_table/src/experimental/columns_metrics_exp.dart';
-import 'package:easy_table/src/experimental/content_area_id.dart';
+import 'package:easy_table/src/experimental/column_pin.dart';
 import 'package:easy_table/src/experimental/row_callbacks.dart';
-import 'package:easy_table/src/experimental/scroll_bar_exp.dart';
-import 'package:easy_table/src/experimental/layout_child.dart';
-import 'package:easy_table/src/experimental/table_layout_exp.dart';
+import 'package:easy_table/src/experimental/layout_v2/layout_child_v2.dart';
+import 'package:easy_table/src/experimental/layout_v2/table_layout_v2.dart';
 import 'package:easy_table/src/experimental/table_layout_settings.dart';
 import 'package:easy_table/src/experimental/table_paint_settings.dart';
 import 'package:easy_table/src/experimental/table_scroll_controllers.dart';
+import 'package:easy_table/src/experimental/table_scrollbar.dart';
 import 'package:easy_table/src/internal/header_cell.dart';
 import 'package:easy_table/src/last_visible_row_listener.dart';
 import 'package:easy_table/src/model.dart';
@@ -19,8 +19,8 @@ import 'package:easy_table/src/theme/theme.dart';
 import 'package:easy_table/src/theme/theme_data.dart';
 import 'package:flutter/material.dart';
 
-class TableLayoutBuilder<ROW> extends StatelessWidget {
-  const TableLayoutBuilder(
+class TableLayoutBuilderV2<ROW> extends StatelessWidget {
+  const TableLayoutBuilderV2(
       {Key? key,
       required this.onHoverListener,
       required this.hoveredRowIndex,
@@ -95,7 +95,7 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
     ColumnsMetricsExp<ROW> rightPinnedColumnsMetrics =
         ColumnsMetricsExp.empty();
 
-    final List<LayoutChild> children = [];
+    final List<LayoutChildV2> children = [];
 
     int visibleRowsCount = layoutSettingsBuilder.visibleRowsCount ?? 0;
     if (constraints.hasBoundedHeight) {
@@ -112,8 +112,8 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
           (contentAvailableHeight / layoutSettingsBuilder.rowHeight).ceil();
     }
 
-    children.add(LayoutChild.verticalScrollbar(
-        child: EasyTableScrollBarExp(
+    children.add(LayoutChildV2.verticalScrollbar(
+        child: TableScrollbar(
             axis: Axis.vertical,
             contentSize: layoutSettingsBuilder.rowsFullHeight,
             scrollController: scrollControllers.vertical,
@@ -121,7 +121,7 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
             borderColor: theme.scrollbar.verticalBorderColor)));
 
     if (layoutSettingsBuilder.hasHeader) {
-      children.add(LayoutChild.topCorner());
+      children.add(LayoutChildV2.topCorner());
     }
 
     final int firstRowIndex =
@@ -149,12 +149,12 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
         leftPinnedColumnsMetrics = ColumnsMetricsExp.resizable(
             model: model,
             columnDividerThickness: theme.columnDividerThickness,
-            contentAreaId: ContentAreaId.leftPinned);
+            contentAreaId: ColumnPin.leftPinned);
 
         unpinnedColumnsMetrics = ColumnsMetricsExp.resizable(
             model: model,
             columnDividerThickness: theme.columnDividerThickness,
-            contentAreaId: ContentAreaId.unpinned);
+            contentAreaId: ColumnPin.unpinned);
 
         final double pinnedAreaWidth = leftPinnedColumnsMetrics.maxWidth;
         pinnedAreaDivisorWidth =
@@ -174,9 +174,9 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
             : true;
 
         if (hasHorizontalScrollbar) {
-          children.add(LayoutChild.horizontalScrollbar(
-              contentAreaId: ContentAreaId.leftPinned,
-              child: EasyTableScrollBarExp(
+          children.add(LayoutChildV2.horizontalScrollbar(
+              contentAreaId: ColumnPin.leftPinned,
+              child: TableScrollbar(
                   axis: Axis.horizontal,
                   scrollController: scrollControllers.leftPinnedContentArea,
                   color: theme.scrollbar.pinnedHorizontalColor,
@@ -184,16 +184,16 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
                   contentSize: pinnedAreaWidth)));
 
           //TODO build EasyTableScrollBarExp in LayoutChild.horizontalScrollbar
-          children.add(LayoutChild.horizontalScrollbar(
-              contentAreaId: ContentAreaId.unpinned,
-              child: EasyTableScrollBarExp(
+          children.add(LayoutChildV2.horizontalScrollbar(
+              contentAreaId: ColumnPin.unpinned,
+              child: TableScrollbar(
                   axis: Axis.horizontal,
                   scrollController: scrollControllers.unpinnedContentArea,
                   color: theme.scrollbar.unpinnedHorizontalColor,
                   borderColor: theme.scrollbar.unpinnedHorizontalBorderColor,
                   contentSize: unpinnedAreaWidth)));
 
-          children.add(LayoutChild.bottomCorner());
+          children.add(LayoutChildV2.bottomCorner());
         }
       }
     } else {
@@ -202,10 +202,10 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
       pinnedAreaDivisorWidth = 0;
     }
 
-    Map<ContentAreaId, ColumnsMetricsExp<ROW>> columnMetricsMap = {
-      ContentAreaId.leftPinned: leftPinnedColumnsMetrics,
-      ContentAreaId.unpinned: unpinnedColumnsMetrics,
-      ContentAreaId.rightPinned: rightPinnedColumnsMetrics
+    Map<ColumnPin, ColumnsMetricsExp<ROW>> columnMetricsMap = {
+      ColumnPin.leftPinned: leftPinnedColumnsMetrics,
+      ColumnPin.unpinned: unpinnedColumnsMetrics,
+      ColumnPin.rightPinned: rightPinnedColumnsMetrics
     };
 
     if (model != null) {
@@ -217,7 +217,7 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
 
           children.insert(
               0,
-              LayoutChild.header(
+              LayoutChildV2.header(
                   contentAreaId: contentAreaId,
                   column: columnIndex,
                   child: EasyTableHeaderCell<ROW>(
@@ -232,7 +232,7 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
             ROW row = model.visibleRowAt(rowIndex);
             children.insert(
                 0,
-                LayoutChild.cell(
+                LayoutChildV2.cell(
                     contentAreaId: contentAreaId,
                     row: rowIndex,
                     column: columnIndex,
@@ -291,7 +291,7 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
         rightPinnedColumnsMetrics: rightPinnedColumnsMetrics,
         rowsLength: model != null ? model.visibleRowsLength : 0);
 
-    return TableLayoutExp(
+    return TableLayoutV2(
         onHoverListener: onHoverListener,
         layoutSettings: layoutSettings,
         paintSettings: paintSettings,
