@@ -1,23 +1,21 @@
-import 'package:easy_table/src/experimental/layout_v3/layout_util_mixin_v3.dart';
 import 'package:easy_table/src/experimental/layout_v3/rows/rows_layout_parent_data_v3.dart';
-import 'package:easy_table/src/experimental/layout_v3/rows/rows_layout_settings.dart';
 import 'package:easy_table/src/experimental/layout_v3/rows/rows_painting_settings.dart';
+import 'package:easy_table/src/experimental/metrics/table_layout_settings_v3.dart';
 import 'package:flutter/rendering.dart';
 
 class RowsLayoutRenderBoxV3<ROW> extends RenderBox
     with
         ContainerRenderObjectMixin<RenderBox, RowsLayoutParentDataV3>,
-        RenderBoxContainerDefaultsMixin<RenderBox, RowsLayoutParentDataV3>,
-        LayoutUtilMixinV3 {
+        RenderBoxContainerDefaultsMixin<RenderBox, RowsLayoutParentDataV3> {
   RowsLayoutRenderBoxV3(
-      {required RowsLayoutSettings layoutSettings,
+      {required TableLayoutSettingsV3<ROW> layoutSettings,
       required RowsPaintingSettings paintSettings})
       : _layoutSettings = layoutSettings,
         _paintSettings = paintSettings;
 
-  RowsLayoutSettings _layoutSettings;
+  TableLayoutSettingsV3<ROW> _layoutSettings;
 
-  set layoutSettings(RowsLayoutSettings value) {
+  set layoutSettings(TableLayoutSettingsV3<ROW> value) {
     if (_layoutSettings != value) {
       _layoutSettings = value;
       markNeedsLayout();
@@ -59,10 +57,7 @@ class RowsLayoutRenderBoxV3<ROW> extends RenderBox
               width: constraints.maxWidth, height: _layoutSettings.cellHeight),
           parentUsesSize: true);
 
-      final double y = rowY(
-          verticalOffset: _layoutSettings.verticalOffset,
-          rowIndex: rowIndex,
-          rowHeight: rowHeight);
+      final double y = (rowIndex * rowHeight) - _layoutSettings.verticalOffset;
 
       renderBox._parentData().offset = Offset(0, y);
     });
@@ -74,7 +69,7 @@ class RowsLayoutRenderBoxV3<ROW> extends RenderBox
   void paint(PaintingContext context, Offset offset) {
     defaultPaint(context, offset);
 
-    if (_layoutSettings.dividerThickness > 0) {
+    if (_layoutSettings.columnDividerThickness > 0) {
       //TODO paint dividers
     }
   }

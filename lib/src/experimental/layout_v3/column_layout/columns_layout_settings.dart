@@ -1,4 +1,3 @@
 class ColumnsLayoutSettings {
   ColumnsLayoutSettings();
-
 }

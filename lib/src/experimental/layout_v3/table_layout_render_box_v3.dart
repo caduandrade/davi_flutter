@@ -1,8 +1,7 @@
 import 'dart:math' as math;
-import 'package:easy_table/src/experimental/columns_metrics_exp.dart';
 import 'package:easy_table/src/experimental/layout_v3/layout_child_id_v3.dart';
 import 'package:easy_table/src/experimental/layout_v3/table_layout_parent_data_v3.dart';
-import 'package:easy_table/src/experimental/table_layout_settings.dart';
+import 'package:easy_table/src/experimental/metrics/table_layout_settings_v3.dart';
 import 'package:easy_table/src/experimental/table_paint_settings.dart';
 import 'package:easy_table/src/theme/theme_data.dart';
 import 'package:flutter/rendering.dart';
@@ -10,16 +9,12 @@ import 'package:flutter/rendering.dart';
 class TableLayoutRenderBoxV3<ROW> extends RenderBox
     with
         ContainerRenderObjectMixin<RenderBox, TableLayoutParentDataV3>,
-        RenderBoxContainerDefaultsMixin<RenderBox, TableLayoutParentDataV3>{
+        RenderBoxContainerDefaultsMixin<RenderBox, TableLayoutParentDataV3> {
   TableLayoutRenderBoxV3(
-      {
-      required TableLayoutSettings layoutSettings,
+      {required TableLayoutSettingsV3<ROW> layoutSettings,
       required TablePaintSettings paintSettings,
-      required ColumnsMetricsExp leftPinnedColumnsMetrics,
-      required ColumnsMetricsExp unpinnedColumnsMetrics,
-      required ColumnsMetricsExp rightPinnedColumnsMetrics,
       required EasyTableThemeData theme})
-      :  _layoutSettings = layoutSettings,
+      : _layoutSettings = layoutSettings,
         _paintSettings = paintSettings,
         _theme = theme;
 
@@ -34,10 +29,10 @@ class TableLayoutRenderBoxV3<ROW> extends RenderBox
   set theme(EasyTableThemeData value) {
     _theme = value;
   }
-  
-  TableLayoutSettings _layoutSettings;
 
-  set layoutSettings(TableLayoutSettings value) {
+  TableLayoutSettingsV3<ROW> _layoutSettings;
+
+  set layoutSettings(TableLayoutSettingsV3<ROW> value) {
     if (_layoutSettings != value) {
       _layoutSettings = value;
       markNeedsLayout();
@@ -51,18 +46,6 @@ class TableLayoutRenderBoxV3<ROW> extends RenderBox
       _paintSettings = value;
       markNeedsPaint();
     }
-  }
-
-  set leftPinnedColumnsMetrics(ColumnsMetricsExp value) {
-
-  }
-
-  set unpinnedColumnsMetrics(ColumnsMetricsExp value) {
-
-  }
-
-  set rightPinnedColumnsMetrics(ColumnsMetricsExp value) {
-
   }
 
   @override
@@ -79,9 +62,9 @@ class TableLayoutRenderBoxV3<ROW> extends RenderBox
 
   @override
   void performLayout() {
-    _rows=null;
-    _header=null;
-    _horizontalScrollbars=null;
+    _rows = null;
+    _header = null;
+    _horizontalScrollbars = null;
     _verticalScrollbar = null;
     _topCorner = null;
     _bottomCorner = null;
@@ -91,7 +74,7 @@ class TableLayoutRenderBoxV3<ROW> extends RenderBox
       TableLayoutParentDataV3 parentData = child._parentData();
       if (parentData.id == LayoutChildIdV3.rows) {
         _rows = renderBox;
-      }  else if (parentData.id == LayoutChildIdV3.verticalScrollbar) {
+      } else if (parentData.id == LayoutChildIdV3.verticalScrollbar) {
         _verticalScrollbar = renderBox;
       } else if (parentData.id == LayoutChildIdV3.horizontalScrollbars) {
         _horizontalScrollbars = renderBox;
@@ -99,54 +82,35 @@ class TableLayoutRenderBoxV3<ROW> extends RenderBox
         _topCorner = renderBox;
       } else if (parentData.id == LayoutChildIdV3.bottomCorner) {
         _bottomCorner = renderBox;
+      } else if (parentData.id == LayoutChildIdV3.header) {
+        _header = renderBox;
       }
     });
 
     // header
-    if(_header!=null) {
+    if (_header != null) {
       _header!.layout(
           BoxConstraints.tightFor(
               width: _layoutSettings.headerBounds.width,
-              height: _layoutSettings.headerHeight),
+              height: _layoutSettings.headerBounds.height),
           parentUsesSize: true);
       _header!._parentData().offset = Offset.zero;
     }
 
     //TODO divisors
 
-    // cells
-    if(_rows!=null) {
-      _rows!.layout(
-          BoxConstraints.tightFor(
-              width: _layoutSettings.cellsBound.width,
-              height: _layoutSettings.cellsBound.height),
-          parentUsesSize: true);
-      _rows!._parentData().offset = Offset(0, _layoutSettings.headerHeight);
-    }
+    // rows
+    _layoutChild(child: _rows, bounds: _layoutSettings.cellsBounds);
 
     // horizontal scrollbars
-    if(_horizontalScrollbars!=null) {
-      _horizontalScrollbars!.layout(
-          BoxConstraints.tightFor(
-              width: _layoutSettings.cellsBound.width,
-              height: _layoutSettings.scrollbarHeight),
-          parentUsesSize: true);
-      _horizontalScrollbars!._parentData().offset = Offset(0, _layoutSettings.headerHeight + _layoutSettings.cellsBound.height);
-    }
+    _layoutChild(
+        child: _horizontalScrollbars,
+        bounds: _layoutSettings.horizontalScrollbarBounds);
 
     // vertical scrollbar
-    _verticalScrollbar!.layout(
-        BoxConstraints.tightFor(
-            width: _layoutSettings.scrollbarWidth,
-            height: math.max(
-                0,
-                _layoutSettings.height -
-                    _layoutSettings.headerHeight -
-                    _layoutSettings.scrollbarHeight)),
-        parentUsesSize: true);
-    _verticalScrollbar!._parentData().offset = Offset(
-        constraints.maxWidth - _layoutSettings.scrollbarWidth,
-        _layoutSettings.headerHeight);
+    _layoutChild(
+        child: _verticalScrollbar,
+        bounds: _layoutSettings.verticalScrollbarBounds);
 
     // top corner
     if (_topCorner != null) {
@@ -171,10 +135,16 @@ class TableLayoutRenderBoxV3<ROW> extends RenderBox
           _layoutSettings.height - _layoutSettings.scrollbarHeight);
     }
 
-
-
-
     size = computeDryLayout(constraints);
+  }
+
+  void _layoutChild({required RenderBox? child, required Rect bounds}) {
+    if (child != null) {
+      child.layout(
+          BoxConstraints.tightFor(width: bounds.width, height: bounds.height),
+          parentUsesSize: true);
+      child._parentData().offset = Offset(bounds.left, bounds.top);
+    }
   }
 
   @override
@@ -189,31 +159,22 @@ class TableLayoutRenderBoxV3<ROW> extends RenderBox
   @override
   double computeMaxIntrinsicHeight(double width) {
     return computeMinIntrinsicHeight(width) +
-        (_layoutSettings.visibleRowsCount * _layoutSettings.cellHeight) +
+        (_layoutSettings.maxVisibleRowsLength * _layoutSettings.cellHeight) +
         _layoutSettings.scrollbarHeight;
   }
 
   @override
   void paint(PaintingContext context, Offset offset) {
-
-
-    paintChild(context: context, offset: offset, child: _verticalScrollbar);
-    paintChild(context: context, offset: offset, child: _topCorner);
-    paintChild(context: context, offset: offset, child: _bottomCorner);
-    paintChild(context: context, offset: offset, child: _header);
-    paintChild(context: context, offset: offset, child: _rows);
-    paintChild(context: context, offset: offset, child: _horizontalScrollbars);
-
-
+    defaultPaint(context, offset);
 
     // pinned content area divisors
     if (_theme.columnDividerThickness > 0) {
       //TODO check
-      if(false) {
-      //if (_leftPinnedContentArea.bounds.width > 0) {
+      if (false) {
+        //if (_leftPinnedContentArea.bounds.width > 0) {
         context.canvas.save();
         context.canvas.clipRect(Rect.fromLTWH(offset.dx, offset.dy,
-            _layoutSettings.cellsBound.width, _layoutSettings.height));
+            _layoutSettings.cellsBounds.width, _layoutSettings.height));
         if (_layoutSettings.headerHeight > 0) {
           // header
           if (_theme.header.columnDividerColor != null) {
@@ -224,7 +185,7 @@ class TableLayoutRenderBoxV3<ROW> extends RenderBox
                 color: _theme.header.columnDividerColor!,
                 top: 0,
                 //TODO check
-                left: 0,//_leftPinnedContentArea.bounds.width,
+                left: 0, //_leftPinnedContentArea.bounds.width,
                 height: _theme.headerCell.height);
           }
         }
@@ -236,9 +197,9 @@ class TableLayoutRenderBoxV3<ROW> extends RenderBox
               theme: _theme,
               color: _theme.columnDividerColor!,
               //TODO check
-              left: 0,//_leftPinnedContentArea.bounds.width,
+              left: 0, //_leftPinnedContentArea.bounds.width,
               top: _layoutSettings.headerHeight,
-              height: _layoutSettings.cellsBound.height);
+              height: _layoutSettings.cellsBounds.height);
         }
         // scrollbar
         if (_theme.scrollbar.columnDividerColor != null) {
@@ -248,17 +209,14 @@ class TableLayoutRenderBoxV3<ROW> extends RenderBox
               theme: _theme,
               color: _theme.scrollbar.columnDividerColor!,
               //TODO check
-              left: 0,//_leftPinnedContentArea.bounds.width,
+              left: 0, //_leftPinnedContentArea.bounds.width,
               top: _layoutSettings.headerHeight +
-                  _layoutSettings.cellsBound.height,
+                  _layoutSettings.cellsBounds.height,
               height: _layoutSettings.scrollbarHeight);
         }
         context.canvas.restore();
       }
     }
-
-
-
   }
 
   void _paintPinnedColumnDividers(
@@ -276,8 +234,6 @@ class TableLayoutRenderBoxV3<ROW> extends RenderBox
         paint);
   }
 
-
-
   @override
   bool hitTestChildren(BoxHitTestResult result, {required Offset position}) {
     return defaultHitTestChildren(result, position: position);
@@ -285,17 +241,15 @@ class TableLayoutRenderBoxV3<ROW> extends RenderBox
 
   void paintChild(
       {required PaintingContext context,
-        required Offset offset,
-        required RenderBox? child}) {
+      required Offset offset,
+      required RenderBox? child}) {
     if (child != null) {
       final TableLayoutParentDataV3 parentData =
-      child.parentData as TableLayoutParentDataV3;
+          child.parentData as TableLayoutParentDataV3;
       context.paintChild(child, parentData.offset + offset);
     }
   }
-  
 }
-
 
 /// Utility extension to facilitate obtaining parent data.
 extension _TableLayoutParentDataGetter on RenderObject {

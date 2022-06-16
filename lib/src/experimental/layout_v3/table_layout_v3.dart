@@ -1,8 +1,7 @@
-import 'package:easy_table/src/experimental/columns_metrics_exp.dart';
 import 'package:easy_table/src/experimental/layout_v3/layout_child_v3.dart';
 import 'package:easy_table/src/experimental/layout_v3/table_layout_element_v3.dart';
 import 'package:easy_table/src/experimental/layout_v3/table_layout_render_box_v3.dart';
-import 'package:easy_table/src/experimental/table_layout_settings.dart';
+import 'package:easy_table/src/experimental/metrics/table_layout_settings_v3.dart';
 import 'package:easy_table/src/experimental/table_paint_settings.dart';
 import 'package:easy_table/src/theme/theme_data.dart';
 import 'package:flutter/material.dart';
@@ -16,18 +15,12 @@ class TableLayoutV3<ROW> extends MultiChildRenderObjectWidget {
       {Key? key,
       required this.layoutSettings,
       required this.paintSettings,
-      required this.leftPinnedColumnsMetrics,
-      required this.unpinnedColumnsMetrics,
-      required this.rightPinnedColumnsMetrics,
       required this.theme,
       required List<LayoutChildV3> children})
       : super(key: key, children: children);
 
-  final TableLayoutSettings layoutSettings;
+  final TableLayoutSettingsV3<ROW> layoutSettings;
   final TablePaintSettings paintSettings;
-  final ColumnsMetricsExp leftPinnedColumnsMetrics;
-  final ColumnsMetricsExp unpinnedColumnsMetrics;
-  final ColumnsMetricsExp rightPinnedColumnsMetrics;
   final EasyTableThemeData theme;
 
   @override
@@ -35,9 +28,6 @@ class TableLayoutV3<ROW> extends MultiChildRenderObjectWidget {
     return TableLayoutRenderBoxV3<ROW>(
         layoutSettings: layoutSettings,
         paintSettings: paintSettings,
-        leftPinnedColumnsMetrics: leftPinnedColumnsMetrics,
-        unpinnedColumnsMetrics: unpinnedColumnsMetrics,
-        rightPinnedColumnsMetrics: rightPinnedColumnsMetrics,
         theme: theme);
   }
 
@@ -53,9 +43,6 @@ class TableLayoutV3<ROW> extends MultiChildRenderObjectWidget {
     renderObject
       ..layoutSettings = layoutSettings
       ..paintSettings = paintSettings
-      ..leftPinnedColumnsMetrics = leftPinnedColumnsMetrics
-      ..unpinnedColumnsMetrics = unpinnedColumnsMetrics
-      ..rightPinnedColumnsMetrics = rightPinnedColumnsMetrics
       ..theme = theme;
   }
 }

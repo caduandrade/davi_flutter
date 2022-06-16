@@ -134,7 +134,7 @@ class _EasyTableExpState<ROW> extends State<EasyTableExp<ROW>> {
             offsets: _scrollControllers.offsets);
 
     Widget table;
-    if (false) {
+    if (true) {
       table = ClipRect(
           child: TableLayoutBuilderV3(
               onHoverListener: _setHoveredRowIndex,
@@ -142,6 +142,9 @@ class _EasyTableExpState<ROW> extends State<EasyTableExp<ROW>> {
               multiSortEnabled: widget.multiSortEnabled,
               layoutSettingsBuilder: layoutSettingsBuilder,
               scrollControllers: _scrollControllers,
+              columnsFit: widget.columnsFit,
+              cellContentHeight: widget.cellContentHeight,
+              visibleRowsLength: widget.visibleRowsCount,
               onLastVisibleRowListener: widget.onLastVisibleRowListener != null
                   ? _onLastVisibleRowListener
                   : null,

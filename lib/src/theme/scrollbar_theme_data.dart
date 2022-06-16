@@ -23,7 +23,8 @@ class TableScrollbarThemeData {
     this.thumbColor = TableScrollbarThemeDataDefaults.thumbColor,
     this.horizontalOnlyWhenNeeded =
         TableScrollbarThemeDataDefaults.horizontalOnlyWhenNeeded,
-    this.verticalOnlyWhenNeeded=TableScrollbarThemeDataDefaults.verticalOnlyWhenNeeded,
+    this.verticalOnlyWhenNeeded =
+        TableScrollbarThemeDataDefaults.verticalOnlyWhenNeeded,
     this.columnDividerColor =
         TableScrollbarThemeDataDefaults.columnDividerColor,
   });

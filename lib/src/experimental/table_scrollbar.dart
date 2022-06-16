@@ -1,7 +1,6 @@
 import 'package:easy_table/src/theme/scrollbar_theme_data.dart';
 import 'package:easy_table/src/theme/theme.dart';
 import 'package:easy_table/src/theme/theme_data.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
@@ -38,7 +37,7 @@ class TableScrollbar extends StatelessWidget {
                 color: borderColor, width: theme.scrollbar.borderThickness));
       }
     }
-    Widget scrollbar= Container(
+    Widget scrollbar = Container(
         decoration: BoxDecoration(color: color, border: border),
         child: Theme(
             data: ThemeData(
@@ -59,9 +58,8 @@ class TableScrollbar extends StatelessWidget {
                         controller: scrollController,
                         scrollDirection: axis)))));
 
-    Widget a=  NotificationListener<ScrollNotification>(
+    Widget a = NotificationListener<ScrollNotification>(
         onNotification: (scrollNotification) {
-
           if (scrollNotification is ScrollStartNotification) {
             print('start');
           } else if (scrollNotification is ScrollEndNotification) {
@@ -71,8 +69,10 @@ class TableScrollbar extends StatelessWidget {
         },
         child: scrollbar);
 
-    return Listener(onPointerDown: (a)=>print('down'),
-        onPointerUp: (a)=>print('up'), child: a);
+    return Listener(
+        onPointerDown: (a) => print('down'),
+        onPointerUp: (a) => print('up'),
+        child: a);
   }
 
   Widget _sizedBox() {

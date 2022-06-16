@@ -1,7 +1,6 @@
 import 'dart:ui';
 
 class RowsPaintingSettings {
-
   RowsPaintingSettings({required this.divisorColor});
 
   final Color? divisorColor;

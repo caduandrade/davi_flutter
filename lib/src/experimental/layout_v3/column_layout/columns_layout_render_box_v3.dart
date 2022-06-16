@@ -1,15 +1,12 @@
 import 'package:easy_table/src/experimental/layout_v3/column_layout/columns_layout_parent_data_v3.dart';
 import 'package:easy_table/src/experimental/layout_v3/column_layout/columns_layout_settings.dart';
-import 'package:easy_table/src/experimental/layout_v3/layout_util_mixin_v3.dart';
 import 'package:flutter/rendering.dart';
 
 class ColumnsLayoutRenderBoxV3<ROW> extends RenderBox
     with
         ContainerRenderObjectMixin<RenderBox, ColumnsLayoutParentDataV3>,
-        RenderBoxContainerDefaultsMixin<RenderBox, ColumnsLayoutParentDataV3>,
-        LayoutUtilMixinV3 {
-  ColumnsLayoutRenderBoxV3(
-      {required ColumnsLayoutSettings layoutSettings})
+        RenderBoxContainerDefaultsMixin<RenderBox, ColumnsLayoutParentDataV3> {
+  ColumnsLayoutRenderBoxV3({required ColumnsLayoutSettings layoutSettings})
       : _layoutSettings = layoutSettings;
 
   ColumnsLayoutSettings _layoutSettings;
@@ -35,7 +32,6 @@ class ColumnsLayoutRenderBoxV3<ROW> extends RenderBox
 
   @override
   void performLayout() {
-
     double x = 0;
     visitChildren((child) {
       final RenderBox renderBox = child as RenderBox;
@@ -43,11 +39,10 @@ class ColumnsLayoutRenderBoxV3<ROW> extends RenderBox
       final int columnIndex = parentData.index!;
 
       renderBox.layout(
-          BoxConstraints.tightFor(
-              width: 60, height: constraints.maxHeight),
+          BoxConstraints.tightFor(width: 60, height: constraints.maxHeight),
           parentUsesSize: true);
       renderBox._parentData().offset = Offset(x, 0);
-      x+=60;
+      x += 60;
     });
 
     size = computeDryLayout(constraints);

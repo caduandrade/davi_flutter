@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 class HeaderThemeData {
   /// Builds a theme data.
   const HeaderThemeData({
-    this.visible=HeaderThemeDataDefaults.visible,
+    this.visible = HeaderThemeDataDefaults.visible,
     this.bottomBorderHeight = HeaderThemeDataDefaults.bottomBorderHeight,
     this.bottomBorderColor = HeaderThemeDataDefaults.bottomBorderColor,
     this.columnDividerColor = HeaderThemeDataDefaults.columnDividerColor,
@@ -35,7 +35,7 @@ class HeaderThemeData {
 }
 
 class HeaderThemeDataDefaults {
-  static const bool visible= true;
+  static const bool visible = true;
   static const double bottomBorderHeight = 1;
   static const Color bottomBorderColor = Colors.grey;
   static const Color columnDividerColor = Colors.grey;

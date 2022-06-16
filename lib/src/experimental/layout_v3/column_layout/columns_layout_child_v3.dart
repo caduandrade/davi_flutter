@@ -3,13 +3,12 @@ import 'package:easy_table/src/experimental/layout_v3/column_layout/columns_layo
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-class ColumnsLayoutChildV3<ROW> extends ParentDataWidget<ColumnsLayoutParentDataV3> {
-
+class ColumnsLayoutChildV3<ROW>
+    extends ParentDataWidget<ColumnsLayoutParentDataV3> {
   ColumnsLayoutChildV3({
     required this.index,
     required Widget child,
   }) : super(key: ValueKey(index), child: child);
-
 
   final int index;
 

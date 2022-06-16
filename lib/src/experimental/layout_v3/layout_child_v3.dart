@@ -1,11 +1,9 @@
-import 'package:easy_table/src/experimental/layout_v3/index_range_v3.dart';
-import 'package:easy_table/src/experimental/layout_v3/rows/rows_layout_settings.dart';
 import 'package:easy_table/src/experimental/layout_v3/rows/rows_v3.dart';
 import 'package:easy_table/src/experimental/layout_v3/horizontal_scrollbars_layout_v3.dart';
 import 'package:easy_table/src/experimental/layout_v3/layout_child_id_v3.dart';
 import 'package:easy_table/src/experimental/layout_v3/table_layout_parent_data_v3.dart';
 import 'package:easy_table/src/experimental/layout_v3/table_layout_v3.dart';
-import 'package:easy_table/src/experimental/pin_status.dart';
+import 'package:easy_table/src/experimental/metrics/table_layout_settings_v3.dart';
 import 'package:easy_table/src/experimental/table_corner.dart';
 import 'package:easy_table/src/experimental/table_scrollbar.dart';
 import 'package:easy_table/src/model.dart';
@@ -13,15 +11,17 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class LayoutChildV3<ROW> extends ParentDataWidget<TableLayoutParentDataV3> {
-  factory LayoutChildV3.header(
-      {required PinStatus pinStatus,
-      required int column,
-      required Widget child}) {
-    return LayoutChildV3._(id: LayoutChildIdV3.header, child: child);
+  factory LayoutChildV3.header() {
+    return LayoutChildV3._(
+        id: LayoutChildIdV3.header, child: Container(color: Colors.blue));
   }
 
-  factory LayoutChildV3.rows({required EasyTableModel<ROW>? model,required RowsLayoutSettings layoutSettings}) {
-    return LayoutChildV3._(id: LayoutChildIdV3.rows, child:  RowsV3<ROW>(model: model,layoutSettings:layoutSettings));
+  factory LayoutChildV3.rows(
+      {required EasyTableModel<ROW>? model,
+      required TableLayoutSettingsV3<ROW> layoutSettings}) {
+    return LayoutChildV3._(
+        id: LayoutChildIdV3.rows,
+        child: RowsV3<ROW>(model: model, layoutSettings: layoutSettings));
   }
 
   factory LayoutChildV3.bottomCorner() {
@@ -36,7 +36,8 @@ class LayoutChildV3<ROW> extends ParentDataWidget<TableLayoutParentDataV3> {
 
   factory LayoutChildV3.horizontalScrollbars(List<TableScrollbar> scrollbars) {
     return LayoutChildV3._(
-        id: LayoutChildIdV3.horizontalScrollbars, child: HorizontalScrollbarsLayoutV3(scrollbars: scrollbars));
+        id: LayoutChildIdV3.horizontalScrollbars,
+        child: HorizontalScrollbarsLayoutV3(scrollbars: scrollbars));
   }
 
   factory LayoutChildV3.verticalScrollbar({required Widget child}) {

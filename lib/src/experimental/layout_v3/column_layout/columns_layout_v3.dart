@@ -19,8 +19,7 @@ class ColumnsLayoutV3<ROW> extends MultiChildRenderObjectWidget {
 
   @override
   RenderObject createRenderObject(BuildContext context) {
-    return ColumnsLayoutRenderBoxV3<ROW>(
-        layoutSettings: layoutSettings);
+    return ColumnsLayoutRenderBoxV3<ROW>(layoutSettings: layoutSettings);
   }
 
   @override
@@ -32,7 +31,6 @@ class ColumnsLayoutV3<ROW> extends MultiChildRenderObjectWidget {
   void updateRenderObject(
       BuildContext context, covariant ColumnsLayoutRenderBoxV3 renderObject) {
     super.updateRenderObject(context, renderObject);
-    renderObject
-      .layoutSettings = layoutSettings;
+    renderObject.layoutSettings = layoutSettings;
   }
 }
