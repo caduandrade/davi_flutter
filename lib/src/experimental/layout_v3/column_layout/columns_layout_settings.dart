@@ -1,3 +1,0 @@
-class ColumnsLayoutSettings {
-  ColumnsLayoutSettings();
-}

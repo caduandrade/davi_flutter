@@ -49,7 +49,7 @@ class TableLayoutBuilderV3<ROW> extends StatelessWidget {
   Widget _builder(BuildContext context, BoxConstraints constraints) {
     final EasyTableThemeData theme = EasyTableTheme.of(context);
 
-    TableLayoutSettingsV3<ROW> layoutSettings = TableLayoutSettingsV3(
+    TableLayoutSettingsV3<ROW> layoutSettings = TableLayoutSettingsV3<ROW>(
         constraints: constraints,
         model: model,
         theme: theme,
@@ -98,12 +98,12 @@ class TableLayoutBuilderV3<ROW> extends StatelessWidget {
     }
 
     children
-        .add(LayoutChildV3.rows(model: model, layoutSettings: layoutSettings));
+        .add(LayoutChildV3<ROW>.rows(model: model, layoutSettings: layoutSettings));
 
     TablePaintSettings paintSettings =
         TablePaintSettings(hoveredRowIndex: null, debugAreas: false);
 
-    return TableLayoutV3(
+    return TableLayoutV3<ROW>(
         layoutSettings: layoutSettings,
         paintSettings: paintSettings,
         theme: theme,

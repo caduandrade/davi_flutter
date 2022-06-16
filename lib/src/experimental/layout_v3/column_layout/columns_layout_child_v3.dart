@@ -8,7 +8,7 @@ class ColumnsLayoutChildV3<ROW>
   ColumnsLayoutChildV3({
     required this.index,
     required Widget child,
-  }) : super(key: ValueKey(index), child: child);
+  }) : super(key: ValueKey<int>(index), child: child);
 
   final int index;
 

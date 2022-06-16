@@ -84,14 +84,14 @@ class TableLayoutSettingsV3<ROW> {
       if (columnsFit) {
         unpinnedContentWidth = math.max(0,
             constraints.maxWidth - (hasVerticalScrollbar ? scrollbarWidth : 0));
-        columnsMetrics = UnmodifiableListView(ColumnMetricsV3.columnsFit(
+        columnsMetrics = UnmodifiableListView<ColumnMetricsV3<ROW>>(ColumnMetricsV3.columnsFit<ROW>(
             model: model,
             dividerThickness: columnDividerThickness,
             maxWidth: unpinnedContentWidth));
         hasHorizontalScrollbar = false;
       } else {
         // resizable columns
-        columnsMetrics = UnmodifiableListView(ColumnMetricsV3.resizable(
+        columnsMetrics = UnmodifiableListView<ColumnMetricsV3<ROW>>(ColumnMetricsV3.resizable<ROW>(
             model: model, dividerThickness: columnDividerThickness));
 
         for (ColumnMetricsV3<ROW> columnMetrics in columnsMetrics) {
@@ -148,7 +148,7 @@ class TableLayoutSettingsV3<ROW> {
         }
       }
     } else {
-      columnsMetrics = UnmodifiableListView([]);
+      columnsMetrics = UnmodifiableListView<ColumnMetricsV3<ROW>>([]);
     }
 
     final int firstRowIndex = (verticalOffset / rowHeight).floor();
@@ -327,6 +327,12 @@ class TableLayoutSettingsV3<ROW> {
 
   @override
   final int hashCode;
+
+  void p() {
+    for (ColumnMetricsV3<ROW> columnMetrics in columnsMetrics) {
+      print(columnMetrics.column.intValueMapper);
+    }
+  }
 
   @override
   bool operator ==(Object other) =>

@@ -7,7 +7,7 @@ class RowsLayoutChildV3<ROW> extends ParentDataWidget<RowsLayoutParentDataV3> {
   RowsLayoutChildV3({
     required this.index,
     required Widget child,
-  }) : super(key: ValueKey(index), child: child);
+  }) : super(key: ValueKey<int>(index), child: child);
 
   final int index;
 

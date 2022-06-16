@@ -1,18 +1,18 @@
 import 'package:easy_table/src/experimental/layout_v3/column_layout/columns_layout_parent_data_v3.dart';
-import 'package:easy_table/src/experimental/layout_v3/column_layout/columns_layout_settings.dart';
+import 'package:easy_table/src/experimental/metrics/table_layout_settings_v3.dart';
 import 'package:flutter/rendering.dart';
 
 class ColumnsLayoutRenderBoxV3<ROW> extends RenderBox
     with
         ContainerRenderObjectMixin<RenderBox, ColumnsLayoutParentDataV3>,
         RenderBoxContainerDefaultsMixin<RenderBox, ColumnsLayoutParentDataV3> {
-  ColumnsLayoutRenderBoxV3({required ColumnsLayoutSettings layoutSettings})
+  ColumnsLayoutRenderBoxV3({required TableLayoutSettingsV3<ROW> layoutSettings})
       : _layoutSettings = layoutSettings;
 
-  ColumnsLayoutSettings _layoutSettings;
+  TableLayoutSettingsV3<ROW> _layoutSettings;
 
-  set layoutSettings(ColumnsLayoutSettings value) {
-    if (_layoutSettings != value) {
+  set layoutSettings(TableLayoutSettingsV3<ROW> value) {
+    if (_layoutSettings != value) { //TODO maybe can check only row height and columns
       _layoutSettings = value;
       markNeedsLayout();
     }

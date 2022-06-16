@@ -2,6 +2,7 @@ import 'package:easy_table/src/experimental/layout_v3/row_v3.dart';
 import 'package:easy_table/src/experimental/layout_v3/rows/rows_layout_child_v3.dart';
 import 'package:easy_table/src/experimental/layout_v3/rows/rows_layout_v3.dart';
 import 'package:easy_table/src/experimental/layout_v3/rows/rows_painting_settings.dart';
+import 'package:easy_table/src/experimental/metrics/column_metrics_v3.dart';
 import 'package:easy_table/src/experimental/metrics/table_layout_settings_v3.dart';
 import 'package:easy_table/src/model.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +16,7 @@ class RowsV3<ROW> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<RowsLayoutChildV3> children = [];
+    List<RowsLayoutChildV3<ROW>> children = [];
 
     if (model != null) {
       final int last =
@@ -23,8 +24,8 @@ class RowsV3<ROW> extends StatelessWidget {
       for (int i = layoutSettings.firstRowIndex;
           i < last && i < model!.visibleRowsLength;
           i++) {
-        RowV3 row = RowV3(rowIndex: i, row: model!.visibleRowAt(i));
-        children.add(RowsLayoutChildV3(index: i, child: row));
+        RowV3<ROW> row = RowV3<ROW>(rowIndex: i, row: model!.visibleRowAt(i), layoutSettings: layoutSettings);
+        children.add(RowsLayoutChildV3<ROW>(index: i, child: row));
       }
 
       //TODO use correct color
