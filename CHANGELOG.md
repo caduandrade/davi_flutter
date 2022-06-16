@@ -7,6 +7,8 @@
   * `CellThemeData.overflow` has been added.
   * `CellStyle.overflow` has been added.
   * `TableScrollbarThemeData.borderThickness` has been added.
+  * TableScrollbarThemeData.verticalOnlyWhenNeeded has been added
+  * HeaderThemeData.visible has been added
 
 ## 1.6.0
 

@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'package:easy_table/src/experimental/layout_v3/table_layout_builder_v3.dart';
 import 'package:easy_table/src/experimental/row_callbacks.dart';
 import 'package:easy_table/src/experimental/layout_v2/table_layout_builder_v2.dart';
 import 'package:easy_table/src/experimental/table_layout_settings.dart';
@@ -113,7 +114,9 @@ class _EasyTableExpState<ROW> extends State<EasyTableExp<ROW>> {
   }
 
   void _rebuild() {
-    setState(() {});
+    setState(() {
+      print('rebuild');
+    });
   }
 
   @override
@@ -130,18 +133,34 @@ class _EasyTableExpState<ROW> extends State<EasyTableExp<ROW>> {
             columnsFit: widget.columnsFit,
             offsets: _scrollControllers.offsets);
 
-    Widget table = ClipRect(
-        child: TableLayoutBuilderV2(
-            onHoverListener: _setHoveredRowIndex,
-            hoveredRowIndex: _hoveredRowIndex,
-            multiSortEnabled: widget.multiSortEnabled,
-            layoutSettingsBuilder: layoutSettingsBuilder,
-            scrollControllers: _scrollControllers,
-            onLastVisibleRowListener: widget.onLastVisibleRowListener != null
-                ? _onLastVisibleRowListener
-                : null,
-            model: widget.model,
-            rowCallbacks: _rowCallbacks()));
+    Widget table;
+    if (false) {
+      table = ClipRect(
+          child: TableLayoutBuilderV3(
+              onHoverListener: _setHoveredRowIndex,
+              hoveredRowIndex: _hoveredRowIndex,
+              multiSortEnabled: widget.multiSortEnabled,
+              layoutSettingsBuilder: layoutSettingsBuilder,
+              scrollControllers: _scrollControllers,
+              onLastVisibleRowListener: widget.onLastVisibleRowListener != null
+                  ? _onLastVisibleRowListener
+                  : null,
+              model: widget.model,
+              rowCallbacks: _rowCallbacks()));
+    } else {
+      table = ClipRect(
+          child: TableLayoutBuilderV2(
+              onHoverListener: _setHoveredRowIndex,
+              hoveredRowIndex: _hoveredRowIndex,
+              multiSortEnabled: widget.multiSortEnabled,
+              layoutSettingsBuilder: layoutSettingsBuilder,
+              scrollControllers: _scrollControllers,
+              onLastVisibleRowListener: widget.onLastVisibleRowListener != null
+                  ? _onLastVisibleRowListener
+                  : null,
+              model: widget.model,
+              rowCallbacks: _rowCallbacks()));
+    }
 
     if (widget.model != null) {
       if (theme.row.hoveredColor != null) {

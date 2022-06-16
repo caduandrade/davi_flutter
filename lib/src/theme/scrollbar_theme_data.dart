@@ -23,6 +23,7 @@ class TableScrollbarThemeData {
     this.thumbColor = TableScrollbarThemeDataDefaults.thumbColor,
     this.horizontalOnlyWhenNeeded =
         TableScrollbarThemeDataDefaults.horizontalOnlyWhenNeeded,
+    this.verticalOnlyWhenNeeded=TableScrollbarThemeDataDefaults.verticalOnlyWhenNeeded,
     this.columnDividerColor =
         TableScrollbarThemeDataDefaults.columnDividerColor,
   });
@@ -39,6 +40,7 @@ class TableScrollbarThemeData {
   final Color unpinnedHorizontalColor;
   final Color thumbColor;
   final bool horizontalOnlyWhenNeeded;
+  final bool verticalOnlyWhenNeeded;
   final Color? columnDividerColor;
 
   @override
@@ -49,6 +51,7 @@ class TableScrollbarThemeData {
           radius == other.radius &&
           margin == other.margin &&
           thickness == other.thickness &&
+          borderThickness == other.borderThickness &&
           verticalBorderColor == other.verticalBorderColor &&
           verticalColor == other.verticalColor &&
           pinnedHorizontalBorderColor == other.pinnedHorizontalBorderColor &&
@@ -58,6 +61,7 @@ class TableScrollbarThemeData {
           unpinnedHorizontalColor == other.unpinnedHorizontalColor &&
           thumbColor == other.thumbColor &&
           horizontalOnlyWhenNeeded == other.horizontalOnlyWhenNeeded &&
+          verticalOnlyWhenNeeded == other.verticalOnlyWhenNeeded &&
           columnDividerColor == other.columnDividerColor;
 
   @override
@@ -65,6 +69,7 @@ class TableScrollbarThemeData {
       radius.hashCode ^
       margin.hashCode ^
       thickness.hashCode ^
+      borderThickness.hashCode ^
       verticalBorderColor.hashCode ^
       verticalColor.hashCode ^
       pinnedHorizontalBorderColor.hashCode ^
@@ -73,11 +78,13 @@ class TableScrollbarThemeData {
       unpinnedHorizontalColor.hashCode ^
       thumbColor.hashCode ^
       horizontalOnlyWhenNeeded.hashCode ^
+      verticalOnlyWhenNeeded.hashCode ^
       columnDividerColor.hashCode;
 }
 
 class TableScrollbarThemeDataDefaults {
   static const horizontalOnlyWhenNeeded = false;
+  static const verticalOnlyWhenNeeded = false;
   static const double margin = 0;
   static const double thickness = 10;
   static const double borderThickness = 1;
