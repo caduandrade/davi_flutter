@@ -165,7 +165,13 @@ class TableLayoutRenderBoxV3<ROW> extends RenderBox
 
   @override
   void paint(PaintingContext context, Offset offset) {
-    defaultPaint(context, offset);
+
+    _paintChild(context: context, offset: offset, child: _header, clipBounds: _layoutSettings.headerBounds);
+    _paintChild(context: context, offset: offset, child: _topCorner, clipBounds: null);
+    _paintChild(context: context, offset: offset, child: _verticalScrollbar, clipBounds: _layoutSettings.verticalScrollbarBounds);
+    _paintChild(context: context, offset: offset, child: _horizontalScrollbars, clipBounds: _layoutSettings.horizontalScrollbarBounds);
+    _paintChild(context: context, offset: offset, child: _bottomCorner, clipBounds: null);
+    _paintChild(context: context, offset: offset, child: _rows, clipBounds: _layoutSettings.cellsBounds);
 
     // pinned content area divisors
     if (_theme.columnDividerThickness > 0) {
@@ -239,14 +245,22 @@ class TableLayoutRenderBoxV3<ROW> extends RenderBox
     return defaultHitTestChildren(result, position: position);
   }
 
-  void paintChild(
+  void _paintChild(
       {required PaintingContext context,
       required Offset offset,
-      required RenderBox? child}) {
+      required RenderBox? child,
+      required Rect? clipBounds}) {
     if (child != null) {
       final TableLayoutParentDataV3 parentData =
           child.parentData as TableLayoutParentDataV3;
+      if(clipBounds!=null){
+        context.canvas.save();
+        context.canvas.clipRect(clipBounds.translate(offset.dx, offset.dy));
+      }
       context.paintChild(child, parentData.offset + offset);
+      if(clipBounds!=null) {
+        context.canvas.restore();
+      }
     }
   }
 }
