@@ -39,8 +39,9 @@ class TableLayoutSettingsV3<ROW> {
     final double cellHeight = cellContentHeight +
         ((theme.cell.padding != null) ? theme.cell.padding!.vertical : 0);
     final double rowHeight = cellHeight + theme.row.dividerThickness;
+    final double headerCellHeight = theme.headerCell.height;
     final double headerHeight =
-        theme.headerCell.height + theme.header.bottomBorderHeight;
+        headerCellHeight + theme.header.bottomBorderHeight;
     final double scrollbarWidth =
         theme.scrollbar.borderThickness + theme.scrollbar.thickness;
     final double scrollbarHeight =
@@ -232,14 +233,17 @@ class TableLayoutSettingsV3<ROW> {
         0,
         0,
         math.min(leftPinnedContentWidth, cellsBounds.width),
-        cellsBounds.height);
+        headerBounds.height + cellsBounds.height);
 
     final double unpinnedOffset = leftPinnedAreaBounds.width > 0
         ? math.min(leftPinnedAreaBounds.width + columnDividerThickness,
             cellsBounds.width)
         : 0;
-    final Rect unpinnedAreaBounds = Rect.fromLTWH(unpinnedOffset, 0,
-        math.max(0, cellsBounds.width - unpinnedOffset), cellsBounds.height);
+    final Rect unpinnedAreaBounds = Rect.fromLTWH(
+        unpinnedOffset,
+        0,
+        math.max(0, cellsBounds.width - unpinnedOffset),
+        headerBounds.height + cellsBounds.height);
 
     // Calculating the hashCode in advance. Will save 1 ms while scrolling ;-)
 
@@ -248,6 +252,7 @@ class TableLayoutSettingsV3<ROW> {
         hasHeader.hashCode ^
         rowHeight.hashCode ^
         headerHeight.hashCode ^
+        headerCellHeight.hashCode ^
         scrollbarWidth.hashCode ^
         scrollbarHeight.hashCode ^
         height.hashCode ^
@@ -274,6 +279,7 @@ class TableLayoutSettingsV3<ROW> {
     return TableLayoutSettingsV3._(
         hasHeader: hasHeader,
         rowHeight: rowHeight,
+        headerCellHeight: headerCellHeight,
         headerHeight: headerHeight,
         scrollbarWidth: scrollbarWidth,
         scrollbarHeight: scrollbarHeight,
@@ -305,6 +311,7 @@ class TableLayoutSettingsV3<ROW> {
   TableLayoutSettingsV3._(
       {required this.hasHeader,
       required this.rowHeight,
+      required this.headerCellHeight,
       required this.leftPinnedContentWidth,
       required this.unpinnedContentWidth,
       required this.headerHeight,
@@ -329,10 +336,17 @@ class TableLayoutSettingsV3<ROW> {
       required this.verticalScrollbarBounds,
       required this.leftPinnedAreaBounds,
       required this.unpinnedAreaBounds,
-      required this.hashCode});
+      required this.hashCode}) {
+    _areaBounds = {
+      PinStatus.leftPinned: leftPinnedAreaBounds,
+      PinStatus.unpinned: unpinnedAreaBounds,
+      PinStatus.rightPinned: Rect.zero
+    };
+  }
 
   final bool hasHeader;
   final double rowHeight;
+  final double headerCellHeight;
   final double headerHeight;
   final double scrollbarWidth;
   final double scrollbarHeight;
@@ -357,6 +371,11 @@ class TableLayoutSettingsV3<ROW> {
   final Rect verticalScrollbarBounds;
   final Rect leftPinnedAreaBounds;
   final Rect unpinnedAreaBounds;
+  late final Map<PinStatus, Rect> _areaBounds;
+
+  Rect getAreaBounds(PinStatus pinStatus) {
+    return _areaBounds[pinStatus]!;
+  }
 
   @override
   final int hashCode;

@@ -1,8 +1,12 @@
+import 'package:easy_table/src/column.dart';
 import 'package:easy_table/src/experimental/layout_v3/layout_child_id_v3.dart';
 import 'package:easy_table/src/experimental/layout_v3/table_layout_parent_data_v3.dart';
+import 'package:easy_table/src/experimental/metrics/column_metrics_v3.dart';
 import 'package:easy_table/src/experimental/metrics/table_layout_settings_v3.dart';
+import 'package:easy_table/src/experimental/pin_status.dart';
 import 'package:easy_table/src/experimental/table_paint_settings.dart';
 import 'package:easy_table/src/theme/theme_data.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
 class TableLayoutRenderBoxV3<ROW> extends RenderBox
@@ -114,11 +118,6 @@ class TableLayoutRenderBoxV3<ROW> extends RenderBox
         child: _unpinnedHorizontalScrollbar,
         bounds: _layoutSettings.unpinnedHorizontalScrollbarsBounds);
 
-    print(
-        'left: ${_layoutSettings.leftPinnedHorizontalScrollbarBounds.left} ${_layoutSettings.leftPinnedHorizontalScrollbarBounds.width}');
-    print(
-        'unpinned: ${_layoutSettings.unpinnedHorizontalScrollbarsBounds.left} ${_layoutSettings.unpinnedHorizontalScrollbarsBounds.width}');
-
     // vertical scrollbar
     _layoutChild(
         child: _verticalScrollbar,
@@ -210,71 +209,100 @@ class TableLayoutRenderBoxV3<ROW> extends RenderBox
         child: _rows,
         clipBounds: _layoutSettings.cellsBounds);
 
-    // pinned content area divisors
-    if (_theme.columnDividerThickness > 0) {
-      //TODO check
-      if (false) {
-        //if (_leftPinnedContentArea.bounds.width > 0) {
+    // column dividers
+    if (_theme.columnDividerThickness > 0 &&
+        (_theme.header.columnDividerColor != null ||
+            _theme.columnDividerColor != null ||
+            _theme.scrollbar.columnDividerColor != null)) {
+      Paint? headerPaint;
+      if (_theme.header.columnDividerColor != null) {
+        headerPaint = Paint()..color = _theme.header.columnDividerColor!;
+      }
+      Paint? columnPaint;
+      if (_theme.columnDividerColor != null) {
+        columnPaint = Paint()
+          ..color = Colors.red; // _theme.columnDividerColor!;
+      }
+
+      bool needAreaDivisor = false;
+      for (int columnIndex = 0;
+          columnIndex < _layoutSettings.columnsMetrics.length;
+          columnIndex++) {
+        final ColumnMetricsV3<ROW> columnMetrics =
+            _layoutSettings.columnsMetrics[columnIndex];
+        final EasyTableColumn<ROW> column = columnMetrics.column;
+        final Rect areaBounds = _layoutSettings.getAreaBounds(column.pinStatus);
+        final double scrollOffset =
+            _layoutSettings.offsets.getHorizontal(column.pinStatus);
+        double left = offset.dx +
+            columnMetrics.offset +
+            columnMetrics.width -
+            scrollOffset;
         context.canvas.save();
-        context.canvas.clipRect(Rect.fromLTWH(offset.dx, offset.dy,
-            _layoutSettings.cellsBounds.width, _layoutSettings.height));
-        if (_layoutSettings.headerHeight > 0) {
-          // header
-          if (_theme.header.columnDividerColor != null) {
-            _paintPinnedColumnDividers(
-                context: context,
-                offset: offset,
-                theme: _theme,
-                color: _theme.header.columnDividerColor!,
-                top: 0,
-                //TODO check
-                left: 0, //_leftPinnedContentArea.bounds.width,
-                height: _theme.headerCell.height);
-          }
+        context.canvas.clipRect(areaBounds.translate(offset.dx, offset.dy));
+        if (headerPaint != null) {
+          context.canvas.drawRect(
+              Rect.fromLTWH(
+                  left,
+                  offset.dy,
+                  _layoutSettings.columnDividerThickness,
+                  _layoutSettings.headerCellHeight),
+              headerPaint);
         }
-        // column
-        if (_theme.columnDividerColor != null) {
-          _paintPinnedColumnDividers(
-              context: context,
-              offset: offset,
-              theme: _theme,
-              color: _theme.columnDividerColor!,
-              //TODO check
-              left: 0, //_leftPinnedContentArea.bounds.width,
-              top: _layoutSettings.headerHeight,
-              height: _layoutSettings.cellsBounds.height);
-        }
-        // scrollbar
-        if (_theme.scrollbar.columnDividerColor != null) {
-          _paintPinnedColumnDividers(
-              context: context,
-              offset: offset,
-              theme: _theme,
-              color: _theme.scrollbar.columnDividerColor!,
-              //TODO check
-              left: 0, //_leftPinnedContentArea.bounds.width,
-              top: _layoutSettings.headerHeight +
-                  _layoutSettings.cellsBounds.height,
-              height: _layoutSettings.scrollbarHeight);
+        if (columnPaint != null) {
+          context.canvas.drawRect(
+              Rect.fromLTWH(
+                  left,
+                  offset.dy + _layoutSettings.headerHeight,
+                  _layoutSettings.columnDividerThickness,
+                  _layoutSettings.cellsBounds.height),
+              columnPaint);
         }
         context.canvas.restore();
+        if (column.pinStatus == PinStatus.leftPinned) {
+          needAreaDivisor = true;
+        } else if (needAreaDivisor && column.pinStatus == PinStatus.unpinned) {
+          needAreaDivisor = false;
+          context.canvas.save();
+          context.canvas.clipRect(Rect.fromLTWH(offset.dx, offset.dy,
+              _layoutSettings.cellsBounds.width, _layoutSettings.height));
+          left = offset.dx +
+              columnMetrics.offset -
+              _layoutSettings.columnDividerThickness;
+          if (headerPaint != null) {
+            context.canvas.drawRect(
+                Rect.fromLTWH(
+                    left,
+                    offset.dy,
+                    _layoutSettings.columnDividerThickness,
+                    _layoutSettings.headerCellHeight),
+                headerPaint);
+          }
+          if (columnPaint != null) {
+            context.canvas.drawRect(
+                Rect.fromLTWH(
+                    left,
+                    offset.dy + _layoutSettings.headerHeight,
+                    _layoutSettings.columnDividerThickness,
+                    _layoutSettings.cellsBounds.height),
+                columnPaint);
+          }
+          if (_layoutSettings.hasHorizontalScrollbar &&
+              _theme.scrollbar.columnDividerColor != null) {
+            context.canvas.drawRect(
+                Rect.fromLTWH(
+                    left,
+                    offset.dy +
+                        _layoutSettings.headerHeight +
+                        _layoutSettings.cellsBounds.height,
+                    _layoutSettings.columnDividerThickness,
+                    _layoutSettings.scrollbarHeight),
+                Paint()..color = _theme.scrollbar.columnDividerColor!);
+          }
+          context.canvas.restore();
+        }
       }
     }
-  }
-
-  void _paintPinnedColumnDividers(
-      {required PaintingContext context,
-      required Offset offset,
-      required EasyTableThemeData theme,
-      required double height,
-      required Color color,
-      required double left,
-      required double top}) {
-    Paint paint = Paint()..color = color;
-    context.canvas.drawRect(
-        Rect.fromLTWH(left + offset.dx, offset.dy + top,
-            theme.columnDividerThickness, height),
-        paint);
   }
 
   @override

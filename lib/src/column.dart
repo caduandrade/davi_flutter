@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'package:easy_table/src/cell_builder.dart';
 import 'package:easy_table/src/cell_style.dart';
+import 'package:easy_table/src/experimental/pin_status.dart';
 import 'package:easy_table/src/model.dart';
 import 'package:easy_table/src/value_mapper.dart';
 import 'package:flutter/widgets.dart';
@@ -224,6 +225,8 @@ class EasyTableColumn<ROW> extends ChangeNotifier with ColumnSortMixin {
   bool get sortable => _sortable && sort != null;
 
   bool resizable;
+
+  PinStatus get pinStatus=>pinned?PinStatus.leftPinned:PinStatus.unpinned;
 
   @override
   String toString() {

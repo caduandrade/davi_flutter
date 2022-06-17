@@ -1,14 +1,27 @@
+import 'package:easy_table/src/experimental/pin_status.dart';
+
 class TableScrollOffsets {
   TableScrollOffsets(
       {required this.leftPinnedContentArea,
       required this.unpinnedContentArea,
       required this.rightPinnedContentArea,
-      required this.vertical});
+      required this.vertical}) {
+    _horizontal = {
+      PinStatus.leftPinned: leftPinnedContentArea,
+      PinStatus.unpinned: unpinnedContentArea,
+      PinStatus.rightPinned: rightPinnedContentArea
+    };
+  }
 
   final double leftPinnedContentArea;
   final double unpinnedContentArea;
   final double rightPinnedContentArea;
   final double vertical;
+  late final Map<PinStatus, double> _horizontal;
+
+  double getHorizontal(PinStatus pinStatus) {
+    return _horizontal[pinStatus]!;
+  }
 
   @override
   bool operator ==(Object other) =>
