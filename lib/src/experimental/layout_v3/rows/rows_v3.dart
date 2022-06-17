@@ -32,8 +32,6 @@ class RowsV3<ROW> extends StatelessWidget {
         children.add(RowsLayoutChildV3<ROW>(index: i, child: row));
       }
 
-      print(children.length);
-
       RowsPaintingSettings paintSettings =
           RowsPaintingSettings(divisorColor: theme.row.dividerColor);
       return RowsLayoutV3<ROW>(

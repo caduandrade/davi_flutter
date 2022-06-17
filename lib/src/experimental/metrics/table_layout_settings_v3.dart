@@ -73,7 +73,9 @@ class TableLayoutSettingsV3<ROW> {
           constraints.maxHeight -
               (hasHeader ? headerHeight : 0) -
               (hasHorizontalScrollbar ? scrollbarHeight : 0));
-      maxVisibleRowsLength = (availableHeight / rowHeight).ceil();
+      final double start = verticalOffset / rowHeight;
+      maxVisibleRowsLength =
+          (start + (availableHeight / rowHeight)).ceil() - start.floor();
     }
     bool needVerticalScrollbar =
         model != null ? maxVisibleRowsLength < model.visibleRowsLength : false;
@@ -84,15 +86,17 @@ class TableLayoutSettingsV3<ROW> {
       if (columnsFit) {
         unpinnedContentWidth = math.max(0,
             constraints.maxWidth - (hasVerticalScrollbar ? scrollbarWidth : 0));
-        columnsMetrics = UnmodifiableListView<ColumnMetricsV3<ROW>>(ColumnMetricsV3.columnsFit<ROW>(
-            model: model,
-            dividerThickness: columnDividerThickness,
-            maxWidth: unpinnedContentWidth));
+        columnsMetrics = UnmodifiableListView<ColumnMetricsV3<ROW>>(
+            ColumnMetricsV3.columnsFit<ROW>(
+                model: model,
+                dividerThickness: columnDividerThickness,
+                maxWidth: unpinnedContentWidth));
         hasHorizontalScrollbar = false;
       } else {
         // resizable columns
-        columnsMetrics = UnmodifiableListView<ColumnMetricsV3<ROW>>(ColumnMetricsV3.resizable<ROW>(
-            model: model, dividerThickness: columnDividerThickness));
+        columnsMetrics = UnmodifiableListView<ColumnMetricsV3<ROW>>(
+            ColumnMetricsV3.resizable<ROW>(
+                model: model, dividerThickness: columnDividerThickness));
 
         for (ColumnMetricsV3<ROW> columnMetrics in columnsMetrics) {
           if (columnMetrics.pinStatus == PinStatus.unpinned) {
@@ -139,7 +143,9 @@ class TableLayoutSettingsV3<ROW> {
                 constraints.maxHeight -
                     (hasHeader ? headerHeight : 0) -
                     scrollbarHeight);
-            maxVisibleRowsLength = (availableHeight / rowHeight).ceil();
+            final double start = verticalOffset / rowHeight;
+            maxVisibleRowsLength =
+                (start + (availableHeight / rowHeight)).ceil() - start.floor();
           }
           needVerticalScrollbar =
               maxVisibleRowsLength < model.visibleRowsLength;
@@ -152,7 +158,6 @@ class TableLayoutSettingsV3<ROW> {
     }
 
     final int firstRowIndex = (verticalOffset / rowHeight).floor();
-
     final double contentHeight = model != null
         ? math.max(0, (model.rowsLength * rowHeight) - rowDividerThickness)
         : 0;
@@ -327,12 +332,6 @@ class TableLayoutSettingsV3<ROW> {
 
   @override
   final int hashCode;
-
-  void p() {
-    for (ColumnMetricsV3<ROW> columnMetrics in columnsMetrics) {
-      print(columnMetrics.column.intValueMapper);
-    }
-  }
 
   @override
   bool operator ==(Object other) =>
