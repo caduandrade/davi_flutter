@@ -69,12 +69,20 @@ class RowsLayoutRenderBoxV3<ROW> extends RenderBox
   void paint(PaintingContext context, Offset offset) {
     defaultPaint(context, offset);
 
-    if (_layoutSettings.columnDividerThickness > 0 && _paintSettings.divisorColor!=null) {
-      Paint paint = Paint()..color=_paintSettings.divisorColor!;
-      final int last = _layoutSettings.firstRowIndex+_layoutSettings.maxVisibleRowsLength;
-      for(int i = _layoutSettings.firstRowIndex ; i < last ; i++) {
-      double top = (i * _layoutSettings.rowHeight)-_layoutSettings.verticalOffset + _layoutSettings.cellHeight+ offset.dy;
-      context.canvas.drawRect(Rect.fromLTWH(offset.dx, top, _layoutSettings.cellsBounds.width, _layoutSettings.rowDividerThickness), paint);
+    if (_layoutSettings.columnDividerThickness > 0 &&
+        _paintSettings.divisorColor != null) {
+      Paint paint = Paint()..color = _paintSettings.divisorColor!;
+      final int last =
+          _layoutSettings.firstRowIndex + _layoutSettings.maxVisibleRowsLength;
+      for (int i = _layoutSettings.firstRowIndex; i < last; i++) {
+        double top = (i * _layoutSettings.rowHeight) -
+            _layoutSettings.verticalOffset +
+            _layoutSettings.cellHeight +
+            offset.dy;
+        context.canvas.drawRect(
+            Rect.fromLTWH(offset.dx, top, _layoutSettings.cellsBounds.width,
+                _layoutSettings.rowDividerThickness),
+            paint);
       }
 
       //TODO paint dividers

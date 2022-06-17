@@ -71,7 +71,11 @@ class TableLayoutBuilderV3<ROW> extends StatelessWidget {
     }
 
     if (layoutSettings.hasHeader) {
-      children.add(LayoutChildV3.header());
+      children.add(LayoutChildV3.header(
+          layoutSettings: layoutSettings,
+          model: model,
+          resizable: !columnsFit,
+          multiSortEnabled: multiSortEnabled));
       if (layoutSettings.hasVerticalScrollbar) {
         children.add(LayoutChildV3.topCorner());
       }
@@ -97,8 +101,8 @@ class TableLayoutBuilderV3<ROW> extends StatelessWidget {
       }
     }
 
-    children
-        .add(LayoutChildV3<ROW>.rows(model: model, layoutSettings: layoutSettings));
+    children.add(
+        LayoutChildV3<ROW>.rows(model: model, layoutSettings: layoutSettings));
 
     TablePaintSettings paintSettings =
         TablePaintSettings(hoveredRowIndex: null, debugAreas: false);

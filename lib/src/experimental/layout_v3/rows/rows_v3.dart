@@ -28,7 +28,10 @@ class RowsV3<ROW> extends StatelessWidget {
       for (int i = layoutSettings.firstRowIndex;
           i < last && i < model!.visibleRowsLength;
           i++) {
-        RowV3<ROW> row = RowV3<ROW>(rowIndex: i, row: model!.visibleRowAt(i), layoutSettings: layoutSettings);
+        RowV3<ROW> row = RowV3<ROW>(
+            rowIndex: i,
+            row: model!.visibleRowAt(i),
+            layoutSettings: layoutSettings);
         children.add(RowsLayoutChildV3<ROW>(index: i, child: row));
       }
 

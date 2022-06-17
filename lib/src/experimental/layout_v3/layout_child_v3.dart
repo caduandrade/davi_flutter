@@ -1,3 +1,4 @@
+import 'package:easy_table/src/experimental/layout_v3/header_v3.dart';
 import 'package:easy_table/src/experimental/layout_v3/rows/rows_v3.dart';
 import 'package:easy_table/src/experimental/layout_v3/horizontal_scrollbars_layout_v3.dart';
 import 'package:easy_table/src/experimental/layout_v3/layout_child_id_v3.dart';
@@ -11,9 +12,20 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class LayoutChildV3<ROW> extends ParentDataWidget<TableLayoutParentDataV3> {
-  factory LayoutChildV3.header() {
+  factory LayoutChildV3.header(
+      {required TableLayoutSettingsV3<ROW> layoutSettings,
+      required EasyTableModel<ROW>? model,
+      required bool resizable,
+      required bool multiSortEnabled}) {
     return LayoutChildV3._(
-        id: LayoutChildIdV3.header, child: Container(color: Colors.blue));
+        id: LayoutChildIdV3.header,
+        child: model != null
+            ? HeaderV3(
+                layoutSettings: layoutSettings,
+                model: model,
+                resizable: resizable,
+                multiSortEnabled: multiSortEnabled)
+            : Container());
   }
 
   factory LayoutChildV3.rows(

@@ -11,11 +11,13 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 class RowV3<ROW> extends StatefulWidget {
-  RowV3({required this.rowIndex, required this.row, required this.layoutSettings}): super(key: ValueKey<int>(rowIndex));
+  RowV3(
+      {required this.rowIndex, required this.row, required this.layoutSettings})
+      : super(key: ValueKey<int>(rowIndex));
 
   final ROW row;
   final int rowIndex;
-final  TableLayoutSettingsV3<ROW> layoutSettings;
+  final TableLayoutSettingsV3<ROW> layoutSettings;
 
   @override
   State<StatefulWidget> createState() => RowV3State<ROW>();
@@ -25,15 +27,16 @@ class RowV3State<ROW> extends State<RowV3<ROW>> {
   bool _enter = false;
   @override
   Widget build(BuildContext context) {
-    EasyTableThemeData theme =EasyTableTheme.of(context);
+    EasyTableThemeData theme = EasyTableTheme.of(context);
 
     List<ColumnsLayoutChildV3<ROW>> children = [];
 
     for (int columnIndex = 0;
-    columnIndex < widget.layoutSettings.columnsMetrics.length;
-    columnIndex++) {
-      final ColumnMetricsV3<ROW> columnMetrics = widget.layoutSettings.columnsMetrics[columnIndex];
-      final  EasyTableColumn<ROW> column = columnMetrics.column;
+        columnIndex < widget.layoutSettings.columnsMetrics.length;
+        columnIndex++) {
+      final ColumnMetricsV3<ROW> columnMetrics =
+          widget.layoutSettings.columnsMetrics[columnIndex];
+      final EasyTableColumn<ROW> column = columnMetrics.column;
       final Widget cell = _buildCellWidget(
           context: context,
           row: widget.row,
@@ -56,10 +59,10 @@ class RowV3State<ROW> extends State<RowV3<ROW>> {
 
   Widget _buildCellWidget(
       {required BuildContext context,
-        required ROW row,
-        required int rowIndex,
-        required EasyTableColumn<ROW> column,
-        required EasyTableThemeData theme}) {
+      required ROW row,
+      required int rowIndex,
+      required EasyTableColumn<ROW> column,
+      required EasyTableThemeData theme}) {
     EdgeInsets? padding;
     Alignment? alignment;
     Color? background;

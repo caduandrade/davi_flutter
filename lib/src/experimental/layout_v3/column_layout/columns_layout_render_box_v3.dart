@@ -13,7 +13,8 @@ class ColumnsLayoutRenderBoxV3<ROW> extends RenderBox
   TableLayoutSettingsV3<ROW> _layoutSettings;
 
   set layoutSettings(TableLayoutSettingsV3<ROW> value) {
-    if (_layoutSettings != value) { //TODO maybe can check only row height and columns
+    if (_layoutSettings != value) {
+      //TODO maybe can check only row height and columns
       _layoutSettings = value;
       markNeedsLayout();
     }
@@ -37,9 +38,11 @@ class ColumnsLayoutRenderBoxV3<ROW> extends RenderBox
       final RenderBox renderBox = child as RenderBox;
       final ColumnsLayoutParentDataV3 parentData = child._parentData();
       final int columnIndex = parentData.index!;
-      ColumnMetricsV3<ROW> columnMetrics = _layoutSettings.columnsMetrics[columnIndex];
+      ColumnMetricsV3<ROW> columnMetrics =
+          _layoutSettings.columnsMetrics[columnIndex];
       renderBox.layout(
-          BoxConstraints.tightFor(width: columnMetrics.width, height: constraints.maxHeight),
+          BoxConstraints.tightFor(
+              width: columnMetrics.width, height: constraints.maxHeight),
           parentUsesSize: true);
       renderBox._parentData().offset = Offset(columnMetrics.offset, 0);
     });
