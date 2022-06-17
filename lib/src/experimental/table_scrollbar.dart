@@ -12,7 +12,8 @@ class TableScrollbar extends StatelessWidget {
       required this.scrollController,
       required this.axis,
       required this.color,
-      required this.borderColor})
+      required this.borderColor,
+      required this.onDragScroll})
       : super(key: key);
 
   final double contentSize;
@@ -20,6 +21,7 @@ class TableScrollbar extends StatelessWidget {
   final Axis axis;
   final Color color;
   final Color borderColor;
+  final OnDragScroll onDragScroll;
 
   @override
   Widget build(BuildContext context) {
@@ -58,21 +60,10 @@ class TableScrollbar extends StatelessWidget {
                         controller: scrollController,
                         scrollDirection: axis)))));
 
-    Widget a = NotificationListener<ScrollNotification>(
-        onNotification: (scrollNotification) {
-          if (scrollNotification is ScrollStartNotification) {
-            print('start');
-          } else if (scrollNotification is ScrollEndNotification) {
-            print('end');
-          }
-          return false;
-        },
-        child: scrollbar);
-
     return Listener(
-        onPointerDown: (a) => print('down'),
-        onPointerUp: (a) => print('up'),
-        child: a);
+        onPointerDown: (event) => onDragScroll(true),
+        onPointerUp: (event) => onDragScroll(false),
+        child: scrollbar);
   }
 
   Widget _sizedBox() {
@@ -82,3 +73,5 @@ class TableScrollbar extends StatelessWidget {
     return SizedBox(width: contentSize);
   }
 }
+
+typedef OnDragScroll = void Function(bool start);

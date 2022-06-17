@@ -29,7 +29,8 @@ class TableLayoutBuilderV2<ROW> extends StatelessWidget {
       required this.multiSortEnabled,
       required this.onLastVisibleRowListener,
       required this.model,
-      required this.rowCallbacks})
+      required this.rowCallbacks,
+      required this.onDragScroll})
       : super(key: key);
 
   final int? hoveredRowIndex;
@@ -40,6 +41,7 @@ class TableLayoutBuilderV2<ROW> extends StatelessWidget {
   final EasyTableModel<ROW>? model;
   final bool multiSortEnabled;
   final RowCallbacks? rowCallbacks;
+  final OnDragScroll onDragScroll;
 
   @override
   Widget build(BuildContext context) {
@@ -118,7 +120,8 @@ class TableLayoutBuilderV2<ROW> extends StatelessWidget {
             contentSize: layoutSettingsBuilder.rowsFullHeight,
             scrollController: scrollControllers.vertical,
             color: theme.scrollbar.verticalColor,
-            borderColor: theme.scrollbar.verticalBorderColor)));
+            borderColor: theme.scrollbar.verticalBorderColor,
+            onDragScroll: onDragScroll)));
 
     if (layoutSettingsBuilder.hasHeader) {
       children.add(LayoutChildV2.topCorner());
@@ -181,7 +184,8 @@ class TableLayoutBuilderV2<ROW> extends StatelessWidget {
                   scrollController: scrollControllers.leftPinnedContentArea,
                   color: theme.scrollbar.pinnedHorizontalColor,
                   borderColor: theme.scrollbar.pinnedHorizontalBorderColor,
-                  contentSize: pinnedAreaWidth)));
+                  contentSize: pinnedAreaWidth,
+                  onDragScroll: onDragScroll)));
 
           //TODO build EasyTableScrollBarExp in LayoutChild.horizontalScrollbar
           children.add(LayoutChildV2.horizontalScrollbar(
@@ -191,7 +195,8 @@ class TableLayoutBuilderV2<ROW> extends StatelessWidget {
                   scrollController: scrollControllers.unpinnedContentArea,
                   color: theme.scrollbar.unpinnedHorizontalColor,
                   borderColor: theme.scrollbar.unpinnedHorizontalBorderColor,
-                  contentSize: unpinnedAreaWidth)));
+                  contentSize: unpinnedAreaWidth,
+                  onDragScroll: onDragScroll)));
 
           children.add(LayoutChildV2.bottomCorner());
         }

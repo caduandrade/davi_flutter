@@ -10,11 +10,16 @@ import 'package:easy_table/src/theme/theme_data.dart';
 import 'package:flutter/material.dart';
 
 class RowsV3<ROW> extends StatelessWidget {
-  const RowsV3({Key? key, required this.layoutSettings, required this.model})
+  const RowsV3(
+      {Key? key,
+      required this.layoutSettings,
+      required this.model,
+      required this.scrolling})
       : super(key: key);
 
   final EasyTableModel<ROW>? model;
   final TableLayoutSettingsV3<ROW> layoutSettings;
+  final bool scrolling;
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +36,8 @@ class RowsV3<ROW> extends StatelessWidget {
         RowV3<ROW> row = RowV3<ROW>(
             rowIndex: i,
             row: model!.visibleRowAt(i),
-            layoutSettings: layoutSettings);
+            layoutSettings: layoutSettings,
+            scrolling: scrolling);
         children.add(RowsLayoutChildV3<ROW>(index: i, child: row));
       }
 

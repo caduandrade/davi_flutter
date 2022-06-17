@@ -12,11 +12,15 @@ import 'package:flutter/material.dart';
 
 class RowV3<ROW> extends StatefulWidget {
   RowV3(
-      {required this.rowIndex, required this.row, required this.layoutSettings})
+      {required this.rowIndex,
+      required this.row,
+      required this.layoutSettings,
+      required this.scrolling})
       : super(key: ValueKey<int>(rowIndex));
 
   final ROW row;
   final int rowIndex;
+  final bool scrolling;
   final TableLayoutSettingsV3<ROW> layoutSettings;
 
   @override
@@ -46,11 +50,11 @@ class RowV3State<ROW> extends State<RowV3<ROW>> {
       children.add(ColumnsLayoutChildV3<ROW>(index: columnIndex, child: cell));
     }
 
-    Color? color = _enter ? Colors.blue[300] : null;
+    Color? color = _enter && !widget.scrolling ? Colors.blue[300] : null;
     return MouseRegion(
-        onEnter: _onEnter,
-        cursor: SystemMouseCursors.click,
-        onExit: _onExit,
+        onEnter: widget.scrolling ? null : _onEnter,
+        cursor: widget.scrolling ? MouseCursor.defer : SystemMouseCursors.click,
+        onExit: widget.scrolling ? null : _onExit,
         child: Container(
             color: color,
             child: ColumnsLayoutV3(

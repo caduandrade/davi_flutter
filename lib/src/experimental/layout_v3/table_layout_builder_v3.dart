@@ -26,7 +26,9 @@ class TableLayoutBuilderV3<ROW> extends StatelessWidget {
       required this.cellContentHeight,
       required this.columnsFit,
       required this.visibleRowsLength,
-      required this.rowCallbacks})
+      required this.rowCallbacks,
+      required this.onDragScroll,
+      required this.scrolling})
       : super(key: key);
 
   final int? hoveredRowIndex;
@@ -40,6 +42,8 @@ class TableLayoutBuilderV3<ROW> extends StatelessWidget {
   final bool columnsFit;
   final double cellContentHeight;
   final int? visibleRowsLength;
+  final OnDragScroll onDragScroll;
+  final bool scrolling;
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +71,8 @@ class TableLayoutBuilderV3<ROW> extends StatelessWidget {
               contentSize: layoutSettings.contentHeight,
               scrollController: scrollControllers.vertical,
               color: theme.scrollbar.verticalColor,
-              borderColor: theme.scrollbar.verticalBorderColor)));
+              borderColor: theme.scrollbar.verticalBorderColor,
+              onDragScroll: onDragScroll)));
     }
 
     if (layoutSettings.hasHeader) {
@@ -87,20 +92,22 @@ class TableLayoutBuilderV3<ROW> extends StatelessWidget {
           scrollController: scrollControllers.leftPinnedContentArea,
           color: theme.scrollbar.pinnedHorizontalColor,
           borderColor: theme.scrollbar.pinnedHorizontalBorderColor,
-          contentSize: layoutSettings.leftPinnedContentWidth)));
+          contentSize: layoutSettings.leftPinnedContentWidth,
+          onDragScroll: onDragScroll)));
       children.add(LayoutChildV3.unpinnedHorizontalScrollbar(TableScrollbar(
           axis: Axis.horizontal,
           scrollController: scrollControllers.unpinnedContentArea,
           color: theme.scrollbar.unpinnedHorizontalColor,
           borderColor: theme.scrollbar.unpinnedHorizontalBorderColor,
-          contentSize: layoutSettings.unpinnedContentWidth)));
+          contentSize: layoutSettings.unpinnedContentWidth,
+          onDragScroll: onDragScroll)));
       if (layoutSettings.hasVerticalScrollbar) {
         children.add(LayoutChildV3.bottomCorner());
       }
     }
 
-    children.add(
-        LayoutChildV3<ROW>.rows(model: model, layoutSettings: layoutSettings));
+    children.add(LayoutChildV3<ROW>.rows(
+        model: model, layoutSettings: layoutSettings, scrolling: scrolling));
 
     TablePaintSettings paintSettings =
         TablePaintSettings(hoveredRowIndex: null, debugAreas: false);

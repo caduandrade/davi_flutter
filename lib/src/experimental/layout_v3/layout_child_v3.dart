@@ -29,10 +29,14 @@ class LayoutChildV3<ROW> extends ParentDataWidget<TableLayoutParentDataV3> {
 
   factory LayoutChildV3.rows(
       {required EasyTableModel<ROW>? model,
-      required TableLayoutSettingsV3<ROW> layoutSettings}) {
+      required TableLayoutSettingsV3<ROW> layoutSettings,
+      required bool scrolling}) {
     return LayoutChildV3._(
         id: LayoutChildIdV3.rows,
-        child: RowsV3<ROW>(model: model, layoutSettings: layoutSettings));
+        child: RowsV3<ROW>(
+            model: model,
+            layoutSettings: layoutSettings,
+            scrolling: scrolling));
   }
 
   factory LayoutChildV3.bottomCorner() {

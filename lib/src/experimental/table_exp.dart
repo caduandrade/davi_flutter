@@ -62,6 +62,8 @@ class EasyTableExp<ROW> extends StatefulWidget {
 class _EasyTableExpState<ROW> extends State<EasyTableExp<ROW>> {
   final TableScrollControllers _scrollControllers = TableScrollControllers();
 
+  bool _scrolling = false;
+
   int? _hoveredRowIndex;
 
   int _lastVisibleRow = -1;
@@ -114,9 +116,7 @@ class _EasyTableExpState<ROW> extends State<EasyTableExp<ROW>> {
   }
 
   void _rebuild() {
-    setState(() {
-      print('rebuild');
-    });
+    setState(() {});
   }
 
   @override
@@ -149,7 +149,9 @@ class _EasyTableExpState<ROW> extends State<EasyTableExp<ROW>> {
                   ? _onLastVisibleRowListener
                   : null,
               model: widget.model,
-              rowCallbacks: _rowCallbacks()));
+              scrolling: _scrolling,
+              rowCallbacks: _rowCallbacks(),
+              onDragScroll: _onDragScroll));
     } else {
       table = ClipRect(
           child: TableLayoutBuilderV2(
@@ -162,7 +164,8 @@ class _EasyTableExpState<ROW> extends State<EasyTableExp<ROW>> {
                   ? _onLastVisibleRowListener
                   : null,
               model: widget.model,
-              rowCallbacks: _rowCallbacks()));
+              rowCallbacks: _rowCallbacks(),
+              onDragScroll: _onDragScroll));
     }
 
     if (widget.model != null) {
@@ -293,5 +296,9 @@ class _EasyTableExpState<ROW> extends State<EasyTableExp<ROW>> {
     if (widget.onRowSecondaryTap != null && widget.model != null) {
       widget.onRowSecondaryTap!(widget.model!.visibleRowAt(rowIndex));
     }
+  }
+
+  void _onDragScroll(bool start) {
+    setState(() => _scrolling = start);
   }
 }
