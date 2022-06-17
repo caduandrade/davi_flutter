@@ -4,7 +4,7 @@ import 'package:easy_table/src/cell_style.dart';
 import 'package:easy_table/src/column.dart';
 import 'package:easy_table/src/experimental/columns_metrics_exp.dart';
 import 'package:easy_table/src/experimental/pin_status.dart';
-import 'package:easy_table/src/experimental/row_callbacks.dart';
+import 'package:easy_table/src/experimental/layout_v2/row_callbacks_v2.dart';
 import 'package:easy_table/src/experimental/layout_v2/layout_child_v2.dart';
 import 'package:easy_table/src/experimental/layout_v2/table_layout_v2.dart';
 import 'package:easy_table/src/experimental/table_layout_settings.dart';
@@ -40,7 +40,7 @@ class TableLayoutBuilderV2<ROW> extends StatelessWidget {
   final TableLayoutSettingsBuilder layoutSettingsBuilder;
   final EasyTableModel<ROW>? model;
   final bool multiSortEnabled;
-  final RowCallbacks? rowCallbacks;
+  final RowCallbacksV2? rowCallbacks;
   final OnDragScroll onDragScroll;
 
   @override

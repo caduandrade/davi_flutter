@@ -10,8 +10,8 @@ typedef IndexRowTapCallback = void Function(int rowIndex);
 typedef IndexRowDoubleTapCallback = void Function(int rowIndex);
 
 @internal
-class RowCallbacks {
-  const RowCallbacks(
+class RowCallbacksV2 {
+  const RowCallbacksV2(
       {required this.onRowDoubleTap,
       required this.onRowTap,
       required this.onRowSecondaryTap});

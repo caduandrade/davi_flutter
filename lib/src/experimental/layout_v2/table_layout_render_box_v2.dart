@@ -4,7 +4,7 @@ import 'package:easy_table/src/experimental/columns_metrics_exp.dart';
 import 'package:easy_table/src/experimental/layout_v2/content_area_v2.dart';
 import 'package:easy_table/src/experimental/pin_status.dart';
 import 'package:easy_table/src/experimental/layout_v2/layout_child_type_v2.dart';
-import 'package:easy_table/src/experimental/row_callbacks.dart';
+import 'package:easy_table/src/experimental/layout_v2/row_callbacks_v2.dart';
 import 'package:easy_table/src/experimental/layout_v2/table_layout_parent_data_v2.dart';
 import 'package:easy_table/src/experimental/table_layout_settings.dart';
 import 'package:easy_table/src/experimental/table_paint_settings.dart';
@@ -26,7 +26,7 @@ class TableLayoutRenderBoxV2<ROW> extends RenderBox
       required ColumnsMetricsExp unpinnedColumnsMetrics,
       required ColumnsMetricsExp rightPinnedColumnsMetrics,
       required EasyTableThemeData theme,
-      required RowCallbacks? rowCallbacks})
+      required RowCallbacksV2? rowCallbacks})
       : _onHoverListener = onHoverListener,
         _layoutSettings = layoutSettings,
         _paintSettings = paintSettings,
@@ -101,8 +101,8 @@ class TableLayoutRenderBoxV2<ROW> extends RenderBox
     }
   }
 
-  RowCallbacks? _rowCallbacks;
-  set rowCallbacks(RowCallbacks? value) {
+  RowCallbacksV2? _rowCallbacks;
+  set rowCallbacks(RowCallbacksV2? value) {
     _rowCallbacks = value;
   }
 

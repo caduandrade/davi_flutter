@@ -1,7 +1,8 @@
 import 'package:easy_table/src/experimental/layout_v3/layout_child_v3.dart';
+import 'package:easy_table/src/experimental/layout_v3/row_callbacks_v3.dart';
 import 'package:easy_table/src/experimental/layout_v3/table_layout_v3.dart';
 import 'package:easy_table/src/experimental/metrics/table_layout_settings_v3.dart';
-import 'package:easy_table/src/experimental/row_callbacks.dart';
+import 'package:easy_table/src/experimental/layout_v2/row_callbacks_v2.dart';
 import 'package:easy_table/src/experimental/table_layout_settings.dart';
 import 'package:easy_table/src/experimental/table_paint_settings.dart';
 import 'package:easy_table/src/experimental/table_scroll_controllers.dart';
@@ -38,12 +39,12 @@ class TableLayoutBuilderV3<ROW> extends StatelessWidget {
   final TableLayoutSettingsBuilder layoutSettingsBuilder;
   final EasyTableModel<ROW>? model;
   final bool multiSortEnabled;
-  final RowCallbacks? rowCallbacks;
   final bool columnsFit;
   final double cellContentHeight;
   final int? visibleRowsLength;
   final OnDragScroll onDragScroll;
   final bool scrolling;
+  final RowCallbacksV3<ROW> rowCallbacks;
 
   @override
   Widget build(BuildContext context) {
@@ -107,7 +108,10 @@ class TableLayoutBuilderV3<ROW> extends StatelessWidget {
     }
 
     children.add(LayoutChildV3<ROW>.rows(
-        model: model, layoutSettings: layoutSettings, scrolling: scrolling));
+        model: model,
+        layoutSettings: layoutSettings,
+        scrolling: scrolling,
+        rowCallbacks: rowCallbacks));
 
     TablePaintSettings paintSettings =
         TablePaintSettings(hoveredRowIndex: null, debugAreas: false);

@@ -1,8 +1,8 @@
+import 'package:easy_table/src/experimental/layout_v3/row_callbacks_v3.dart';
 import 'package:easy_table/src/experimental/layout_v3/row_v3.dart';
 import 'package:easy_table/src/experimental/layout_v3/rows/rows_layout_child_v3.dart';
 import 'package:easy_table/src/experimental/layout_v3/rows/rows_layout_v3.dart';
 import 'package:easy_table/src/experimental/layout_v3/rows/rows_painting_settings.dart';
-import 'package:easy_table/src/experimental/metrics/column_metrics_v3.dart';
 import 'package:easy_table/src/experimental/metrics/table_layout_settings_v3.dart';
 import 'package:easy_table/src/model.dart';
 import 'package:easy_table/src/theme/theme.dart';
@@ -14,12 +14,14 @@ class RowsV3<ROW> extends StatelessWidget {
       {Key? key,
       required this.layoutSettings,
       required this.model,
-      required this.scrolling})
+      required this.scrolling,
+      required this.rowCallbacks})
       : super(key: key);
 
   final EasyTableModel<ROW>? model;
   final TableLayoutSettingsV3<ROW> layoutSettings;
   final bool scrolling;
+  final RowCallbacksV3<ROW> rowCallbacks;
 
   @override
   Widget build(BuildContext context) {
@@ -37,6 +39,7 @@ class RowsV3<ROW> extends StatelessWidget {
             rowIndex: i,
             row: model!.visibleRowAt(i),
             layoutSettings: layoutSettings,
+            rowCallbacks: rowCallbacks,
             scrolling: scrolling);
         children.add(RowsLayoutChildV3<ROW>(index: i, child: row));
       }

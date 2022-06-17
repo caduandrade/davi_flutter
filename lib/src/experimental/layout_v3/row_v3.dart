@@ -3,6 +3,7 @@ import 'package:easy_table/src/cell_style.dart';
 import 'package:easy_table/src/column.dart';
 import 'package:easy_table/src/experimental/layout_v3/column_layout/columns_layout_child_v3.dart';
 import 'package:easy_table/src/experimental/layout_v3/column_layout/columns_layout_v3.dart';
+import 'package:easy_table/src/experimental/layout_v3/row_callbacks_v3.dart';
 import 'package:easy_table/src/experimental/metrics/column_metrics_v3.dart';
 import 'package:easy_table/src/experimental/metrics/table_layout_settings_v3.dart';
 import 'package:easy_table/src/theme/theme.dart';
@@ -15,13 +16,15 @@ class RowV3<ROW> extends StatefulWidget {
       {required this.rowIndex,
       required this.row,
       required this.layoutSettings,
-      required this.scrolling})
+      required this.scrolling,
+      required this.rowCallbacks})
       : super(key: ValueKey<int>(rowIndex));
 
   final ROW row;
   final int rowIndex;
   final bool scrolling;
   final TableLayoutSettingsV3<ROW> layoutSettings;
+  final RowCallbacksV3<ROW> rowCallbacks;
 
   @override
   State<StatefulWidget> createState() => RowV3State<ROW>();
@@ -50,15 +53,24 @@ class RowV3State<ROW> extends State<RowV3<ROW>> {
       children.add(ColumnsLayoutChildV3<ROW>(index: columnIndex, child: cell));
     }
 
+    Widget layout = ColumnsLayoutV3(
+        layoutSettings: widget.layoutSettings, children: children);
+
+    if (widget.rowCallbacks.hasCallback) {
+      layout = GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: _buildOnTap(),
+          onDoubleTap: _buildOnDoubleTap(),
+          onSecondaryTap: _buildOnSecondaryTap(),
+          child: layout);
+    }
+
     Color? color = _enter && !widget.scrolling ? Colors.blue[300] : null;
     return MouseRegion(
         onEnter: widget.scrolling ? null : _onEnter,
         cursor: widget.scrolling ? MouseCursor.defer : SystemMouseCursors.click,
         onExit: widget.scrolling ? null : _onExit,
-        child: Container(
-            color: color,
-            child: ColumnsLayoutV3(
-                layoutSettings: widget.layoutSettings, children: children)));
+        child: Container(color: color, child: layout));
   }
 
   Widget _buildCellWidget(
@@ -121,6 +133,27 @@ class RowV3State<ROW> extends State<RowV3<ROW>> {
     }
     //TODO optional clip?
     return ClipRect(child: child);
+  }
+
+  GestureTapCallback? _buildOnTap() {
+    if (widget.rowCallbacks.onRowTap != null) {
+      return () => widget.rowCallbacks.onRowTap!(widget.row);
+    }
+    return null;
+  }
+
+  GestureTapCallback? _buildOnDoubleTap() {
+    if (widget.rowCallbacks.onRowDoubleTap != null) {
+      return () => widget.rowCallbacks.onRowDoubleTap!(widget.row);
+    }
+    return null;
+  }
+
+  GestureTapCallback? _buildOnSecondaryTap() {
+    if (widget.rowCallbacks.onRowSecondaryTap != null) {
+      return () => widget.rowCallbacks.onRowSecondaryTap!(widget.row);
+    }
+    return null;
   }
 
   String? _stringValue(

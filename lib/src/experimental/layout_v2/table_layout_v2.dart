@@ -1,6 +1,6 @@
 import 'package:easy_table/src/experimental/columns_metrics_exp.dart';
 import 'package:easy_table/src/experimental/layout_v2/layout_child_v2.dart';
-import 'package:easy_table/src/experimental/row_callbacks.dart';
+import 'package:easy_table/src/experimental/layout_v2/row_callbacks_v2.dart';
 import 'package:easy_table/src/experimental/layout_v2/table_layout_element_v2.dart';
 import 'package:easy_table/src/experimental/layout_v2/table_layout_render_box_v2.dart';
 import 'package:easy_table/src/experimental/table_layout_settings.dart';
@@ -34,7 +34,7 @@ class TableLayoutV2<ROW> extends MultiChildRenderObjectWidget {
   final ColumnsMetricsExp unpinnedColumnsMetrics;
   final ColumnsMetricsExp rightPinnedColumnsMetrics;
   final EasyTableThemeData theme;
-  final RowCallbacks? rowCallbacks;
+  final RowCallbacksV2? rowCallbacks;
 
   @override
   RenderObject createRenderObject(BuildContext context) {

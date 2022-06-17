@@ -1,4 +1,5 @@
 import 'package:easy_table/src/experimental/layout_v3/header_v3.dart';
+import 'package:easy_table/src/experimental/layout_v3/row_callbacks_v3.dart';
 import 'package:easy_table/src/experimental/layout_v3/rows/rows_v3.dart';
 import 'package:easy_table/src/experimental/layout_v3/layout_child_id_v3.dart';
 import 'package:easy_table/src/experimental/layout_v3/table_layout_parent_data_v3.dart';
@@ -30,12 +31,14 @@ class LayoutChildV3<ROW> extends ParentDataWidget<TableLayoutParentDataV3> {
   factory LayoutChildV3.rows(
       {required EasyTableModel<ROW>? model,
       required TableLayoutSettingsV3<ROW> layoutSettings,
-      required bool scrolling}) {
+      required bool scrolling,
+      required RowCallbacksV3<ROW> rowCallbacks}) {
     return LayoutChildV3._(
         id: LayoutChildIdV3.rows,
         child: RowsV3<ROW>(
             model: model,
             layoutSettings: layoutSettings,
+            rowCallbacks: rowCallbacks,
             scrolling: scrolling));
   }
 

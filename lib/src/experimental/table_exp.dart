@@ -1,6 +1,7 @@
 import 'dart:math' as math;
+import 'package:easy_table/src/experimental/layout_v3/row_callbacks_v3.dart';
 import 'package:easy_table/src/experimental/layout_v3/table_layout_builder_v3.dart';
-import 'package:easy_table/src/experimental/row_callbacks.dart';
+import 'package:easy_table/src/experimental/layout_v2/row_callbacks_v2.dart';
 import 'package:easy_table/src/experimental/layout_v2/table_layout_builder_v2.dart';
 import 'package:easy_table/src/experimental/table_layout_settings.dart';
 import 'package:easy_table/src/experimental/table_scroll_controllers.dart';
@@ -150,7 +151,10 @@ class _EasyTableExpState<ROW> extends State<EasyTableExp<ROW>> {
                   : null,
               model: widget.model,
               scrolling: _scrolling,
-              rowCallbacks: _rowCallbacks(),
+              rowCallbacks: RowCallbacksV3(
+                  onRowTap: widget.onRowTap,
+                  onRowSecondaryTap: widget.onRowSecondaryTap,
+                  onRowDoubleTap: widget.onRowDoubleTap),
               onDragScroll: _onDragScroll));
     } else {
       table = ClipRect(
@@ -268,11 +272,11 @@ class _EasyTableExpState<ROW> extends State<EasyTableExp<ROW>> {
     return KeyEventResult.handled;
   }
 
-  RowCallbacks? _rowCallbacks() {
+  RowCallbacksV2? _rowCallbacks() {
     if (widget.onRowTap != null ||
         widget.onRowDoubleTap != null ||
         widget.onRowSecondaryTap != null) {
-      return RowCallbacks(
+      return RowCallbacksV2(
           onRowDoubleTap: _onRowDoubleTap,
           onRowTap: _onRowTap,
           onRowSecondaryTap: _onRowSecondaryTap);
