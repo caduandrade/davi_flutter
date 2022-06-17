@@ -1,7 +1,8 @@
 enum LayoutChildIdV3 {
   header,
   rows,
-  horizontalScrollbars,
+  leftPinnedHorizontalScrollbar,
+  unpinnedHorizontalScrollbar,
   verticalScrollbar,
   topCorner,
   bottomCorner

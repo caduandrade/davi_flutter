@@ -54,7 +54,7 @@ class TableLayoutBuilderV3<ROW> extends StatelessWidget {
         model: model,
         theme: theme,
         columnsFit: columnsFit,
-        verticalOffset: scrollControllers.verticalOffset,
+        offsets: scrollControllers.offsets,
         cellContentHeight: cellContentHeight,
         visibleRowsLength: visibleRowsLength);
 
@@ -82,20 +82,18 @@ class TableLayoutBuilderV3<ROW> extends StatelessWidget {
     }
 
     if (layoutSettings.hasHorizontalScrollbar) {
-      children.add(LayoutChildV3.horizontalScrollbars([
-        TableScrollbar(
-            axis: Axis.horizontal,
-            scrollController: scrollControllers.leftPinnedContentArea,
-            color: theme.scrollbar.pinnedHorizontalColor,
-            borderColor: theme.scrollbar.pinnedHorizontalBorderColor,
-            contentSize: layoutSettings.leftPinnedContentWidth),
-        TableScrollbar(
-            axis: Axis.horizontal,
-            scrollController: scrollControllers.unpinnedContentArea,
-            color: theme.scrollbar.unpinnedHorizontalColor,
-            borderColor: theme.scrollbar.unpinnedHorizontalBorderColor,
-            contentSize: layoutSettings.unpinnedContentWidth)
-      ]));
+      children.add(LayoutChildV3.leftPinnedHorizontalScrollbar(TableScrollbar(
+          axis: Axis.horizontal,
+          scrollController: scrollControllers.leftPinnedContentArea,
+          color: theme.scrollbar.pinnedHorizontalColor,
+          borderColor: theme.scrollbar.pinnedHorizontalBorderColor,
+          contentSize: layoutSettings.leftPinnedContentWidth)));
+      children.add(LayoutChildV3.unpinnedHorizontalScrollbar(TableScrollbar(
+          axis: Axis.horizontal,
+          scrollController: scrollControllers.unpinnedContentArea,
+          color: theme.scrollbar.unpinnedHorizontalColor,
+          borderColor: theme.scrollbar.unpinnedHorizontalBorderColor,
+          contentSize: layoutSettings.unpinnedContentWidth)));
       if (layoutSettings.hasVerticalScrollbar) {
         children.add(LayoutChildV3.bottomCorner());
       }

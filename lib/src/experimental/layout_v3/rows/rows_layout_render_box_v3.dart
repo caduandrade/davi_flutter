@@ -57,7 +57,8 @@ class RowsLayoutRenderBoxV3<ROW> extends RenderBox
               width: constraints.maxWidth, height: _layoutSettings.cellHeight),
           parentUsesSize: true);
 
-      final double y = (rowIndex * rowHeight) - _layoutSettings.verticalOffset;
+      final double y =
+          (rowIndex * rowHeight) - _layoutSettings.offsets.vertical;
 
       renderBox._parentData().offset = Offset(0, y);
     });
@@ -76,7 +77,7 @@ class RowsLayoutRenderBoxV3<ROW> extends RenderBox
           _layoutSettings.firstRowIndex + _layoutSettings.maxVisibleRowsLength;
       for (int i = _layoutSettings.firstRowIndex; i < last; i++) {
         double top = (i * _layoutSettings.rowHeight) -
-            _layoutSettings.verticalOffset +
+            _layoutSettings.offsets.vertical +
             _layoutSettings.cellHeight +
             offset.dy;
         context.canvas.drawRect(

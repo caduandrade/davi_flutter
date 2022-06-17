@@ -1,4 +1,3 @@
-import 'dart:math' as math;
 import 'package:easy_table/src/experimental/layout_v3/layout_child_id_v3.dart';
 import 'package:easy_table/src/experimental/layout_v3/table_layout_parent_data_v3.dart';
 import 'package:easy_table/src/experimental/metrics/table_layout_settings_v3.dart';
@@ -21,7 +20,8 @@ class TableLayoutRenderBoxV3<ROW> extends RenderBox
   RenderBox? _header;
   RenderBox? _rows;
   RenderBox? _verticalScrollbar;
-  RenderBox? _horizontalScrollbars;
+  RenderBox? _unpinnedHorizontalScrollbar;
+  RenderBox? _leftPinnedHorizontalScrollbar;
   RenderBox? _topCorner;
   RenderBox? _bottomCorner;
 
@@ -64,7 +64,8 @@ class TableLayoutRenderBoxV3<ROW> extends RenderBox
   void performLayout() {
     _rows = null;
     _header = null;
-    _horizontalScrollbars = null;
+    _unpinnedHorizontalScrollbar = null;
+    _leftPinnedHorizontalScrollbar = null;
     _verticalScrollbar = null;
     _topCorner = null;
     _bottomCorner = null;
@@ -76,8 +77,11 @@ class TableLayoutRenderBoxV3<ROW> extends RenderBox
         _rows = renderBox;
       } else if (parentData.id == LayoutChildIdV3.verticalScrollbar) {
         _verticalScrollbar = renderBox;
-      } else if (parentData.id == LayoutChildIdV3.horizontalScrollbars) {
-        _horizontalScrollbars = renderBox;
+      } else if (parentData.id == LayoutChildIdV3.unpinnedHorizontalScrollbar) {
+        _unpinnedHorizontalScrollbar = renderBox;
+      } else if (parentData.id ==
+          LayoutChildIdV3.leftPinnedHorizontalScrollbar) {
+        _leftPinnedHorizontalScrollbar = renderBox;
       } else if (parentData.id == LayoutChildIdV3.topCorner) {
         _topCorner = renderBox;
       } else if (parentData.id == LayoutChildIdV3.bottomCorner) {
@@ -104,8 +108,16 @@ class TableLayoutRenderBoxV3<ROW> extends RenderBox
 
     // horizontal scrollbars
     _layoutChild(
-        child: _horizontalScrollbars,
-        bounds: _layoutSettings.horizontalScrollbarBounds);
+        child: _leftPinnedHorizontalScrollbar,
+        bounds: _layoutSettings.leftPinnedHorizontalScrollbarBounds);
+    _layoutChild(
+        child: _unpinnedHorizontalScrollbar,
+        bounds: _layoutSettings.unpinnedHorizontalScrollbarsBounds);
+
+    print(
+        'left: ${_layoutSettings.leftPinnedHorizontalScrollbarBounds.left} ${_layoutSettings.leftPinnedHorizontalScrollbarBounds.width}');
+    print(
+        'unpinned: ${_layoutSettings.unpinnedHorizontalScrollbarsBounds.left} ${_layoutSettings.unpinnedHorizontalScrollbarsBounds.width}');
 
     // vertical scrollbar
     _layoutChild(
@@ -180,8 +192,13 @@ class TableLayoutRenderBoxV3<ROW> extends RenderBox
     _paintChild(
         context: context,
         offset: offset,
-        child: _horizontalScrollbars,
-        clipBounds: _layoutSettings.horizontalScrollbarBounds);
+        child: _leftPinnedHorizontalScrollbar,
+        clipBounds: _layoutSettings.horizontalScrollbarsBounds);
+    _paintChild(
+        context: context,
+        offset: offset,
+        child: _unpinnedHorizontalScrollbar,
+        clipBounds: _layoutSettings.horizontalScrollbarsBounds);
     _paintChild(
         context: context,
         offset: offset,

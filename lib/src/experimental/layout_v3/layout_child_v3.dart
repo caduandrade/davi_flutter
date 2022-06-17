@@ -1,6 +1,5 @@
 import 'package:easy_table/src/experimental/layout_v3/header_v3.dart';
 import 'package:easy_table/src/experimental/layout_v3/rows/rows_v3.dart';
-import 'package:easy_table/src/experimental/layout_v3/horizontal_scrollbars_layout_v3.dart';
 import 'package:easy_table/src/experimental/layout_v3/layout_child_id_v3.dart';
 import 'package:easy_table/src/experimental/layout_v3/table_layout_parent_data_v3.dart';
 import 'package:easy_table/src/experimental/layout_v3/table_layout_v3.dart';
@@ -46,10 +45,15 @@ class LayoutChildV3<ROW> extends ParentDataWidget<TableLayoutParentDataV3> {
         id: LayoutChildIdV3.topCorner, child: const TableCorner(top: true));
   }
 
-  factory LayoutChildV3.horizontalScrollbars(List<TableScrollbar> scrollbars) {
+  factory LayoutChildV3.leftPinnedHorizontalScrollbar(
+      TableScrollbar scrollbar) {
     return LayoutChildV3._(
-        id: LayoutChildIdV3.horizontalScrollbars,
-        child: HorizontalScrollbarsLayoutV3(scrollbars: scrollbars));
+        id: LayoutChildIdV3.leftPinnedHorizontalScrollbar, child: scrollbar);
+  }
+
+  factory LayoutChildV3.unpinnedHorizontalScrollbar(TableScrollbar scrollbar) {
+    return LayoutChildV3._(
+        id: LayoutChildIdV3.unpinnedHorizontalScrollbar, child: scrollbar);
   }
 
   factory LayoutChildV3.verticalScrollbar({required Widget child}) {

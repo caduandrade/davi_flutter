@@ -1,3 +1,4 @@
+import 'package:easy_table/src/column.dart';
 import 'package:easy_table/src/experimental/layout_v3/column_layout/columns_layout_parent_data_v3.dart';
 import 'package:easy_table/src/experimental/metrics/column_metrics_v3.dart';
 import 'package:easy_table/src/experimental/metrics/table_layout_settings_v3.dart';
@@ -14,7 +15,7 @@ class ColumnsLayoutRenderBoxV3<ROW> extends RenderBox
 
   set layoutSettings(TableLayoutSettingsV3<ROW> value) {
     if (_layoutSettings != value) {
-      //TODO maybe can check only row height and columns
+      //TODO maybe can check only row height and column widths
       _layoutSettings = value;
       markNeedsLayout();
     }
@@ -38,13 +39,17 @@ class ColumnsLayoutRenderBoxV3<ROW> extends RenderBox
       final RenderBox renderBox = child as RenderBox;
       final ColumnsLayoutParentDataV3 parentData = child._parentData();
       final int columnIndex = parentData.index!;
-      ColumnMetricsV3<ROW> columnMetrics =
+      final ColumnMetricsV3<ROW> columnMetrics =
           _layoutSettings.columnsMetrics[columnIndex];
+      final EasyTableColumn<ROW> column = columnMetrics.column;
+      final double offset = column.pinned
+          ? _layoutSettings.offsets.leftPinnedContentArea
+          : _layoutSettings.offsets.unpinnedContentArea;
       renderBox.layout(
           BoxConstraints.tightFor(
               width: columnMetrics.width, height: constraints.maxHeight),
           parentUsesSize: true);
-      renderBox._parentData().offset = Offset(columnMetrics.offset, 0);
+      renderBox._parentData().offset = Offset(columnMetrics.offset - offset, 0);
     });
 
     size = computeDryLayout(constraints);
@@ -52,14 +57,55 @@ class ColumnsLayoutRenderBoxV3<ROW> extends RenderBox
 
   @override
   void paint(PaintingContext context, Offset offset) {
-    //TODO clip
-    defaultPaint(context, offset);
+    RenderBox? child = firstChild;
+    while (child != null) {
+      final ColumnsLayoutParentDataV3 childParentData = child._parentData();
+      final int columnIndex = childParentData.index!;
+      final ColumnMetricsV3<ROW> columnMetrics =
+          _layoutSettings.columnsMetrics[columnIndex];
+      final EasyTableColumn<ROW> column = columnMetrics.column;
+      final Rect bounds = column.pinned
+          ? _layoutSettings.leftPinnedAreaBounds
+          : _layoutSettings.unpinnedAreaBounds;
+      context.canvas.save();
+      context.canvas.clipRect(bounds.translate(offset.dx, offset.dy));
+      context.paintChild(child, childParentData.offset + offset);
+      context.canvas.restore();
+      child = childParentData.nextSibling;
+    }
   }
 
   @override
   bool hitTestChildren(BoxHitTestResult result, {required Offset position}) {
     //TODO clip?
-    return defaultHitTestChildren(result, position: position);
+    //return defaultHitTestChildren(result, position: position);
+
+    RenderBox? child = lastChild;
+    while (child != null) {
+      final ColumnsLayoutParentDataV3 childParentData = child._parentData();
+      final int columnIndex = childParentData.index!;
+      final ColumnMetricsV3<ROW> columnMetrics =
+          _layoutSettings.columnsMetrics[columnIndex];
+      final EasyTableColumn<ROW> column = columnMetrics.column;
+      final Rect bounds = column.pinned
+          ? _layoutSettings.leftPinnedAreaBounds
+          : _layoutSettings.unpinnedAreaBounds;
+      if (bounds.contains(position)) {
+        final bool isHit = result.addWithPaintOffset(
+          offset: childParentData.offset,
+          position: position,
+          hitTest: (BoxHitTestResult result, Offset transformed) {
+            assert(transformed == position - childParentData.offset);
+            return child!.hitTest(result, position: transformed);
+          },
+        );
+        if (isHit) {
+          return true;
+        }
+      }
+      child = childParentData.previousSibling;
+    }
+    return false;
   }
 }
 
