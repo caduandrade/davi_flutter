@@ -1,4 +1,5 @@
 import 'package:easy_table/src/experimental/layout_v3/column_layout/columns_layout_parent_data_v3.dart';
+import 'package:easy_table/src/experimental/metrics/column_metrics_v3.dart';
 import 'package:easy_table/src/experimental/metrics/table_layout_settings_v3.dart';
 import 'package:flutter/rendering.dart';
 
@@ -32,17 +33,15 @@ class ColumnsLayoutRenderBoxV3<ROW> extends RenderBox
 
   @override
   void performLayout() {
-    double x = 0;
     visitChildren((child) {
       final RenderBox renderBox = child as RenderBox;
       final ColumnsLayoutParentDataV3 parentData = child._parentData();
       final int columnIndex = parentData.index!;
-
+      ColumnMetricsV3<ROW> columnMetrics = _layoutSettings.columnsMetrics[columnIndex];
       renderBox.layout(
-          BoxConstraints.tightFor(width: 60, height: constraints.maxHeight),
+          BoxConstraints.tightFor(width: columnMetrics.width, height: constraints.maxHeight),
           parentUsesSize: true);
-      renderBox._parentData().offset = Offset(x, 0);
-      x += 60;
+      renderBox._parentData().offset = Offset(columnMetrics.offset, 0);
     });
 
     size = computeDryLayout(constraints);
@@ -50,11 +49,13 @@ class ColumnsLayoutRenderBoxV3<ROW> extends RenderBox
 
   @override
   void paint(PaintingContext context, Offset offset) {
+    //TODO clip
     defaultPaint(context, offset);
   }
 
   @override
   bool hitTestChildren(BoxHitTestResult result, {required Offset position}) {
+    //TODO clip?
     return defaultHitTestChildren(result, position: position);
   }
 }

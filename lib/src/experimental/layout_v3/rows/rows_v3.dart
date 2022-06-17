@@ -5,6 +5,8 @@ import 'package:easy_table/src/experimental/layout_v3/rows/rows_painting_setting
 import 'package:easy_table/src/experimental/metrics/column_metrics_v3.dart';
 import 'package:easy_table/src/experimental/metrics/table_layout_settings_v3.dart';
 import 'package:easy_table/src/model.dart';
+import 'package:easy_table/src/theme/theme.dart';
+import 'package:easy_table/src/theme/theme_data.dart';
 import 'package:flutter/material.dart';
 
 class RowsV3<ROW> extends StatelessWidget {
@@ -16,6 +18,8 @@ class RowsV3<ROW> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    EasyTableThemeData theme = EasyTableTheme.of(context);
+
     List<RowsLayoutChildV3<ROW>> children = [];
 
     if (model != null) {
@@ -28,9 +32,10 @@ class RowsV3<ROW> extends StatelessWidget {
         children.add(RowsLayoutChildV3<ROW>(index: i, child: row));
       }
 
-      //TODO use correct color
+      print(children.length);
+
       RowsPaintingSettings paintSettings =
-          RowsPaintingSettings(divisorColor: Colors.green);
+          RowsPaintingSettings(divisorColor: theme.row.dividerColor);
       return RowsLayoutV3<ROW>(
           layoutSettings: layoutSettings,
           paintSettings: paintSettings,
