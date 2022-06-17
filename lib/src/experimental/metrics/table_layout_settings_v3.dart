@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:easy_table/src/column.dart';
 import 'package:easy_table/src/experimental/metrics/column_metrics_v3.dart';
 import 'package:easy_table/src/experimental/pin_status.dart';
 import 'package:easy_table/src/experimental/scroll_offsets.dart';
@@ -257,6 +258,7 @@ class TableLayoutSettingsV3<ROW> {
         scrollbarHeight.hashCode ^
         height.hashCode ^
         offsets.hashCode ^
+        columnsFit.hashCode ^
         firstRowIndex.hashCode ^
         contentHeight.hashCode ^
         cellHeight.hashCode ^
@@ -279,6 +281,7 @@ class TableLayoutSettingsV3<ROW> {
     return TableLayoutSettingsV3._(
         hasHeader: hasHeader,
         rowHeight: rowHeight,
+        columnsFit: columnsFit,
         headerCellHeight: headerCellHeight,
         headerHeight: headerHeight,
         scrollbarWidth: scrollbarWidth,
@@ -310,6 +313,7 @@ class TableLayoutSettingsV3<ROW> {
 
   TableLayoutSettingsV3._(
       {required this.hasHeader,
+      required this.columnsFit,
       required this.rowHeight,
       required this.headerCellHeight,
       required this.leftPinnedContentWidth,
@@ -344,6 +348,7 @@ class TableLayoutSettingsV3<ROW> {
     };
   }
 
+  final bool columnsFit;
   final bool hasHeader;
   final double rowHeight;
   final double headerCellHeight;
@@ -375,6 +380,13 @@ class TableLayoutSettingsV3<ROW> {
 
   Rect getAreaBounds(PinStatus pinStatus) {
     return _areaBounds[pinStatus]!;
+  }
+
+  PinStatus pinStatus(EasyTableColumn<ROW> column) {
+    if (columnsFit) {
+      return PinStatus.unpinned;
+    }
+    return column.pinStatus;
   }
 
   @override

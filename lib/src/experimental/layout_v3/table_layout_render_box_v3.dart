@@ -220,8 +220,7 @@ class TableLayoutRenderBoxV3<ROW> extends RenderBox
       }
       Paint? columnPaint;
       if (_theme.columnDividerColor != null) {
-        columnPaint = Paint()
-          ..color = Colors.red; // _theme.columnDividerColor!;
+        columnPaint = Paint()..color = _theme.columnDividerColor!;
       }
 
       bool needAreaDivisor = false;
@@ -231,9 +230,10 @@ class TableLayoutRenderBoxV3<ROW> extends RenderBox
         final ColumnMetricsV3<ROW> columnMetrics =
             _layoutSettings.columnsMetrics[columnIndex];
         final EasyTableColumn<ROW> column = columnMetrics.column;
-        final Rect areaBounds = _layoutSettings.getAreaBounds(column.pinStatus);
+        final PinStatus pinStatus = _layoutSettings.pinStatus(column);
+        final Rect areaBounds = _layoutSettings.getAreaBounds(pinStatus);
         final double scrollOffset =
-            _layoutSettings.offsets.getHorizontal(column.pinStatus);
+            _layoutSettings.offsets.getHorizontal(pinStatus);
         double left = offset.dx +
             columnMetrics.offset +
             columnMetrics.width -
@@ -259,9 +259,9 @@ class TableLayoutRenderBoxV3<ROW> extends RenderBox
               columnPaint);
         }
         context.canvas.restore();
-        if (column.pinStatus == PinStatus.leftPinned) {
+        if (pinStatus == PinStatus.leftPinned) {
           needAreaDivisor = true;
-        } else if (needAreaDivisor && column.pinStatus == PinStatus.unpinned) {
+        } else if (needAreaDivisor && pinStatus == PinStatus.unpinned) {
           needAreaDivisor = false;
           context.canvas.save();
           context.canvas.clipRect(Rect.fromLTWH(offset.dx, offset.dy,

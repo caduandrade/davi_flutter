@@ -226,7 +226,7 @@ class EasyTableColumn<ROW> extends ChangeNotifier with ColumnSortMixin {
 
   bool resizable;
 
-  PinStatus get pinStatus=>pinned?PinStatus.leftPinned:PinStatus.unpinned;
+  PinStatus get pinStatus => pinned ? PinStatus.leftPinned : PinStatus.unpinned;
 
   @override
   String toString() {

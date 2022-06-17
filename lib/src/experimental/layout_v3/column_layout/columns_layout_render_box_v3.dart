@@ -2,6 +2,7 @@ import 'package:easy_table/src/column.dart';
 import 'package:easy_table/src/experimental/layout_v3/column_layout/columns_layout_parent_data_v3.dart';
 import 'package:easy_table/src/experimental/metrics/column_metrics_v3.dart';
 import 'package:easy_table/src/experimental/metrics/table_layout_settings_v3.dart';
+import 'package:easy_table/src/experimental/pin_status.dart';
 import 'package:flutter/rendering.dart';
 
 class ColumnsLayoutRenderBoxV3<ROW> extends RenderBox
@@ -42,9 +43,8 @@ class ColumnsLayoutRenderBoxV3<ROW> extends RenderBox
       final ColumnMetricsV3<ROW> columnMetrics =
           _layoutSettings.columnsMetrics[columnIndex];
       final EasyTableColumn<ROW> column = columnMetrics.column;
-      final double offset = column.pinned
-          ? _layoutSettings.offsets.leftPinnedContentArea
-          : _layoutSettings.offsets.unpinnedContentArea;
+      final PinStatus pinStatus = _layoutSettings.pinStatus(column);
+      final double offset = _layoutSettings.offsets.getHorizontal(pinStatus);
       renderBox.layout(
           BoxConstraints.tightFor(
               width: columnMetrics.width, height: constraints.maxHeight),
@@ -64,9 +64,8 @@ class ColumnsLayoutRenderBoxV3<ROW> extends RenderBox
       final ColumnMetricsV3<ROW> columnMetrics =
           _layoutSettings.columnsMetrics[columnIndex];
       final EasyTableColumn<ROW> column = columnMetrics.column;
-      final Rect bounds = column.pinned
-          ? _layoutSettings.leftPinnedAreaBounds
-          : _layoutSettings.unpinnedAreaBounds;
+      final PinStatus pinStatus = _layoutSettings.pinStatus(column);
+      final Rect bounds = _layoutSettings.getAreaBounds(pinStatus);
       context.canvas.save();
       context.canvas.clipRect(bounds.translate(offset.dx, offset.dy));
       context.paintChild(child, childParentData.offset + offset);
@@ -87,9 +86,8 @@ class ColumnsLayoutRenderBoxV3<ROW> extends RenderBox
       final ColumnMetricsV3<ROW> columnMetrics =
           _layoutSettings.columnsMetrics[columnIndex];
       final EasyTableColumn<ROW> column = columnMetrics.column;
-      final Rect bounds = column.pinned
-          ? _layoutSettings.leftPinnedAreaBounds
-          : _layoutSettings.unpinnedAreaBounds;
+      final PinStatus pinStatus = _layoutSettings.pinStatus(column);
+      final Rect bounds = _layoutSettings.getAreaBounds(pinStatus);
       if (bounds.contains(position)) {
         final bool isHit = result.addWithPaintOffset(
           offset: childParentData.offset,
