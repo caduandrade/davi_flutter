@@ -65,12 +65,22 @@ class RowV3State<ROW> extends State<RowV3<ROW>> {
           child: layout);
     }
 
-    Color? color = _enter && !widget.scrolling ? Colors.blue[300] : null;
-    return MouseRegion(
-        onEnter: widget.scrolling ? null : _onEnter,
-        cursor: widget.scrolling ? MouseCursor.defer : SystemMouseCursors.click,
-        onExit: widget.scrolling ? null : _onExit,
-        child: Container(color: color, child: layout));
+    if (widget.rowCallbacks.hasCallback || theme.row.hoveredColor != null) {
+      Color? color = _enter && !widget.scrolling ? Colors.blue[300] : null;
+      if (theme.row.hoveredColor != null) {
+        color = _enter && !widget.scrolling
+            ? theme.row.hoveredColor!(widget.rowIndex)
+            : null;
+      }
+      layout = MouseRegion(
+          onEnter: widget.scrolling ? null : _onEnter,
+          cursor:
+              widget.scrolling ? MouseCursor.defer : SystemMouseCursors.click,
+          onExit: widget.scrolling ? null : _onExit,
+          child: Container(color: color, child: layout));
+    }
+
+    return layout;
   }
 
   Widget _buildCellWidget(
@@ -123,7 +133,7 @@ class RowV3State<ROW> extends State<RowV3<ROW>> {
     if (background != null) {
       child = Container(child: child, color: background);
     }
-    return  ClipRect(child: child);
+    return ClipRect(child: child);
   }
 
   GestureTapCallback? _buildOnTap() {
