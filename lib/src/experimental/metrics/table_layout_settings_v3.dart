@@ -77,9 +77,6 @@ class TableLayoutSettingsV3<ROW> {
           constraints.maxHeight -
               (hasHeader ? headerHeight : 0) -
               (hasHorizontalScrollbar ? scrollbarHeight : 0));
-      //TODO remove
-      //final double start = offsets.vertical / rowHeight;
-      //maxVisibleRowsLength = (start + (availableHeight / rowHeight)).ceil() - start.floor();
       maxVisibleRowsLength = RowRange.maxVisibleRowsLength(
           scrollOffset: offsets.vertical,
           height: availableHeight,
@@ -152,9 +149,6 @@ class TableLayoutSettingsV3<ROW> {
                 constraints.maxHeight -
                     (hasHeader ? headerHeight : 0) -
                     scrollbarHeight);
-            //TODO remove
-            //final double start = offsets.vertical / rowHeight;
-            //maxVisibleRowsLength = (start + (availableHeight / rowHeight)).ceil() - start.floor();
             maxVisibleRowsLength = RowRange.maxVisibleRowsLength(
                 scrollOffset: offsets.vertical,
                 height: availableHeight,

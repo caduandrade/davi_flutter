@@ -53,6 +53,6 @@ class RowsV3<ROW> extends StatelessWidget {
               children: children));
     }
 
-    return const Placeholder();
+    return Container();
   }
 }

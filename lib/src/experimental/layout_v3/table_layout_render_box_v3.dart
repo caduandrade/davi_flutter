@@ -6,7 +6,6 @@ import 'package:easy_table/src/experimental/metrics/table_layout_settings_v3.dar
 import 'package:easy_table/src/experimental/pin_status.dart';
 import 'package:easy_table/src/experimental/table_paint_settings.dart';
 import 'package:easy_table/src/theme/theme_data.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
 class TableLayoutRenderBoxV3<ROW> extends RenderBox
@@ -104,8 +103,6 @@ class TableLayoutRenderBoxV3<ROW> extends RenderBox
           parentUsesSize: true);
       _header!._parentData().offset = Offset.zero;
     }
-
-    //TODO divisors
 
     // rows
     _layoutChild(child: _rows, bounds: _layoutSettings.cellsBounds);

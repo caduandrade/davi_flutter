@@ -76,9 +76,6 @@ class ColumnsLayoutRenderBoxV3<ROW> extends RenderBox
 
   @override
   bool hitTestChildren(BoxHitTestResult result, {required Offset position}) {
-    //TODO clip?
-    //return defaultHitTestChildren(result, position: position);
-
     RenderBox? child = lastChild;
     while (child != null) {
       final ColumnsLayoutParentDataV3 childParentData = child._parentData();
