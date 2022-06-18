@@ -144,9 +144,7 @@ class _HomePageState extends State<HomePage> {
   Widget _tableArea() {
     return Padding(
         padding: const EdgeInsets.all(32),
-        child: Container(
-            decoration: BoxDecoration(border: Border.all()),
-            child: EasyTableTheme(
+        child: EasyTableTheme(
                 data: EasyTableThemeData(
                     scrollbar: const TableScrollbarThemeData(
                         horizontalOnlyWhenNeeded: true),
@@ -168,7 +166,7 @@ class _HomePageState extends State<HomePage> {
                     onRowTap: _onRowTap,
                     onRowDoubleTap: _onRowDoubleTap,
                     onRowSecondaryTap: _onRowSecondaryTap
-                ))));
+                )));
   }
 
   void _changeColumnsFit() {

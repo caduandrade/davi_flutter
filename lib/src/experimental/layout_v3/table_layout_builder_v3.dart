@@ -2,7 +2,6 @@ import 'package:easy_table/src/experimental/layout_v3/layout_child_v3.dart';
 import 'package:easy_table/src/experimental/layout_v3/row_callbacks_v3.dart';
 import 'package:easy_table/src/experimental/layout_v3/table_layout_v3.dart';
 import 'package:easy_table/src/experimental/metrics/table_layout_settings_v3.dart';
-import 'package:easy_table/src/experimental/layout_v2/row_callbacks_v2.dart';
 import 'package:easy_table/src/experimental/table_layout_settings.dart';
 import 'package:easy_table/src/experimental/table_paint_settings.dart';
 import 'package:easy_table/src/experimental/table_scroll_controllers.dart';
