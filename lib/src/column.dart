@@ -48,6 +48,8 @@ class EasyTableColumn<ROW> extends ChangeNotifier with ColumnSortMixin {
       Alignment? headerAlignment,
       Alignment? cellAlignment,
       TextStyle? cellTextStyle,
+      TextOverflow? cellOverflow,
+      Color? cellBackground,
       TextStyle? headerTextStyle,
       Widget? leading,
       EasyTableCellBuilder<ROW>? cellBuilder,
@@ -144,6 +146,7 @@ class EasyTableColumn<ROW> extends ChangeNotifier with ColumnSortMixin {
         resizable: resizable,
         headerPadding: headerPadding,
         cellPadding: cellPadding,
+        cellOverflow: cellOverflow,
         headerAlignment: headerAlignment,
         cellAlignment: cellAlignment,
         headerTextStyle: headerTextStyle,
@@ -160,8 +163,10 @@ class EasyTableColumn<ROW> extends ChangeNotifier with ColumnSortMixin {
       this.cellPadding,
       this.headerAlignment,
       this.cellAlignment,
+      this.cellBackground,
       this.headerTextStyle,
       this.cellTextStyle,
+      this.cellOverflow,
       this.fractionDigits,
       this.cellBuilder,
       this.leading,
@@ -186,6 +191,8 @@ class EasyTableColumn<ROW> extends ChangeNotifier with ColumnSortMixin {
   final EdgeInsets? headerPadding;
   final Alignment? headerAlignment;
   final Alignment? cellAlignment;
+  final TextOverflow? cellOverflow;
+  final Color? cellBackground;
   final TextStyle? cellTextStyle;
   final TextStyle? headerTextStyle;
   final int? fractionDigits;

@@ -91,19 +91,29 @@ class RowWidgetState<ROW> extends State<RowWidget<ROW>> {
       required int rowIndex,
       required EasyTableColumn<ROW> column,
       required EasyTableThemeData theme}) {
-    EdgeInsets? padding;
-    Alignment? alignment;
-    Color? background;
-    TextStyle? textStyle;
-    TextOverflow? overflow;
+    // Theme
+    EdgeInsets? padding = theme.cell.padding;
+    Alignment? alignment = theme.cell.alignment;
+    Color? background = theme.cell.nullValueColor != null
+        ? theme.cell.nullValueColor!(rowIndex)
+        : null;
+    TextStyle? textStyle = theme.cell.textStyle;
+    TextOverflow? overflow = theme.cell.overflow;
+    // Entire column
+    padding = column.cellPadding ?? padding;
+    alignment = column.cellAlignment ?? alignment;
+    background = column.cellBackground ?? background;
+    textStyle = column.cellTextStyle ?? textStyle;
+    overflow = column.cellOverflow ?? overflow;
+    // Single cell
     if (column.cellStyleBuilder != null) {
       CellStyle? cellStyle = column.cellStyleBuilder!(row);
       if (cellStyle != null) {
-        background = cellStyle.background;
-        alignment = cellStyle.alignment;
-        padding = cellStyle.padding;
-        textStyle = cellStyle.textStyle;
-        overflow = cellStyle.overflow;
+        padding = cellStyle.padding ?? padding;
+        alignment = cellStyle.alignment ?? alignment;
+        background = cellStyle.background ?? background;
+        textStyle = cellStyle.textStyle ?? textStyle;
+        overflow = cellStyle.overflow ?? overflow;
       }
     }
 
@@ -121,15 +131,12 @@ class RowWidgetState<ROW> extends State<RowWidget<ROW>> {
         child = Text(value,
             overflow: overflow ?? theme.cell.overflow,
             style: textStyle ?? theme.cell.textStyle);
-      } else if (background == null && theme.cell.nullValueColor != null) {
-        background = theme.cell.nullValueColor!(rowIndex);
       }
     }
     if (child != null) {
-      child = Align(child: child, alignment: alignment ?? theme.cell.alignment);
-      EdgeInsetsGeometry? p = padding ?? theme.cell.padding;
-      if (p != null) {
-        child = Padding(padding: p, child: child);
+      child = Align(child: child, alignment: alignment);
+      if (padding != null) {
+        child = Padding(padding: padding, child: child);
       }
     }
     if (background != null) {

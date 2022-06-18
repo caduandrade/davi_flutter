@@ -17,6 +17,8 @@
   * EasyTableModel.allColumnsWidth removed
   * EasyTableModel.unpinnedColumnsLength removed
   * EasyTableModel.pinnedColumnsLength removed
+  * EasyTableColumnSort.cellBackground added
+  * EasyTableColumnSort.cellOverflow added
 
 ## 1.6.0
 

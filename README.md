@@ -144,7 +144,7 @@ void _onRowDoubleTap(BuildContext context, Person person) {
 ```dart
     _model = EasyTableModel(rows: persons, columns: [
       EasyTableColumn(
-          pinned: true,
+          pinStatus: PinStatus.left,
           width: 30,
           cellBuilder: (BuildContext context, Person row, int visibleRowIndex) {
             return InkWell(
