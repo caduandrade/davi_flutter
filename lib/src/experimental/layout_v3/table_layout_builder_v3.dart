@@ -1,6 +1,8 @@
+import 'dart:math' as math;
 import 'package:easy_table/src/experimental/layout_v3/layout_child_v3.dart';
 import 'package:easy_table/src/experimental/layout_v3/row_callbacks_v3.dart';
 import 'package:easy_table/src/experimental/layout_v3/table_layout_v3.dart';
+import 'package:easy_table/src/experimental/metrics/row_range.dart';
 import 'package:easy_table/src/experimental/metrics/table_layout_settings_v3.dart';
 import 'package:easy_table/src/experimental/table_layout_settings.dart';
 import 'package:easy_table/src/experimental/table_paint_settings.dart';
@@ -115,10 +117,26 @@ class TableLayoutBuilderV3<ROW> extends StatelessWidget {
     TablePaintSettings paintSettings =
         TablePaintSettings(hoveredRowIndex: null, debugAreas: false);
 
-    return TableLayoutV3<ROW>(
+    Widget layout = TableLayoutV3<ROW>(
         layoutSettings: layoutSettings,
         paintSettings: paintSettings,
         theme: theme,
         children: children);
+    if (onLastVisibleRowListener != null) {
+      layout = NotificationListener<ScrollMetricsNotification>(
+          child: layout,
+          onNotification: (notification) {
+            RowRange? rowRange = RowRange.build(
+                scrollOffset: scrollControllers.verticalOffset,
+                height: layoutSettings.cellsBounds.height,
+                cellHeight: layoutSettings.cellHeight,
+                dividerThickness: layoutSettings.rowDividerThickness);
+            if (rowRange != null) {
+              onLastVisibleRowListener!(rowRange.lastIndex);
+            }
+            return false;
+          });
+    }
+    return layout;
   }
 }
