@@ -37,7 +37,7 @@ class TableLayoutSettings<ROW> {
       ]);
     }
 
-    // Now let's find out the dynamic values given the constraints!!!
+    // Let's find out the dynamic values given the constraints!!!
     // I'm so excited!!!
 
     final double height;

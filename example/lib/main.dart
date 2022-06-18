@@ -45,7 +45,7 @@ class _HomePageState extends State<HomePage> {
         EasyTableColumn(
             name: 'Gender',
             width: 80,
-          iconValue: (row) => row.male
+            iconValue: (row) => row.male
                 ? CellIcon(icon: Icons.male, color: Colors.blue[700]!)
                 : CellIcon(icon: Icons.female, color: Colors.pink[600]!)),
         EasyTableColumn(
@@ -107,7 +107,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _table() {
-    return EasyTableExp<Character>(_model, multiSortEnabled: true);
+    return EasyTable<Character>(_model, multiSortEnabled: true);
   }
 
   Widget _buttons() {

@@ -19,10 +19,10 @@ import 'package:flutter/services.dart';
 /// The [cellContentHeight] is mandatory due to performance.
 /// The total height of the cell will be the sum of the [cellContentHeight]
 /// value, divider thickness, and cell margin.
-class EasyTableExp<ROW> extends StatefulWidget {
+class EasyTable<ROW> extends StatefulWidget {
 //TODO handle negative values
 //TODO allow null and use defaults?
-  const EasyTableExp(this.model,
+  const EasyTable(this.model,
       {Key? key,
       this.onHoverListener,
       this.unpinnedHorizontalScrollController,
@@ -60,11 +60,11 @@ class EasyTableExp<ROW> extends StatefulWidget {
   int? get visibleRowsCount => _visibleRowsCount;
 
   @override
-  State<StatefulWidget> createState() => _EasyTableExpState<ROW>();
+  State<StatefulWidget> createState() => _EasyTableState<ROW>();
 }
 
-/// The [EasyTableExp] state.
-class _EasyTableExpState<ROW> extends State<EasyTableExp<ROW>> {
+/// The [EasyTable] state.
+class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
   late final TableScrollControllers _scrollControllers;
 
   bool _scrolling = false;
@@ -106,7 +106,7 @@ class _EasyTableExpState<ROW> extends State<EasyTableExp<ROW>> {
   }
 
   @override
-  void didUpdateWidget(covariant EasyTableExp<ROW> oldWidget) {
+  void didUpdateWidget(covariant EasyTable<ROW> oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.model != oldWidget.model) {
       oldWidget.model?.removeListener(_rebuild);

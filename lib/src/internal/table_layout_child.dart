@@ -1,4 +1,4 @@
-import 'package:easy_table/src/internal/header.dart';
+import 'package:easy_table/src/internal/header_widget.dart';
 import 'package:easy_table/src/internal/layout_child_id.dart';
 import 'package:easy_table/src/internal/row_callbacks.dart';
 import 'package:easy_table/src/internal/rows_builder.dart';
@@ -13,16 +13,16 @@ import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
 @internal
-class LayoutChild<ROW> extends ParentDataWidget<TableLayoutParentData> {
-  factory LayoutChild.header(
+class TableLayoutChild<ROW> extends ParentDataWidget<TableLayoutParentData> {
+  factory TableLayoutChild.header(
       {required TableLayoutSettings<ROW> layoutSettings,
       required EasyTableModel<ROW>? model,
       required bool resizable,
       required bool multiSortEnabled}) {
-    return LayoutChild._(
+    return TableLayoutChild._(
         id: LayoutChildId.header,
         child: model != null
-            ? Header(
+            ? HeaderWidget(
                 layoutSettings: layoutSettings,
                 model: model,
                 resizable: resizable,
@@ -30,12 +30,12 @@ class LayoutChild<ROW> extends ParentDataWidget<TableLayoutParentData> {
             : Container());
   }
 
-  factory LayoutChild.rows(
+  factory TableLayoutChild.rows(
       {required EasyTableModel<ROW>? model,
       required TableLayoutSettings<ROW> layoutSettings,
       required bool scrolling,
       required RowCallbacks<ROW> rowCallbacks}) {
-    return LayoutChild._(
+    return TableLayoutChild._(
         id: LayoutChildId.rows,
         child: RowsBuilder<ROW>(
             model: model,
@@ -44,31 +44,34 @@ class LayoutChild<ROW> extends ParentDataWidget<TableLayoutParentData> {
             scrolling: scrolling));
   }
 
-  factory LayoutChild.bottomCorner() {
-    return LayoutChild._(
+  factory TableLayoutChild.bottomCorner() {
+    return TableLayoutChild._(
         id: LayoutChildId.bottomCorner, child: const TableCorner(top: false));
   }
 
-  factory LayoutChild.topCorner() {
-    return LayoutChild._(
+  factory TableLayoutChild.topCorner() {
+    return TableLayoutChild._(
         id: LayoutChildId.topCorner, child: const TableCorner(top: true));
   }
 
-  factory LayoutChild.leftPinnedHorizontalScrollbar(TableScrollbar scrollbar) {
-    return LayoutChild._(
+  factory TableLayoutChild.leftPinnedHorizontalScrollbar(
+      TableScrollbar scrollbar) {
+    return TableLayoutChild._(
         id: LayoutChildId.leftPinnedHorizontalScrollbar, child: scrollbar);
   }
 
-  factory LayoutChild.unpinnedHorizontalScrollbar(TableScrollbar scrollbar) {
-    return LayoutChild._(
+  factory TableLayoutChild.unpinnedHorizontalScrollbar(
+      TableScrollbar scrollbar) {
+    return TableLayoutChild._(
         id: LayoutChildId.unpinnedHorizontalScrollbar, child: scrollbar);
   }
 
-  factory LayoutChild.verticalScrollbar({required Widget child}) {
-    return LayoutChild._(id: LayoutChildId.verticalScrollbar, child: child);
+  factory TableLayoutChild.verticalScrollbar({required Widget child}) {
+    return TableLayoutChild._(
+        id: LayoutChildId.verticalScrollbar, child: child);
   }
 
-  LayoutChild._({
+  TableLayoutChild._({
     required this.id,
     required Widget child,
   }) : super(key: ValueKey<LayoutChildId>(id), child: child);

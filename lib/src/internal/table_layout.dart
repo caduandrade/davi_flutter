@@ -1,4 +1,4 @@
-import 'package:easy_table/src/internal/layout_child.dart';
+import 'package:easy_table/src/internal/table_layout_child.dart';
 import 'package:easy_table/src/internal/table_layout_element.dart';
 import 'package:easy_table/src/internal/table_layout_render_box.dart';
 import 'package:easy_table/src/internal/table_layout_settings.dart';
@@ -14,7 +14,7 @@ class TableLayout<ROW> extends MultiChildRenderObjectWidget {
       {Key? key,
       required this.layoutSettings,
       required this.theme,
-      required List<LayoutChild> children})
+      required List<TableLayoutChild> children})
       : super(key: key, children: children);
 
   final TableLayoutSettings<ROW> layoutSettings;

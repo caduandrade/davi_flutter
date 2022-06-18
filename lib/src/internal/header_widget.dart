@@ -11,8 +11,8 @@ import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
 
 @internal
-class Header<ROW> extends StatelessWidget {
-  const Header(
+class HeaderWidget<ROW> extends StatelessWidget {
+  const HeaderWidget(
       {Key? key,
       required this.layoutSettings,
       required this.model,

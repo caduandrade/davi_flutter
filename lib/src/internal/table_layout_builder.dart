@@ -1,4 +1,4 @@
-import 'package:easy_table/src/internal/layout_child.dart';
+import 'package:easy_table/src/internal/table_layout_child.dart';
 import 'package:easy_table/src/internal/row_callbacks.dart';
 import 'package:easy_table/src/internal/table_layout.dart';
 import 'package:easy_table/src/internal/row_range.dart';
@@ -62,10 +62,10 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
         themeMetrics: themeMetrics,
         visibleRowsLength: visibleRowsLength);
 
-    final List<LayoutChild> children = [];
+    final List<TableLayoutChild> children = [];
 
     if (layoutSettings.hasVerticalScrollbar) {
-      children.add(LayoutChild.verticalScrollbar(
+      children.add(TableLayoutChild.verticalScrollbar(
           child: TableScrollbar(
               axis: Axis.vertical,
               contentSize: layoutSettings.contentHeight,
@@ -76,25 +76,26 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
     }
 
     if (themeMetrics.hasHeader) {
-      children.add(LayoutChild.header(
+      children.add(TableLayoutChild.header(
           layoutSettings: layoutSettings,
           model: model,
           resizable: !columnsFit,
           multiSortEnabled: multiSortEnabled));
       if (layoutSettings.hasVerticalScrollbar) {
-        children.add(LayoutChild.topCorner());
+        children.add(TableLayoutChild.topCorner());
       }
     }
 
     if (layoutSettings.hasHorizontalScrollbar) {
-      children.add(LayoutChild.leftPinnedHorizontalScrollbar(TableScrollbar(
-          axis: Axis.horizontal,
-          scrollController: scrollControllers.leftPinnedContentArea,
-          color: theme.scrollbar.pinnedHorizontalColor,
-          borderColor: theme.scrollbar.pinnedHorizontalBorderColor,
-          contentSize: layoutSettings.leftPinnedContentWidth,
-          onDragScroll: onDragScroll)));
-      children.add(LayoutChild.unpinnedHorizontalScrollbar(TableScrollbar(
+      children.add(TableLayoutChild.leftPinnedHorizontalScrollbar(
+          TableScrollbar(
+              axis: Axis.horizontal,
+              scrollController: scrollControllers.leftPinnedContentArea,
+              color: theme.scrollbar.pinnedHorizontalColor,
+              borderColor: theme.scrollbar.pinnedHorizontalBorderColor,
+              contentSize: layoutSettings.leftPinnedContentWidth,
+              onDragScroll: onDragScroll)));
+      children.add(TableLayoutChild.unpinnedHorizontalScrollbar(TableScrollbar(
           axis: Axis.horizontal,
           scrollController: scrollControllers.unpinnedContentArea,
           color: theme.scrollbar.unpinnedHorizontalColor,
@@ -102,11 +103,11 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
           contentSize: layoutSettings.unpinnedContentWidth,
           onDragScroll: onDragScroll)));
       if (layoutSettings.hasVerticalScrollbar) {
-        children.add(LayoutChild.bottomCorner());
+        children.add(TableLayoutChild.bottomCorner());
       }
     }
 
-    children.add(LayoutChild<ROW>.rows(
+    children.add(TableLayoutChild<ROW>.rows(
         model: model,
         layoutSettings: layoutSettings,
         scrolling: scrolling,
