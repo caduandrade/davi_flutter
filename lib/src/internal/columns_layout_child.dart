@@ -1,12 +1,13 @@
-import 'package:easy_table/src/experimental/layout_v3/rows/rows_layout_parent_data.dart';
-import 'package:easy_table/src/experimental/layout_v3/rows/rows_layout.dart';
+import 'package:easy_table/src/internal/columns_layout_parent_data.dart';
+import 'package:easy_table/src/internal/columns_layout.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
 @internal
-class RowsLayoutChild<ROW> extends ParentDataWidget<RowsLayoutParentDataV3> {
-  RowsLayoutChild({
+class ColumnsLayoutChild<ROW>
+    extends ParentDataWidget<ColumnsLayoutParentData> {
+  ColumnsLayoutChild({
     required this.index,
     required Widget child,
   }) : super(key: ValueKey<int>(index), child: child);
@@ -15,9 +16,9 @@ class RowsLayoutChild<ROW> extends ParentDataWidget<RowsLayoutParentDataV3> {
 
   @override
   void applyParentData(RenderObject renderObject) {
-    assert(renderObject.parentData is RowsLayoutParentDataV3);
-    final RowsLayoutParentDataV3 parentData =
-        renderObject.parentData! as RowsLayoutParentDataV3;
+    assert(renderObject.parentData is ColumnsLayoutParentData);
+    final ColumnsLayoutParentData parentData =
+        renderObject.parentData! as ColumnsLayoutParentData;
     if (index != parentData.index) {
       parentData.index = index;
       final AbstractNode? targetParent = renderObject.parent;
@@ -28,7 +29,7 @@ class RowsLayoutChild<ROW> extends ParentDataWidget<RowsLayoutParentDataV3> {
   }
 
   @override
-  Type get debugTypicalAncestorWidgetClass => RowsLayout;
+  Type get debugTypicalAncestorWidgetClass => ColumnsLayout;
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {

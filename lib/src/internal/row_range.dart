@@ -1,3 +1,6 @@
+import 'package:meta/meta.dart';
+
+@internal
 class RowRange {
   static int maxVisibleRowsLength(
       {required double scrollOffset,

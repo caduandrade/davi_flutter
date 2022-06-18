@@ -1,5 +1,7 @@
 import 'package:easy_table/src/pin_status.dart';
+import 'package:meta/meta.dart';
 
+@internal
 class TableScrollOffsets {
   TableScrollOffsets(
       {required this.leftPinnedContentArea,

@@ -1,16 +1,18 @@
-import 'package:easy_table/src/experimental/layout_v3/row_callbacks.dart';
-import 'package:easy_table/src/experimental/layout_v3/row.dart';
-import 'package:easy_table/src/experimental/layout_v3/rows/rows_layout_child.dart';
-import 'package:easy_table/src/experimental/layout_v3/rows/rows_layout.dart';
-import 'package:easy_table/src/experimental/layout_v3/rows/rows_painting_settings.dart';
-import 'package:easy_table/src/experimental/metrics/table_layout_settings.dart';
+import 'package:easy_table/src/internal/row_callbacks.dart';
+import 'package:easy_table/src/internal/row_widget.dart';
+import 'package:easy_table/src/internal/rows_layout_child.dart';
+import 'package:easy_table/src/internal/rows_layout.dart';
+import 'package:easy_table/src/internal/rows_painting_settings.dart';
+import 'package:easy_table/src/internal/table_layout_settings.dart';
 import 'package:easy_table/src/model.dart';
 import 'package:easy_table/src/theme/theme.dart';
 import 'package:easy_table/src/theme/theme_data.dart';
 import 'package:flutter/material.dart';
+import 'package:meta/meta.dart';
 
-class RowsV3<ROW> extends StatelessWidget {
-  const RowsV3(
+@internal
+class RowsBuilder<ROW> extends StatelessWidget {
+  const RowsBuilder(
       {Key? key,
       required this.layoutSettings,
       required this.model,
@@ -19,9 +21,9 @@ class RowsV3<ROW> extends StatelessWidget {
       : super(key: key);
 
   final EasyTableModel<ROW>? model;
-  final TableLayoutSettingsV3<ROW> layoutSettings;
+  final TableLayoutSettings<ROW> layoutSettings;
   final bool scrolling;
-  final RowCallbacksV3<ROW> rowCallbacks;
+  final RowCallbacks<ROW> rowCallbacks;
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +37,7 @@ class RowsV3<ROW> extends StatelessWidget {
       for (int i = layoutSettings.firstRowIndex;
           i < last && i < model!.visibleRowsLength;
           i++) {
-        RowV3<ROW> row = RowV3<ROW>(
+        RowWidget<ROW> row = RowWidget<ROW>(
             rowIndex: i,
             row: model!.visibleRowAt(i),
             layoutSettings: layoutSettings,

@@ -1,23 +1,23 @@
-import 'package:easy_table/src/experimental/layout_v3/rows/rows_layout_parent_data.dart';
-import 'package:easy_table/src/experimental/layout_v3/rows/rows_painting_settings.dart';
-import 'package:easy_table/src/experimental/metrics/table_layout_settings.dart';
+import 'package:easy_table/src/internal/rows_layout_parent_data.dart';
+import 'package:easy_table/src/internal/rows_painting_settings.dart';
+import 'package:easy_table/src/internal/table_layout_settings.dart';
 import 'package:flutter/rendering.dart';
 import 'package:meta/meta.dart';
 
 @internal
 class RowsLayoutRenderBox<ROW> extends RenderBox
     with
-        ContainerRenderObjectMixin<RenderBox, RowsLayoutParentDataV3>,
-        RenderBoxContainerDefaultsMixin<RenderBox, RowsLayoutParentDataV3> {
+        ContainerRenderObjectMixin<RenderBox, RowsLayoutParentData>,
+        RenderBoxContainerDefaultsMixin<RenderBox, RowsLayoutParentData> {
   RowsLayoutRenderBox(
-      {required TableLayoutSettingsV3<ROW> layoutSettings,
+      {required TableLayoutSettings<ROW> layoutSettings,
       required RowsPaintingSettings paintSettings})
       : _layoutSettings = layoutSettings,
         _paintSettings = paintSettings;
 
-  TableLayoutSettingsV3<ROW> _layoutSettings;
+  TableLayoutSettings<ROW> _layoutSettings;
 
-  set layoutSettings(TableLayoutSettingsV3<ROW> value) {
+  set layoutSettings(TableLayoutSettings<ROW> value) {
     if (_layoutSettings != value) {
       _layoutSettings = value;
       markNeedsLayout();
@@ -35,8 +35,8 @@ class RowsLayoutRenderBox<ROW> extends RenderBox
 
   @override
   void setupParentData(RenderBox child) {
-    if (child.parentData is! RowsLayoutParentDataV3) {
-      child.parentData = RowsLayoutParentDataV3();
+    if (child.parentData is! RowsLayoutParentData) {
+      child.parentData = RowsLayoutParentData();
     }
   }
 
@@ -51,7 +51,7 @@ class RowsLayoutRenderBox<ROW> extends RenderBox
 
     visitChildren((child) {
       final RenderBox renderBox = child as RenderBox;
-      final RowsLayoutParentDataV3 parentData = child._parentData();
+      final RowsLayoutParentData parentData = child._parentData();
       final int rowIndex = parentData.index!;
 
       renderBox.layout(
@@ -98,7 +98,7 @@ class RowsLayoutRenderBox<ROW> extends RenderBox
 
 /// Utility extension to facilitate obtaining parent data.
 extension _ParentDataGetter on RenderObject {
-  RowsLayoutParentDataV3 _parentData() {
-    return parentData as RowsLayoutParentDataV3;
+  RowsLayoutParentData _parentData() {
+    return parentData as RowsLayoutParentData;
   }
 }

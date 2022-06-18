@@ -2,9 +2,11 @@ import 'dart:math' as math;
 import 'package:easy_table/src/column.dart';
 import 'package:easy_table/src/pin_status.dart';
 import 'package:easy_table/src/model.dart';
+import 'package:meta/meta.dart';
 
-class ColumnMetricsV3<ROW> {
-  ColumnMetricsV3(
+@internal
+class ColumnMetrics<ROW> {
+  ColumnMetrics(
       {required this.column,
       required this.width,
       required this.offset,
@@ -18,7 +20,7 @@ class ColumnMetricsV3<ROW> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is ColumnMetricsV3 &&
+      other is ColumnMetrics &&
           runtimeType == other.runtimeType &&
           column == other.column &&
           width == other.width &&
@@ -29,11 +31,11 @@ class ColumnMetricsV3<ROW> {
   int get hashCode =>
       column.hashCode ^ width.hashCode ^ offset.hashCode ^ pinStatus.hashCode;
 
-  static List<ColumnMetricsV3<ROW>> columnsFit<ROW>(
+  static List<ColumnMetrics<ROW>> columnsFit<ROW>(
       {required EasyTableModel<ROW> model,
       required double maxWidth,
       required double dividerThickness}) {
-    List<ColumnMetricsV3<ROW>> list = [];
+    List<ColumnMetrics<ROW>> list = [];
     double offset = 0;
     final int dividersLength = math.max(0, model.columnsLength - 1);
     final double availableWidth =
@@ -43,7 +45,7 @@ class ColumnMetricsV3<ROW> {
     for (int i = 0; i < model.columnsLength; i++) {
       final EasyTableColumn<ROW> column = model.columnAt(i);
       final double width = columnWidthRatio * column.weight;
-      list.add(ColumnMetricsV3<ROW>(
+      list.add(ColumnMetrics<ROW>(
           column: column,
           width: width,
           offset: offset,
@@ -53,16 +55,16 @@ class ColumnMetricsV3<ROW> {
     return list;
   }
 
-  static List<ColumnMetricsV3<ROW>> resizable<ROW>(
+  static List<ColumnMetrics<ROW>> resizable<ROW>(
       {required EasyTableModel<ROW> model, required double dividerThickness}) {
-    List<ColumnMetricsV3<ROW>> list = [];
+    List<ColumnMetrics<ROW>> list = [];
     double offset = 0;
     for (PinStatus pinStatus in PinStatus.values) {
       for (int i = 0; i < model.columnsLength; i++) {
         final EasyTableColumn<ROW> column = model.columnAt(i);
         if ((pinStatus == PinStatus.unpinned && column.pinned == false) ||
             (pinStatus == PinStatus.leftPinned && column.pinned)) {
-          list.add(ColumnMetricsV3<ROW>(
+          list.add(ColumnMetrics<ROW>(
               column: column,
               width: column.width,
               offset: offset,

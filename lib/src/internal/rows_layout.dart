@@ -1,8 +1,8 @@
-import 'package:easy_table/src/experimental/layout_v3/rows/rows_layout_child.dart';
-import 'package:easy_table/src/experimental/layout_v3/rows/rows_layout_element.dart';
-import 'package:easy_table/src/experimental/layout_v3/rows/rows_layout_render_box.dart';
-import 'package:easy_table/src/experimental/layout_v3/rows/rows_painting_settings.dart';
-import 'package:easy_table/src/experimental/metrics/table_layout_settings.dart';
+import 'package:easy_table/src/internal/rows_layout_child.dart';
+import 'package:easy_table/src/internal/rows_layout_element.dart';
+import 'package:easy_table/src/internal/rows_layout_render_box.dart';
+import 'package:easy_table/src/internal/rows_painting_settings.dart';
+import 'package:easy_table/src/internal/table_layout_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
@@ -17,7 +17,7 @@ class RowsLayout<ROW> extends MultiChildRenderObjectWidget {
       required List<RowsLayoutChild<ROW>> children})
       : super(key: key, children: children);
 
-  final TableLayoutSettingsV3<ROW> layoutSettings;
+  final TableLayoutSettings<ROW> layoutSettings;
   final RowsPaintingSettings paintSettings;
 
   @override
@@ -28,7 +28,7 @@ class RowsLayout<ROW> extends MultiChildRenderObjectWidget {
 
   @override
   MultiChildRenderObjectElement createElement() {
-    return RowsLayoutElementV3(this);
+    return RowsLayoutElement(this);
   }
 
   @override

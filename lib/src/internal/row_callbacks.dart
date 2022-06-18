@@ -2,8 +2,8 @@ import 'package:easy_table/src/row_callback_typedefs.dart';
 import 'package:meta/meta.dart';
 
 @internal
-class RowCallbacksV3<ROW> {
-  const RowCallbacksV3(
+class RowCallbacks<ROW> {
+  const RowCallbacks(
       {required this.onRowDoubleTap,
       required this.onRowTap,
       required this.onRowSecondaryTap});

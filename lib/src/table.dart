@@ -1,7 +1,7 @@
 import 'dart:math' as math;
-import 'package:easy_table/src/experimental/layout_v3/row_callbacks.dart';
-import 'package:easy_table/src/experimental/layout_v3/table_layout_builder.dart';
-import 'package:easy_table/src/experimental/table_scroll_controllers.dart';
+import 'package:easy_table/src/internal/row_callbacks.dart';
+import 'package:easy_table/src/internal/table_layout_builder.dart';
+import 'package:easy_table/src/internal/table_scroll_controllers.dart';
 import 'package:easy_table/src/internal/table_theme_metrics.dart';
 import 'package:easy_table/src/model.dart';
 import 'package:easy_table/src/last_visible_row_listener.dart';
@@ -147,10 +147,11 @@ class _EasyTableExpState<ROW> extends State<EasyTableExp<ROW>> {
   Widget build(BuildContext context) {
     final EasyTableThemeData theme = EasyTableTheme.of(context);
 
-    final TableThemeMetrics themeMetrics = TableThemeMetrics(cellContentHeight:widget.cellContentHeight, theme:theme);
+    final TableThemeMetrics themeMetrics = TableThemeMetrics(
+        cellContentHeight: widget.cellContentHeight, theme: theme);
 
     Widget table = ClipRect(
-        child: TableLayoutBuilderV3(
+        child: TableLayoutBuilder(
             onHoverListener: _setHoveredRowIndex,
             hoveredRowIndex: _hoveredRowIndex,
             multiSortEnabled: widget.multiSortEnabled,
@@ -163,7 +164,7 @@ class _EasyTableExpState<ROW> extends State<EasyTableExp<ROW>> {
                 : null,
             model: widget.model,
             scrolling: _scrolling,
-            rowCallbacks: RowCallbacksV3(
+            rowCallbacks: RowCallbacks(
                 onRowTap: widget.onRowTap,
                 onRowSecondaryTap: widget.onRowSecondaryTap,
                 onRowDoubleTap: widget.onRowDoubleTap),

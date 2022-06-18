@@ -1,8 +1,8 @@
 import 'package:easy_table/src/column.dart';
-import 'package:easy_table/src/experimental/layout_v3/column_layout/columns_layout_child.dart';
-import 'package:easy_table/src/experimental/layout_v3/column_layout/columns_layout.dart';
-import 'package:easy_table/src/experimental/metrics/column_metrics.dart';
-import 'package:easy_table/src/experimental/metrics/table_layout_settings.dart';
+import 'package:easy_table/src/internal/columns_layout_child.dart';
+import 'package:easy_table/src/internal/columns_layout.dart';
+import 'package:easy_table/src/internal/column_metrics.dart';
+import 'package:easy_table/src/internal/table_layout_settings.dart';
 import 'package:easy_table/src/internal/header_cell.dart';
 import 'package:easy_table/src/model.dart';
 import 'package:easy_table/src/theme/theme.dart';
@@ -20,7 +20,7 @@ class Header<ROW> extends StatelessWidget {
       required this.multiSortEnabled})
       : super(key: key);
 
-  final TableLayoutSettingsV3<ROW> layoutSettings;
+  final TableLayoutSettings<ROW> layoutSettings;
   final EasyTableModel<ROW> model;
   final bool resizable;
   final bool multiSortEnabled;
@@ -29,12 +29,12 @@ class Header<ROW> extends StatelessWidget {
   Widget build(BuildContext context) {
     EasyTableThemeData theme = EasyTableTheme.of(context);
 
-    List<ColumnsLayoutChildV3<ROW>> children = [];
+    List<ColumnsLayoutChild<ROW>> children = [];
 
     for (int columnIndex = 0;
         columnIndex < layoutSettings.columnsMetrics.length;
         columnIndex++) {
-      final ColumnMetricsV3<ROW> columnMetrics =
+      final ColumnMetrics<ROW> columnMetrics =
           layoutSettings.columnsMetrics[columnIndex];
       final EasyTableColumn<ROW> column = columnMetrics.column;
 
@@ -44,11 +44,11 @@ class Header<ROW> extends StatelessWidget {
           column: column,
           resizable: resizable,
           multiSortEnabled: multiSortEnabled);
-      children.add(ColumnsLayoutChildV3<ROW>(index: columnIndex, child: cell));
+      children.add(ColumnsLayoutChild<ROW>(index: columnIndex, child: cell));
     }
 
     Widget header =
-        ColumnsLayoutV3(layoutSettings: layoutSettings, children: children);
+        ColumnsLayout(layoutSettings: layoutSettings, children: children);
 
     if (theme.header.bottomBorderHeight > 0 &&
         theme.header.bottomBorderColor != null) {

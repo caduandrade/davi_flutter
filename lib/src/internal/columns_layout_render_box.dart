@@ -1,20 +1,22 @@
 import 'package:easy_table/src/column.dart';
-import 'package:easy_table/src/experimental/layout_v3/column_layout/columns_layout_parent_data.dart';
-import 'package:easy_table/src/experimental/metrics/column_metrics.dart';
-import 'package:easy_table/src/experimental/metrics/table_layout_settings.dart';
+import 'package:easy_table/src/internal/columns_layout_parent_data.dart';
+import 'package:easy_table/src/internal/column_metrics.dart';
+import 'package:easy_table/src/internal/table_layout_settings.dart';
 import 'package:easy_table/src/pin_status.dart';
 import 'package:flutter/rendering.dart';
+import 'package:meta/meta.dart';
 
-class ColumnsLayoutRenderBoxV3<ROW> extends RenderBox
+@internal
+class ColumnsLayoutRenderBox<ROW> extends RenderBox
     with
-        ContainerRenderObjectMixin<RenderBox, ColumnsLayoutParentDataV3>,
-        RenderBoxContainerDefaultsMixin<RenderBox, ColumnsLayoutParentDataV3> {
-  ColumnsLayoutRenderBoxV3({required TableLayoutSettingsV3<ROW> layoutSettings})
+        ContainerRenderObjectMixin<RenderBox, ColumnsLayoutParentData>,
+        RenderBoxContainerDefaultsMixin<RenderBox, ColumnsLayoutParentData> {
+  ColumnsLayoutRenderBox({required TableLayoutSettings<ROW> layoutSettings})
       : _layoutSettings = layoutSettings;
 
-  TableLayoutSettingsV3<ROW> _layoutSettings;
+  TableLayoutSettings<ROW> _layoutSettings;
 
-  set layoutSettings(TableLayoutSettingsV3<ROW> value) {
+  set layoutSettings(TableLayoutSettings<ROW> value) {
     if (_layoutSettings != value) {
       //TODO maybe can check only row height and column widths
       _layoutSettings = value;
@@ -24,8 +26,8 @@ class ColumnsLayoutRenderBoxV3<ROW> extends RenderBox
 
   @override
   void setupParentData(RenderBox child) {
-    if (child.parentData is! ColumnsLayoutParentDataV3) {
-      child.parentData = ColumnsLayoutParentDataV3();
+    if (child.parentData is! ColumnsLayoutParentData) {
+      child.parentData = ColumnsLayoutParentData();
     }
   }
 
@@ -38,9 +40,9 @@ class ColumnsLayoutRenderBoxV3<ROW> extends RenderBox
   void performLayout() {
     visitChildren((child) {
       final RenderBox renderBox = child as RenderBox;
-      final ColumnsLayoutParentDataV3 parentData = child._parentData();
+      final ColumnsLayoutParentData parentData = child._parentData();
       final int columnIndex = parentData.index!;
-      final ColumnMetricsV3<ROW> columnMetrics =
+      final ColumnMetrics<ROW> columnMetrics =
           _layoutSettings.columnsMetrics[columnIndex];
       final EasyTableColumn<ROW> column = columnMetrics.column;
       final PinStatus pinStatus = _layoutSettings.pinStatus(column);
@@ -59,9 +61,9 @@ class ColumnsLayoutRenderBoxV3<ROW> extends RenderBox
   void paint(PaintingContext context, Offset offset) {
     RenderBox? child = firstChild;
     while (child != null) {
-      final ColumnsLayoutParentDataV3 childParentData = child._parentData();
+      final ColumnsLayoutParentData childParentData = child._parentData();
       final int columnIndex = childParentData.index!;
-      final ColumnMetricsV3<ROW> columnMetrics =
+      final ColumnMetrics<ROW> columnMetrics =
           _layoutSettings.columnsMetrics[columnIndex];
       final EasyTableColumn<ROW> column = columnMetrics.column;
       final PinStatus pinStatus = _layoutSettings.pinStatus(column);
@@ -78,9 +80,9 @@ class ColumnsLayoutRenderBoxV3<ROW> extends RenderBox
   bool hitTestChildren(BoxHitTestResult result, {required Offset position}) {
     RenderBox? child = lastChild;
     while (child != null) {
-      final ColumnsLayoutParentDataV3 childParentData = child._parentData();
+      final ColumnsLayoutParentData childParentData = child._parentData();
       final int columnIndex = childParentData.index!;
-      final ColumnMetricsV3<ROW> columnMetrics =
+      final ColumnMetrics<ROW> columnMetrics =
           _layoutSettings.columnsMetrics[columnIndex];
       final EasyTableColumn<ROW> column = columnMetrics.column;
       final PinStatus pinStatus = _layoutSettings.pinStatus(column);
@@ -106,7 +108,7 @@ class ColumnsLayoutRenderBoxV3<ROW> extends RenderBox
 
 /// Utility extension to facilitate obtaining parent data.
 extension _ParentDataGetter on RenderObject {
-  ColumnsLayoutParentDataV3 _parentData() {
-    return parentData as ColumnsLayoutParentDataV3;
+  ColumnsLayoutParentData _parentData() {
+    return parentData as ColumnsLayoutParentData;
   }
 }

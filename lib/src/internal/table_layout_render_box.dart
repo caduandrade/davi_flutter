@@ -1,23 +1,22 @@
 import 'package:easy_table/src/column.dart';
-import 'package:easy_table/src/experimental/layout_v3/layout_child_id.dart';
-import 'package:easy_table/src/experimental/layout_v3/table_layout_parent_data_v3.dart';
-import 'package:easy_table/src/experimental/metrics/column_metrics.dart';
-import 'package:easy_table/src/experimental/metrics/table_layout_settings.dart';
+import 'package:easy_table/src/internal/layout_child_id.dart';
+import 'package:easy_table/src/internal/table_layout_parent_data.dart';
+import 'package:easy_table/src/internal/column_metrics.dart';
+import 'package:easy_table/src/internal/table_layout_settings.dart';
 import 'package:easy_table/src/pin_status.dart';
-import 'package:easy_table/src/experimental/table_paint_settings.dart';
 import 'package:easy_table/src/theme/theme_data.dart';
 import 'package:flutter/rendering.dart';
+import 'package:meta/meta.dart';
 
-class TableLayoutRenderBoxV3<ROW> extends RenderBox
+@internal
+class TableLayoutRenderBox<ROW> extends RenderBox
     with
-        ContainerRenderObjectMixin<RenderBox, TableLayoutParentDataV3>,
-        RenderBoxContainerDefaultsMixin<RenderBox, TableLayoutParentDataV3> {
-  TableLayoutRenderBoxV3(
-      {required TableLayoutSettingsV3<ROW> layoutSettings,
-      required TablePaintSettings paintSettings,
+        ContainerRenderObjectMixin<RenderBox, TableLayoutParentData>,
+        RenderBoxContainerDefaultsMixin<RenderBox, TableLayoutParentData> {
+  TableLayoutRenderBox(
+      {required TableLayoutSettings<ROW> layoutSettings,
       required EasyTableThemeData theme})
       : _layoutSettings = layoutSettings,
-        _paintSettings = paintSettings,
         _theme = theme;
 
   RenderBox? _header;
@@ -33,28 +32,19 @@ class TableLayoutRenderBoxV3<ROW> extends RenderBox
     _theme = value;
   }
 
-  TableLayoutSettingsV3<ROW> _layoutSettings;
+  TableLayoutSettings<ROW> _layoutSettings;
 
-  set layoutSettings(TableLayoutSettingsV3<ROW> value) {
+  set layoutSettings(TableLayoutSettings<ROW> value) {
     if (_layoutSettings != value) {
       _layoutSettings = value;
       markNeedsLayout();
     }
   }
 
-  TablePaintSettings _paintSettings;
-
-  set paintSettings(TablePaintSettings value) {
-    if (_paintSettings != value) {
-      _paintSettings = value;
-      markNeedsPaint();
-    }
-  }
-
   @override
   void setupParentData(RenderBox child) {
-    if (child.parentData is! TableLayoutParentDataV3) {
-      child.parentData = TableLayoutParentDataV3();
+    if (child.parentData is! TableLayoutParentData) {
+      child.parentData = TableLayoutParentData();
     }
   }
 
@@ -75,21 +65,20 @@ class TableLayoutRenderBoxV3<ROW> extends RenderBox
 
     visitChildren((child) {
       RenderBox renderBox = child as RenderBox;
-      TableLayoutParentDataV3 parentData = child._parentData();
-      if (parentData.id == LayoutChildIdV3.rows) {
+      TableLayoutParentData parentData = child._parentData();
+      if (parentData.id == LayoutChildId.rows) {
         _rows = renderBox;
-      } else if (parentData.id == LayoutChildIdV3.verticalScrollbar) {
+      } else if (parentData.id == LayoutChildId.verticalScrollbar) {
         _verticalScrollbar = renderBox;
-      } else if (parentData.id == LayoutChildIdV3.unpinnedHorizontalScrollbar) {
+      } else if (parentData.id == LayoutChildId.unpinnedHorizontalScrollbar) {
         _unpinnedHorizontalScrollbar = renderBox;
-      } else if (parentData.id ==
-          LayoutChildIdV3.leftPinnedHorizontalScrollbar) {
+      } else if (parentData.id == LayoutChildId.leftPinnedHorizontalScrollbar) {
         _leftPinnedHorizontalScrollbar = renderBox;
-      } else if (parentData.id == LayoutChildIdV3.topCorner) {
+      } else if (parentData.id == LayoutChildId.topCorner) {
         _topCorner = renderBox;
-      } else if (parentData.id == LayoutChildIdV3.bottomCorner) {
+      } else if (parentData.id == LayoutChildId.bottomCorner) {
         _bottomCorner = renderBox;
-      } else if (parentData.id == LayoutChildIdV3.header) {
+      } else if (parentData.id == LayoutChildId.header) {
         _header = renderBox;
       }
     });
@@ -227,7 +216,7 @@ class TableLayoutRenderBoxV3<ROW> extends RenderBox
       for (int columnIndex = 0;
           columnIndex < _layoutSettings.columnsMetrics.length;
           columnIndex++) {
-        final ColumnMetricsV3<ROW> columnMetrics =
+        final ColumnMetrics<ROW> columnMetrics =
             _layoutSettings.columnsMetrics[columnIndex];
         final EasyTableColumn<ROW> column = columnMetrics.column;
         final PinStatus pinStatus = _layoutSettings.pinStatus(column);
@@ -316,8 +305,8 @@ class TableLayoutRenderBoxV3<ROW> extends RenderBox
       required RenderBox? child,
       required Rect? clipBounds}) {
     if (child != null) {
-      final TableLayoutParentDataV3 parentData =
-          child.parentData as TableLayoutParentDataV3;
+      final TableLayoutParentData parentData =
+          child.parentData as TableLayoutParentData;
       if (clipBounds != null) {
         context.canvas.save();
         context.canvas.clipRect(clipBounds.translate(offset.dx, offset.dy));
@@ -332,7 +321,7 @@ class TableLayoutRenderBoxV3<ROW> extends RenderBox
 
 /// Utility extension to facilitate obtaining parent data.
 extension _TableLayoutParentDataGetter on RenderObject {
-  TableLayoutParentDataV3 _parentData() {
-    return parentData as TableLayoutParentDataV3;
+  TableLayoutParentData _parentData() {
+    return parentData as TableLayoutParentData;
   }
 }

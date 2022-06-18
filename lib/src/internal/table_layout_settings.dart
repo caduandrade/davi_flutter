@@ -1,11 +1,11 @@
 import 'dart:math' as math;
 
 import 'package:easy_table/src/column.dart';
-import 'package:easy_table/src/experimental/metrics/column_metrics.dart';
-import 'package:easy_table/src/experimental/metrics/row_range.dart';
+import 'package:easy_table/src/internal/column_metrics.dart';
+import 'package:easy_table/src/internal/row_range.dart';
 import 'package:easy_table/src/internal/table_theme_metrics.dart';
 import 'package:easy_table/src/pin_status.dart';
-import 'package:easy_table/src/experimental/scroll_offsets.dart';
+import 'package:easy_table/src/internal/scroll_offsets.dart';
 import 'package:easy_table/src/model.dart';
 import 'package:easy_table/src/theme/theme_data.dart';
 import 'package:flutter/widgets.dart';
@@ -13,8 +13,8 @@ import 'package:meta/meta.dart';
 import 'package:collection/collection.dart';
 
 @internal
-class TableLayoutSettingsV3<ROW> {
-  factory TableLayoutSettingsV3(
+class TableLayoutSettings<ROW> {
+  factory TableLayoutSettings(
       {required EasyTableModel<ROW>? model,
       required BoxConstraints constraints,
       required bool columnsFit,
@@ -43,7 +43,7 @@ class TableLayoutSettingsV3<ROW> {
     final double height;
 
     // This will hold all columns metrics (width and offset)
-    final List<ColumnMetricsV3<ROW>> columnsMetrics;
+    final List<ColumnMetrics<ROW>> columnsMetrics;
 
     double leftPinnedContentWidth = 0;
     double unpinnedContentWidth = 0;
@@ -79,20 +79,20 @@ class TableLayoutSettingsV3<ROW> {
             0,
             constraints.maxWidth -
                 (hasVerticalScrollbar ? themeMetrics.scrollbarWidth : 0));
-        columnsMetrics = UnmodifiableListView<ColumnMetricsV3<ROW>>(
-            ColumnMetricsV3.columnsFit<ROW>(
+        columnsMetrics = UnmodifiableListView<ColumnMetrics<ROW>>(
+            ColumnMetrics.columnsFit<ROW>(
                 model: model,
                 dividerThickness: themeMetrics.columnDividerThickness,
                 maxWidth: unpinnedContentWidth));
         hasHorizontalScrollbar = false;
       } else {
         // resizable columns
-        columnsMetrics = UnmodifiableListView<ColumnMetricsV3<ROW>>(
-            ColumnMetricsV3.resizable<ROW>(
+        columnsMetrics = UnmodifiableListView<ColumnMetrics<ROW>>(
+            ColumnMetrics.resizable<ROW>(
                 model: model,
                 dividerThickness: themeMetrics.columnDividerThickness));
 
-        for (ColumnMetricsV3<ROW> columnMetrics in columnsMetrics) {
+        for (ColumnMetrics<ROW> columnMetrics in columnsMetrics) {
           if (columnMetrics.pinStatus == PinStatus.unpinned) {
             unpinnedContentWidth = columnMetrics.offset + columnMetrics.width;
           } else if (columnMetrics.pinStatus == PinStatus.leftPinned) {
@@ -156,7 +156,7 @@ class TableLayoutSettingsV3<ROW> {
       }
     } else {
       // null model
-      columnsMetrics = UnmodifiableListView<ColumnMetricsV3<ROW>>([]);
+      columnsMetrics = UnmodifiableListView<ColumnMetrics<ROW>>([]);
     }
 
     final int firstRowIndex =
@@ -280,7 +280,7 @@ class TableLayoutSettingsV3<ROW> {
         hasHorizontalScrollbar.hashCode ^
         unpinnedAreaBounds.hashCode;
 
-    return TableLayoutSettingsV3._(
+    return TableLayoutSettings._(
         columnsFit: columnsFit,
         height: height,
         themeMetrics: themeMetrics,
@@ -305,7 +305,7 @@ class TableLayoutSettingsV3<ROW> {
         hashCode: hashCode);
   }
 
-  TableLayoutSettingsV3._(
+  TableLayoutSettings._(
       {required this.themeMetrics,
       required this.columnsFit,
       required this.leftPinnedContentWidth,
@@ -345,7 +345,7 @@ class TableLayoutSettingsV3<ROW> {
   final bool hasVerticalScrollbar;
   final bool hasHorizontalScrollbar;
   final int maxVisibleRowsLength;
-  final List<ColumnMetricsV3<ROW>> columnsMetrics;
+  final List<ColumnMetrics<ROW>> columnsMetrics;
   final Rect headerBounds;
   final Rect cellsBounds;
   final Rect unpinnedHorizontalScrollbarsBounds;
@@ -373,7 +373,7 @@ class TableLayoutSettingsV3<ROW> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is TableLayoutSettingsV3 &&
+      other is TableLayoutSettings &&
           runtimeType == other.runtimeType &&
           hashCode == other.hashCode;
 }

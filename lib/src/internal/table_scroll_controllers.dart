@@ -1,7 +1,9 @@
-import 'package:easy_table/src/experimental/scroll_offsets.dart';
+import 'package:easy_table/src/internal/scroll_offsets.dart';
 import 'package:easy_table/src/internal/scroll_controller.dart';
 import 'package:flutter/widgets.dart';
+import 'package:meta/meta.dart';
 
+@internal
 class TableScrollControllers {
   TableScrollControllers(
       {required ScrollController? unpinnedHorizontal,
