@@ -27,6 +27,9 @@ class EasyTableExp<ROW> extends StatefulWidget {
   const EasyTableExp(this.model,
       {Key? key,
       this.onHoverListener,
+      this.unpinnedHorizontalScrollController,
+      this.pinnedHorizontalScrollController,
+      this.verticalScrollController,
       this.onLastVisibleRowListener,
       this.onRowTap,
       this.onRowSecondaryTap,
@@ -42,6 +45,9 @@ class EasyTableExp<ROW> extends StatefulWidget {
         super(key: key);
 
   final EasyTableModel<ROW>? model;
+  final ScrollController? unpinnedHorizontalScrollController;
+  final ScrollController? pinnedHorizontalScrollController;
+  final ScrollController? verticalScrollController;
   final OnRowHoverListener? onHoverListener;
   final RowDoubleTapCallback<ROW>? onRowDoubleTap;
   final RowTapCallback<ROW>? onRowTap;
@@ -61,7 +67,7 @@ class EasyTableExp<ROW> extends StatefulWidget {
 
 /// The [EasyTableExp] state.
 class _EasyTableExpState<ROW> extends State<EasyTableExp<ROW>> {
-  final TableScrollControllers _scrollControllers = TableScrollControllers();
+  late final TableScrollControllers _scrollControllers;
 
   bool _scrolling = false;
 
@@ -85,6 +91,10 @@ class _EasyTableExpState<ROW> extends State<EasyTableExp<ROW>> {
   @override
   void initState() {
     super.initState();
+    _scrollControllers = TableScrollControllers(
+        vertical: widget.verticalScrollController,
+        unpinnedHorizontal: widget.unpinnedHorizontalScrollController,
+        leftPinnedHorizontal: widget.pinnedHorizontalScrollController);
     widget.model?.addListener(_rebuild);
     _scrollControllers.addListener(_rebuild);
   }
@@ -103,6 +113,21 @@ class _EasyTableExpState<ROW> extends State<EasyTableExp<ROW>> {
     if (widget.model != oldWidget.model) {
       oldWidget.model?.removeListener(_rebuild);
       widget.model?.addListener(_rebuild);
+    }
+    if (widget.verticalScrollController != null) {
+      _scrollControllers.setVerticalScrollController(
+          scrollController: widget.verticalScrollController!,
+          listener: _rebuild);
+    }
+    if (widget.unpinnedHorizontalScrollController != null) {
+      _scrollControllers.setUnpinnedScrollController(
+          scrollController: widget.unpinnedHorizontalScrollController!,
+          listener: _rebuild);
+    }
+    if (widget.pinnedHorizontalScrollController != null) {
+      _scrollControllers.setLeftPinnedScrollController(
+          scrollController: widget.pinnedHorizontalScrollController!,
+          listener: _rebuild);
     }
   }
 
