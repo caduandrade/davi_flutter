@@ -69,7 +69,6 @@ class RowsLayoutRenderBoxV3<ROW> extends RenderBox
   @override
   void paint(PaintingContext context, Offset offset) {
     defaultPaint(context, offset);
-
     if (_layoutSettings.columnDividerThickness > 0 &&
         _paintSettings.divisorColor != null) {
       Paint paint = Paint()..color = _paintSettings.divisorColor!;
@@ -85,8 +84,6 @@ class RowsLayoutRenderBoxV3<ROW> extends RenderBox
                 _layoutSettings.rowDividerThickness),
             paint);
       }
-
-      //TODO paint dividers
     }
   }
 

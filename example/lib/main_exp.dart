@@ -93,7 +93,10 @@ class _HomePageState extends State<HomePage> {
       EasyTableColumn(name: 'string3', stringValue: (row) => row.string3),
       EasyTableColumn(name: 'string4', stringValue: (row) => row.string4),
       EasyTableColumn(name: 'string5', stringValue: (row) => row.string5),
-      EasyTableColumn(name: 'string6', stringValue: (row) => row.string6),
+      EasyTableColumn(
+          name: 'string6',
+          cellBuilder: (context, row, visibleRowIndex) => ElevatedButton(
+              onPressed: () => print(row.string6), child: Text(row.string6))),
       EasyTableColumn(
           name: 'string7 (widget)',
           cellBuilder: (context, row, visibleRowIndex) => Text(row.string7)),
@@ -145,28 +148,26 @@ class _HomePageState extends State<HomePage> {
     return Padding(
         padding: const EdgeInsets.all(32),
         child: EasyTableTheme(
-                data: EasyTableThemeData(
-                    scrollbar: const TableScrollbarThemeData(
-                        horizontalOnlyWhenNeeded: true),
-                    cell: CellThemeData(
-                        nullValueColor: (rowIndex) => Colors.grey[300]),
-                    columnDividerThickness: _columnDividerThickness,
-                    columnDividerColor: _columnDividerColor,
-                    header: HeaderThemeData(
-                        bottomBorderColor: _bottomBorderColor,
-                        bottomBorderHeight: _bottomBorderHeight,
-                        columnDividerColor: _headerColumnDividerColor),
-                    headerCell: HeaderCellThemeData(height: _headerCellHeight),
-                    row:       RowThemeData(hoveredColor: (index) => Colors.blue[50])
-                ),
-                child: EasyTableExp(_model,
-                    onLastVisibleRowListener: _onLastVisibleRowListener,
-                    columnsFit: _columnsFit,
-                    multiSortEnabled: true,
-                    onRowTap: _onRowTap,
-                    onRowDoubleTap: _onRowDoubleTap,
-                    onRowSecondaryTap: _onRowSecondaryTap
-                )));
+            data: EasyTableThemeData(
+                scrollbar: const TableScrollbarThemeData(
+                    horizontalOnlyWhenNeeded: true),
+                cell: CellThemeData(
+                    nullValueColor: (rowIndex) => Colors.grey[300]),
+                columnDividerThickness: _columnDividerThickness,
+                columnDividerColor: _columnDividerColor,
+                header: HeaderThemeData(
+                    bottomBorderColor: _bottomBorderColor,
+                    bottomBorderHeight: _bottomBorderHeight,
+                    columnDividerColor: _headerColumnDividerColor),
+                headerCell: HeaderCellThemeData(height: _headerCellHeight),
+                row: RowThemeData(hoveredColor: (index) => Colors.blue[50])),
+            child: EasyTableExp(_model,
+                onLastVisibleRowListener: _onLastVisibleRowListener,
+                columnsFit: _columnsFit,
+                multiSortEnabled: true,
+                onRowTap: _onRowTap,
+                onRowDoubleTap: _onRowDoubleTap,
+                onRowSecondaryTap: _onRowSecondaryTap)));
   }
 
   void _changeColumnsFit() {
@@ -216,7 +217,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _onLastVisibleRowListener(int lastVisibleRowIndex) {
-     //print('lastVisibleRowIndex: $lastVisibleRowIndex');
+    //print('lastVisibleRowIndex: $lastVisibleRowIndex');
   }
 
   void _onRowTap(Value row) {
