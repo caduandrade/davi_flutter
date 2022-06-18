@@ -47,7 +47,6 @@ class TableLayoutSettings<ROW> {
 
     double leftPinnedContentWidth = 0;
     double unpinnedContentWidth = 0;
-    double rightPinnedContentWidth = 0;
 
     // The maximum number of rows that can be visible at the available height.
     int maxVisibleRowsLength = visibleRowsLength ?? 0;
@@ -93,13 +92,10 @@ class TableLayoutSettings<ROW> {
                 dividerThickness: themeMetrics.columnDividerThickness));
 
         for (ColumnMetrics<ROW> columnMetrics in columnsMetrics) {
-          if (columnMetrics.pinStatus == PinStatus.unpinned) {
+          if (columnMetrics.pinStatus == PinStatus.none) {
             unpinnedContentWidth = columnMetrics.offset + columnMetrics.width;
-          } else if (columnMetrics.pinStatus == PinStatus.leftPinned) {
+          } else if (columnMetrics.pinStatus == PinStatus.left) {
             leftPinnedContentWidth = columnMetrics.offset + columnMetrics.width;
-          } else if (columnMetrics.pinStatus == PinStatus.rightPinned) {
-            rightPinnedContentWidth =
-                columnMetrics.offset + columnMetrics.width;
           }
         }
         unpinnedContentWidth = math.max(
@@ -328,9 +324,8 @@ class TableLayoutSettings<ROW> {
       required this.unpinnedAreaBounds,
       required this.hashCode}) {
     _areaBounds = {
-      PinStatus.leftPinned: leftPinnedAreaBounds,
-      PinStatus.unpinned: unpinnedAreaBounds,
-      PinStatus.rightPinned: Rect.zero
+      PinStatus.left: leftPinnedAreaBounds,
+      PinStatus.none: unpinnedAreaBounds
     };
   }
 
@@ -362,7 +357,7 @@ class TableLayoutSettings<ROW> {
 
   PinStatus pinStatus(EasyTableColumn<ROW> column) {
     if (columnsFit) {
-      return PinStatus.unpinned;
+      return PinStatus.none;
     }
     return column.pinStatus;
   }

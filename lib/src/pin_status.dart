@@ -1,1 +1,1 @@
-enum PinStatus { leftPinned, unpinned, rightPinned }
+enum PinStatus { left, none }

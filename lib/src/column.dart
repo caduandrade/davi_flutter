@@ -42,7 +42,7 @@ class EasyTableColumn<ROW> extends ChangeNotifier with ColumnSortMixin {
       int? fractionDigits,
       bool sortable = true,
       bool resizable = true,
-      bool pinned = false,
+      PinStatus pinStatus = PinStatus.none,
       EdgeInsets? headerPadding,
       EdgeInsets? cellPadding,
       Alignment? headerAlignment,
@@ -134,7 +134,7 @@ class EasyTableColumn<ROW> extends ChangeNotifier with ColumnSortMixin {
         cellBuilder: cellBuilder,
         leading: leading,
         sort: sort,
-        pinned: pinned,
+        pinStatus: pinStatus,
         stringValueMapper: stringValue,
         intValueMapper: intValue,
         doubleValueMapper: doubleValue,
@@ -166,7 +166,7 @@ class EasyTableColumn<ROW> extends ChangeNotifier with ColumnSortMixin {
       this.cellBuilder,
       this.leading,
       this.sort,
-      required this.pinned,
+      required this.pinStatus,
       this.stringValueMapper,
       this.intValueMapper,
       this.iconValueMapper,
@@ -189,7 +189,7 @@ class EasyTableColumn<ROW> extends ChangeNotifier with ColumnSortMixin {
   final TextStyle? cellTextStyle;
   final TextStyle? headerTextStyle;
   final int? fractionDigits;
-  final bool pinned;
+  final PinStatus pinStatus;
   final EasyTableCellBuilder<ROW>? cellBuilder;
   final EasyTableColumnSort<ROW>? sort;
   final EasyTableIntValueMapper<ROW>? intValueMapper;
@@ -225,8 +225,6 @@ class EasyTableColumn<ROW> extends ChangeNotifier with ColumnSortMixin {
   bool get sortable => _sortable && sort != null;
 
   bool resizable;
-
-  PinStatus get pinStatus => pinned ? PinStatus.leftPinned : PinStatus.unpinned;
 
   @override
   String toString() {

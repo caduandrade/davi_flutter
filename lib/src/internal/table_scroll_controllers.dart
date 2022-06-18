@@ -68,7 +68,6 @@ class TableScrollControllers {
   TableScrollOffsets get offsets => TableScrollOffsets(
       leftPinnedContentArea: leftPinnedContentAreaOffset,
       unpinnedContentArea: unpinnedContentAreaOffset,
-      rightPinnedContentArea: 0,
       vertical: verticalOffset);
 
   void addListener(VoidCallback listener) {

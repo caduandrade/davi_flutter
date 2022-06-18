@@ -11,6 +11,12 @@
   * HeaderThemeData.visible has been added
   * CellIcon.background and CellIcon.alignment removed (already exists on CellStyle)
   * EasyTable.cellContentHeight moved to CellThemeData.contentHeight
+  * EasyTableColumnSort.pinned changed to EasyTableColumnSort.pinStatus
+  * EasyTableModel.pinnedColumnsWidth removed
+  * EasyTableModel.unpinnedColumnsWidth removed
+  * EasyTableModel.allColumnsWidth removed
+  * EasyTableModel.unpinnedColumnsLength removed
+  * EasyTableModel.pinnedColumnsLength removed
 
 ## 1.6.0
 

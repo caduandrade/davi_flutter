@@ -6,18 +6,15 @@ class TableScrollOffsets {
   TableScrollOffsets(
       {required this.leftPinnedContentArea,
       required this.unpinnedContentArea,
-      required this.rightPinnedContentArea,
       required this.vertical}) {
     _horizontal = {
-      PinStatus.leftPinned: leftPinnedContentArea,
-      PinStatus.unpinned: unpinnedContentArea,
-      PinStatus.rightPinned: rightPinnedContentArea
+      PinStatus.left: leftPinnedContentArea,
+      PinStatus.none: unpinnedContentArea
     };
   }
 
   final double leftPinnedContentArea;
   final double unpinnedContentArea;
-  final double rightPinnedContentArea;
   final double vertical;
   late final Map<PinStatus, double> _horizontal;
 
@@ -32,13 +29,11 @@ class TableScrollOffsets {
           runtimeType == other.runtimeType &&
           leftPinnedContentArea == other.leftPinnedContentArea &&
           unpinnedContentArea == other.unpinnedContentArea &&
-          rightPinnedContentArea == other.rightPinnedContentArea &&
           vertical == other.vertical;
 
   @override
   int get hashCode =>
       leftPinnedContentArea.hashCode ^
       unpinnedContentArea.hashCode ^
-      rightPinnedContentArea.hashCode ^
       vertical.hashCode;
 }

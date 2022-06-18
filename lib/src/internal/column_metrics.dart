@@ -49,7 +49,7 @@ class ColumnMetrics<ROW> {
           column: column,
           width: width,
           offset: offset,
-          pinStatus: PinStatus.unpinned));
+          pinStatus: PinStatus.none));
       offset += width + dividerThickness;
     }
     return list;
@@ -62,8 +62,7 @@ class ColumnMetrics<ROW> {
     for (PinStatus pinStatus in PinStatus.values) {
       for (int i = 0; i < model.columnsLength; i++) {
         final EasyTableColumn<ROW> column = model.columnAt(i);
-        if ((pinStatus == PinStatus.unpinned && column.pinned == false) ||
-            (pinStatus == PinStatus.leftPinned && column.pinned)) {
+        if ((pinStatus == column.pinStatus)) {
           list.add(ColumnMetrics<ROW>(
               column: column,
               width: column.width,

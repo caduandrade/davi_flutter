@@ -248,9 +248,9 @@ class TableLayoutRenderBox<ROW> extends RenderBox
               columnPaint);
         }
         context.canvas.restore();
-        if (pinStatus == PinStatus.leftPinned) {
+        if (pinStatus == PinStatus.left) {
           needAreaDivisor = true;
-        } else if (needAreaDivisor && pinStatus == PinStatus.unpinned) {
+        } else if (needAreaDivisor && pinStatus == PinStatus.none) {
           needAreaDivisor = false;
           context.canvas.save();
           context.canvas.clipRect(Rect.fromLTWH(offset.dx, offset.dy,
