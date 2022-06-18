@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:easy_table/src/column.dart';
 import 'package:easy_table/src/experimental/metrics/column_metrics_v3.dart';
+import 'package:easy_table/src/experimental/metrics/row_range.dart';
 import 'package:easy_table/src/experimental/pin_status.dart';
 import 'package:easy_table/src/experimental/scroll_offsets.dart';
 import 'package:easy_table/src/model.dart';
@@ -76,9 +77,14 @@ class TableLayoutSettingsV3<ROW> {
           constraints.maxHeight -
               (hasHeader ? headerHeight : 0) -
               (hasHorizontalScrollbar ? scrollbarHeight : 0));
-      final double start = offsets.vertical / rowHeight;
-      maxVisibleRowsLength =
-          (start + (availableHeight / rowHeight)).ceil() - start.floor();
+      //TODO remove
+      //final double start = offsets.vertical / rowHeight;
+      //maxVisibleRowsLength = (start + (availableHeight / rowHeight)).ceil() - start.floor();
+      maxVisibleRowsLength = RowRange.maxVisibleRowsLength(
+          scrollOffset: offsets.vertical,
+          height: availableHeight,
+          cellHeight: cellHeight,
+          dividerThickness: rowDividerThickness);
     }
     bool needVerticalScrollbar =
         model != null ? maxVisibleRowsLength < model.visibleRowsLength : false;
@@ -146,9 +152,14 @@ class TableLayoutSettingsV3<ROW> {
                 constraints.maxHeight -
                     (hasHeader ? headerHeight : 0) -
                     scrollbarHeight);
-            final double start = offsets.vertical / rowHeight;
-            maxVisibleRowsLength =
-                (start + (availableHeight / rowHeight)).ceil() - start.floor();
+            //TODO remove
+            //final double start = offsets.vertical / rowHeight;
+            //maxVisibleRowsLength = (start + (availableHeight / rowHeight)).ceil() - start.floor();
+            maxVisibleRowsLength = RowRange.maxVisibleRowsLength(
+                scrollOffset: offsets.vertical,
+                height: availableHeight,
+                cellHeight: cellHeight,
+                dividerThickness: rowDividerThickness);
           }
           needVerticalScrollbar =
               maxVisibleRowsLength < model.visibleRowsLength;
