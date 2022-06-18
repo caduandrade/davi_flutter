@@ -3,10 +3,9 @@ import 'package:meta/meta.dart';
 
 @internal
 class TableThemeMetrics<ROW> {
-  factory TableThemeMetrics(
-      {required double cellContentHeight, required EasyTableThemeData theme}) {
+  factory TableThemeMetrics(EasyTableThemeData theme) {
     final bool hasHeader = theme.header.visible;
-    final double cellHeight = cellContentHeight +
+    final double cellHeight = theme.cell.contentHeight +
         ((theme.cell.padding != null) ? theme.cell.padding!.vertical : 0);
     final double rowHeight = cellHeight + theme.row.dividerThickness;
     final double headerCellHeight = theme.headerCell.height;

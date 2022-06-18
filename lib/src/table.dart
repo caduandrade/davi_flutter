@@ -34,7 +34,6 @@ class EasyTable<ROW> extends StatefulWidget {
       this.onRowDoubleTap,
       this.columnsFit = false,
       int? visibleRowsCount,
-      this.cellContentHeight = 32,
       this.focusable = true,
       this.multiSortEnabled = false})
       : _visibleRowsCount = visibleRowsCount == null || visibleRowsCount > 0
@@ -52,7 +51,6 @@ class EasyTable<ROW> extends StatefulWidget {
   final RowTapCallback<ROW>? onRowSecondaryTap;
   final bool columnsFit;
   final int? _visibleRowsCount;
-  final double cellContentHeight;
   final OnLastVisibleRowListener? onLastVisibleRowListener;
   final bool focusable;
   final bool multiSortEnabled;
@@ -147,8 +145,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
   Widget build(BuildContext context) {
     final EasyTableThemeData theme = EasyTableTheme.of(context);
 
-    final TableThemeMetrics themeMetrics = TableThemeMetrics(
-        cellContentHeight: widget.cellContentHeight, theme: theme);
+    final TableThemeMetrics themeMetrics = TableThemeMetrics(theme);
 
     Widget table = ClipRect(
         child: TableLayoutBuilder(
