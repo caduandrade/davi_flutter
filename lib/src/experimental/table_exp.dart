@@ -1,8 +1,6 @@
 import 'dart:math' as math;
 import 'package:easy_table/src/experimental/layout_v3/row_callbacks_v3.dart';
 import 'package:easy_table/src/experimental/layout_v3/table_layout_builder_v3.dart';
-import 'package:easy_table/src/experimental/layout_v2/row_callbacks_v2.dart';
-import 'package:easy_table/src/experimental/layout_v2/table_layout_builder_v2.dart';
 import 'package:easy_table/src/experimental/table_layout_settings.dart';
 import 'package:easy_table/src/experimental/table_scroll_controllers.dart';
 import 'package:easy_table/src/model.dart';
@@ -159,43 +157,26 @@ class _EasyTableExpState<ROW> extends State<EasyTableExp<ROW>> {
             columnsFit: widget.columnsFit,
             offsets: _scrollControllers.offsets);
 
-    Widget table;
-    if (true) {
-      table = ClipRect(
-          child: TableLayoutBuilderV3(
-              onHoverListener: _setHoveredRowIndex,
-              hoveredRowIndex: _hoveredRowIndex,
-              multiSortEnabled: widget.multiSortEnabled,
-              layoutSettingsBuilder: layoutSettingsBuilder,
-              scrollControllers: _scrollControllers,
-              columnsFit: widget.columnsFit,
-              cellContentHeight: widget.cellContentHeight,
-              visibleRowsLength: widget.visibleRowsCount,
-              onLastVisibleRowListener: widget.onLastVisibleRowListener != null
-                  ? _onLastVisibleRowListener
-                  : null,
-              model: widget.model,
-              scrolling: _scrolling,
-              rowCallbacks: RowCallbacksV3(
-                  onRowTap: widget.onRowTap,
-                  onRowSecondaryTap: widget.onRowSecondaryTap,
-                  onRowDoubleTap: widget.onRowDoubleTap),
-              onDragScroll: _onDragScroll));
-    } else {
-      table = ClipRect(
-          child: TableLayoutBuilderV2(
-              onHoverListener: _setHoveredRowIndex,
-              hoveredRowIndex: _hoveredRowIndex,
-              multiSortEnabled: widget.multiSortEnabled,
-              layoutSettingsBuilder: layoutSettingsBuilder,
-              scrollControllers: _scrollControllers,
-              onLastVisibleRowListener: widget.onLastVisibleRowListener != null
-                  ? _onLastVisibleRowListener
-                  : null,
-              model: widget.model,
-              rowCallbacks: _rowCallbacks(),
-              onDragScroll: _onDragScroll));
-    }
+    Widget table = ClipRect(
+        child: TableLayoutBuilderV3(
+            onHoverListener: _setHoveredRowIndex,
+            hoveredRowIndex: _hoveredRowIndex,
+            multiSortEnabled: widget.multiSortEnabled,
+            layoutSettingsBuilder: layoutSettingsBuilder,
+            scrollControllers: _scrollControllers,
+            columnsFit: widget.columnsFit,
+            cellContentHeight: widget.cellContentHeight,
+            visibleRowsLength: widget.visibleRowsCount,
+            onLastVisibleRowListener: widget.onLastVisibleRowListener != null
+                ? _onLastVisibleRowListener
+                : null,
+            model: widget.model,
+            scrolling: _scrolling,
+            rowCallbacks: RowCallbacksV3(
+                onRowTap: widget.onRowTap,
+                onRowSecondaryTap: widget.onRowSecondaryTap,
+                onRowDoubleTap: widget.onRowDoubleTap),
+            onDragScroll: _onDragScroll));
 
     if (widget.model != null) {
       if (theme.row.hoveredColor != null) {
@@ -295,36 +276,6 @@ class _EasyTableExpState<ROW> extends State<EasyTableExp<ROW>> {
       }
     }
     return KeyEventResult.handled;
-  }
-
-  RowCallbacksV2? _rowCallbacks() {
-    if (widget.onRowTap != null ||
-        widget.onRowDoubleTap != null ||
-        widget.onRowSecondaryTap != null) {
-      return RowCallbacksV2(
-          onRowDoubleTap: _onRowDoubleTap,
-          onRowTap: _onRowTap,
-          onRowSecondaryTap: _onRowSecondaryTap);
-    }
-    return null;
-  }
-
-  void _onRowTap(int rowIndex) {
-    if (widget.onRowTap != null && widget.model != null) {
-      widget.onRowTap!(widget.model!.visibleRowAt(rowIndex));
-    }
-  }
-
-  void _onRowDoubleTap(int rowIndex) {
-    if (widget.onRowDoubleTap != null && widget.model != null) {
-      widget.onRowDoubleTap!(widget.model!.visibleRowAt(rowIndex));
-    }
-  }
-
-  void _onRowSecondaryTap(int rowIndex) {
-    if (widget.onRowSecondaryTap != null && widget.model != null) {
-      widget.onRowSecondaryTap!(widget.model!.visibleRowAt(rowIndex));
-    }
   }
 
   void _onDragScroll(bool start) {
