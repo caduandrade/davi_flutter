@@ -1,7 +1,7 @@
-import 'package:easy_table/src/experimental/layout_v3/column_layout/columns_layout_child_v3.dart';
-import 'package:easy_table/src/experimental/layout_v3/column_layout/columns_layout_element_v3.dart';
-import 'package:easy_table/src/experimental/layout_v3/column_layout/columns_layout_render_box_v3.dart';
-import 'package:easy_table/src/experimental/metrics/table_layout_settings_v3.dart';
+import 'package:easy_table/src/experimental/layout_v3/column_layout/columns_layout_child.dart';
+import 'package:easy_table/src/experimental/layout_v3/column_layout/columns_layout_element.dart';
+import 'package:easy_table/src/experimental/layout_v3/column_layout/columns_layout_render_box.dart';
+import 'package:easy_table/src/experimental/metrics/table_layout_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';

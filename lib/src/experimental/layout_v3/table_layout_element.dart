@@ -1,4 +1,4 @@
-import 'package:easy_table/src/experimental/layout_v3/table_layout_v3.dart';
+import 'package:easy_table/src/experimental/layout_v3/table_layout.dart';
 import 'package:flutter/widgets.dart';
 
 /// The [TableLayoutV2] element.

@@ -2,25 +2,19 @@ class RowRange {
   static int maxVisibleRowsLength(
       {required double scrollOffset,
       required double height,
-      required double cellHeight,
-      required double dividerThickness}) {
+      required double rowHeight}) {
     RowRange? rowRange = RowRange.build(
-        scrollOffset: scrollOffset,
-        height: height,
-        cellHeight: cellHeight,
-        dividerThickness: dividerThickness);
+        scrollOffset: scrollOffset, height: height, rowHeight: rowHeight);
     return rowRange != null ? rowRange.length : 0;
   }
 
   static RowRange? build(
       {required double scrollOffset,
       required double height,
-      required double cellHeight,
-      required double dividerThickness}) {
+      required double rowHeight}) {
     if (height == 0) {
       return null;
     }
-    final double rowHeight = cellHeight + dividerThickness;
     final int firstIndex = (scrollOffset / rowHeight).floor();
     final double firstRowRemainingHeight =
         rowHeight - (scrollOffset - (firstIndex * rowHeight));

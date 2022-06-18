@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 import 'package:easy_table/src/cell_builder.dart';
 import 'package:easy_table/src/cell_style.dart';
-import 'package:easy_table/src/experimental/pin_status.dart';
+import 'package:easy_table/src/pin_status.dart';
 import 'package:easy_table/src/model.dart';
 import 'package:easy_table/src/value_mapper.dart';
 import 'package:flutter/widgets.dart';

@@ -1,11 +1,11 @@
 import 'package:easy_table/src/cell_icon.dart';
 import 'package:easy_table/src/cell_style.dart';
 import 'package:easy_table/src/column.dart';
-import 'package:easy_table/src/experimental/layout_v3/column_layout/columns_layout_child_v3.dart';
-import 'package:easy_table/src/experimental/layout_v3/column_layout/columns_layout_v3.dart';
-import 'package:easy_table/src/experimental/layout_v3/row_callbacks_v3.dart';
-import 'package:easy_table/src/experimental/metrics/column_metrics_v3.dart';
-import 'package:easy_table/src/experimental/metrics/table_layout_settings_v3.dart';
+import 'package:easy_table/src/experimental/layout_v3/column_layout/columns_layout_child.dart';
+import 'package:easy_table/src/experimental/layout_v3/column_layout/columns_layout.dart';
+import 'package:easy_table/src/experimental/layout_v3/row_callbacks.dart';
+import 'package:easy_table/src/experimental/metrics/column_metrics.dart';
+import 'package:easy_table/src/experimental/metrics/table_layout_settings.dart';
 import 'package:easy_table/src/theme/theme.dart';
 import 'package:easy_table/src/theme/theme_data.dart';
 import 'package:flutter/gestures.dart';

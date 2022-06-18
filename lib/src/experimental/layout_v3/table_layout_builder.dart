@@ -1,13 +1,12 @@
-import 'dart:math' as math;
-import 'package:easy_table/src/experimental/layout_v3/layout_child_v3.dart';
-import 'package:easy_table/src/experimental/layout_v3/row_callbacks_v3.dart';
-import 'package:easy_table/src/experimental/layout_v3/table_layout_v3.dart';
+import 'package:easy_table/src/experimental/layout_v3/layout_child.dart';
+import 'package:easy_table/src/experimental/layout_v3/row_callbacks.dart';
+import 'package:easy_table/src/experimental/layout_v3/table_layout.dart';
 import 'package:easy_table/src/experimental/metrics/row_range.dart';
-import 'package:easy_table/src/experimental/metrics/table_layout_settings_v3.dart';
-import 'package:easy_table/src/experimental/table_layout_settings.dart';
+import 'package:easy_table/src/experimental/metrics/table_layout_settings.dart';
 import 'package:easy_table/src/experimental/table_paint_settings.dart';
 import 'package:easy_table/src/experimental/table_scroll_controllers.dart';
 import 'package:easy_table/src/experimental/table_scrollbar.dart';
+import 'package:easy_table/src/internal/table_theme_metrics.dart';
 import 'package:easy_table/src/last_visible_row_listener.dart';
 import 'package:easy_table/src/model.dart';
 import 'package:easy_table/src/row_hover_listener.dart';
@@ -20,12 +19,11 @@ class TableLayoutBuilderV3<ROW> extends StatelessWidget {
       {Key? key,
       required this.onHoverListener,
       required this.hoveredRowIndex,
-      required this.layoutSettingsBuilder,
       required this.scrollControllers,
       required this.multiSortEnabled,
       required this.onLastVisibleRowListener,
       required this.model,
-      required this.cellContentHeight,
+      required this.themeMetrics,
       required this.columnsFit,
       required this.visibleRowsLength,
       required this.rowCallbacks,
@@ -37,15 +35,14 @@ class TableLayoutBuilderV3<ROW> extends StatelessWidget {
   final OnLastVisibleRowListener? onLastVisibleRowListener;
   final OnRowHoverListener onHoverListener;
   final TableScrollControllers scrollControllers;
-  final TableLayoutSettingsBuilder layoutSettingsBuilder;
   final EasyTableModel<ROW>? model;
   final bool multiSortEnabled;
   final bool columnsFit;
-  final double cellContentHeight;
   final int? visibleRowsLength;
   final OnDragScroll onDragScroll;
   final bool scrolling;
   final RowCallbacksV3<ROW> rowCallbacks;
+  final TableThemeMetrics themeMetrics;
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +58,7 @@ class TableLayoutBuilderV3<ROW> extends StatelessWidget {
         theme: theme,
         columnsFit: columnsFit,
         offsets: scrollControllers.offsets,
-        cellContentHeight: cellContentHeight,
+        themeMetrics: themeMetrics,
         visibleRowsLength: visibleRowsLength);
 
     final List<LayoutChildV3> children = [];
@@ -77,7 +74,7 @@ class TableLayoutBuilderV3<ROW> extends StatelessWidget {
               onDragScroll: onDragScroll)));
     }
 
-    if (layoutSettings.hasHeader) {
+    if (themeMetrics.hasHeader) {
       children.add(LayoutChildV3.header(
           layoutSettings: layoutSettings,
           model: model,
@@ -129,8 +126,7 @@ class TableLayoutBuilderV3<ROW> extends StatelessWidget {
             RowRange? rowRange = RowRange.build(
                 scrollOffset: scrollControllers.verticalOffset,
                 height: layoutSettings.cellsBounds.height,
-                cellHeight: layoutSettings.cellHeight,
-                dividerThickness: layoutSettings.rowDividerThickness);
+                rowHeight: themeMetrics.rowHeight);
             if (rowRange != null) {
               onLastVisibleRowListener!(rowRange.lastIndex);
             }

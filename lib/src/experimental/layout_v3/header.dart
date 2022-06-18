@@ -1,16 +1,18 @@
 import 'package:easy_table/src/column.dart';
-import 'package:easy_table/src/experimental/layout_v3/column_layout/columns_layout_child_v3.dart';
-import 'package:easy_table/src/experimental/layout_v3/column_layout/columns_layout_v3.dart';
-import 'package:easy_table/src/experimental/metrics/column_metrics_v3.dart';
-import 'package:easy_table/src/experimental/metrics/table_layout_settings_v3.dart';
+import 'package:easy_table/src/experimental/layout_v3/column_layout/columns_layout_child.dart';
+import 'package:easy_table/src/experimental/layout_v3/column_layout/columns_layout.dart';
+import 'package:easy_table/src/experimental/metrics/column_metrics.dart';
+import 'package:easy_table/src/experimental/metrics/table_layout_settings.dart';
 import 'package:easy_table/src/internal/header_cell.dart';
 import 'package:easy_table/src/model.dart';
 import 'package:easy_table/src/theme/theme.dart';
 import 'package:easy_table/src/theme/theme_data.dart';
 import 'package:flutter/widgets.dart';
+import 'package:meta/meta.dart';
 
-class HeaderV3<ROW> extends StatelessWidget {
-  const HeaderV3(
+@internal
+class Header<ROW> extends StatelessWidget {
+  const Header(
       {Key? key,
       required this.layoutSettings,
       required this.model,

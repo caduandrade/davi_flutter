@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 import 'package:easy_table/src/column.dart';
-import 'package:easy_table/src/experimental/pin_status.dart';
+import 'package:easy_table/src/pin_status.dart';
 import 'package:easy_table/src/model.dart';
 
 class ColumnMetricsV3<ROW> {

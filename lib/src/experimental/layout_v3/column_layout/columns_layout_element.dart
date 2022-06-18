@@ -1,9 +1,9 @@
-import 'package:easy_table/src/experimental/layout_v3/rows/rows_layout_v3.dart';
+import 'package:easy_table/src/experimental/layout_v3/column_layout/columns_layout.dart';
 import 'package:flutter/widgets.dart';
 
 /// The [TableLayoutV2] element.
-class RowsLayoutElementV3 extends MultiChildRenderObjectElement {
-  RowsLayoutElementV3(RowsLayoutV3 widget) : super(widget);
+class ColumnsLayoutElementV3 extends MultiChildRenderObjectElement {
+  ColumnsLayoutElementV3(ColumnsLayoutV3 widget) : super(widget);
 
   @override
   void debugVisitOnstageChildren(ElementVisitor visitor) {

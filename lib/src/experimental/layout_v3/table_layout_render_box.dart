@@ -1,9 +1,9 @@
 import 'package:easy_table/src/column.dart';
-import 'package:easy_table/src/experimental/layout_v3/layout_child_id_v3.dart';
+import 'package:easy_table/src/experimental/layout_v3/layout_child_id.dart';
 import 'package:easy_table/src/experimental/layout_v3/table_layout_parent_data_v3.dart';
-import 'package:easy_table/src/experimental/metrics/column_metrics_v3.dart';
-import 'package:easy_table/src/experimental/metrics/table_layout_settings_v3.dart';
-import 'package:easy_table/src/experimental/pin_status.dart';
+import 'package:easy_table/src/experimental/metrics/column_metrics.dart';
+import 'package:easy_table/src/experimental/metrics/table_layout_settings.dart';
+import 'package:easy_table/src/pin_status.dart';
 import 'package:easy_table/src/experimental/table_paint_settings.dart';
 import 'package:easy_table/src/theme/theme_data.dart';
 import 'package:flutter/rendering.dart';
@@ -124,23 +124,25 @@ class TableLayoutRenderBoxV3<ROW> extends RenderBox
     if (_topCorner != null) {
       _topCorner!.layout(
           BoxConstraints.tightFor(
-              width: _layoutSettings.scrollbarWidth,
-              height: _layoutSettings.headerHeight),
+              width: _layoutSettings.themeMetrics.scrollbarWidth,
+              height: _layoutSettings.themeMetrics.headerHeight),
           parentUsesSize: true);
-      _topCorner!._parentData().offset =
-          Offset(constraints.maxWidth - _layoutSettings.scrollbarWidth, 0);
+      _topCorner!._parentData().offset = Offset(
+          constraints.maxWidth - _layoutSettings.themeMetrics.scrollbarWidth,
+          0);
     }
 
     // bottom corner
     if (_bottomCorner != null) {
       _bottomCorner!.layout(
           BoxConstraints.tightFor(
-              width: _layoutSettings.scrollbarWidth,
-              height: _layoutSettings.scrollbarHeight),
+              width: _layoutSettings.themeMetrics.scrollbarWidth,
+              height: _layoutSettings.themeMetrics.scrollbarHeight),
           parentUsesSize: true);
       _bottomCorner!._parentData().offset = Offset(
-          constraints.maxWidth - _layoutSettings.scrollbarWidth,
-          _layoutSettings.height - _layoutSettings.scrollbarHeight);
+          constraints.maxWidth - _layoutSettings.themeMetrics.scrollbarWidth,
+          _layoutSettings.height -
+              _layoutSettings.themeMetrics.scrollbarHeight);
     }
 
     size = computeDryLayout(constraints);
@@ -158,8 +160,8 @@ class TableLayoutRenderBoxV3<ROW> extends RenderBox
   @override
   double computeMinIntrinsicHeight(double width) {
     double height = 0;
-    if (_layoutSettings.hasHeader) {
-      height += _layoutSettings.headerHeight;
+    if (_layoutSettings.themeMetrics.hasHeader) {
+      height += _layoutSettings.themeMetrics.headerHeight;
     }
     return height;
   }
@@ -167,8 +169,9 @@ class TableLayoutRenderBoxV3<ROW> extends RenderBox
   @override
   double computeMaxIntrinsicHeight(double width) {
     return computeMinIntrinsicHeight(width) +
-        (_layoutSettings.maxVisibleRowsLength * _layoutSettings.cellHeight) +
-        _layoutSettings.scrollbarHeight;
+        (_layoutSettings.maxVisibleRowsLength *
+            _layoutSettings.themeMetrics.cellHeight) +
+        _layoutSettings.themeMetrics.scrollbarHeight;
   }
 
   @override
@@ -242,16 +245,16 @@ class TableLayoutRenderBoxV3<ROW> extends RenderBox
               Rect.fromLTWH(
                   left,
                   offset.dy,
-                  _layoutSettings.columnDividerThickness,
-                  _layoutSettings.headerCellHeight),
+                  _layoutSettings.themeMetrics.columnDividerThickness,
+                  _layoutSettings.themeMetrics.headerCellHeight),
               headerPaint);
         }
         if (columnPaint != null) {
           context.canvas.drawRect(
               Rect.fromLTWH(
                   left,
-                  offset.dy + _layoutSettings.headerHeight,
-                  _layoutSettings.columnDividerThickness,
+                  offset.dy + _layoutSettings.themeMetrics.headerHeight,
+                  _layoutSettings.themeMetrics.columnDividerThickness,
                   _layoutSettings.cellsBounds.height),
               columnPaint);
         }
@@ -265,22 +268,22 @@ class TableLayoutRenderBoxV3<ROW> extends RenderBox
               _layoutSettings.cellsBounds.width, _layoutSettings.height));
           left = offset.dx +
               columnMetrics.offset -
-              _layoutSettings.columnDividerThickness;
+              _layoutSettings.themeMetrics.columnDividerThickness;
           if (headerPaint != null) {
             context.canvas.drawRect(
                 Rect.fromLTWH(
                     left,
                     offset.dy,
-                    _layoutSettings.columnDividerThickness,
-                    _layoutSettings.headerCellHeight),
+                    _layoutSettings.themeMetrics.columnDividerThickness,
+                    _layoutSettings.themeMetrics.headerCellHeight),
                 headerPaint);
           }
           if (columnPaint != null) {
             context.canvas.drawRect(
                 Rect.fromLTWH(
                     left,
-                    offset.dy + _layoutSettings.headerHeight,
-                    _layoutSettings.columnDividerThickness,
+                    offset.dy + _layoutSettings.themeMetrics.headerHeight,
+                    _layoutSettings.themeMetrics.columnDividerThickness,
                     _layoutSettings.cellsBounds.height),
                 columnPaint);
           }
@@ -290,10 +293,10 @@ class TableLayoutRenderBoxV3<ROW> extends RenderBox
                 Rect.fromLTWH(
                     left,
                     offset.dy +
-                        _layoutSettings.headerHeight +
+                        _layoutSettings.themeMetrics.headerHeight +
                         _layoutSettings.cellsBounds.height,
-                    _layoutSettings.columnDividerThickness,
-                    _layoutSettings.scrollbarHeight),
+                    _layoutSettings.themeMetrics.columnDividerThickness,
+                    _layoutSettings.themeMetrics.scrollbarHeight),
                 Paint()..color = _theme.scrollbar.columnDividerColor!);
           }
           context.canvas.restore();

@@ -1,4 +1,4 @@
-import 'package:easy_table/src/experimental/pin_status.dart';
+import 'package:easy_table/src/pin_status.dart';
 
 class TableScrollOffsets {
   TableScrollOffsets(

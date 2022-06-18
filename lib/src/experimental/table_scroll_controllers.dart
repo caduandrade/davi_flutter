@@ -1,4 +1,5 @@
 import 'package:easy_table/src/experimental/scroll_offsets.dart';
+import 'package:easy_table/src/internal/scroll_controller.dart';
 import 'package:flutter/widgets.dart';
 
 class TableScrollControllers {
@@ -6,9 +7,11 @@ class TableScrollControllers {
       {required ScrollController? unpinnedHorizontal,
       required ScrollController? leftPinnedHorizontal,
       required ScrollController? vertical})
-      : _leftPinnedContentArea = leftPinnedHorizontal ?? ScrollController(),
-        _unpinnedContentArea = unpinnedHorizontal ?? ScrollController(),
-        _vertical = vertical ?? ScrollController();
+      : _leftPinnedContentArea =
+            leftPinnedHorizontal ?? EasyTableScrollController(),
+        _unpinnedContentArea =
+            unpinnedHorizontal ?? EasyTableScrollController(),
+        _vertical = vertical ?? EasyTableScrollController();
 
   ScrollController _leftPinnedContentArea;
   ScrollController _unpinnedContentArea;

@@ -1,10 +1,10 @@
-import 'package:easy_table/src/experimental/layout_v3/header_v3.dart';
-import 'package:easy_table/src/experimental/layout_v3/row_callbacks_v3.dart';
-import 'package:easy_table/src/experimental/layout_v3/rows/rows_v3.dart';
-import 'package:easy_table/src/experimental/layout_v3/layout_child_id_v3.dart';
+import 'package:easy_table/src/experimental/layout_v3/header.dart';
+import 'package:easy_table/src/experimental/layout_v3/row_callbacks.dart';
+import 'package:easy_table/src/experimental/layout_v3/rows/rows.dart';
+import 'package:easy_table/src/experimental/layout_v3/layout_child_id.dart';
 import 'package:easy_table/src/experimental/layout_v3/table_layout_parent_data_v3.dart';
-import 'package:easy_table/src/experimental/layout_v3/table_layout_v3.dart';
-import 'package:easy_table/src/experimental/metrics/table_layout_settings_v3.dart';
+import 'package:easy_table/src/experimental/layout_v3/table_layout.dart';
+import 'package:easy_table/src/experimental/metrics/table_layout_settings.dart';
 import 'package:easy_table/src/experimental/table_corner.dart';
 import 'package:easy_table/src/experimental/table_scrollbar.dart';
 import 'package:easy_table/src/model.dart';
@@ -20,7 +20,7 @@ class LayoutChildV3<ROW> extends ParentDataWidget<TableLayoutParentDataV3> {
     return LayoutChildV3._(
         id: LayoutChildIdV3.header,
         child: model != null
-            ? HeaderV3(
+            ? Header(
                 layoutSettings: layoutSettings,
                 model: model,
                 resizable: resizable,

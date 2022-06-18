@@ -1,9 +1,10 @@
 import 'dart:math' as math;
 
 import 'package:easy_table/src/column.dart';
-import 'package:easy_table/src/experimental/metrics/column_metrics_v3.dart';
+import 'package:easy_table/src/experimental/metrics/column_metrics.dart';
 import 'package:easy_table/src/experimental/metrics/row_range.dart';
-import 'package:easy_table/src/experimental/pin_status.dart';
+import 'package:easy_table/src/internal/table_theme_metrics.dart';
+import 'package:easy_table/src/pin_status.dart';
 import 'package:easy_table/src/experimental/scroll_offsets.dart';
 import 'package:easy_table/src/model.dart';
 import 'package:easy_table/src/theme/theme_data.dart';
@@ -17,7 +18,7 @@ class TableLayoutSettingsV3<ROW> {
       {required EasyTableModel<ROW>? model,
       required BoxConstraints constraints,
       required bool columnsFit,
-      required double cellContentHeight,
+      required TableThemeMetrics themeMetrics,
       required int? visibleRowsLength,
       required TableScrollOffsets offsets,
       required EasyTableThemeData theme}) {
@@ -35,21 +36,6 @@ class TableLayoutSettingsV3<ROW> {
         ),
       ]);
     }
-
-    // Fixed values defined by theme.
-    final bool hasHeader = theme.header.visible;
-    final double cellHeight = cellContentHeight +
-        ((theme.cell.padding != null) ? theme.cell.padding!.vertical : 0);
-    final double rowHeight = cellHeight + theme.row.dividerThickness;
-    final double headerCellHeight = theme.headerCell.height;
-    final double headerHeight =
-        headerCellHeight + theme.header.bottomBorderHeight;
-    final double scrollbarWidth =
-        theme.scrollbar.borderThickness + theme.scrollbar.thickness;
-    final double scrollbarHeight =
-        theme.scrollbar.borderThickness + theme.scrollbar.thickness;
-    final double columnDividerThickness = theme.columnDividerThickness;
-    final double rowDividerThickness = theme.row.dividerThickness;
 
     // Now let's find out the dynamic values given the constraints!!!
     // I'm so excited!!!
@@ -75,13 +61,12 @@ class TableLayoutSettingsV3<ROW> {
       final double availableHeight = math.max(
           0,
           constraints.maxHeight -
-              (hasHeader ? headerHeight : 0) -
-              (hasHorizontalScrollbar ? scrollbarHeight : 0));
+              (themeMetrics.hasHeader ? themeMetrics.headerHeight : 0) -
+              (hasHorizontalScrollbar ? themeMetrics.scrollbarHeight : 0));
       maxVisibleRowsLength = RowRange.maxVisibleRowsLength(
           scrollOffset: offsets.vertical,
           height: availableHeight,
-          cellHeight: cellHeight,
-          dividerThickness: rowDividerThickness);
+          rowHeight: themeMetrics.rowHeight);
     }
     bool needVerticalScrollbar =
         model != null ? maxVisibleRowsLength < model.visibleRowsLength : false;
@@ -90,19 +75,22 @@ class TableLayoutSettingsV3<ROW> {
 
     if (model != null) {
       if (columnsFit) {
-        unpinnedContentWidth = math.max(0,
-            constraints.maxWidth - (hasVerticalScrollbar ? scrollbarWidth : 0));
+        unpinnedContentWidth = math.max(
+            0,
+            constraints.maxWidth -
+                (hasVerticalScrollbar ? themeMetrics.scrollbarWidth : 0));
         columnsMetrics = UnmodifiableListView<ColumnMetricsV3<ROW>>(
             ColumnMetricsV3.columnsFit<ROW>(
                 model: model,
-                dividerThickness: columnDividerThickness,
+                dividerThickness: themeMetrics.columnDividerThickness,
                 maxWidth: unpinnedContentWidth));
         hasHorizontalScrollbar = false;
       } else {
         // resizable columns
         columnsMetrics = UnmodifiableListView<ColumnMetricsV3<ROW>>(
             ColumnMetricsV3.resizable<ROW>(
-                model: model, dividerThickness: columnDividerThickness));
+                model: model,
+                dividerThickness: themeMetrics.columnDividerThickness));
 
         for (ColumnMetricsV3<ROW> columnMetrics in columnsMetrics) {
           if (columnMetrics.pinStatus == PinStatus.unpinned) {
@@ -118,10 +106,14 @@ class TableLayoutSettingsV3<ROW> {
             0,
             unpinnedContentWidth -
                 leftPinnedContentWidth -
-                (leftPinnedContentWidth > 0 ? columnDividerThickness : 0));
+                (leftPinnedContentWidth > 0
+                    ? themeMetrics.columnDividerThickness
+                    : 0));
 
-        final double maxContentAreaWidth = math.max(0,
-            constraints.maxWidth - (hasVerticalScrollbar ? scrollbarWidth : 0));
+        final double maxContentAreaWidth = math.max(
+            0,
+            constraints.maxWidth -
+                (hasVerticalScrollbar ? themeMetrics.scrollbarWidth : 0));
 
         final bool needLeftPinnedHorizontalScrollbar =
             leftPinnedContentWidth > maxContentAreaWidth;
@@ -129,7 +121,9 @@ class TableLayoutSettingsV3<ROW> {
         final bool needUnpinnedHorizontalScrollbar = unpinnedContentWidth >
             maxContentAreaWidth -
                 leftPinnedContentWidth -
-                (leftPinnedContentWidth > 0 ? columnDividerThickness : 0);
+                (leftPinnedContentWidth > 0
+                    ? themeMetrics.columnDividerThickness
+                    : 0);
 
         final bool needHorizontalScrollbar = needUnpinnedHorizontalScrollbar ||
             needLeftPinnedHorizontalScrollbar;
@@ -147,13 +141,12 @@ class TableLayoutSettingsV3<ROW> {
             final double availableHeight = math.max(
                 0,
                 constraints.maxHeight -
-                    (hasHeader ? headerHeight : 0) -
-                    scrollbarHeight);
+                    (themeMetrics.hasHeader ? themeMetrics.headerHeight : 0) -
+                    themeMetrics.scrollbarHeight);
             maxVisibleRowsLength = RowRange.maxVisibleRowsLength(
                 scrollOffset: offsets.vertical,
                 height: availableHeight,
-                cellHeight: cellHeight,
-                dividerThickness: rowDividerThickness);
+                rowHeight: themeMetrics.rowHeight);
           }
           needVerticalScrollbar =
               maxVisibleRowsLength < model.visibleRowsLength;
@@ -166,17 +159,23 @@ class TableLayoutSettingsV3<ROW> {
       columnsMetrics = UnmodifiableListView<ColumnMetricsV3<ROW>>([]);
     }
 
-    final int firstRowIndex = (offsets.vertical / rowHeight).floor();
+    final int firstRowIndex =
+        (offsets.vertical / themeMetrics.rowHeight).floor();
     final double contentHeight = model != null
-        ? math.max(0, (model.rowsLength * rowHeight) - rowDividerThickness)
+        ? math.max(
+            0,
+            (model.rowsLength * themeMetrics.rowHeight) -
+                themeMetrics.rowDividerThickness)
         : 0;
 
     // Now let's set the screen boundaries!
 
     final double contentAreaWidth = math.max(
-        0, constraints.maxWidth - (hasVerticalScrollbar ? scrollbarWidth : 0));
-    final Rect headerBounds = hasHeader
-        ? Rect.fromLTWH(0, 0, contentAreaWidth, headerHeight)
+        0,
+        constraints.maxWidth -
+            (hasVerticalScrollbar ? themeMetrics.scrollbarWidth : 0));
+    final Rect headerBounds = themeMetrics.hasHeader
+        ? Rect.fromLTWH(0, 0, contentAreaWidth, themeMetrics.headerHeight)
         : Rect.zero;
     final Rect cellsBounds;
     final Rect horizontalScrollbarBounds;
@@ -191,7 +190,7 @@ class TableLayoutSettingsV3<ROW> {
               0,
               constraints.maxHeight -
                   headerBounds.height -
-                  (hasHorizontalScrollbar ? scrollbarHeight : 0)));
+                  (hasHorizontalScrollbar ? themeMetrics.scrollbarHeight : 0)));
     } else {
       // unbounded height
       cellsBounds = Rect.fromLTWH(
@@ -199,17 +198,22 @@ class TableLayoutSettingsV3<ROW> {
           headerBounds.height,
           contentAreaWidth,
           math.max(
-              0, (maxVisibleRowsLength * rowHeight) - rowDividerThickness));
+              0,
+              (maxVisibleRowsLength * themeMetrics.rowHeight) -
+                  themeMetrics.rowDividerThickness));
     }
 
     if (hasHorizontalScrollbar) {
       final double top = headerBounds.height + cellsBounds.height;
       final double leftDivisorWidth =
-          leftPinnedContentWidth > 0 ? columnDividerThickness : 0;
+          leftPinnedContentWidth > 0 ? themeMetrics.columnDividerThickness : 0;
       horizontalScrollbarBounds =
-          Rect.fromLTWH(0, top, contentAreaWidth, scrollbarHeight);
-      leftPinnedHorizontalScrollbarBounds = Rect.fromLTWH(0, top,
-          math.min(leftPinnedContentWidth, contentAreaWidth), scrollbarHeight);
+          Rect.fromLTWH(0, top, contentAreaWidth, themeMetrics.scrollbarHeight);
+      leftPinnedHorizontalScrollbarBounds = Rect.fromLTWH(
+          0,
+          top,
+          math.min(leftPinnedContentWidth, contentAreaWidth),
+          themeMetrics.scrollbarHeight);
       unpinnedHorizontalScrollbarsBounds = Rect.fromLTWH(
           leftPinnedHorizontalScrollbarBounds.width + leftDivisorWidth,
           top,
@@ -218,7 +222,7 @@ class TableLayoutSettingsV3<ROW> {
               contentAreaWidth -
                   leftPinnedHorizontalScrollbarBounds.width -
                   leftDivisorWidth),
-          scrollbarHeight);
+          themeMetrics.scrollbarHeight);
     } else {
       horizontalScrollbarBounds = Rect.zero;
       leftPinnedHorizontalScrollbarBounds = Rect.zero;
@@ -232,7 +236,7 @@ class TableLayoutSettingsV3<ROW> {
     final Rect verticalScrollbarBounds = Rect.fromLTWH(
         cellsBounds.width,
         headerBounds.bottom,
-        hasVerticalScrollbar ? scrollbarWidth : 0,
+        hasVerticalScrollbar ? themeMetrics.scrollbarWidth : 0,
         cellsBounds.height);
 
     final Rect leftPinnedAreaBounds = Rect.fromLTWH(
@@ -242,7 +246,8 @@ class TableLayoutSettingsV3<ROW> {
         headerBounds.height + cellsBounds.height);
 
     final double unpinnedOffset = leftPinnedAreaBounds.width > 0
-        ? math.min(leftPinnedAreaBounds.width + columnDividerThickness,
+        ? math.min(
+            leftPinnedAreaBounds.width + themeMetrics.columnDividerThickness,
             cellsBounds.width)
         : 0;
     final Rect unpinnedAreaBounds = Rect.fromLTWH(
@@ -255,20 +260,12 @@ class TableLayoutSettingsV3<ROW> {
 
     IterableEquality iterableEquality = const IterableEquality();
     final int hashCode = iterableEquality.hash(columnsMetrics) ^
-        hasHeader.hashCode ^
-        rowHeight.hashCode ^
-        headerHeight.hashCode ^
-        headerCellHeight.hashCode ^
-        scrollbarWidth.hashCode ^
-        scrollbarHeight.hashCode ^
         height.hashCode ^
         offsets.hashCode ^
         columnsFit.hashCode ^
         firstRowIndex.hashCode ^
         contentHeight.hashCode ^
-        cellHeight.hashCode ^
-        columnDividerThickness.hashCode ^
-        rowDividerThickness.hashCode ^
+        themeMetrics.hashCode ^
         maxVisibleRowsLength.hashCode ^
         headerBounds.hashCode ^
         cellsBounds.hashCode ^
@@ -284,20 +281,12 @@ class TableLayoutSettingsV3<ROW> {
         unpinnedAreaBounds.hashCode;
 
     return TableLayoutSettingsV3._(
-        hasHeader: hasHeader,
-        rowHeight: rowHeight,
         columnsFit: columnsFit,
-        headerCellHeight: headerCellHeight,
-        headerHeight: headerHeight,
-        scrollbarWidth: scrollbarWidth,
-        scrollbarHeight: scrollbarHeight,
         height: height,
-        cellHeight: cellHeight,
+        themeMetrics: themeMetrics,
         offsets: offsets,
         firstRowIndex: firstRowIndex,
         contentHeight: contentHeight,
-        columnDividerThickness: columnDividerThickness,
-        rowDividerThickness: rowDividerThickness,
         hasVerticalScrollbar: hasVerticalScrollbar,
         hasHorizontalScrollbar: hasHorizontalScrollbar,
         maxVisibleRowsLength: maxVisibleRowsLength,
@@ -317,24 +306,16 @@ class TableLayoutSettingsV3<ROW> {
   }
 
   TableLayoutSettingsV3._(
-      {required this.hasHeader,
+      {required this.themeMetrics,
       required this.columnsFit,
-      required this.rowHeight,
-      required this.headerCellHeight,
       required this.leftPinnedContentWidth,
       required this.unpinnedContentWidth,
-      required this.headerHeight,
-      required this.scrollbarWidth,
-      required this.scrollbarHeight,
       required this.height,
-      required this.cellHeight,
       required this.offsets,
       required this.firstRowIndex,
       required this.contentHeight,
       required this.hasVerticalScrollbar,
       required this.hasHorizontalScrollbar,
-      required this.columnDividerThickness,
-      required this.rowDividerThickness,
       required this.maxVisibleRowsLength,
       required this.columnsMetrics,
       required this.headerBounds,
@@ -353,20 +334,12 @@ class TableLayoutSettingsV3<ROW> {
     };
   }
 
+  final TableThemeMetrics themeMetrics;
   final bool columnsFit;
-  final bool hasHeader;
-  final double rowHeight;
-  final double headerCellHeight;
-  final double headerHeight;
-  final double scrollbarWidth;
-  final double scrollbarHeight;
   final double height;
   final TableScrollOffsets offsets;
-  final double cellHeight;
   final int firstRowIndex;
   final double contentHeight;
-  final double columnDividerThickness;
-  final double rowDividerThickness;
   final double unpinnedContentWidth;
   final double leftPinnedContentWidth;
   final bool hasVerticalScrollbar;

@@ -1,13 +1,15 @@
-import 'package:easy_table/src/experimental/layout_v3/rows/rows_layout_parent_data_v3.dart';
+import 'package:easy_table/src/experimental/layout_v3/rows/rows_layout_parent_data.dart';
 import 'package:easy_table/src/experimental/layout_v3/rows/rows_painting_settings.dart';
-import 'package:easy_table/src/experimental/metrics/table_layout_settings_v3.dart';
+import 'package:easy_table/src/experimental/metrics/table_layout_settings.dart';
 import 'package:flutter/rendering.dart';
+import 'package:meta/meta.dart';
 
-class RowsLayoutRenderBoxV3<ROW> extends RenderBox
+@internal
+class RowsLayoutRenderBox<ROW> extends RenderBox
     with
         ContainerRenderObjectMixin<RenderBox, RowsLayoutParentDataV3>,
         RenderBoxContainerDefaultsMixin<RenderBox, RowsLayoutParentDataV3> {
-  RowsLayoutRenderBoxV3(
+  RowsLayoutRenderBox(
       {required TableLayoutSettingsV3<ROW> layoutSettings,
       required RowsPaintingSettings paintSettings})
       : _layoutSettings = layoutSettings,
@@ -45,7 +47,7 @@ class RowsLayoutRenderBoxV3<ROW> extends RenderBox
 
   @override
   void performLayout() {
-    final double rowHeight = _layoutSettings.rowHeight;
+    final double rowHeight = _layoutSettings.themeMetrics.rowHeight;
 
     visitChildren((child) {
       final RenderBox renderBox = child as RenderBox;
@@ -54,7 +56,8 @@ class RowsLayoutRenderBoxV3<ROW> extends RenderBox
 
       renderBox.layout(
           BoxConstraints.tightFor(
-              width: constraints.maxWidth, height: _layoutSettings.cellHeight),
+              width: constraints.maxWidth,
+              height: _layoutSettings.themeMetrics.cellHeight),
           parentUsesSize: true);
 
       final double y =
@@ -69,19 +72,19 @@ class RowsLayoutRenderBoxV3<ROW> extends RenderBox
   @override
   void paint(PaintingContext context, Offset offset) {
     defaultPaint(context, offset);
-    if (_layoutSettings.columnDividerThickness > 0 &&
+    if (_layoutSettings.themeMetrics.columnDividerThickness > 0 &&
         _paintSettings.divisorColor != null) {
       Paint paint = Paint()..color = _paintSettings.divisorColor!;
       final int last =
           _layoutSettings.firstRowIndex + _layoutSettings.maxVisibleRowsLength;
       for (int i = _layoutSettings.firstRowIndex; i < last; i++) {
-        double top = (i * _layoutSettings.rowHeight) -
+        double top = (i * _layoutSettings.themeMetrics.rowHeight) -
             _layoutSettings.offsets.vertical +
-            _layoutSettings.cellHeight +
+            _layoutSettings.themeMetrics.cellHeight +
             offset.dy;
         context.canvas.drawRect(
             Rect.fromLTWH(offset.dx, top, _layoutSettings.cellsBounds.width,
-                _layoutSettings.rowDividerThickness),
+                _layoutSettings.themeMetrics.rowDividerThickness),
             paint);
       }
     }
