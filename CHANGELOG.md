@@ -9,6 +9,7 @@
   * `TableScrollbarThemeData.borderThickness` has been added.
   * TableScrollbarThemeData.verticalOnlyWhenNeeded has been added
   * HeaderThemeData.visible has been added
+  * CellIcon.background and CellIcon.alignment removed (already exists on CellStyle)
 
 ## 1.6.0
 

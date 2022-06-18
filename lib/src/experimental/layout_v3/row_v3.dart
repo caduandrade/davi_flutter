@@ -101,14 +101,6 @@ class RowV3State<ROW> extends State<RowV3<ROW>> {
     } else if (column.iconValueMapper != null) {
       CellIcon? cellIcon = column.iconValueMapper!(row);
       if (cellIcon != null) {
-        if (cellIcon.alignment != null) {
-          //TODO check
-          //alignment = cellIcon.alignment!;
-        }
-        if (cellIcon.background != null) {
-          //TODO check
-          // background = cellIcon.background;
-        }
         child = Icon(cellIcon.icon, color: cellIcon.color, size: cellIcon.size);
       }
     } else {
@@ -131,8 +123,7 @@ class RowV3State<ROW> extends State<RowV3<ROW>> {
     if (background != null) {
       child = Container(child: child, color: background);
     }
-    //TODO optional clip?
-    return ClipRect(child: child);
+    return  ClipRect(child: child);
   }
 
   GestureTapCallback? _buildOnTap() {

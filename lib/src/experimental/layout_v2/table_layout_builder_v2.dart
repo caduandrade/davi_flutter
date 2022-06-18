@@ -337,14 +337,6 @@ class TableLayoutBuilderV2<ROW> extends StatelessWidget {
     } else if (column.iconValueMapper != null) {
       CellIcon? cellIcon = column.iconValueMapper!(row);
       if (cellIcon != null) {
-        if (cellIcon.alignment != null) {
-          //TODO check
-          //alignment = cellIcon.alignment!;
-        }
-        if (cellIcon.background != null) {
-          //TODO check
-          // background = cellIcon.background;
-        }
         child = Icon(cellIcon.icon, color: cellIcon.color, size: cellIcon.size);
       }
     } else {

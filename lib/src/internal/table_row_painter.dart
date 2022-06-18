@@ -55,12 +55,6 @@ class TableRowPainter<ROW> extends CustomPainter {
       if (column.iconValueMapper != null) {
         CellIcon? cellIcon = column.iconValueMapper!(row);
         if (cellIcon != null) {
-          if (cellIcon.alignment != null) {
-            alignment = cellIcon.alignment!;
-          }
-          if (cellIcon.background != null) {
-            background = cellIcon.background;
-          }
           IconData icon = cellIcon.icon;
           textPainter = TextPainter(
               textDirection: TextDirection.ltr,
