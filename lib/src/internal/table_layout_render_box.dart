@@ -158,7 +158,7 @@ class TableLayoutRenderBox<ROW> extends RenderBox
   @override
   double computeMaxIntrinsicHeight(double width) {
     return computeMinIntrinsicHeight(width) +
-        (_layoutSettings.maxVisibleRowsLength *
+        (_layoutSettings.visibleRowsLength *
             _layoutSettings.themeMetrics.cellHeight) +
         _layoutSettings.themeMetrics.scrollbarHeight;
   }

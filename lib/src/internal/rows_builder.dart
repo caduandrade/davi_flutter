@@ -33,7 +33,7 @@ class RowsBuilder<ROW> extends StatelessWidget {
 
     if (model != null) {
       final int last =
-          layoutSettings.firstRowIndex + layoutSettings.maxVisibleRowsLength;
+          layoutSettings.firstRowIndex + layoutSettings.visibleRowsLength;
       for (int i = layoutSettings.firstRowIndex;
           i < last && i < model!.visibleRowsLength;
           i++) {

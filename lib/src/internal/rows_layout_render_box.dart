@@ -76,7 +76,7 @@ class RowsLayoutRenderBox<ROW> extends RenderBox
         _paintSettings.divisorColor != null) {
       Paint paint = Paint()..color = _paintSettings.divisorColor!;
       final int last =
-          _layoutSettings.firstRowIndex + _layoutSettings.maxVisibleRowsLength;
+          _layoutSettings.firstRowIndex + _layoutSettings.visibleRowsLength;
       for (int i = _layoutSettings.firstRowIndex; i < last; i++) {
         double top = (i * _layoutSettings.themeMetrics.rowHeight) -
             _layoutSettings.offsets.vertical +
