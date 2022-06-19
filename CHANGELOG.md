@@ -19,6 +19,15 @@
   * EasyTableModel.pinnedColumnsLength removed
   * EasyTableColumnSort.cellBackground added
   * EasyTableColumnSort.cellOverflow added
+  * EasyTableModel
+    * rowsLength to originalRowsLength
+    * isRowsEmpty to isOriginalRowsEmpty
+    * isRowsNotEmpty to isOriginalRowsNotEmpty
+    * removeVisibleRowAt to removeRowAt 
+    * visibleRowsLength to rowsLength
+    * isVisibleRowsEmpty to isRowsEmpty
+    * isVisibleRowsNotEmpty to isRowsNotEmpty
+    * visibleRowAt to rowAt
 
 ## 1.6.0
 

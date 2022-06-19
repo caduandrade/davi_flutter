@@ -127,8 +127,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _removeFirstRow() {
-    if (_model != null && _model!.isRowsNotEmpty) {
-      _model!.removeVisibleRowAt(0);
+    if (_model != null && _model!.isOriginalRowsNotEmpty) {
+      _model!.removeRowAt(0);
     }
   }
 

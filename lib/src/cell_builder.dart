@@ -4,4 +4,4 @@ import 'package:flutter/widgets.dart';
 ///
 /// Used by [EasyTableColumn].
 typedef EasyTableCellBuilder<ROW> = Widget Function(
-    BuildContext context, ROW row, int visibleRowIndex);
+    BuildContext context, ROW row, int rowIndex);

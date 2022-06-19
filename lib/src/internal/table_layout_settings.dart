@@ -61,12 +61,11 @@ class TableLayoutSettings<ROW> {
               (themeMetrics.hasHeader ? themeMetrics.headerHeight : 0) -
               (hasHorizontalScrollbar ? themeMetrics.scrollbarHeight : 0));
       needVerticalScrollbar = model != null
-          ? model.visibleRowsLength * themeMetrics.rowHeight >
-              availableRowsHeight
+          ? model.rowsLength * themeMetrics.rowHeight > availableRowsHeight
           : false;
     } else {
       needVerticalScrollbar =
-          model != null ? visibleRowsLength! < model.visibleRowsLength : false;
+          model != null ? visibleRowsLength! < model.rowsLength : false;
     }
     bool hasVerticalScrollbar =
         !theme.scrollbar.verticalOnlyWhenNeeded || needVerticalScrollbar;
@@ -139,8 +138,7 @@ class TableLayoutSettings<ROW> {
                     (themeMetrics.hasHeader ? themeMetrics.headerHeight : 0) -
                     themeMetrics.scrollbarHeight);
             needVerticalScrollbar =
-                model.visibleRowsLength * themeMetrics.rowHeight >
-                    availableRowsHeight;
+                model.rowsLength * themeMetrics.rowHeight > availableRowsHeight;
           }
           hasVerticalScrollbar =
               !theme.scrollbar.verticalOnlyWhenNeeded || needVerticalScrollbar;
@@ -156,7 +154,7 @@ class TableLayoutSettings<ROW> {
     final double contentHeight = model != null
         ? math.max(
             0,
-            (model.rowsLength * themeMetrics.rowHeight) -
+            (model.originalRowsLength * themeMetrics.rowHeight) -
                 themeMetrics.rowDividerThickness)
         : 0;
 

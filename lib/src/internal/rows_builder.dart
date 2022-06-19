@@ -35,11 +35,11 @@ class RowsBuilder<ROW> extends StatelessWidget {
       final int last =
           layoutSettings.firstRowIndex + layoutSettings.visibleRowsLength;
       for (int i = layoutSettings.firstRowIndex;
-          i < last && i < model!.visibleRowsLength;
+          i < last && i < model!.rowsLength;
           i++) {
         RowWidget<ROW> row = RowWidget<ROW>(
             rowIndex: i,
-            row: model!.visibleRowAt(i),
+            row: model!.rowAt(i),
             layoutSettings: layoutSettings,
             rowCallbacks: rowCallbacks,
             scrolling: scrolling);

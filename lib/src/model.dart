@@ -21,7 +21,7 @@ class EasyTableModel<ROW> extends ChangeNotifier {
     return model;
   }
 
-  EasyTableModel._(this._originalRows, this._visibleRows);
+  EasyTableModel._(this._originalRows, this._rows);
 
   final List<EasyTableColumn<ROW>> _columns = [];
   final List<ROW> _originalRows;
@@ -32,21 +32,21 @@ class EasyTableModel<ROW> extends ChangeNotifier {
   List<EasyTableColumn<ROW>> get sortedColumns =>
       UnmodifiableListView(_sortedColumns);
 
-  List<ROW> _visibleRows;
+  List<ROW> _rows;
 
-  bool get _isVisibleRowsModifiable => _visibleRows is! UnmodifiableListView;
+  bool get _isRowsModifiable => _rows is! UnmodifiableListView;
 
-  int get rowsLength => _originalRows.length;
+  int get originalRowsLength => _originalRows.length;
 
-  bool get isRowsEmpty => _originalRows.isEmpty;
+  bool get isOriginalRowsEmpty => _originalRows.isEmpty;
 
-  bool get isRowsNotEmpty => _originalRows.isNotEmpty;
+  bool get isOriginalRowsNotEmpty => _originalRows.isNotEmpty;
 
-  int get visibleRowsLength => _visibleRows.length;
+  int get rowsLength => _rows.length;
 
-  bool get isVisibleRowsEmpty => _visibleRows.isEmpty;
+  bool get isRowsEmpty => _rows.isEmpty;
 
-  bool get isVisibleRowsNotEmpty => _visibleRows.isNotEmpty;
+  bool get isRowsNotEmpty => _rows.isNotEmpty;
 
   int get columnsLength => _columns.length;
 
@@ -69,33 +69,33 @@ class EasyTableModel<ROW> extends ChangeNotifier {
   /// Indicates whether the model is sorted by multiple columns.
   bool get isMultiSorted => _sortedColumns.length > 1;
 
-  ROW visibleRowAt(int index) => _visibleRows[index];
+  ROW rowAt(int index) => _rows[index];
 
   void addRow(ROW row) {
     _originalRows.add(row);
-    _updateVisibleRows(notify: true);
+    _updateRows(notify: true);
   }
 
   void addRows(Iterable<ROW> rows) {
     _originalRows.addAll(rows);
-    _updateVisibleRows(notify: true);
+    _updateRows(notify: true);
   }
 
   /// Remove all rows.
   void removeRows() {
     _originalRows.clear();
-    _updateVisibleRows(notify: true);
+    _updateRows(notify: true);
   }
 
   void replaceRows(Iterable<ROW> rows) {
     _originalRows.clear();
     _originalRows.addAll(rows);
-    _updateVisibleRows(notify: true);
+    _updateRows(notify: true);
   }
 
-  void removeVisibleRowAt(int index) {
-    if (_isVisibleRowsModifiable) {
-      ROW row = _visibleRows.removeAt(index);
+  void removeRowAt(int index) {
+    if (_isRowsModifiable) {
+      ROW row = _rows.removeAt(index);
       _originalRows.remove(row);
     } else {
       _originalRows.removeAt(index);
@@ -105,8 +105,8 @@ class EasyTableModel<ROW> extends ChangeNotifier {
 
   void removeRow(ROW row) {
     _originalRows.remove(row);
-    if (_isVisibleRowsModifiable) {
-      _visibleRows.remove(row);
+    if (_isRowsModifiable) {
+      _rows.remove(row);
     }
     notifyListeners();
   }
@@ -132,7 +132,7 @@ class EasyTableModel<ROW> extends ChangeNotifier {
     _columns.clear();
     _sortedColumns.clear();
     _columnInResizing = null;
-    _updateVisibleRows(notify: true);
+    _updateRows(notify: true);
   }
 
   void _updateSortOrders() {
@@ -156,7 +156,7 @@ class EasyTableModel<ROW> extends ChangeNotifier {
       if (_sortedColumns.remove(column)) {
         column._clearSortData();
         _updateSortOrders();
-        _updateVisibleRows(notify: false);
+        _updateRows(notify: false);
       }
       notifyListeners();
     }
@@ -174,7 +174,7 @@ class EasyTableModel<ROW> extends ChangeNotifier {
   void clearSort() {
     _sortedColumns.clear();
     _clearColumnsSortData();
-    _updateVisibleRows(notify: true);
+    _updateRows(notify: true);
   }
 
   void _clearColumnsSortData() {
@@ -195,7 +195,7 @@ class EasyTableModel<ROW> extends ChangeNotifier {
       }
     }
     _updateSortOrders();
-    _updateVisibleRows(notify: true);
+    _updateRows(notify: true);
   }
 
   /// Updates the multi sort given a column.
@@ -218,7 +218,7 @@ class EasyTableModel<ROW> extends ChangeNotifier {
       _sortedColumns.removeAt(columnSortIndex)._clearSortData();
     }
     _updateSortOrders();
-    _updateVisibleRows(notify: true);
+    _updateRows(notify: true);
   }
 
   /// Sort given a column index.
@@ -237,7 +237,7 @@ class EasyTableModel<ROW> extends ChangeNotifier {
       column._sortOrder = 1;
       column._sortType = sortType;
       _sortedColumns.add(column);
-      _updateVisibleRows(notify: true);
+      _updateRows(notify: true);
     }
   }
 
@@ -247,13 +247,13 @@ class EasyTableModel<ROW> extends ChangeNotifier {
   }
 
   /// Updates the visible rows given the sorts and filters.
-  void _updateVisibleRows({required bool notify}) {
+  void _updateRows({required bool notify}) {
     if (isSorted) {
       List<ROW> list = List.from(_originalRows);
       list.sort(_compoundSort);
-      _visibleRows = list;
+      _rows = list;
     } else {
-      _visibleRows = UnmodifiableListView(_originalRows);
+      _rows = UnmodifiableListView(_originalRows);
     }
     if (notify) {
       notifyListeners();
