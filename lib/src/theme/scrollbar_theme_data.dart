@@ -84,8 +84,8 @@ class TableScrollbarThemeData {
 }
 
 class TableScrollbarThemeDataDefaults {
-  static const horizontalOnlyWhenNeeded = false;
-  static const verticalOnlyWhenNeeded = false;
+  static const horizontalOnlyWhenNeeded = true;
+  static const verticalOnlyWhenNeeded = true;
   static const double margin = 0;
   static const double thickness = 10;
   static const double borderThickness = 1;
