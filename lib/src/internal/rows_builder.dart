@@ -41,7 +41,7 @@ class RowsBuilder<ROW> extends StatelessWidget {
           i < last && i < model!.rowsLength;
           i++) {
         RowWidget<ROW> row = RowWidget<ROW>(
-            rowIndex: i,
+            index: i,
             row: model!.rowAt(i),
             onHover: onHover,
             layoutSettings: layoutSettings,

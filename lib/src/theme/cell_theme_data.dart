@@ -1,4 +1,4 @@
-import 'package:easy_table/src/theme/row_color.dart';
+import 'package:easy_table/src/theme/cell_null_color.dart';
 import 'package:flutter/material.dart';
 
 /// The [EasyTable] cell theme.
@@ -27,8 +27,7 @@ class CellThemeData {
   final TextOverflow? overflow;
 
   /// Defines a background when the cell value is null.
-  /// It is ignoring when [CellStyle.background] is not null.
-  final EasyTableRowColor? nullValueColor;
+  final CellNullColor? nullValueColor;
 
   @override
   bool operator ==(Object other) =>

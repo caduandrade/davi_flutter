@@ -6,6 +6,7 @@ import 'package:easy_table/src/internal/columns_layout.dart';
 import 'package:easy_table/src/internal/row_callbacks.dart';
 import 'package:easy_table/src/internal/column_metrics.dart';
 import 'package:easy_table/src/internal/table_layout_settings.dart';
+import 'package:easy_table/src/row_data.dart';
 import 'package:easy_table/src/row_hover_listener.dart';
 import 'package:easy_table/src/theme/theme.dart';
 import 'package:easy_table/src/theme/theme_data.dart';
@@ -16,16 +17,16 @@ import 'package:meta/meta.dart';
 @internal
 class RowWidget<ROW> extends StatefulWidget {
   RowWidget(
-      {required this.rowIndex,
+      {required this.index,
       required this.row,
       required this.onHover,
       required this.layoutSettings,
       required this.scrolling,
       required this.rowCallbacks})
-      : super(key: ValueKey<int>(rowIndex));
+      : super(key: ValueKey<int>(index));
 
   final ROW row;
-  final int rowIndex;
+  final int index;
   final bool scrolling;
   final OnRowHoverListener? onHover;
   final TableLayoutSettings<ROW> layoutSettings;
@@ -52,7 +53,7 @@ class RowWidgetState<ROW> extends State<RowWidget<ROW>> {
       final Widget cell = _buildCellWidget(
           context: context,
           row: widget.row,
-          rowIndex: widget.rowIndex,
+          index: widget.index,
           column: column,
           theme: theme);
       children.add(ColumnsLayoutChild<ROW>(index: columnIndex, child: cell));
@@ -76,7 +77,7 @@ class RowWidgetState<ROW> extends State<RowWidget<ROW>> {
           widget.onHover != null) {
         Color? color;
         if (_hovered && theme.row.hoveredColor != null) {
-          color = theme.row.hoveredColor!(widget.rowIndex);
+          color = theme.row.hoveredColor!(widget.index);
         }
         layout = MouseRegion(
             onEnter: _onEnter,
@@ -94,7 +95,7 @@ class RowWidgetState<ROW> extends State<RowWidget<ROW>> {
   Widget _buildCellWidget(
       {required BuildContext context,
       required ROW row,
-      required int rowIndex,
+      required int index,
       required EasyTableColumn<ROW> column,
       required EasyTableThemeData theme}) {
     // Theme
@@ -105,12 +106,16 @@ class RowWidgetState<ROW> extends State<RowWidget<ROW>> {
     // Entire column
     padding = column.cellPadding ?? padding;
     alignment = column.cellAlignment ?? alignment;
-    Color? background = column.cellBackground;
+    Color? background = column.cellBackground != null
+        ? column
+            .cellBackground!(RowData(row: row, index: index, hovered: _hovered))
+        : null;
     textStyle = column.cellTextStyle ?? textStyle;
     overflow = column.cellOverflow ?? overflow;
     // Single cell
     if (column.cellStyleBuilder != null) {
-      CellStyle? cellStyle = column.cellStyleBuilder!(row);
+      CellStyle? cellStyle = column.cellStyleBuilder!(
+          RowData(row: row, index: index, hovered: _hovered));
       if (cellStyle != null) {
         padding = cellStyle.padding ?? padding;
         alignment = cellStyle.alignment ?? alignment;
@@ -122,7 +127,8 @@ class RowWidgetState<ROW> extends State<RowWidget<ROW>> {
 
     Widget? child;
     if (column.cellBuilder != null) {
-      child = column.cellBuilder!(context, row, rowIndex);
+      child = column.cellBuilder!(
+          context, RowData(row: row, index: index, hovered: _hovered));
     } else if (column.iconValueMapper != null) {
       CellIcon? cellIcon = column.iconValueMapper!(row);
       if (cellIcon != null) {
@@ -135,7 +141,7 @@ class RowWidgetState<ROW> extends State<RowWidget<ROW>> {
             overflow: overflow ?? theme.cell.overflow,
             style: textStyle ?? theme.cell.textStyle);
       } else if (theme.cell.nullValueColor != null) {
-        background = theme.cell.nullValueColor!(rowIndex);
+        background = theme.cell.nullValueColor!(index, _hovered);
       }
     }
     if (child != null) {
@@ -196,7 +202,7 @@ class RowWidgetState<ROW> extends State<RowWidget<ROW>> {
     setState(() {
       _hovered = true;
       if (widget.onHover != null) {
-        widget.onHover!(widget.rowIndex);
+        widget.onHover!(widget.index);
       }
     });
   }

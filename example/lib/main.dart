@@ -56,8 +56,8 @@ class _HomePageState extends State<HomePage> {
         EasyTableColumn(
             name: 'Skills',
             width: 100,
-            cellBuilder: (context, row, visibleRowIndex) =>
-                SkillsWidget(skills: row.skills)),
+            cellBuilder: (context, data) =>
+                SkillsWidget(skills: data.row.skills)),
         EasyTableColumn(
             name: 'Strength', width: 80, intValue: (row) => row.strength),
         EasyTableColumn(
@@ -65,14 +65,20 @@ class _HomePageState extends State<HomePage> {
         EasyTableColumn(
             name: 'Intelligence',
             width: 90,
-            cellStyleBuilder: (r)=>CellStyle(background: Colors.yellow),
+            cellStyleBuilder: (data) => CellStyle(
+                background: data.hovered ? Colors.yellow : Colors.yellow[300]),
             intValue: (row) => row.intelligence),
-        EasyTableColumn(name: 'Life', width: 70, intValue: (row) => row.life,cellBackground: Colors.lightGreen),
+        EasyTableColumn(
+            name: 'Life',
+            width: 70,
+            intValue: (row) => row.life,
+            cellBackground: (data) =>
+                data.hovered ? Colors.green : Colors.lightGreen),
         EasyTableColumn(name: 'Mana', width: 70, intValue: (row) => row.mana),
         EasyTableColumn(
             name: 'Gold',
             width: 110,
-            doubleValue: (row) => null,//row.gold,
+            doubleValue: (row) => null, //row.gold,
             fractionDigits: 2)
       ]);
       setState(() {
@@ -93,7 +99,7 @@ class _HomePageState extends State<HomePage> {
       body = EasyTableTheme(
           child: _table(),
           data: EasyTableThemeData(
-            cell: CellThemeData(nullValueColor:(index)=>Colors.grey ),
+              cell: CellThemeData(nullValueColor: (index, hovered) =>hovered?Colors.grey: Colors.grey[200]),
               row: RowThemeData(hoveredColor: (index) => Colors.blue[50],
               )));
     }
@@ -110,7 +116,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _table() {
-    return EasyTable<Character>(_model, multiSortEnabled: true, onHover: _onHover);
+    return EasyTable<Character>(_model,
+        multiSortEnabled: true, onHover: _onHover);
   }
 
   Widget _buttons() {
@@ -129,8 +136,8 @@ class _HomePageState extends State<HomePage> {
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 0)));
   }
 
-  void _onHover(int? rowIndex){
-     print('_onHover: $rowIndex');
+  void _onHover(int? rowIndex) {
+    print('_onHover: $rowIndex');
   }
 
   void _removeFirstRow() {

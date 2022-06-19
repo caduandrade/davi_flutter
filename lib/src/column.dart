@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'package:easy_table/src/cell_background.dart';
 import 'package:easy_table/src/cell_builder.dart';
 import 'package:easy_table/src/cell_style.dart';
 import 'package:easy_table/src/pin_status.dart';
@@ -49,7 +50,7 @@ class EasyTableColumn<ROW> extends ChangeNotifier with ColumnSortMixin {
       Alignment? cellAlignment,
       TextStyle? cellTextStyle,
       TextOverflow? cellOverflow,
-      Color? cellBackground,
+      CellBackgroundBuilder<ROW>? cellBackground,
       TextStyle? headerTextStyle,
       Widget? leading,
       EasyTableCellBuilder<ROW>? cellBuilder,
@@ -193,7 +194,7 @@ class EasyTableColumn<ROW> extends ChangeNotifier with ColumnSortMixin {
   final Alignment? headerAlignment;
   final Alignment? cellAlignment;
   final TextOverflow? cellOverflow;
-  final Color? cellBackground;
+  final CellBackgroundBuilder<ROW>? cellBackground;
   final TextStyle? cellTextStyle;
   final TextStyle? headerTextStyle;
   final int? fractionDigits;

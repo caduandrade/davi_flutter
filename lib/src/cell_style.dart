@@ -1,9 +1,10 @@
+import 'package:easy_table/src/row_data.dart';
 import 'package:flutter/widgets.dart';
 
-/// Signature for a function that builds a [CellStyle] for a value of a row.
+/// Signature for a function that builds a [CellStyle] for a row.
 ///
 /// Used by [EasyTableColumn].
-typedef CellStyleBuilder<ROW> = CellStyle? Function(ROW row);
+typedef CellStyleBuilder<ROW> = CellStyle? Function(RowData<ROW> data);
 
 /// Overrides the theme and column style.
 class CellStyle {

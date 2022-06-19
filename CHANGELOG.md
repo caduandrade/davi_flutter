@@ -22,6 +22,9 @@
   * RowThemeData.lastDividerVisible added
   * EasyTableThemeData.fillHeight added
   * EasyTable.onHoverListener renamed to onHover
+  * EasyTableCellBuilder parameters ROW row, int rowIndex to RowData<ROW> data
+  * CellStyleBuilder parameter ROW row to RowData data
+  * EasyTableColumn .background changed from Color to CellBackgroundBuilder<ROW>
   * EasyTableModel
     * rowsLength to originalRowsLength
     * isRowsEmpty to isOriginalRowsEmpty
