@@ -189,7 +189,7 @@ void _onRowDoubleTap(BuildContext context, Person person) {
   }
 
   void _onLastVisibleRowListener(int lastVisibleRowIndex) {
-    if (!_loading && lastVisibleRowIndex == _model!.visibleRowsLength - 1) {
+    if (!_loading && lastVisibleRowIndex == _model!.rowsLength - 1) {
       setState(() {
         _loading = true;
       });
@@ -197,7 +197,7 @@ void _onRowDoubleTap(BuildContext context, Person person) {
         setState(() {
           _loading = false;
           List<String> newValues = List.generate(
-              30, (index) => 'value ${_model!.visibleRowsLength + index}');
+              30, (index) => 'value ${_model!.rowsLength + index}');
           _model!.addRows(newValues);
         });
       });

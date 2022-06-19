@@ -68,16 +68,15 @@ class RowWidgetState<ROW> extends State<RowWidget<ROW>> {
     }
 
     if (widget.rowCallbacks.hasCallback || theme.row.hoveredColor != null) {
-      Color? color = _enter && !widget.scrolling ? Colors.blue[300] : null;
-      if (theme.row.hoveredColor != null) {
-        color = _enter && !widget.scrolling
-            ? theme.row.hoveredColor!(widget.rowIndex)
-            : null;
+      Color? color;
+      if (_enter && !widget.scrolling && theme.row.hoveredColor != null) {
+        color = theme.row.hoveredColor!(widget.rowIndex);
       }
       layout = MouseRegion(
           onEnter: widget.scrolling ? null : _onEnter,
-          cursor:
-              widget.scrolling ? MouseCursor.defer : SystemMouseCursors.click,
+          cursor: widget.rowCallbacks.hasCallback && !widget.scrolling
+              ? SystemMouseCursors.click
+              : MouseCursor.defer,
           onExit: widget.scrolling ? null : _onExit,
           child: Container(color: color, child: layout));
     }
