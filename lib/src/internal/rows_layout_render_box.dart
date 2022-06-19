@@ -71,14 +71,48 @@ class RowsLayoutRenderBox<ROW> extends RenderBox
 
   @override
   void paint(PaintingContext context, Offset offset) {
+    // backgrounds
+    if (_paintSettings.rowColor != null) {
+      int last = _layoutSettings.firstRowIndex;
+      if (_paintSettings.fillHeight) {
+        last += _layoutSettings.maxVisibleRowsLength;
+      } else {
+        last += _layoutSettings.visibleRowsLength;
+      }
+      for (int rowIndex = _layoutSettings.firstRowIndex;
+          rowIndex < last;
+          rowIndex++) {
+        Color? color = _paintSettings.rowColor!(rowIndex);
+        if (color != null) {
+          Paint paint = Paint()..color = color;
+          double top = (rowIndex * _layoutSettings.themeMetrics.rowHeight) -
+              _layoutSettings.offsets.vertical +
+              offset.dy;
+          context.canvas.drawRect(
+              Rect.fromLTWH(offset.dx, top, _layoutSettings.cellsBounds.width,
+                  _layoutSettings.themeMetrics.cellHeight),
+              paint);
+        }
+      }
+    }
     defaultPaint(context, offset);
-    if (_layoutSettings.themeMetrics.columnDividerThickness > 0 &&
+    // dividers
+    if (_layoutSettings.themeMetrics.rowDividerThickness > 0 &&
         _paintSettings.divisorColor != null) {
       Paint paint = Paint()..color = _paintSettings.divisorColor!;
-      final int last =
-          _layoutSettings.firstRowIndex + _layoutSettings.visibleRowsLength;
-      for (int i = _layoutSettings.firstRowIndex; i < last; i++) {
-        double top = (i * _layoutSettings.themeMetrics.rowHeight) -
+      int last = _layoutSettings.firstRowIndex;
+      if (_paintSettings.fillHeight) {
+        last += _layoutSettings.maxVisibleRowsLength;
+      } else {
+        last += _layoutSettings.visibleRowsLength;
+        if (!_paintSettings.lastRowDividerVisible) {
+          last--;
+        }
+      }
+      for (int rowIndex = _layoutSettings.firstRowIndex;
+          rowIndex < last;
+          rowIndex++) {
+        double top = (rowIndex * _layoutSettings.themeMetrics.rowHeight) -
             _layoutSettings.offsets.vertical +
             _layoutSettings.themeMetrics.cellHeight +
             offset.dy;

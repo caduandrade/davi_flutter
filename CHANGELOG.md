@@ -19,6 +19,8 @@
   * EasyTableModel.pinnedColumnsLength removed
   * EasyTableColumnSort.cellBackground added
   * EasyTableColumnSort.cellOverflow added
+  * RowThemeData.lastDividerVisible added
+  * EasyTableThemeData.fillHeight added
   * EasyTableModel
     * rowsLength to originalRowsLength
     * isRowsEmpty to isOriginalRowsEmpty

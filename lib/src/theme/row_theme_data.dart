@@ -7,6 +7,7 @@ class RowThemeData {
   /// Builds a theme data.
   const RowThemeData({
     this.color,
+    this.lastDividerVisible = RowThemeDataDefaults.lastDividerVisible,
     this.hoveredColor,
     this.dividerThickness = RowThemeDataDefaults.dividerThickness,
     this.dividerColor = RowThemeDataDefaults.dividerColor,
@@ -16,6 +17,7 @@ class RowThemeData {
   final EasyTableRowColor? hoveredColor;
   final double dividerThickness;
   final Color? dividerColor;
+  final bool lastDividerVisible;
 
   @override
   bool operator ==(Object other) =>
@@ -24,26 +26,29 @@ class RowThemeData {
           runtimeType == other.runtimeType &&
           color == other.color &&
           hoveredColor == other.hoveredColor &&
-          dividerColor == other.dividerColor;
+          dividerThickness == other.dividerThickness &&
+          dividerColor == other.dividerColor &&
+          lastDividerVisible == other.lastDividerVisible;
 
   @override
   int get hashCode =>
-      color.hashCode ^ hoveredColor.hashCode ^ dividerColor.hashCode;
+      color.hashCode ^
+      hoveredColor.hashCode ^
+      dividerThickness.hashCode ^
+      dividerColor.hashCode ^
+      lastDividerVisible.hashCode;
 
-  static EasyTableRowColor rowZebraColor({Color? evenColor, Color? oddColor}) {
+  static EasyTableRowColor zebraColor(
+      {Color? evenColor = const Color(0xFFF5F5F5),
+      Color? oddColor = Colors.white}) {
     return (rowIndex) {
       return rowIndex.isOdd ? evenColor : oddColor;
     };
   }
-
-  static Color? _rowWhiteGreyColor(int rowIndex) {
-    return rowIndex.isOdd ? Colors.white : Colors.grey[100];
-  }
-
-  static const EasyTableRowColor rowWhiteGreyColor = _rowWhiteGreyColor;
 }
 
 class RowThemeDataDefaults {
   static const Color dividerColor = Color(0xFFE0E0E0);
-  static const double dividerThickness = 1;
+  static const double dividerThickness = 10;
+  static const bool lastDividerVisible = true;
 }

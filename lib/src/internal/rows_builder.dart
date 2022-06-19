@@ -46,8 +46,11 @@ class RowsBuilder<ROW> extends StatelessWidget {
         children.add(RowsLayoutChild<ROW>(index: i, child: row));
       }
 
-      RowsPaintingSettings paintSettings =
-          RowsPaintingSettings(divisorColor: theme.row.dividerColor);
+      RowsPaintingSettings paintSettings = RowsPaintingSettings(
+          divisorColor: theme.row.dividerColor,
+          fillHeight: theme.fillHeight,
+          lastRowDividerVisible: theme.row.lastDividerVisible,
+          rowColor: theme.row.color);
       return ClipRect(
           child: RowsLayout<ROW>(
               layoutSettings: layoutSettings,

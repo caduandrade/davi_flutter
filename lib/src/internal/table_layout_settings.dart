@@ -192,10 +192,12 @@ class TableLayoutSettings<ROW> {
               (visibleRowsLength! * themeMetrics.rowHeight) -
                   themeMetrics.rowDividerThickness));
     }
-    final int effectiveVisibleRowsLength = RowRange.maxVisibleRowsLength(
+    final int maxVisibleRowsLength = RowRange.maxVisibleRowsLength(
         scrollOffset: offsets.vertical,
         height: cellsBounds.height,
         rowHeight: themeMetrics.rowHeight);
+    final int effectiveVisibleRowsLength =
+        model != null ? math.min(model.rowsLength, maxVisibleRowsLength) : 0;
 
     if (hasHorizontalScrollbar) {
       final double top = headerBounds.height + cellsBounds.height;
@@ -261,6 +263,7 @@ class TableLayoutSettings<ROW> {
         contentHeight.hashCode ^
         themeMetrics.hashCode ^
         effectiveVisibleRowsLength.hashCode ^
+        maxVisibleRowsLength.hashCode ^
         headerBounds.hashCode ^
         cellsBounds.hashCode ^
         horizontalScrollbarBounds.hashCode ^
@@ -284,6 +287,7 @@ class TableLayoutSettings<ROW> {
         hasVerticalScrollbar: hasVerticalScrollbar,
         hasHorizontalScrollbar: hasHorizontalScrollbar,
         visibleRowsLength: effectiveVisibleRowsLength,
+        maxVisibleRowsLength: maxVisibleRowsLength,
         columnsMetrics: columnsMetrics,
         headerBounds: headerBounds,
         cellsBounds: cellsBounds,
@@ -311,6 +315,7 @@ class TableLayoutSettings<ROW> {
       required this.hasVerticalScrollbar,
       required this.hasHorizontalScrollbar,
       required this.visibleRowsLength,
+      required this.maxVisibleRowsLength,
       required this.columnsMetrics,
       required this.headerBounds,
       required this.cellsBounds,
@@ -339,6 +344,7 @@ class TableLayoutSettings<ROW> {
   final bool hasHorizontalScrollbar;
 
   /// The number of rows that can be visible at the available height.
+  final int maxVisibleRowsLength;
   final int visibleRowsLength;
   final List<ColumnMetrics<ROW>> columnsMetrics;
   final Rect headerBounds;
