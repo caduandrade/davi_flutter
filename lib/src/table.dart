@@ -24,7 +24,7 @@ class EasyTable<ROW> extends StatefulWidget {
 //TODO allow null and use defaults?
   const EasyTable(this.model,
       {Key? key,
-      this.onHoverListener,
+      this.onHover,
       this.unpinnedHorizontalScrollController,
       this.pinnedHorizontalScrollController,
       this.verticalScrollController,
@@ -45,7 +45,7 @@ class EasyTable<ROW> extends StatefulWidget {
   final ScrollController? unpinnedHorizontalScrollController;
   final ScrollController? pinnedHorizontalScrollController;
   final ScrollController? verticalScrollController;
-  final OnRowHoverListener? onHoverListener;
+  final OnRowHoverListener? onHover;
   final RowDoubleTapCallback<ROW>? onRowDoubleTap;
   final RowTapCallback<ROW>? onRowTap;
   final RowTapCallback<ROW>? onRowSecondaryTap;
@@ -73,14 +73,12 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
   final FocusNode _focusNode = FocusNode();
   bool _focused = false;
 
-  void _setHoveredRowIndex(int? value) {
-    if (widget.model != null && _hoveredRowIndex != value) {
-      setState(() {
-        _hoveredRowIndex = value;
-        if (widget.onHoverListener != null) {
-          widget.onHoverListener!(_hoveredRowIndex);
-        }
-      });
+  void _setHoveredRowIndex(int? rowIndex) {
+    if (widget.model != null && _hoveredRowIndex != rowIndex) {
+      _hoveredRowIndex = rowIndex;
+      if (widget.onHover != null) {
+        widget.onHover!(_hoveredRowIndex);
+      }
     }
   }
 
@@ -149,8 +147,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
 
     Widget table = ClipRect(
         child: TableLayoutBuilder(
-            onHoverListener: _setHoveredRowIndex,
-            hoveredRowIndex: _hoveredRowIndex,
+            onHover: widget.onHover != null ? _setHoveredRowIndex : null,
             multiSortEnabled: widget.multiSortEnabled,
             scrollControllers: _scrollControllers,
             columnsFit: widget.columnsFit,

@@ -18,8 +18,7 @@ import 'package:meta/meta.dart';
 class TableLayoutBuilder<ROW> extends StatelessWidget {
   const TableLayoutBuilder(
       {Key? key,
-      required this.onHoverListener,
-      required this.hoveredRowIndex,
+      required this.onHover,
       required this.scrollControllers,
       required this.multiSortEnabled,
       required this.onLastVisibleRowListener,
@@ -32,9 +31,8 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
       required this.scrolling})
       : super(key: key);
 
-  final int? hoveredRowIndex;
   final OnLastVisibleRowListener? onLastVisibleRowListener;
-  final OnRowHoverListener onHoverListener;
+  final OnRowHoverListener? onHover;
   final TableScrollControllers scrollControllers;
   final EasyTableModel<ROW>? model;
   final bool multiSortEnabled;
@@ -111,6 +109,7 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
         model: model,
         layoutSettings: layoutSettings,
         scrolling: scrolling,
+        onHover: onHover,
         rowCallbacks: rowCallbacks));
 
     Widget layout = TableLayout<ROW>(

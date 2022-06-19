@@ -6,6 +6,7 @@ import 'package:easy_table/src/internal/columns_layout.dart';
 import 'package:easy_table/src/internal/row_callbacks.dart';
 import 'package:easy_table/src/internal/column_metrics.dart';
 import 'package:easy_table/src/internal/table_layout_settings.dart';
+import 'package:easy_table/src/row_hover_listener.dart';
 import 'package:easy_table/src/theme/theme.dart';
 import 'package:easy_table/src/theme/theme_data.dart';
 import 'package:flutter/gestures.dart';
@@ -17,6 +18,7 @@ class RowWidget<ROW> extends StatefulWidget {
   RowWidget(
       {required this.rowIndex,
       required this.row,
+      required this.onHover,
       required this.layoutSettings,
       required this.scrolling,
       required this.rowCallbacks})
@@ -25,6 +27,7 @@ class RowWidget<ROW> extends StatefulWidget {
   final ROW row;
   final int rowIndex;
   final bool scrolling;
+  final OnRowHoverListener? onHover;
   final TableLayoutSettings<ROW> layoutSettings;
   final RowCallbacks<ROW> rowCallbacks;
 
@@ -33,7 +36,7 @@ class RowWidget<ROW> extends StatefulWidget {
 }
 
 class RowWidgetState<ROW> extends State<RowWidget<ROW>> {
-  bool _enter = false;
+  bool _hovered = false;
   @override
   Widget build(BuildContext context) {
     EasyTableThemeData theme = EasyTableTheme.of(context);
@@ -67,18 +70,22 @@ class RowWidgetState<ROW> extends State<RowWidget<ROW>> {
           child: layout);
     }
 
-    if (widget.rowCallbacks.hasCallback || theme.row.hoveredColor != null) {
-      Color? color;
-      if (_enter && !widget.scrolling && theme.row.hoveredColor != null) {
-        color = theme.row.hoveredColor!(widget.rowIndex);
+    if (!widget.scrolling) {
+      if (widget.rowCallbacks.hasCallback ||
+          theme.row.hoveredColor != null ||
+          widget.onHover != null) {
+        Color? color;
+        if (_hovered && theme.row.hoveredColor != null) {
+          color = theme.row.hoveredColor!(widget.rowIndex);
+        }
+        layout = MouseRegion(
+            onEnter: _onEnter,
+            cursor: widget.rowCallbacks.hasCallback
+                ? SystemMouseCursors.click
+                : MouseCursor.defer,
+            onExit: _onExit,
+            child: Container(color: color, child: layout));
       }
-      layout = MouseRegion(
-          onEnter: widget.scrolling ? null : _onEnter,
-          cursor: widget.rowCallbacks.hasCallback && !widget.scrolling
-              ? SystemMouseCursors.click
-              : MouseCursor.defer,
-          onExit: widget.scrolling ? null : _onExit,
-          child: Container(color: color, child: layout));
     }
 
     return layout;
@@ -186,10 +193,20 @@ class RowWidgetState<ROW> extends State<RowWidget<ROW>> {
   }
 
   void _onEnter(PointerEnterEvent event) {
-    setState(() => _enter = true);
+    setState(() {
+      _hovered = true;
+      if (widget.onHover != null) {
+        widget.onHover!(widget.rowIndex);
+      }
+    });
   }
 
   void _onExit(PointerExitEvent event) {
-    setState(() => _enter = false);
+    setState(() {
+      _hovered = false;
+      if (widget.onHover != null) {
+        widget.onHover!(null);
+      }
+    });
   }
 }

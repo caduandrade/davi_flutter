@@ -5,6 +5,7 @@ import 'package:easy_table/src/internal/rows_layout.dart';
 import 'package:easy_table/src/internal/rows_painting_settings.dart';
 import 'package:easy_table/src/internal/table_layout_settings.dart';
 import 'package:easy_table/src/model.dart';
+import 'package:easy_table/src/row_hover_listener.dart';
 import 'package:easy_table/src/theme/theme.dart';
 import 'package:easy_table/src/theme/theme_data.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +17,7 @@ class RowsBuilder<ROW> extends StatelessWidget {
       {Key? key,
       required this.layoutSettings,
       required this.model,
+      required this.onHover,
       required this.scrolling,
       required this.rowCallbacks})
       : super(key: key);
@@ -23,6 +25,7 @@ class RowsBuilder<ROW> extends StatelessWidget {
   final EasyTableModel<ROW>? model;
   final TableLayoutSettings<ROW> layoutSettings;
   final bool scrolling;
+  final OnRowHoverListener? onHover;
   final RowCallbacks<ROW> rowCallbacks;
 
   @override
@@ -40,6 +43,7 @@ class RowsBuilder<ROW> extends StatelessWidget {
         RowWidget<ROW> row = RowWidget<ROW>(
             rowIndex: i,
             row: model!.rowAt(i),
+            onHover: onHover,
             layoutSettings: layoutSettings,
             rowCallbacks: rowCallbacks,
             scrolling: scrolling);

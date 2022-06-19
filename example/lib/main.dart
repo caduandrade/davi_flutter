@@ -65,13 +65,14 @@ class _HomePageState extends State<HomePage> {
         EasyTableColumn(
             name: 'Intelligence',
             width: 90,
+            cellStyleBuilder: (r)=>CellStyle(background: Colors.yellow),
             intValue: (row) => row.intelligence),
-        EasyTableColumn(name: 'Life', width: 70, intValue: (row) => row.life),
+        EasyTableColumn(name: 'Life', width: 70, intValue: (row) => row.life,cellBackground: Colors.lightGreen),
         EasyTableColumn(name: 'Mana', width: 70, intValue: (row) => row.mana),
         EasyTableColumn(
             name: 'Gold',
             width: 110,
-            doubleValue: (row) => row.gold,
+            doubleValue: (row) => null,//row.gold,
             fractionDigits: 2)
       ]);
       setState(() {
@@ -92,7 +93,9 @@ class _HomePageState extends State<HomePage> {
       body = EasyTableTheme(
           child: _table(),
           data: EasyTableThemeData(
-              row: RowThemeData(hoveredColor: (index) => Colors.blue[50])));
+            cell: CellThemeData(nullValueColor:(index)=>Colors.grey ),
+              row: RowThemeData(hoveredColor: (index) => Colors.blue[50],
+              )));
     }
 
     return Scaffold(
@@ -107,7 +110,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _table() {
-    return EasyTable<Character>(_model, multiSortEnabled: true);
+    return EasyTable<Character>(_model, multiSortEnabled: true, onHover: _onHover);
   }
 
   Widget _buttons() {
@@ -124,6 +127,10 @@ class _HomePageState extends State<HomePage> {
                   child: const Text('Remove first column'))
             ]),
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 0)));
+  }
+
+  void _onHover(int? rowIndex){
+     print('_onHover: $rowIndex');
   }
 
   void _removeFirstRow() {

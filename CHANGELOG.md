@@ -21,6 +21,7 @@
   * EasyTableColumnSort.cellOverflow added
   * RowThemeData.lastDividerVisible added
   * EasyTableThemeData.fillHeight added
+  * EasyTable.onHoverListener renamed to onHover
   * EasyTableModel
     * rowsLength to originalRowsLength
     * isRowsEmpty to isOriginalRowsEmpty

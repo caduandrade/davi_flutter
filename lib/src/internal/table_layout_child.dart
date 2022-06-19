@@ -8,6 +8,7 @@ import 'package:easy_table/src/internal/table_layout_settings.dart';
 import 'package:easy_table/src/internal/table_corner.dart';
 import 'package:easy_table/src/internal/table_scrollbar.dart';
 import 'package:easy_table/src/model.dart';
+import 'package:easy_table/src/row_hover_listener.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
@@ -34,12 +35,14 @@ class TableLayoutChild<ROW> extends ParentDataWidget<TableLayoutParentData> {
       {required EasyTableModel<ROW>? model,
       required TableLayoutSettings<ROW> layoutSettings,
       required bool scrolling,
+      required OnRowHoverListener? onHover,
       required RowCallbacks<ROW> rowCallbacks}) {
     return TableLayoutChild._(
         id: LayoutChildId.rows,
         child: RowsBuilder<ROW>(
             model: model,
             layoutSettings: layoutSettings,
+            onHover: onHover,
             rowCallbacks: rowCallbacks,
             scrolling: scrolling));
   }
