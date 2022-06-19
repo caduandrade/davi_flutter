@@ -25,6 +25,8 @@
   * EasyTableCellBuilder parameters ROW row, int rowIndex to RowData<ROW> data
   * CellStyleBuilder parameter ROW row to RowData data
   * EasyTableColumn .background changed from Color to CellBackgroundBuilder<ROW>
+  * RowThemeData.hoveredColor renamed to hoverBackground
+  * RowThemeData.hoverForeground added
   * EasyTableModel
     * rowsLength to originalRowsLength
     * isRowsEmpty to isOriginalRowsEmpty

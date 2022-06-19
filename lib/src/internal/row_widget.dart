@@ -73,19 +73,35 @@ class RowWidgetState<ROW> extends State<RowWidget<ROW>> {
 
     if (!widget.scrolling) {
       if (widget.rowCallbacks.hasCallback ||
-          theme.row.hoveredColor != null ||
+          theme.row.hoverBackground != null ||
+          theme.row.hoverForeground != null ||
           widget.onHover != null) {
-        Color? color;
-        if (_hovered && theme.row.hoveredColor != null) {
-          color = theme.row.hoveredColor!(widget.index);
+        _ColorPainter? hoverBackground;
+        if (_hovered && theme.row.hoverBackground != null) {
+          Color? color = theme.row.hoverBackground!(widget.index);
+          if (color != null) {
+            hoverBackground = _ColorPainter(color);
+          }
+          layout = Container(color: color, child: layout);
         }
+        _ColorPainter? hoverForeground;
+        if (_hovered && theme.row.hoverForeground != null) {
+          Color? color = theme.row.hoverForeground!(widget.index);
+          if (color != null) {
+            hoverForeground = _ColorPainter(color);
+          }
+        }
+        layout = CustomPaint(
+            painter: hoverBackground,
+            foregroundPainter: hoverForeground,
+            child: layout);
         layout = MouseRegion(
             onEnter: _onEnter,
             cursor: widget.rowCallbacks.hasCallback
                 ? SystemMouseCursors.click
                 : MouseCursor.defer,
             onExit: _onExit,
-            child: Container(color: color, child: layout));
+            child: layout);
       }
     }
 
@@ -215,4 +231,20 @@ class RowWidgetState<ROW> extends State<RowWidget<ROW>> {
       }
     });
   }
+}
+
+class _ColorPainter extends CustomPainter {
+  _ColorPainter(this.color);
+
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    canvas.drawRect(
+        Rect.fromLTWH(0, 0, size.width, size.height), Paint()..color = color);
+  }
+
+  @override
+  bool shouldRepaint(covariant _ColorPainter oldDelegate) =>
+      color != oldDelegate.color;
 }

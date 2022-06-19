@@ -8,13 +8,15 @@ class RowThemeData {
   const RowThemeData({
     this.color,
     this.lastDividerVisible = RowThemeDataDefaults.lastDividerVisible,
-    this.hoveredColor,
+    this.hoverBackground,
+    this.hoverForeground,
     this.dividerThickness = RowThemeDataDefaults.dividerThickness,
     this.dividerColor = RowThemeDataDefaults.dividerColor,
   });
 
   final EasyTableRowColor? color;
-  final EasyTableRowColor? hoveredColor;
+  final EasyTableRowColor? hoverBackground;
+  final EasyTableRowColor? hoverForeground;
   final double dividerThickness;
   final Color? dividerColor;
   final bool lastDividerVisible;
@@ -25,7 +27,8 @@ class RowThemeData {
       other is RowThemeData &&
           runtimeType == other.runtimeType &&
           color == other.color &&
-          hoveredColor == other.hoveredColor &&
+          hoverBackground == other.hoverBackground &&
+          hoverForeground == other.hoverForeground &&
           dividerThickness == other.dividerThickness &&
           dividerColor == other.dividerColor &&
           lastDividerVisible == other.lastDividerVisible;
@@ -33,7 +36,8 @@ class RowThemeData {
   @override
   int get hashCode =>
       color.hashCode ^
-      hoveredColor.hashCode ^
+      hoverBackground.hashCode ^
+      hoverForeground.hashCode ^
       dividerThickness.hashCode ^
       dividerColor.hashCode ^
       lastDividerVisible.hashCode;

@@ -66,14 +66,13 @@ class _HomePageState extends State<HomePage> {
             name: 'Intelligence',
             width: 90,
             cellStyleBuilder: (data) => CellStyle(
-                background: data.hovered ? Colors.yellow : Colors.yellow[300]),
+                background: Colors.yellow[300]),
             intValue: (row) => row.intelligence),
         EasyTableColumn(
             name: 'Life',
             width: 70,
             intValue: (row) => row.life,
-            cellBackground: (data) =>
-                data.hovered ? Colors.green : Colors.lightGreen),
+            cellBackground: (data) =>Colors.green[300]),
         EasyTableColumn(name: 'Mana', width: 70, intValue: (row) => row.mana),
         EasyTableColumn(
             name: 'Gold',
@@ -99,8 +98,8 @@ class _HomePageState extends State<HomePage> {
       body = EasyTableTheme(
           child: _table(),
           data: EasyTableThemeData(
-              cell: CellThemeData(nullValueColor: (index, hovered) =>hovered?Colors.grey: Colors.grey[200]),
-              row: RowThemeData(hoveredColor: (index) => Colors.blue[50],
+              cell: CellThemeData(nullValueColor: (index, hovered) =>Colors.grey[200]),
+              row: RowThemeData(hoverForeground: (index) => Colors.black.withOpacity(.2),
               )));
     }
 

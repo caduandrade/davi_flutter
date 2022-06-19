@@ -165,7 +165,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
             onDragScroll: _onDragScroll));
 
     if (widget.model != null) {
-      if (theme.row.hoveredColor != null) {
+      if (theme.row.hoverBackground != null) {
         table = MouseRegion(
             onExit: (event) => _setHoveredRowIndex(null), child: table);
       }
