@@ -188,24 +188,28 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
             onExit: (event) => _setHoveredRowIndex(null), child: table);
       }
 
+      table = Listener(
+        child: table,
+        behavior: HitTestBehavior.translucent,
+        onPointerDown: (pointer) {
+          if (widget.focusable) {
+            _focusNode.requestFocus();
+            _focused = true;
+          }
+        },
+        onPointerSignal: (pointerSignal) {
+          if (pointerSignal is PointerScrollEvent) {
+            _onPointerScroll(pointerSignal, themeMetrics.rowHeight);
+          }
+        },
+      );
+
       if (widget.focusable) {
         table = Focus(
             focusNode: _focusNode,
             onKey: (node, event) =>
                 _handleKeyPress(node, event, themeMetrics.rowHeight),
             child: table);
-        table = Listener(
-          child: table,
-          onPointerDown: (pointer) {
-            _focusNode.requestFocus();
-            _focused = true;
-          },
-          onPointerSignal: (pointerSignal) {
-            if (pointerSignal is PointerScrollEvent) {
-              _onPointerScroll(pointerSignal, themeMetrics.rowHeight);
-            }
-          },
-        );
       }
     }
 
