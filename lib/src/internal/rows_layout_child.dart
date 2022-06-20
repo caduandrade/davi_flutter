@@ -5,21 +5,24 @@ import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
 @internal
-class RowsLayoutChild<ROW> extends ParentDataWidget<RowsLayoutParentData> {
+class RowsLayoutChild extends ParentDataWidget<RowsLayoutParentData> {
   RowsLayoutChild({
     required this.index,
+    required this.last,
     required Widget child,
   }) : super(key: ValueKey<int>(index), child: child);
 
   final int index;
+  final bool last;
 
   @override
   void applyParentData(RenderObject renderObject) {
     assert(renderObject.parentData is RowsLayoutParentData);
     final RowsLayoutParentData parentData =
         renderObject.parentData! as RowsLayoutParentData;
-    if (index != parentData.index) {
+    if (index != parentData.index || last != parentData.last) {
       parentData.index = index;
+      parentData.last = last;
       final AbstractNode? targetParent = renderObject.parent;
       if (targetParent is RenderObject) {
         targetParent.markNeedsLayout();

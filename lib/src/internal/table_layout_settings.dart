@@ -21,6 +21,7 @@ class TableLayoutSettings<ROW> {
       required TableThemeMetrics themeMetrics,
       required int? visibleRowsLength,
       required TableScrollOffsets offsets,
+      required bool hasLastRowWidget,
       required EasyTableThemeData theme}) {
     if (!constraints.hasBoundedWidth) {
       throw FlutterError('EasyTable was given unbounded width.');
@@ -36,6 +37,9 @@ class TableLayoutSettings<ROW> {
         ),
       ]);
     }
+
+    final int rowsLength =
+        (model != null ? model.rowsLength : 0) + (hasLastRowWidget ? 1 : 0);
 
     // Let's find out the dynamic values given the constraints!!!
     // I'm so excited!!!
@@ -61,11 +65,13 @@ class TableLayoutSettings<ROW> {
               (themeMetrics.hasHeader ? themeMetrics.headerHeight : 0) -
               (hasHorizontalScrollbar ? themeMetrics.scrollbarHeight : 0));
       needVerticalScrollbar = model != null
-          ? model.rowsLength * themeMetrics.rowHeight > availableRowsHeight
+          ? (rowsLength * themeMetrics.rowHeight) -
+                  themeMetrics.rowDividerThickness >
+              availableRowsHeight
           : false;
     } else {
       needVerticalScrollbar =
-          model != null ? visibleRowsLength! < model.rowsLength : false;
+          model != null ? visibleRowsLength! < rowsLength : false;
     }
     bool hasVerticalScrollbar =
         !theme.scrollbar.verticalOnlyWhenNeeded || needVerticalScrollbar;
@@ -137,8 +143,9 @@ class TableLayoutSettings<ROW> {
                 constraints.maxHeight -
                     (themeMetrics.hasHeader ? themeMetrics.headerHeight : 0) -
                     themeMetrics.scrollbarHeight);
-            needVerticalScrollbar =
-                model.rowsLength * themeMetrics.rowHeight > availableRowsHeight;
+            needVerticalScrollbar = (rowsLength * themeMetrics.rowHeight) -
+                    themeMetrics.rowDividerThickness >
+                availableRowsHeight;
           }
           hasVerticalScrollbar =
               !theme.scrollbar.verticalOnlyWhenNeeded || needVerticalScrollbar;
@@ -154,7 +161,7 @@ class TableLayoutSettings<ROW> {
     final double contentHeight = model != null
         ? math.max(
             0,
-            (model.originalRowsLength * themeMetrics.rowHeight) -
+            (rowsLength * themeMetrics.rowHeight) -
                 themeMetrics.rowDividerThickness)
         : 0;
 
@@ -197,7 +204,7 @@ class TableLayoutSettings<ROW> {
         height: cellsBounds.height,
         rowHeight: themeMetrics.rowHeight);
     final int effectiveVisibleRowsLength =
-        model != null ? math.min(model.rowsLength, maxVisibleRowsLength) : 0;
+        model != null ? math.min(rowsLength, maxVisibleRowsLength) : 0;
 
     if (hasHorizontalScrollbar) {
       final double top = headerBounds.height + cellsBounds.height;
@@ -252,18 +259,20 @@ class TableLayoutSettings<ROW> {
         math.max(0, cellsBounds.width - unpinnedOffset),
         headerBounds.height + cellsBounds.height);
 
-    // Calculating the hashCode in advance. Will save 1 ms while scrolling ;-)
+    // Calculating the hashCode in advance. Will save 1 ms ;-)
 
     IterableEquality iterableEquality = const IterableEquality();
     final int hashCode = iterableEquality.hash(columnsMetrics) ^
         height.hashCode ^
         offsets.hashCode ^
+        rowsLength.hashCode ^
         columnsFit.hashCode ^
         firstRowIndex.hashCode ^
         contentHeight.hashCode ^
         themeMetrics.hashCode ^
         effectiveVisibleRowsLength.hashCode ^
         maxVisibleRowsLength.hashCode ^
+        hasLastRowWidget.hashCode ^
         headerBounds.hashCode ^
         cellsBounds.hashCode ^
         horizontalScrollbarBounds.hashCode ^
@@ -289,6 +298,8 @@ class TableLayoutSettings<ROW> {
         visibleRowsLength: effectiveVisibleRowsLength,
         maxVisibleRowsLength: maxVisibleRowsLength,
         columnsMetrics: columnsMetrics,
+        hasLastRowWidget: hasLastRowWidget,
+        rowsLength: rowsLength,
         headerBounds: headerBounds,
         cellsBounds: cellsBounds,
         horizontalScrollbarsBounds: horizontalScrollbarBounds,
@@ -310,6 +321,8 @@ class TableLayoutSettings<ROW> {
       required this.unpinnedContentWidth,
       required this.height,
       required this.offsets,
+      required this.hasLastRowWidget,
+      required this.rowsLength,
       required this.firstRowIndex,
       required this.contentHeight,
       required this.hasVerticalScrollbar,
@@ -342,6 +355,8 @@ class TableLayoutSettings<ROW> {
   final double leftPinnedContentWidth;
   final bool hasVerticalScrollbar;
   final bool hasHorizontalScrollbar;
+  final bool hasLastRowWidget;
+  final int rowsLength;
 
   /// The number of rows that can be visible at the available height.
   final int maxVisibleRowsLength;

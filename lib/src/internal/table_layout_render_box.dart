@@ -203,6 +203,32 @@ class TableLayoutRenderBox<ROW> extends RenderBox
         (_theme.header.columnDividerColor != null ||
             _theme.columnDividerColor != null ||
             _theme.scrollbar.columnDividerColor != null)) {
+      _LastRowWidgetMetrics? lastRowWidgetMetrics;
+      if (_layoutSettings.hasLastRowWidget) {
+        final int rowIndex = _layoutSettings.rowsLength - 1;
+        if (rowIndex >= _layoutSettings.firstRowIndex &&
+            rowIndex <
+                _layoutSettings.firstRowIndex +
+                    _layoutSettings.visibleRowsLength) {
+          final double top1 =
+              offset.dy + _layoutSettings.themeMetrics.headerHeight;
+          final double lastRowWidgetTop = _layoutSettings.headerBounds.height +
+              (rowIndex * _layoutSettings.themeMetrics.rowHeight) -
+              _layoutSettings.offsets.vertical +
+              offset.dy;
+          final height1 = lastRowWidgetTop - top1;
+          final top2 =
+              lastRowWidgetTop + _layoutSettings.themeMetrics.cellHeight;
+          final height2 = _layoutSettings.cellsBounds.height -
+              lastRowWidgetTop -
+              _layoutSettings.themeMetrics.cellHeight +
+              offset.dy +
+              _layoutSettings.themeMetrics.headerHeight;
+          lastRowWidgetMetrics = _LastRowWidgetMetrics(
+              top1: top1, height1: height1, top2: top2, height2: height2);
+        }
+      }
+
       Paint? headerPaint;
       if (_theme.header.columnDividerColor != null) {
         headerPaint = Paint()..color = _theme.header.columnDividerColor!;
@@ -239,13 +265,30 @@ class TableLayoutRenderBox<ROW> extends RenderBox
               headerPaint);
         }
         if (columnPaint != null) {
-          context.canvas.drawRect(
-              Rect.fromLTWH(
-                  left,
-                  offset.dy + _layoutSettings.themeMetrics.headerHeight,
-                  _layoutSettings.themeMetrics.columnDividerThickness,
-                  _layoutSettings.cellsBounds.height),
-              columnPaint);
+          if (lastRowWidgetMetrics != null) {
+            context.canvas.drawRect(
+                Rect.fromLTWH(
+                    left,
+                    lastRowWidgetMetrics.top1,
+                    _layoutSettings.themeMetrics.columnDividerThickness,
+                    lastRowWidgetMetrics.height1),
+                columnPaint);
+            context.canvas.drawRect(
+                Rect.fromLTWH(
+                    left,
+                    lastRowWidgetMetrics.top2,
+                    _layoutSettings.themeMetrics.columnDividerThickness,
+                    lastRowWidgetMetrics.height2),
+                columnPaint);
+          } else {
+            context.canvas.drawRect(
+                Rect.fromLTWH(
+                    left,
+                    offset.dy + _layoutSettings.themeMetrics.headerHeight,
+                    _layoutSettings.themeMetrics.columnDividerThickness,
+                    _layoutSettings.cellsBounds.height),
+                columnPaint);
+          }
         }
         context.canvas.restore();
         if (pinStatus == PinStatus.left) {
@@ -268,13 +311,30 @@ class TableLayoutRenderBox<ROW> extends RenderBox
                 headerPaint);
           }
           if (columnPaint != null) {
-            context.canvas.drawRect(
-                Rect.fromLTWH(
-                    left,
-                    offset.dy + _layoutSettings.themeMetrics.headerHeight,
-                    _layoutSettings.themeMetrics.columnDividerThickness,
-                    _layoutSettings.cellsBounds.height),
-                columnPaint);
+            if (lastRowWidgetMetrics != null) {
+              context.canvas.drawRect(
+                  Rect.fromLTWH(
+                      left,
+                      lastRowWidgetMetrics.top1,
+                      _layoutSettings.themeMetrics.columnDividerThickness,
+                      lastRowWidgetMetrics.height1),
+                  columnPaint);
+              context.canvas.drawRect(
+                  Rect.fromLTWH(
+                      left,
+                      lastRowWidgetMetrics.top2,
+                      _layoutSettings.themeMetrics.columnDividerThickness,
+                      lastRowWidgetMetrics.height2),
+                  columnPaint);
+            } else {
+              context.canvas.drawRect(
+                  Rect.fromLTWH(
+                      left,
+                      offset.dy + _layoutSettings.themeMetrics.headerHeight,
+                      _layoutSettings.themeMetrics.columnDividerThickness,
+                      _layoutSettings.cellsBounds.height),
+                  columnPaint);
+            }
           }
           if (_layoutSettings.hasHorizontalScrollbar &&
               _theme.scrollbar.columnDividerColor != null) {
@@ -317,6 +377,19 @@ class TableLayoutRenderBox<ROW> extends RenderBox
       }
     }
   }
+}
+
+class _LastRowWidgetMetrics {
+  _LastRowWidgetMetrics(
+      {required this.top1,
+      required this.height1,
+      required this.top2,
+      required this.height2});
+
+  final double top1;
+  final double height1;
+  final double top2;
+  final double height2;
 }
 
 /// Utility extension to facilitate obtaining parent data.

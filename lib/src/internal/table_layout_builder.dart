@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'package:easy_table/src/internal/table_layout_child.dart';
 import 'package:easy_table/src/internal/row_callbacks.dart';
 import 'package:easy_table/src/internal/table_layout.dart';
@@ -6,6 +7,7 @@ import 'package:easy_table/src/internal/table_layout_settings.dart';
 import 'package:easy_table/src/internal/table_scroll_controllers.dart';
 import 'package:easy_table/src/internal/table_scrollbar.dart';
 import 'package:easy_table/src/internal/table_theme_metrics.dart';
+import 'package:easy_table/src/last_row_widget_listener.dart';
 import 'package:easy_table/src/last_visible_row_listener.dart';
 import 'package:easy_table/src/model.dart';
 import 'package:easy_table/src/row_hover_listener.dart';
@@ -21,17 +23,19 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
       required this.onHover,
       required this.scrollControllers,
       required this.multiSortEnabled,
-      required this.onLastVisibleRowListener,
+      required this.onLastVisibleRow,
       required this.model,
       required this.themeMetrics,
       required this.columnsFit,
       required this.visibleRowsLength,
       required this.rowCallbacks,
       required this.onDragScroll,
-      required this.scrolling})
+      required this.scrolling,
+      required this.lastRowWidget,
+      required this.onLastRowWidget})
       : super(key: key);
 
-  final OnLastVisibleRowListener? onLastVisibleRowListener;
+  final OnLastVisibleRowListener? onLastVisibleRow;
   final OnRowHoverListener? onHover;
   final TableScrollControllers scrollControllers;
   final EasyTableModel<ROW>? model;
@@ -42,6 +46,8 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
   final bool scrolling;
   final RowCallbacks<ROW> rowCallbacks;
   final TableThemeMetrics themeMetrics;
+  final Widget? lastRowWidget;
+  final OnLastRowWidgetListener? onLastRowWidget;
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +64,8 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
         columnsFit: columnsFit,
         offsets: scrollControllers.offsets,
         themeMetrics: themeMetrics,
-        visibleRowsLength: visibleRowsLength);
+        visibleRowsLength: visibleRowsLength,
+        hasLastRowWidget: lastRowWidget != null);
 
     final List<TableLayoutChild> children = [];
 
@@ -110,11 +117,15 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
         layoutSettings: layoutSettings,
         scrolling: scrolling,
         onHover: onHover,
-        rowCallbacks: rowCallbacks));
+        rowCallbacks: rowCallbacks,
+        lastRowWidget: lastRowWidget));
 
     Widget layout = TableLayout<ROW>(
         layoutSettings: layoutSettings, theme: theme, children: children);
-    if (onLastVisibleRowListener != null) {
+    final bool hasLastRowListener =
+        onLastRowWidget != null && layoutSettings.hasLastRowWidget;
+    final bool hasListener = hasLastRowListener || onLastVisibleRow != null;
+    if (hasListener && model != null) {
       layout = NotificationListener<ScrollMetricsNotification>(
           child: layout,
           onNotification: (notification) {
@@ -123,7 +134,13 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
                 height: layoutSettings.cellsBounds.height,
                 rowHeight: themeMetrics.rowHeight);
             if (rowRange != null) {
-              onLastVisibleRowListener!(rowRange.lastIndex);
+              if (hasLastRowListener) {
+                onLastRowWidget!(rowRange.lastIndex >= model!.rowsLength);
+              }
+              if (onLastVisibleRow != null && model!.isRowsNotEmpty) {
+                onLastVisibleRow!(
+                    math.min(model!.rowsLength - 1, rowRange.lastIndex));
+              }
             }
             return false;
           });

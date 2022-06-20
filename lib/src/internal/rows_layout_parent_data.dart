@@ -5,4 +5,5 @@ import 'package:meta/meta.dart';
 @internal
 class RowsLayoutParentData extends ContainerBoxParentData<RenderBox> {
   int? index;
+  bool? last;
 }

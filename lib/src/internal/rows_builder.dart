@@ -19,7 +19,8 @@ class RowsBuilder<ROW> extends StatelessWidget {
       required this.model,
       required this.onHover,
       required this.scrolling,
-      required this.rowCallbacks})
+      required this.rowCallbacks,
+      required this.lastRowWidget})
       : super(key: key);
 
   final EasyTableModel<ROW>? model;
@@ -27,32 +28,40 @@ class RowsBuilder<ROW> extends StatelessWidget {
   final bool scrolling;
   final OnRowHoverListener? onHover;
   final RowCallbacks<ROW> rowCallbacks;
+  final Widget? lastRowWidget;
 
   @override
   Widget build(BuildContext context) {
     EasyTableThemeData theme = EasyTableTheme.of(context);
 
-    List<RowsLayoutChild<ROW>> children = [];
+    List<RowsLayoutChild> children = [];
 
     if (model != null) {
       final int last =
           layoutSettings.firstRowIndex + layoutSettings.visibleRowsLength;
-      for (int i = layoutSettings.firstRowIndex;
-          i < last && i < model!.rowsLength;
-          i++) {
+      for (int rowIndex = layoutSettings.firstRowIndex;
+          rowIndex < last && rowIndex < model!.rowsLength;
+          rowIndex++) {
         RowWidget<ROW> row = RowWidget<ROW>(
-            index: i,
-            row: model!.rowAt(i),
+            index: rowIndex,
+            row: model!.rowAt(rowIndex),
             onHover: onHover,
             layoutSettings: layoutSettings,
             rowCallbacks: rowCallbacks,
-            scrolling: scrolling);
-        children.add(RowsLayoutChild<ROW>(index: i, child: row));
+            scrolling: scrolling,
+            columnResizing:
+                model != null ? model!.columnInResizing != null : false);
+        children.add(RowsLayoutChild(index: rowIndex, child: row, last: false));
+      }
+      if (lastRowWidget != null &&
+          children.length < layoutSettings.visibleRowsLength) {
+        children.add(RowsLayoutChild(
+            index: model!.rowsLength, child: lastRowWidget!, last: true));
       }
 
       RowsPaintingSettings paintSettings = RowsPaintingSettings(
           divisorColor: theme.row.dividerColor,
-          fillHeight: theme.fillHeight,
+          fillHeight: theme.row.fillHeight,
           lastRowDividerVisible: theme.row.lastDividerVisible,
           rowColor: theme.row.color);
       return ClipRect(

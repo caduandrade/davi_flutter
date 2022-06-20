@@ -22,12 +22,14 @@ class RowWidget<ROW> extends StatefulWidget {
       required this.onHover,
       required this.layoutSettings,
       required this.scrolling,
+      required this.columnResizing,
       required this.rowCallbacks})
       : super(key: ValueKey<int>(index));
 
   final ROW row;
   final int index;
   final bool scrolling;
+  final bool columnResizing;
   final OnRowHoverListener? onHover;
   final TableLayoutSettings<ROW> layoutSettings;
   final RowCallbacks<ROW> rowCallbacks;
@@ -71,7 +73,7 @@ class RowWidgetState<ROW> extends State<RowWidget<ROW>> {
           child: layout);
     }
 
-    if (!widget.scrolling) {
+    if (!widget.scrolling && !widget.columnResizing) {
       if (widget.rowCallbacks.hasCallback ||
           theme.row.hoverBackground != null ||
           theme.row.hoverForeground != null ||

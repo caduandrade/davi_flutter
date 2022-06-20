@@ -36,7 +36,8 @@ class TableLayoutChild<ROW> extends ParentDataWidget<TableLayoutParentData> {
       required TableLayoutSettings<ROW> layoutSettings,
       required bool scrolling,
       required OnRowHoverListener? onHover,
-      required RowCallbacks<ROW> rowCallbacks}) {
+      required RowCallbacks<ROW> rowCallbacks,
+      required Widget? lastRowWidget}) {
     return TableLayoutChild._(
         id: LayoutChildId.rows,
         child: RowsBuilder<ROW>(
@@ -44,7 +45,8 @@ class TableLayoutChild<ROW> extends ParentDataWidget<TableLayoutParentData> {
             layoutSettings: layoutSettings,
             onHover: onHover,
             rowCallbacks: rowCallbacks,
-            scrolling: scrolling));
+            scrolling: scrolling,
+            lastRowWidget: lastRowWidget));
   }
 
   factory TableLayoutChild.bottomCorner() {

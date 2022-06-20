@@ -5,14 +5,14 @@ import 'package:flutter/material.dart';
 /// Defines the configuration of the overall visual [RowThemeData] for a widget subtree within the app.
 class RowThemeData {
   /// Builds a theme data.
-  const RowThemeData({
-    this.color,
-    this.lastDividerVisible = RowThemeDataDefaults.lastDividerVisible,
-    this.hoverBackground,
-    this.hoverForeground,
-    this.dividerThickness = RowThemeDataDefaults.dividerThickness,
-    this.dividerColor = RowThemeDataDefaults.dividerColor,
-  });
+  const RowThemeData(
+      {this.color,
+      this.lastDividerVisible = RowThemeDataDefaults.lastDividerVisible,
+      this.hoverBackground,
+      this.hoverForeground,
+      this.dividerThickness = RowThemeDataDefaults.dividerThickness,
+      this.dividerColor = RowThemeDataDefaults.dividerColor,
+      this.fillHeight = RowThemeDataDefaults.fillHeight});
 
   final EasyTableRowColor? color;
   final EasyTableRowColor? hoverBackground;
@@ -20,6 +20,7 @@ class RowThemeData {
   final double dividerThickness;
   final Color? dividerColor;
   final bool lastDividerVisible;
+  final bool fillHeight;
 
   @override
   bool operator ==(Object other) =>
@@ -31,7 +32,8 @@ class RowThemeData {
           hoverForeground == other.hoverForeground &&
           dividerThickness == other.dividerThickness &&
           dividerColor == other.dividerColor &&
-          lastDividerVisible == other.lastDividerVisible;
+          lastDividerVisible == other.lastDividerVisible &&
+          fillHeight == other.fillHeight;
 
   @override
   int get hashCode =>
@@ -40,7 +42,8 @@ class RowThemeData {
       hoverForeground.hashCode ^
       dividerThickness.hashCode ^
       dividerColor.hashCode ^
-      lastDividerVisible.hashCode;
+      lastDividerVisible.hashCode ^
+      fillHeight.hashCode;
 
   static EasyTableRowColor zebraColor(
       {Color? evenColor = const Color(0xFFF5F5F5),
@@ -52,7 +55,8 @@ class RowThemeData {
 }
 
 class RowThemeDataDefaults {
-  static const Color dividerColor = Color(0xFFE0E0E0);
-  static const double dividerThickness = 10;
+  static const bool fillHeight = false;
+  static const Color dividerColor = Colors.grey;
+  static const double dividerThickness = 1;
   static const bool lastDividerVisible = true;
 }

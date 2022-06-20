@@ -14,7 +14,7 @@ class RowsLayout<ROW> extends MultiChildRenderObjectWidget {
       {Key? key,
       required this.layoutSettings,
       required this.paintSettings,
-      required List<RowsLayoutChild<ROW>> children})
+      required List<RowsLayoutChild> children})
       : super(key: key, children: children);
 
   final TableLayoutSettings<ROW> layoutSettings;

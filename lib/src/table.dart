@@ -3,6 +3,7 @@ import 'package:easy_table/src/internal/row_callbacks.dart';
 import 'package:easy_table/src/internal/table_layout_builder.dart';
 import 'package:easy_table/src/internal/table_scroll_controllers.dart';
 import 'package:easy_table/src/internal/table_theme_metrics.dart';
+import 'package:easy_table/src/last_row_widget_listener.dart';
 import 'package:easy_table/src/model.dart';
 import 'package:easy_table/src/last_visible_row_listener.dart';
 import 'package:easy_table/src/row_callback_typedefs.dart';
@@ -28,14 +29,16 @@ class EasyTable<ROW> extends StatefulWidget {
       this.unpinnedHorizontalScrollController,
       this.pinnedHorizontalScrollController,
       this.verticalScrollController,
-      this.onLastVisibleRowListener,
+      this.onLastVisibleRow,
       this.onRowTap,
       this.onRowSecondaryTap,
       this.onRowDoubleTap,
       this.columnsFit = false,
       int? visibleRowsCount,
       this.focusable = true,
-      this.multiSortEnabled = false})
+      this.multiSortEnabled = false,
+      this.lastRowWidget,
+      this.onLastRowWidget})
       : _visibleRowsCount = visibleRowsCount == null || visibleRowsCount > 0
             ? visibleRowsCount
             : null,
@@ -51,9 +54,11 @@ class EasyTable<ROW> extends StatefulWidget {
   final RowTapCallback<ROW>? onRowSecondaryTap;
   final bool columnsFit;
   final int? _visibleRowsCount;
-  final OnLastVisibleRowListener? onLastVisibleRowListener;
+  final OnLastVisibleRowListener? onLastVisibleRow;
   final bool focusable;
   final bool multiSortEnabled;
+  final Widget? lastRowWidget;
+  final OnLastRowWidgetListener? onLastRowWidget;
 
   int? get visibleRowsCount => _visibleRowsCount;
 
@@ -69,6 +74,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
 
   int? _hoveredRowIndex;
 
+  bool _lastRowWidgetVisible = false;
   int _lastVisibleRow = -1;
   final FocusNode _focusNode = FocusNode();
   bool _focused = false;
@@ -125,12 +131,20 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
     }
   }
 
+  void _onLastRowWidget(bool visible) {
+    if (widget.onLastRowWidget != null) {
+      if (_lastRowWidgetVisible != visible) {
+        _lastRowWidgetVisible = visible;
+        Future.microtask(() => widget.onLastRowWidget!(_lastRowWidgetVisible));
+      }
+    }
+  }
+
   void _onLastVisibleRowListener(int lastVisibleRowIndex) {
-    if (widget.onLastVisibleRowListener != null) {
+    if (widget.onLastVisibleRow != null) {
       if (_lastVisibleRow != lastVisibleRowIndex) {
         _lastVisibleRow = lastVisibleRowIndex;
-        Future.microtask(
-            () => widget.onLastVisibleRowListener!(lastVisibleRowIndex));
+        Future.microtask(() => widget.onLastVisibleRow!(lastVisibleRowIndex));
       }
     }
   }
@@ -153,11 +167,14 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
             columnsFit: widget.columnsFit,
             themeMetrics: themeMetrics,
             visibleRowsLength: widget.visibleRowsCount,
-            onLastVisibleRowListener: widget.onLastVisibleRowListener != null
+            onLastRowWidget:
+                widget.onLastRowWidget != null ? _onLastRowWidget : null,
+            onLastVisibleRow: widget.onLastVisibleRow != null
                 ? _onLastVisibleRowListener
                 : null,
             model: widget.model,
             scrolling: _scrolling,
+            lastRowWidget: widget.lastRowWidget,
             rowCallbacks: RowCallbacks(
                 onRowTap: widget.onRowTap,
                 onRowSecondaryTap: widget.onRowSecondaryTap,
@@ -165,7 +182,8 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
             onDragScroll: _onDragScroll));
 
     if (widget.model != null) {
-      if (theme.row.hoverBackground != null) {
+      if (theme.row.hoverBackground != null ||
+          theme.row.hoverForeground != null) {
         table = MouseRegion(
             onExit: (event) => _setHoveredRowIndex(null), child: table);
       }

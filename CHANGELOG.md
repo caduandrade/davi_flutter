@@ -20,13 +20,15 @@
   * EasyTableColumnSort.cellBackground added
   * EasyTableColumnSort.cellOverflow added
   * RowThemeData.lastDividerVisible added
-  * EasyTableThemeData.fillHeight added
+  * RowThemeData.fillHeight added
   * EasyTable.onHoverListener renamed to onHover
   * EasyTableCellBuilder parameters ROW row, int rowIndex to RowData<ROW> data
   * CellStyleBuilder parameter ROW row to RowData data
   * EasyTableColumn .background changed from Color to CellBackgroundBuilder<ROW>
   * RowThemeData.hoveredColor renamed to hoverBackground
   * RowThemeData.hoverForeground added
+  * EasyTable.onLastVisibleRowListener renamed to onLastVisibleRow
+  * EasyTable.onLastRowWidget and EasyTable.lastRowWidget add 
   * EasyTableModel
     * rowsLength to originalRowsLength
     * isRowsEmpty to isOriginalRowsEmpty

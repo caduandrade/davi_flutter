@@ -13,7 +13,6 @@ class EasyTableThemeData {
   const EasyTableThemeData(
       {this.columnDividerThickness =
           EasyTableThemeDataDefaults.columnDividerThickness,
-      this.fillHeight = EasyTableThemeDataDefaults.fillHeight,
       this.columnDividerColor = EasyTableThemeDataDefaults.columnDividerColor,
       this.decoration = EasyTableThemeDataDefaults.tableDecoration,
       this.topCornerBorderColor =
@@ -40,7 +39,6 @@ class EasyTableThemeData {
   final Color topCornerColor;
   final Color bottomCornerBorderColor;
   final Color bottomCornerColor;
-  final bool fillHeight;
 
   @override
   bool operator ==(Object other) =>
@@ -77,7 +75,6 @@ class EasyTableThemeData {
 }
 
 class EasyTableThemeDataDefaults {
-  static const bool fillHeight = false;
   static const double columnDividerThickness = 1;
   static const BoxDecoration tableDecoration = BoxDecoration(
       border: Border(
