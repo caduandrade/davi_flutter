@@ -48,12 +48,12 @@ class _EasyTableHeaderCellState extends State<EasyTableHeaderCell> {
         shrink: theme.expandableName ? 0 : 1,
         expand: theme.expandableName ? 1 : 0));
 
-    final TableSortOrder? sortType = widget.column.order;
-    if (sortType != null) {
+    final TableSortOrder? order = widget.column.order;
+    if (order != null) {
       IconData? icon;
-      if (sortType == TableSortOrder.ascending) {
+      if (order == TableSortOrder.ascending) {
         icon = theme.ascendingIcon;
-      } else if (sortType == TableSortOrder.descending) {
+      } else if (order == TableSortOrder.descending) {
         icon = theme.descendingIcon;
       }
       children.add(
@@ -163,15 +163,16 @@ class _EasyTableHeaderCellState extends State<EasyTableHeaderCell> {
   void _onHeaderPressed(
       {required EasyTableModel model, required EasyTableColumn column}) {
     if (model.isSorted == false) {
-      model.sortByColumn(column: column, sortType: TableSortOrder.ascending);
+      model.sortByColumn(column: column, sortOrder: TableSortOrder.ascending);
     } else if (widget.multiSortEnabled) {
       widget.model.multiSortByColumn(widget.column);
     } else {
-      final TableSortOrder? sortType = widget.column.order;
-      if (sortType == null) {
-        model.sortByColumn(column: column, sortType: TableSortOrder.ascending);
-      } else if (sortType == TableSortOrder.ascending) {
-        model.sortByColumn(column: column, sortType: TableSortOrder.descending);
+      final TableSortOrder? order = widget.column.order;
+      if (order == null) {
+        model.sortByColumn(column: column, sortOrder: TableSortOrder.ascending);
+      } else if (order == TableSortOrder.ascending) {
+        model.sortByColumn(
+            column: column, sortOrder: TableSortOrder.descending);
       } else {
         model.clearSort();
       }

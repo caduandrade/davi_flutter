@@ -223,19 +223,19 @@ class EasyTableModel<ROW> extends ChangeNotifier {
 
   /// Sort given a column index.
   void sortByColumnIndex(
-      {required int columnIndex, required TableSortOrder sortType}) {
-    sortByColumn(column: _columns[columnIndex], sortType: sortType);
+      {required int columnIndex, required TableSortOrder sortOrder}) {
+    sortByColumn(column: _columns[columnIndex], sortOrder: sortOrder);
   }
 
   /// Sort given a column.
   void sortByColumn(
       {required EasyTableColumn<ROW> column,
-      required TableSortOrder sortType}) {
+      required TableSortOrder sortOrder}) {
     if (column.sort != null && _columns.contains(column)) {
       _sortedColumns.clear();
       _clearColumnsSortData();
       column._priority = 1;
-      column._order = sortType;
+      column._order = sortOrder;
       _sortedColumns.add(column);
       _updateRows(notify: true);
     }
