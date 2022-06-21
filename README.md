@@ -16,8 +16,9 @@
 
 * [Get started](#get-started)
 * [Columns fit](#columns-fit)
-* [Multi sort](#multi-sort)
+* [Multiple sort](#multiple-sort)
 * [Column style](#column-style)
+* [Cell style](#cell-style)
 * [Custom cell widget](#custom-cell-widget)
 * [Row callbacks](#row-callbacks)
 * [Pinned column](#pinned-column)
@@ -76,7 +77,7 @@ Widget build(BuildContext context) {
 
 ![](https://caduandrade.github.io/easy_table_flutter/columns_fit_v3.png)
 
-## Multi sort
+## Multiple sort
 
 ```dart
   EasyTable(_model, multiSortEnabled: true);
@@ -86,19 +87,36 @@ Widget build(BuildContext context) {
 
 ```dart
     _model = EasyTableModel<Person>(rows: rows, columns: [
-      EasyTableColumn(name: 'Name', width: 120, stringValue: (row) => row.name),
+      EasyTableColumn(name: 'Name', stringValue: (row) => row.name),
       EasyTableColumn(
           name: 'Age',
-          width: 120,
           intValue: (row) => row.age,
           headerTextStyle: TextStyle(color: Colors.blue[900]!),
           headerAlignment: Alignment.center,
           cellAlignment: Alignment.center,
-          cellTextStyle: TextStyle(color: Colors.blue[700]!))
+          cellTextStyle: TextStyle(color: Colors.blue[700]!),
+          cellBackground: (data) => Colors.blue[50])
     ]);
 ```
 
 ![](https://caduandrade.github.io/easy_table_flutter/column_style_v1.png)
+
+## Cell style
+
+```dart
+    _model = EasyTableModel<Person>(rows: rows, columns: [
+      EasyTableColumn(name: 'Name', stringValue: (row) => row.name),
+      EasyTableColumn(
+          name: 'Age',
+          intValue: (row) => row.age,
+          cellStyleBuilder: (data) => data.row.age >= 30 && data.row.age < 40
+              ? CellStyle(
+                  background: Colors.blue[800],
+                  alignment: Alignment.center,
+                  textStyle: const TextStyle(color: Colors.white))
+              : null)
+    ]);
+```
 
 ## Custom cell widget
 
@@ -108,8 +126,7 @@ Widget build(BuildContext context) {
       EasyTableColumn(
           name: 'Rate',
           width: 150,
-          cellBuilder: (context, row, visibleRowIndex) =>
-              StarsWidget(stars: row.stars))
+          cellBuilder: (context, data) => StarsWidget(stars: data.row.stars))
     ]);
 ```
 
@@ -146,13 +163,13 @@ void _onRowDoubleTap(BuildContext context, Person person) {
       EasyTableColumn(
           pinStatus: PinStatus.left,
           width: 30,
-          cellBuilder: (BuildContext context, Person row, int visibleRowIndex) {
+          cellBuilder: (BuildContext context, RowData<Person> data) {
             return InkWell(
                 child: const Icon(Icons.edit, size: 16),
-                onTap: () => _onEdit(row));
+                onTap: () => _onEdit(data.row));
           }),
-      EasyTableColumn(name: 'Name', width: 120, stringValue: (row) => row.name),
-      EasyTableColumn(name: 'Age', width: 120, intValue: (row) => row.age)
+      EasyTableColumn(name: 'Name', stringValue: (row) => row.name),
+      EasyTableColumn(name: 'Age', intValue: (row) => row.age)
     ]);
 ```
 
@@ -161,43 +178,37 @@ void _onRowDoubleTap(BuildContext context, Person person) {
 ## Infinite scroll
 
 ```dart
-  final UniqueKey _tableKey = UniqueKey();
-  EasyTableModel<String>? _model;
+  EasyTableModel<Value>? _model;
   bool _loading = false;
 
   @override
   void initState() {
     super.initState();
-    List<String> rows = List.generate(30, (index) => 'value $index');
-    _model = EasyTableModel<String>(
-        rows: rows,
-        columns: [EasyTableColumn(name: 'Value', stringValue: (row) => row)]);
+    List<Value> rows = List.generate(30, (index) => Value(index));
+    _model = EasyTableModel<Value>(rows: rows, columns: [
+      EasyTableColumn(name: 'Index', intValue: (row) => row.index),
+      EasyTableColumn(name: 'Random 1', stringValue: (row) => row.random1),
+      EasyTableColumn(name: 'Random 2', stringValue: (row) => row.random2)
+    ]);
   }
 
   @override
   Widget build(BuildContext context) {
-    EasyTable table = EasyTable<String>(_model,
-        key: _tableKey, onLastVisibleRowListener: _onLastVisibleRowListener);
-
-    List<Widget> children = [Positioned.fill(key: _tableKey, child: table)];
-
-    if (_loading) {
-      children.add(const Positioned(
-          child: LoadingWidget(), left: 0, right: 0, bottom: 0));
-    }
-    return Stack(children: children);
+    return EasyTable<Value>(_model,
+        lastRowWidget: const LoadingWidget(),
+        onLastRowWidget: _onLastRowWidget);
   }
 
-  void _onLastVisibleRowListener(int lastVisibleRowIndex) {
-    if (!_loading && lastVisibleRowIndex == _model!.rowsLength - 1) {
+  void _onLastRowWidget(bool visible) {
+    if (visible && !_loading) {
       setState(() {
         _loading = true;
       });
       Future.delayed(const Duration(seconds: 2), () {
         setState(() {
           _loading = false;
-          List<String> newValues = List.generate(
-              30, (index) => 'value ${_model!.rowsLength + index}');
+          List<Value> newValues =
+              List.generate(30, (index) => Value(_model!.rowsLength + index));
           _model!.addRows(newValues);
         });
       });
@@ -240,7 +251,7 @@ EasyTableTheme(
     Person('Cadu', null),
     Person('Delmar', '+22 222-222-222')
   ], columns: [
-    EasyTableColumn(name: 'Name', width: 120, stringValue: (row) => row.name),
+    EasyTableColumn(name: 'Name', stringValue: (row) => row.name),
     EasyTableColumn(
         name: 'Mobile', width: 150, stringValue: (row) => row.mobile)
   ]);
@@ -248,10 +259,10 @@ EasyTableTheme(
 
 ```dart
   EasyTableTheme(
-      child: EasyTable<Person>(_model),
-      data: EasyTableThemeData(
-          cell:
-              CellThemeData(nullValueColor: ((rowIndex) => Colors.grey[300]))));
+        child: EasyTable<Person>(_model),
+        data: EasyTableThemeData(
+            cell: CellThemeData(
+                nullValueColor: ((rowIndex, hovered) => Colors.grey[300]))));
 ```
 
 ![](https://caduandrade.github.io/easy_table_flutter/null_cell_color_v2.png)
