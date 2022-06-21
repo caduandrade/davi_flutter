@@ -20,16 +20,24 @@
 * [Column style](#column-style)
 * [Cell style](#cell-style)
 * [Custom cell widget](#custom-cell-widget)
-* [Row callbacks](#row-callbacks)
 * [Pinned column](#pinned-column)
-* [Infinite scroll](#infinite-scroll)
+* Row
+  * [Row callbacks](#row-callbacks)
+  * [Row hover listener](#row-hover-listener)
+  * [Infinite scroll](#infinite-scroll)
 * Theme
-  * Scrollbar
+  * [Dividers thickness and color](#dividers-thickness-and-color) 
+  * [Header](#header)
+  * Row
+    * [Row color](#row-color) 
+    * [Row zebra color](#row-zebra-color)
+    * [Row hover background](#row-hover-background)
+    * [Row hover foreground](#row-hover-foreground)
+    * [Row fill height](#row-fill-height)
+  * [Scrollbar](#scrollbar)
     * [Horizontal scrollbar only when needed](#horizontal-scrollbar-only-when-needed) 
   * Cell
     * [Null value color](#null-value-color)
-  * Divider
-    * [Divider color and thickness](#divider-color-and-thickness)
 * [Support this project](#support-this-project)
 
 ## Get started
@@ -132,7 +140,28 @@ Widget build(BuildContext context) {
 
 ![](https://caduandrade.github.io/easy_table_flutter/custom_cell_widget_v1.png)
 
-## Row callbacks
+## Pinned column
+
+```dart
+    _model = EasyTableModel(rows: persons, columns: [
+      EasyTableColumn(
+          pinStatus: PinStatus.left,
+          width: 30,
+          cellBuilder: (BuildContext context, RowData<Person> data) {
+            return InkWell(
+                child: const Icon(Icons.edit, size: 16),
+                onTap: () => _onEdit(data.row));
+          }),
+      EasyTableColumn(name: 'Name', stringValue: (row) => row.name),
+      EasyTableColumn(name: 'Age', intValue: (row) => row.age)
+    ]);
+```
+
+![](https://caduandrade.github.io/easy_table_flutter/pinned_column_v3.png)
+
+## Row
+
+### Row callbacks
 
 ```dart
 @override
@@ -156,26 +185,17 @@ void _onRowDoubleTap(BuildContext context, Person person) {
 }
 ```
 
-## Pinned column
+### Row hover listener
 
 ```dart
-    _model = EasyTableModel(rows: persons, columns: [
-      EasyTableColumn(
-          pinStatus: PinStatus.left,
-          width: 30,
-          cellBuilder: (BuildContext context, RowData<Person> data) {
-            return InkWell(
-                child: const Icon(Icons.edit, size: 16),
-                onTap: () => _onEdit(data.row));
-          }),
-      EasyTableColumn(name: 'Name', stringValue: (row) => row.name),
-      EasyTableColumn(name: 'Age', intValue: (row) => row.age)
-    ]);
+  EasyTable<Person>(_model, onHover: _onHover);
+
+  void _onHover(int? rowIndex) {
+    ...
+  }
 ```
 
-![](https://caduandrade.github.io/easy_table_flutter/pinned_column_v3.png)
-
-## Infinite scroll
+### Infinite scroll
 
 ```dart
   EasyTableModel<Value>? _model;
@@ -220,7 +240,115 @@ void _onRowDoubleTap(BuildContext context, Person person) {
 
 ## Theme
 
+### Dividers thickness and color
+
+```dart
+EasyTableTheme(
+        child: EasyTable<Person>(_model),
+        data: const EasyTableThemeData(
+            columnDividerThickness: 4,
+            columnDividerColor: Colors.blue,
+            header: HeaderThemeData(columnDividerColor: Colors.purple),
+            row: RowThemeData(dividerThickness: 4, dividerColor: Colors.green),
+            scrollbar:
+                TableScrollbarThemeData(columnDividerColor: Colors.orange)));
+```
+
+![](https://caduandrade.github.io/easy_table_flutter/theme_divider_v2.png)
+
+### Header
+
+```dart
+EasyTableTheme(
+        child: EasyTable<Person>(_model),
+        data: EasyTableThemeData(
+            header: const HeaderThemeData(
+                bottomBorderHeight: 4, bottomBorderColor: Colors.blue),
+            headerCell: HeaderCellThemeData(
+                height: 40,
+                alignment: Alignment.center,
+                textStyle: const TextStyle(fontStyle: FontStyle.italic),
+                resizeAreaWidth: 10,
+                resizeAreaHoverColor: Colors.blue.withOpacity(.5),
+                sortIconColor: Colors.green,
+                expandableName: false)));
+```
+
+#### Hidden header
+
+```dart
+EasyTableTheme(
+        child: EasyTable<Person>(_model),
+        data:
+            const EasyTableThemeData(header: HeaderThemeData(visible: false)));
+```
+
+### Row
+
+#### Row color
+
+```dart
+EasyTableTheme(
+        data: EasyTableThemeData(
+            row: RowThemeData(color: (rowIndex) => Colors.green[50])),
+        child: EasyTable<Person>(_model));
+```
+
+#### Row zebra color
+
+```dart
+EasyTableTheme(
+        data: EasyTableThemeData(
+            row: RowThemeData(color: RowThemeData.zebraColor())),
+        child: EasyTable<Person>(_model));
+```
+
+#### Row hover background
+
+```dart
+EasyTableTheme(
+        data: EasyTableThemeData(
+            row: RowThemeData(hoverBackground: (rowIndex) => Colors.blue[50])),
+        child: EasyTable<Person>(_model));
+```
+
+#### Row hover foreground
+
+```dart
+EasyTableTheme(
+        data: EasyTableThemeData(
+            row: RowThemeData(
+                hoverForeground: (rowIndex) => Colors.blue.withOpacity(.2))),
+        child: EasyTable<Person>(_model));
+```
+
+#### Row fill height
+
+```dart
+EasyTableTheme(
+        data: EasyTableThemeData(
+            row: RowThemeData(
+                fillHeight: true, color: RowThemeData.zebraColor())),
+        child: EasyTable<Person>(_model));
+```
+
 ### Scrollbar
+
+```dart
+EasyTableTheme(
+        child: EasyTable<Person>(_model),
+        data:  const EasyTableThemeData(
+            scrollbar: TableScrollbarThemeData(
+              thickness: 16,
+              thumbColor: Colors.black,
+                pinnedHorizontalColor: Colors.yellow,
+                unpinnedHorizontalColor: Colors.green,
+                verticalColor: Colors.blue,
+                borderThickness: 8,
+                pinnedHorizontalBorderColor: Colors.orange,
+                unpinnedHorizontalBorderColor: Colors.purple,
+                verticalBorderColor: Colors.pink)));
+```
 
 #### Horizontal scrollbar only when needed
 
@@ -266,22 +394,6 @@ EasyTableTheme(
 ```
 
 ![](https://caduandrade.github.io/easy_table_flutter/null_cell_color_v2.png)
-
-### Divider
-
-#### Divider color and thickness
-
-```dart
-EasyTableTheme(
-        child: EasyTable<Person>(_model),
-        data: const EasyTableThemeData(
-            columnDividerThickness: 2,
-            columnDividerColor: Colors.blue,
-            row:
-                RowThemeData(dividerThickness: 2, dividerColor: Colors.green)));
-```
-
-![](https://caduandrade.github.io/easy_table_flutter/theme_divider_v2.png)
 
 ## TODO
 
