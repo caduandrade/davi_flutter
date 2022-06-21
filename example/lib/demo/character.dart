@@ -44,7 +44,7 @@ class Character {
   final int age;
   final String race;
   final String cls;
-  final double gold;
+  final double? gold;
   final int level;
   final int strength;
   final int intelligence;
@@ -94,7 +94,7 @@ class Character {
       list.add(_character(name: name, male: true, random: random));
     }
     list.shuffle();
-    return list.sublist(0, 3);
+    return list.sublist(0, 53);
   }
 
   static Future<List<String>> _readNames(String filePath) async {
@@ -108,7 +108,6 @@ class Character {
     String race = _races[random.nextInt(_races.length)];
     int age = 20 + random.nextInt(80);
     String cls = _classes[random.nextInt(_classes.length)];
-    double gold = random.nextInt(500000) * random.nextDouble();
     int level = 1 + (random.nextInt(100) * random.nextDouble()).round();
     int strength =
         math.max(level + random.nextInt(100) - random.nextInt(20), 10);
@@ -118,6 +117,8 @@ class Character {
         math.max(level + random.nextInt(100) - random.nextInt(20), 10);
     int mana = level + random.nextInt(500);
     int life = level + random.nextInt(5000);
+    double? gold =
+        life % 3 == 0 ? null : random.nextInt(500000) * random.nextDouble();
 
     Set<Skill> uniqueSkills = {};
     int skillsCount = random.nextInt(4);

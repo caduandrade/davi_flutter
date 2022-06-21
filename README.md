@@ -364,7 +364,7 @@ EasyTableTheme(
 
 > A warning is being displayed in the console due to a bug in Flutter: https://github.com/flutter/flutter/issues/103939.
 > The error happens when the horizontal scrollbar is hidden after being visible.
-> The following MR should fix the issue: https://github.com/flutter/flutter/pull/103948
+> The PR (https://github.com/flutter/flutter/pull/103948) fix it. 
 
 ### Cell
 
@@ -397,13 +397,11 @@ EasyTableTheme(
 
 ## TODO
 
-* Easiest way to create loading indicator for infinite scroll
 * Collapsed rows
 * Header grouping
 * Row selection
-* Cell edition?
 * Column reorder
-* Pinned column on right?
+* Pinned column on right
 * Filter
 * And everything else, the sky is the limit
 
