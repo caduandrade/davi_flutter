@@ -29,6 +29,8 @@
   * RowThemeData.hoverForeground added
   * EasyTable.onLastVisibleRowListener renamed to onLastVisibleRow
   * EasyTable.onLastRowWidget and EasyTable.lastRowWidget add 
+  * EasyTableSortType renamed to TableSortOrder
+  * ColumnSort.sortType renamed to ColumnSort.order
   * EasyTableModel
     * rowsLength to originalRowsLength
     * isRowsEmpty to isOriginalRowsEmpty

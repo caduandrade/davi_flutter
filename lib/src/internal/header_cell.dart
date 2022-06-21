@@ -48,12 +48,12 @@ class _EasyTableHeaderCellState extends State<EasyTableHeaderCell> {
         shrink: theme.expandableName ? 0 : 1,
         expand: theme.expandableName ? 1 : 0));
 
-    final EasyTableSortType? sortType = widget.column.sortType;
+    final TableSortOrder? sortType = widget.column.order;
     if (sortType != null) {
       IconData? icon;
-      if (sortType == EasyTableSortType.ascending) {
+      if (sortType == TableSortOrder.ascending) {
         icon = theme.ascendingIcon;
-      } else if (sortType == EasyTableSortType.descending) {
+      } else if (sortType == TableSortOrder.descending) {
         icon = theme.descendingIcon;
       }
       children.add(
@@ -61,7 +61,7 @@ class _EasyTableHeaderCellState extends State<EasyTableHeaderCell> {
       if (widget.model.isMultiSorted) {
         children.add(Align(
             alignment: Alignment.center,
-            child: Text(widget.column.sortOrder.toString(),
+            child: Text(widget.column.priority.toString(),
                 style: TextStyle(
                     color: theme.sortIconColor,
                     fontSize: theme.sortOrderSize))));
@@ -163,17 +163,15 @@ class _EasyTableHeaderCellState extends State<EasyTableHeaderCell> {
   void _onHeaderPressed(
       {required EasyTableModel model, required EasyTableColumn column}) {
     if (model.isSorted == false) {
-      model.sortByColumn(column: column, sortType: EasyTableSortType.ascending);
+      model.sortByColumn(column: column, sortType: TableSortOrder.ascending);
     } else if (widget.multiSortEnabled) {
       widget.model.multiSortByColumn(widget.column);
     } else {
-      final EasyTableSortType? sortType = widget.column.sortType;
+      final TableSortOrder? sortType = widget.column.order;
       if (sortType == null) {
-        model.sortByColumn(
-            column: column, sortType: EasyTableSortType.ascending);
-      } else if (sortType == EasyTableSortType.ascending) {
-        model.sortByColumn(
-            column: column, sortType: EasyTableSortType.descending);
+        model.sortByColumn(column: column, sortType: TableSortOrder.ascending);
+      } else if (sortType == TableSortOrder.ascending) {
+        model.sortByColumn(column: column, sortType: TableSortOrder.descending);
       } else {
         model.clearSort();
       }

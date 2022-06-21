@@ -2,7 +2,7 @@ import 'dart:collection';
 
 import 'package:easy_table/src/column.dart';
 import 'package:easy_table/src/column_sort.dart';
-import 'package:easy_table/src/sort_type.dart';
+import 'package:easy_table/src/sort_order.dart';
 import 'package:flutter/widgets.dart';
 
 /// The [EasyTable] model.
@@ -135,10 +135,10 @@ class EasyTableModel<ROW> extends ChangeNotifier {
     _updateRows(notify: true);
   }
 
-  void _updateSortOrders() {
-    int order = 1;
+  void _updateSortPriorities() {
+    int priority = 1;
     for (EasyTableColumn<ROW> column in _sortedColumns) {
-      column._sortOrder = order++;
+      column._priority = priority++;
     }
   }
 
@@ -155,7 +155,7 @@ class EasyTableModel<ROW> extends ChangeNotifier {
       }
       if (_sortedColumns.remove(column)) {
         column._clearSortData();
-        _updateSortOrders();
+        _updateSortPriorities();
         _updateRows(notify: false);
       }
       notifyListeners();
@@ -190,11 +190,11 @@ class EasyTableModel<ROW> extends ChangeNotifier {
     for (ColumnSort columnSort in columnSorts) {
       EasyTableColumn<ROW> column = _columns[columnSort.columnIndex];
       if (column.sort != null) {
-        column._sortType = columnSort.sortType;
+        column._order = columnSort.order;
         _sortedColumns.add(column);
       }
     }
-    _updateSortOrders();
+    _updateSortPriorities();
     _updateRows(notify: true);
   }
 
@@ -205,37 +205,37 @@ class EasyTableModel<ROW> extends ChangeNotifier {
     }
     int columnSortIndex = _sortedColumns.indexOf(column);
     if (columnSortIndex == -1) {
-      column._sortType = EasyTableSortType.ascending;
+      column._order = TableSortOrder.ascending;
       _sortedColumns.add(column);
     } else if (columnSortIndex == _sortedColumns.length - 1) {
       // last
-      if (_sortedColumns.last.sortType == EasyTableSortType.ascending) {
-        _sortedColumns.last._sortType = EasyTableSortType.descending;
+      if (_sortedColumns.last.order == TableSortOrder.ascending) {
+        _sortedColumns.last._order = TableSortOrder.descending;
       } else {
         _sortedColumns.removeAt(columnSortIndex)._clearSortData();
       }
     } else {
       _sortedColumns.removeAt(columnSortIndex)._clearSortData();
     }
-    _updateSortOrders();
+    _updateSortPriorities();
     _updateRows(notify: true);
   }
 
   /// Sort given a column index.
   void sortByColumnIndex(
-      {required int columnIndex, required EasyTableSortType sortType}) {
+      {required int columnIndex, required TableSortOrder sortType}) {
     sortByColumn(column: _columns[columnIndex], sortType: sortType);
   }
 
   /// Sort given a column.
   void sortByColumn(
       {required EasyTableColumn<ROW> column,
-      required EasyTableSortType sortType}) {
+      required TableSortOrder sortType}) {
     if (column.sort != null && _columns.contains(column)) {
       _sortedColumns.clear();
       _clearColumnsSortData();
-      column._sortOrder = 1;
-      column._sortType = sortType;
+      column._priority = 1;
+      column._order = sortType;
       _sortedColumns.add(column);
       _updateRows(notify: true);
     }
@@ -265,9 +265,9 @@ class EasyTableModel<ROW> extends ChangeNotifier {
     int r = 0;
     for (int i = 0; i < _sortedColumns.length; i++) {
       final EasyTableColumnSort<ROW> sort = _sortedColumns[i].sort!;
-      final EasyTableSortType sortType = _sortedColumns[i].sortType!;
+      final TableSortOrder order = _sortedColumns[i].order!;
 
-      if (sortType == EasyTableSortType.descending) {
+      if (order == TableSortOrder.descending) {
         r = sort(b, a);
       } else {
         r = sort(a, b);
@@ -281,14 +281,14 @@ class EasyTableModel<ROW> extends ChangeNotifier {
 }
 
 mixin ColumnSortMixin {
-  int? _sortOrder;
-  int? get sortOrder => _sortOrder;
-  EasyTableSortType? _sortType;
-  EasyTableSortType? get sortType => _sortType;
+  int? _priority;
+  int? get priority => _priority;
+  TableSortOrder? _order;
+  TableSortOrder? get order => _order;
   void _clearSortData() {
-    _sortOrder = null;
-    _sortType = null;
+    _priority = null;
+    _order = null;
   }
 
-  bool get isSorted => _sortType != null;
+  bool get isSorted => _order != null;
 }

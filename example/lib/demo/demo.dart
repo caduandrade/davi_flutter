@@ -99,7 +99,7 @@ class _HomePageState extends State<HomePage> {
     }
 
     Widget table = EasyTableTheme(
-        child: EasyTable<Character>(_model, multiSortEnabled: true),
+        child: EasyTable<Character>(_model),
         data: EasyTableThemeData(
             cell: CellThemeData(
                 nullValueColor: _nullValueColor
