@@ -11,7 +11,9 @@ import 'package:flutter/material.dart';
 class EasyTableThemeData {
   /// Builds a theme data.
   const EasyTableThemeData(
-      {this.columnDividerThickness =
+      {this.columnDividerFillHeight =
+          EasyTableThemeDataDefaults.columnDividerFillHeight,
+      this.columnDividerThickness =
           EasyTableThemeDataDefaults.columnDividerThickness,
       this.columnDividerColor = EasyTableThemeDataDefaults.columnDividerColor,
       this.decoration = EasyTableThemeDataDefaults.tableDecoration,
@@ -27,6 +29,7 @@ class EasyTableThemeData {
       this.headerCell = const HeaderCellThemeData(),
       this.scrollbar = const TableScrollbarThemeData()});
 
+  final bool columnDividerFillHeight;
   final double columnDividerThickness;
   final Color? columnDividerColor;
   final BoxDecoration? decoration;
@@ -45,6 +48,7 @@ class EasyTableThemeData {
       identical(this, other) ||
       other is EasyTableThemeData &&
           runtimeType == other.runtimeType &&
+          columnDividerFillHeight == other.columnDividerFillHeight &&
           columnDividerThickness == other.columnDividerThickness &&
           columnDividerColor == other.columnDividerColor &&
           decoration == other.decoration &&
@@ -61,6 +65,7 @@ class EasyTableThemeData {
   @override
   int get hashCode =>
       columnDividerThickness.hashCode ^
+      columnDividerFillHeight.hashCode ^
       columnDividerColor.hashCode ^
       decoration.hashCode ^
       cell.hashCode ^
@@ -75,6 +80,7 @@ class EasyTableThemeData {
 }
 
 class EasyTableThemeDataDefaults {
+  static const bool columnDividerFillHeight = false;
   static const double columnDividerThickness = 1;
   static const BoxDecoration tableDecoration = BoxDecoration(
       border: Border(

@@ -31,6 +31,7 @@
   * EasyTable.onLastRowWidget and EasyTable.lastRowWidget add 
   * EasyTableSortType renamed to TableSortOrder
   * ColumnSort.sortType renamed to ColumnSort.order
+  * EasyTableThemeData.columnDividerFillHeight added
   * EasyTableModel
     * rowsLength to originalRowsLength
     * isRowsEmpty to isOriginalRowsEmpty

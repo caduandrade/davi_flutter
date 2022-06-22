@@ -33,8 +33,12 @@ class _HomePageState extends State<HomePage> {
   bool _leftPinned = false;
   bool _hoverBackground = false;
   bool _hoverForeground = true;
-  bool _rowFillHeight = false;
+  bool _rowFillHeight = RowThemeDataDefaults.fillHeight;
   bool _nullValueColor = true;
+  bool _lastRowWidget = false;
+  bool _columnDividerFillHeight =
+      EasyTableThemeDataDefaults.columnDividerFillHeight;
+  DemoBackground _demoBackground = DemoBackground.none;
 
   @override
   void initState() {
@@ -99,24 +103,37 @@ class _HomePageState extends State<HomePage> {
     }
 
     Widget table = EasyTableTheme(
-        child: EasyTable<Character>(_model),
+        child: EasyTable<Character>(_model,
+            lastRowWidget: _lastRowWidget
+                ? const Center(child: Text('LAST ROW WIDGET'))
+                : null),
         data: EasyTableThemeData(
+            columnDividerFillHeight: _columnDividerFillHeight,
             cell: CellThemeData(
                 nullValueColor: _nullValueColor
                     ? (index, hovered) => Colors.grey[200]
                     : null),
-            row: RowThemeData(
-                fillHeight: _rowFillHeight,
-                hoverBackground:
-                    _hoverBackground ? (index) => Colors.blue[50] : null,
-                hoverForeground: _hoverForeground
-                    ? (index) => Colors.black.withOpacity(.1)
-                    : null)));
+            row: _rowThemeData()));
 
     return Row(children: [
       _options(),
       Expanded(child: Padding(child: table, padding: const EdgeInsets.all(16)))
     ], crossAxisAlignment: CrossAxisAlignment.stretch);
+  }
+
+  RowThemeData _rowThemeData() {
+    EasyTableRowColor? color;
+    if (_demoBackground == DemoBackground.zebra) {
+      color = RowThemeData.zebraColor();
+    } else if (_demoBackground == DemoBackground.simple) {
+      color = (index) => Colors.green[50];
+    }
+    return RowThemeData(
+        color: color,
+        fillHeight: _rowFillHeight,
+        hoverBackground: _hoverBackground ? (index) => Colors.blue[50] : null,
+        hoverForeground:
+            _hoverForeground ? (index) => Colors.black.withOpacity(.1) : null);
   }
 
   Widget _options() {
@@ -136,6 +153,14 @@ class _HomePageState extends State<HomePage> {
                   onChanged: _onLeftPinned,
                   text: 'Left pinned'),
               CheckboxUtil.build(
+                  value: _lastRowWidget,
+                  onChanged: _onLastRowWidget,
+                  text: 'Last row widget'),
+              CheckboxUtil.build(
+                  value: _columnDividerFillHeight,
+                  onChanged: _onColumnDividerFillHeight,
+                  text: 'Column divider fill height'),
+              CheckboxUtil.build(
                   value: _rowFillHeight,
                   onChanged: _onRowFillHeight,
                   text: 'Row fill height'),
@@ -150,9 +175,45 @@ class _HomePageState extends State<HomePage> {
               CheckboxUtil.build(
                   value: _nullValueColor,
                   onChanged: _onNullValueColor,
-                  text: 'Null value color')
+                  text: 'Null value color'),
+              const Text('Background'),
+              IntrinsicWidth(
+                  child: ListTile(
+                      title: const Text('None'),
+                      leading: Radio<DemoBackground>(
+                          value: DemoBackground.none,
+                          groupValue: _demoBackground,
+                          onChanged: _onBackgroundChanged))),
+              IntrinsicWidth(
+                  child: ListTile(
+                      title: const Text('Simple'),
+                      leading: Radio<DemoBackground>(
+                          value: DemoBackground.simple,
+                          groupValue: _demoBackground,
+                          onChanged: _onBackgroundChanged))),
+              IntrinsicWidth(
+                  child: ListTile(
+                      title: const Text('Zebra'),
+                      leading: Radio<DemoBackground>(
+                          value: DemoBackground.zebra,
+                          groupValue: _demoBackground,
+                          onChanged: _onBackgroundChanged)))
             ]),
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 0)));
+  }
+
+  void _onColumnDividerFillHeight() {
+    setState(() {
+      _columnDividerFillHeight = !_columnDividerFillHeight;
+    });
+  }
+
+  void _onBackgroundChanged(DemoBackground? value) {
+    if (value != null) {
+      setState(() {
+        _demoBackground = value;
+      });
+    }
   }
 
   void _removeFirstRow() {
@@ -202,9 +263,17 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  void _onLastRowWidget() {
+    setState(() {
+      _lastRowWidget = !_lastRowWidget;
+    });
+  }
+
   void _onNullValueColor() {
     setState(() {
       _nullValueColor = !_nullValueColor;
     });
   }
 }
+
+enum DemoBackground { none, zebra, simple }
