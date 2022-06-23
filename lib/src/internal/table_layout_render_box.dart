@@ -332,13 +332,15 @@ class TableLayoutRenderBox<ROW> extends RenderBox
                       _layoutSettings.themeMetrics.columnDividerThickness,
                       lastRowWidgetMetrics.height1),
                   columnPaint);
-              context.canvas.drawRect(
-                  Rect.fromLTWH(
-                      left,
-                      lastRowWidgetMetrics.top2,
-                      _layoutSettings.themeMetrics.columnDividerThickness,
-                      lastRowWidgetMetrics.height2),
-                  columnPaint);
+              if (_theme.columnDividerFillHeight) {
+                context.canvas.drawRect(
+                    Rect.fromLTWH(
+                        left,
+                        lastRowWidgetMetrics.top2,
+                        _layoutSettings.themeMetrics.columnDividerThickness,
+                        lastRowWidgetMetrics.height2),
+                    columnPaint);
+              }
             } else {
               context.canvas.drawRect(
                   Rect.fromLTWH(

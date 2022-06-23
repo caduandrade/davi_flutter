@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 /// The [EasyTable] row theme.
 /// Defines the configuration of the overall visual [RowThemeData] for a widget subtree within the app.
 class RowThemeData {
-  /// Builds a theme data.
+  /// Builds a row theme data.
   const RowThemeData(
       {this.color,
       this.lastDividerVisible = RowThemeDataDefaults.lastDividerVisible,
@@ -54,6 +54,7 @@ class RowThemeData {
   }
 }
 
+/// Defines the [RowThemeData] default values.
 class RowThemeDataDefaults {
   static const bool fillHeight = false;
   static const Color dividerColor = Colors.grey;
