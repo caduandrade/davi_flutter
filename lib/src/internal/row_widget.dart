@@ -6,6 +6,7 @@ import 'package:easy_table/src/internal/columns_layout.dart';
 import 'package:easy_table/src/internal/row_callbacks.dart';
 import 'package:easy_table/src/internal/column_metrics.dart';
 import 'package:easy_table/src/internal/table_layout_settings.dart';
+import 'package:easy_table/src/row_color.dart';
 import 'package:easy_table/src/row_data.dart';
 import 'package:easy_table/src/row_hover_listener.dart';
 import 'package:easy_table/src/theme/theme.dart';
@@ -23,6 +24,7 @@ class RowWidget<ROW> extends StatefulWidget {
       required this.layoutSettings,
       required this.scrolling,
       required this.columnResizing,
+      required this.color,
       required this.rowCallbacks})
       : super(key: ValueKey<int>(index));
 
@@ -33,13 +35,28 @@ class RowWidget<ROW> extends StatefulWidget {
   final OnRowHoverListener? onHover;
   final TableLayoutSettings<ROW> layoutSettings;
   final RowCallbacks<ROW> rowCallbacks;
+  final EasyTableRowColor<ROW>? color;
 
   @override
   State<StatefulWidget> createState() => RowWidgetState<ROW>();
 }
 
 class RowWidgetState<ROW> extends State<RowWidget<ROW>> {
-  bool _hovered = false;
+  late RowData<ROW> _rowData;
+
+  @override
+  void initState() {
+    super.initState();
+    _rowData = RowData(row: widget.row, index: widget.index, hovered: false);
+  }
+
+  @override
+  void didUpdateWidget(covariant RowWidget<ROW> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _rowData = RowData(
+        row: widget.row, index: widget.index, hovered: _rowData.hovered);
+  }
+
   @override
   Widget build(BuildContext context) {
     EasyTableThemeData theme = EasyTableTheme.of(context);
@@ -52,12 +69,8 @@ class RowWidgetState<ROW> extends State<RowWidget<ROW>> {
       final ColumnMetrics<ROW> columnMetrics =
           widget.layoutSettings.columnsMetrics[columnIndex];
       final EasyTableColumn<ROW> column = columnMetrics.column;
-      final Widget cell = _buildCellWidget(
-          context: context,
-          row: widget.row,
-          index: widget.index,
-          column: column,
-          theme: theme);
+      final Widget cell =
+          _buildCellWidget(context: context, column: column, theme: theme);
       children.add(ColumnsLayoutChild<ROW>(index: columnIndex, child: cell));
     }
 
@@ -73,21 +86,27 @@ class RowWidgetState<ROW> extends State<RowWidget<ROW>> {
           child: layout);
     }
 
+    Color? color;
+    if (widget.color != null) {
+      color = widget.color!(_rowData);
+    }
+
     if (!widget.scrolling && !widget.columnResizing) {
       if (widget.rowCallbacks.hasCallback ||
           theme.row.hoverBackground != null ||
           theme.row.hoverForeground != null ||
           widget.onHover != null) {
+        if (_rowData.hovered && theme.row.hoverBackground != null) {
+          // replace row color
+          color = theme.row.hoverBackground!(widget.index);
+        }
         _ColorPainter? hoverBackground;
-        if (_hovered && theme.row.hoverBackground != null) {
-          Color? color = theme.row.hoverBackground!(widget.index);
-          if (color != null) {
-            hoverBackground = _ColorPainter(color);
-          }
-          layout = Container(color: color, child: layout);
+        if (color != null) {
+          // row color or hover background
+          hoverBackground = _ColorPainter(color);
         }
         _ColorPainter? hoverForeground;
-        if (_hovered && theme.row.hoverForeground != null) {
+        if (_rowData.hovered && theme.row.hoverForeground != null) {
           Color? color = theme.row.hoverForeground!(widget.index);
           if (color != null) {
             hoverForeground = _ColorPainter(color);
@@ -105,6 +124,8 @@ class RowWidgetState<ROW> extends State<RowWidget<ROW>> {
             onExit: _onExit,
             child: layout);
       }
+    } else if (color != null) {
+      layout = Container(color: color, child: layout);
     }
 
     return layout;
@@ -112,8 +133,6 @@ class RowWidgetState<ROW> extends State<RowWidget<ROW>> {
 
   Widget _buildCellWidget(
       {required BuildContext context,
-      required ROW row,
-      required int index,
       required EasyTableColumn<ROW> column,
       required EasyTableThemeData theme}) {
     // Theme
@@ -124,16 +143,13 @@ class RowWidgetState<ROW> extends State<RowWidget<ROW>> {
     // Entire column
     padding = column.cellPadding ?? padding;
     alignment = column.cellAlignment ?? alignment;
-    Color? background = column.cellBackground != null
-        ? column
-            .cellBackground!(RowData(row: row, index: index, hovered: _hovered))
-        : null;
+    Color? background =
+        column.cellBackground != null ? column.cellBackground!(_rowData) : null;
     textStyle = column.cellTextStyle ?? textStyle;
     overflow = column.cellOverflow ?? overflow;
     // Single cell
     if (column.cellStyleBuilder != null) {
-      CellStyle? cellStyle = column.cellStyleBuilder!(
-          RowData(row: row, index: index, hovered: _hovered));
+      CellStyle? cellStyle = column.cellStyleBuilder!(_rowData);
       if (cellStyle != null) {
         padding = cellStyle.padding ?? padding;
         alignment = cellStyle.alignment ?? alignment;
@@ -145,21 +161,20 @@ class RowWidgetState<ROW> extends State<RowWidget<ROW>> {
 
     Widget? child;
     if (column.cellBuilder != null) {
-      child = column.cellBuilder!(
-          context, RowData(row: row, index: index, hovered: _hovered));
+      child = column.cellBuilder!(context, _rowData);
     } else if (column.iconValueMapper != null) {
-      CellIcon? cellIcon = column.iconValueMapper!(row);
+      CellIcon? cellIcon = column.iconValueMapper!(widget.row);
       if (cellIcon != null) {
         child = Icon(cellIcon.icon, color: cellIcon.color, size: cellIcon.size);
       }
     } else {
-      String? value = _stringValue(column: column, row: row);
+      String? value = _stringValue(column: column, row: widget.row);
       if (value != null) {
         child = Text(value,
             overflow: overflow ?? theme.cell.overflow,
             style: textStyle ?? theme.cell.textStyle);
       } else if (theme.cell.nullValueColor != null) {
-        background = theme.cell.nullValueColor!(index, _hovered);
+        background = theme.cell.nullValueColor!(widget.index, _rowData.hovered);
       }
     }
     if (child != null) {
@@ -218,7 +233,7 @@ class RowWidgetState<ROW> extends State<RowWidget<ROW>> {
 
   void _onEnter(PointerEnterEvent event) {
     setState(() {
-      _hovered = true;
+      _rowData = RowData(row: widget.row, index: widget.index, hovered: true);
       if (widget.onHover != null) {
         widget.onHover!(widget.index);
       }
@@ -227,7 +242,7 @@ class RowWidgetState<ROW> extends State<RowWidget<ROW>> {
 
   void _onExit(PointerExitEvent event) {
     setState(() {
-      _hovered = false;
+      _rowData = RowData(row: widget.row, index: widget.index, hovered: false);
       if (widget.onHover != null) {
         widget.onHover!(null);
       }

@@ -31,6 +31,7 @@ class _HomePageState extends State<HomePage> {
   EasyTableModel<Character>? _model;
   bool _fewRows = false;
   bool _leftPinned = false;
+  bool _rowColor = false;
   bool _hoverBackground = false;
   bool _hoverForeground = true;
   bool _rowFillHeight = RowThemeDataDefaults.fillHeight;
@@ -38,7 +39,7 @@ class _HomePageState extends State<HomePage> {
   bool _lastRowWidget = false;
   bool _columnDividerFillHeight =
       EasyTableThemeDataDefaults.columnDividerFillHeight;
-  DemoBackground _demoBackground = DemoBackground.none;
+  RowThemeColor _demoBackground = RowThemeColor.none;
 
   @override
   void initState() {
@@ -104,6 +105,9 @@ class _HomePageState extends State<HomePage> {
 
     Widget table = EasyTableTheme(
         child: EasyTable<Character>(_model,
+            rowColor: _rowColor
+                ? (data) => data.row.life < 1000 ? Colors.red[200] : null
+                : null,
             lastRowWidget: _lastRowWidget
                 ? const Center(child: Text('LAST ROW WIDGET'))
                 : null),
@@ -122,10 +126,10 @@ class _HomePageState extends State<HomePage> {
   }
 
   RowThemeData _rowThemeData() {
-    EasyTableRowColor? color;
-    if (_demoBackground == DemoBackground.zebra) {
+    ThemeRowColor? color;
+    if (_demoBackground == RowThemeColor.zebra) {
       color = RowThemeData.zebraColor();
-    } else if (_demoBackground == DemoBackground.simple) {
+    } else if (_demoBackground == RowThemeColor.simple) {
       color = (index) => Colors.green[50];
     }
     return RowThemeData(
@@ -176,26 +180,28 @@ class _HomePageState extends State<HomePage> {
                   value: _nullValueColor,
                   onChanged: _onNullValueColor,
                   text: 'Null value color'),
-              const Text('Background'),
+              CheckboxUtil.build(
+                  value: _rowColor, onChanged: _onRowColor, text: 'Row color'),
+              const Text('Row theme color'),
               IntrinsicWidth(
                   child: ListTile(
                       title: const Text('None'),
-                      leading: Radio<DemoBackground>(
-                          value: DemoBackground.none,
+                      leading: Radio<RowThemeColor>(
+                          value: RowThemeColor.none,
                           groupValue: _demoBackground,
                           onChanged: _onBackgroundChanged))),
               IntrinsicWidth(
                   child: ListTile(
                       title: const Text('Simple'),
-                      leading: Radio<DemoBackground>(
-                          value: DemoBackground.simple,
+                      leading: Radio<RowThemeColor>(
+                          value: RowThemeColor.simple,
                           groupValue: _demoBackground,
                           onChanged: _onBackgroundChanged))),
               IntrinsicWidth(
                   child: ListTile(
                       title: const Text('Zebra'),
-                      leading: Radio<DemoBackground>(
-                          value: DemoBackground.zebra,
+                      leading: Radio<RowThemeColor>(
+                          value: RowThemeColor.zebra,
                           groupValue: _demoBackground,
                           onChanged: _onBackgroundChanged)))
             ]),
@@ -208,7 +214,7 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  void _onBackgroundChanged(DemoBackground? value) {
+  void _onBackgroundChanged(RowThemeColor? value) {
     if (value != null) {
       setState(() {
         _demoBackground = value;
@@ -226,6 +232,12 @@ class _HomePageState extends State<HomePage> {
     if (_model != null && _model!.isColumnsNotEmpty) {
       _model!.removeColumnAt(0);
     }
+  }
+
+  void _onRowColor() {
+    setState(() {
+      _rowColor = !_rowColor;
+    });
   }
 
   void _onRowFillHeight() {
@@ -276,4 +288,4 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-enum DemoBackground { none, zebra, simple }
+enum RowThemeColor { none, zebra, simple }

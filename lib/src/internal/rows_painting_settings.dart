@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:easy_table/src/theme/row_color.dart';
+import 'package:easy_table/src/theme/theme_row_color.dart';
 import 'package:meta/meta.dart';
 
 @internal
@@ -12,7 +12,7 @@ class RowsPaintingSettings {
       required this.rowColor});
 
   final Color? divisorColor;
-  final EasyTableRowColor? rowColor;
+  final ThemeRowColor? rowColor;
   final bool fillHeight;
   final bool lastRowDividerVisible;
 

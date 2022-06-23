@@ -1,4 +1,4 @@
-import 'package:easy_table/src/theme/row_color.dart';
+import 'package:easy_table/src/theme/theme_row_color.dart';
 import 'package:flutter/material.dart';
 
 /// The [EasyTable] row theme.
@@ -14,9 +14,9 @@ class RowThemeData {
       this.dividerColor = RowThemeDataDefaults.dividerColor,
       this.fillHeight = RowThemeDataDefaults.fillHeight});
 
-  final EasyTableRowColor? color;
-  final EasyTableRowColor? hoverBackground;
-  final EasyTableRowColor? hoverForeground;
+  final ThemeRowColor? color;
+  final ThemeRowColor? hoverBackground;
+  final ThemeRowColor? hoverForeground;
   final double dividerThickness;
   final Color? dividerColor;
   final bool lastDividerVisible;
@@ -45,7 +45,7 @@ class RowThemeData {
       lastDividerVisible.hashCode ^
       fillHeight.hashCode;
 
-  static EasyTableRowColor zebraColor(
+  static ThemeRowColor zebraColor(
       {Color? evenColor = const Color(0xFFF5F5F5),
       Color? oddColor = Colors.white}) {
     return (rowIndex) {

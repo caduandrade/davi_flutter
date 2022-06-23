@@ -8,6 +8,7 @@ import 'package:easy_table/src/internal/table_layout_settings.dart';
 import 'package:easy_table/src/internal/table_corner.dart';
 import 'package:easy_table/src/internal/table_scrollbar.dart';
 import 'package:easy_table/src/model.dart';
+import 'package:easy_table/src/row_color.dart';
 import 'package:easy_table/src/row_hover_listener.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -37,6 +38,7 @@ class TableLayoutChild<ROW> extends ParentDataWidget<TableLayoutParentData> {
       required bool scrolling,
       required OnRowHoverListener? onHover,
       required RowCallbacks<ROW> rowCallbacks,
+      required EasyTableRowColor<ROW>? rowColor,
       required Widget? lastRowWidget}) {
     return TableLayoutChild._(
         id: LayoutChildId.rows,
@@ -46,6 +48,7 @@ class TableLayoutChild<ROW> extends ParentDataWidget<TableLayoutParentData> {
             onHover: onHover,
             rowCallbacks: rowCallbacks,
             scrolling: scrolling,
+            rowColor: rowColor,
             lastRowWidget: lastRowWidget));
   }
 

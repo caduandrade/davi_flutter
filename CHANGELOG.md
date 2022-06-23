@@ -32,6 +32,7 @@
   * EasyTableSortType renamed to TableSortOrder
   * ColumnSort.sortType renamed to ColumnSort.order
   * EasyTableThemeData.columnDividerFillHeight added
+  * EasyTable.rowColor added
   * EasyTableModel
     * rowsLength to originalRowsLength
     * isRowsEmpty to isOriginalRowsEmpty

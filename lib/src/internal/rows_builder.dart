@@ -5,6 +5,7 @@ import 'package:easy_table/src/internal/rows_layout.dart';
 import 'package:easy_table/src/internal/rows_painting_settings.dart';
 import 'package:easy_table/src/internal/table_layout_settings.dart';
 import 'package:easy_table/src/model.dart';
+import 'package:easy_table/src/row_color.dart';
 import 'package:easy_table/src/row_hover_listener.dart';
 import 'package:easy_table/src/theme/theme.dart';
 import 'package:easy_table/src/theme/theme_data.dart';
@@ -20,6 +21,7 @@ class RowsBuilder<ROW> extends StatelessWidget {
       required this.onHover,
       required this.scrolling,
       required this.rowCallbacks,
+      required this.rowColor,
       required this.lastRowWidget})
       : super(key: key);
 
@@ -29,6 +31,7 @@ class RowsBuilder<ROW> extends StatelessWidget {
   final OnRowHoverListener? onHover;
   final RowCallbacks<ROW> rowCallbacks;
   final Widget? lastRowWidget;
+  final EasyTableRowColor<ROW>? rowColor;
 
   @override
   Widget build(BuildContext context) {
@@ -49,6 +52,7 @@ class RowsBuilder<ROW> extends StatelessWidget {
             layoutSettings: layoutSettings,
             rowCallbacks: rowCallbacks,
             scrolling: scrolling,
+            color: rowColor,
             columnResizing:
                 model != null ? model!.columnInResizing != null : false);
         children.add(RowsLayoutChild(index: rowIndex, child: row, last: false));
