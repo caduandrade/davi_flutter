@@ -1,22 +1,37 @@
 ## 2.0.0
 
-* Changes
-  * `HeaderThemeData.height` has been removed.
-  * `HeaderCellThemeData.height` has been added.
-  * `TableScrollbarThemeData.columnDividerColor` has been added.
-  * `CellThemeData.overflow` has been added.
-  * `CellStyle.overflow` has been added.
-  * `TableScrollbarThemeData.borderThickness` has been added.
-  * TableScrollbarThemeData.verticalOnlyWhenNeeded has been added
-  * HeaderThemeData.visible has been added
+* Improvements
+  * Property to display vertical scrollbar only when needed.
+  * Header visibility.
+  * More theme configurations.
+* New theme properties
+  * `HeaderThemeData.visible`
+  * `HeaderCellThemeData.height`
+  * `TableScrollbarThemeData.columnDividerColor`
+  * `TableScrollbarThemeData.verticalOnlyWhenNeeded`
+  * `TableScrollbarThemeData.borderThickness`
+  * `CellThemeData.overflow`
+* Renamed
+  * `EasyTableModel.rowsLength` to `EasyTableModel.originalRowsLength`
+  * `EasyTableModel.isRowsEmpty` to `EasyTableModel.isOriginalRowsEmpty`
+  * `EasyTableModel.isRowsNotEmpty` to `EasyTableModel.isOriginalRowsNotEmpty`
+  * `EasyTableModel.removeVisibleRowAt` to `EasyTableModel.removeRowAt`
+  * `EasyTableModel.visibleRowsLength` to `EasyTableModel.rowsLength`
+  * `EasyTableModel.isVisibleRowsEmpty` to `EasyTableModel.isRowsEmpty`
+  * `EasyTableModel.isVisibleRowsNotEmpty` to `EasyTableModel.isRowsNotEmpty`
+  * `EasyTableModel.visibleRowAt` to `EasyTableModel.rowAt`
+* Removed
+  * `HeaderThemeData.height`  
+  * `EasyTableModel.pinnedColumnsWidth`
+  * `EasyTableModel.unpinnedColumnsWidth`
+  * `EasyTableModel.allColumnsWidth`
+  * `EasyTableModel.unpinnedColumnsLength`
+  * `EasyTableModel.pinnedColumnsLength`
+
+* Changes (TODO)
   * CellIcon.background and CellIcon.alignment removed (already exists on CellStyle)
   * EasyTable.cellContentHeight moved to CellThemeData.contentHeight
   * EasyTableColumnSort.pinned changed to EasyTableColumnSort.pinStatus
-  * EasyTableModel.pinnedColumnsWidth removed
-  * EasyTableModel.unpinnedColumnsWidth removed
-  * EasyTableModel.allColumnsWidth removed
-  * EasyTableModel.unpinnedColumnsLength removed
-  * EasyTableModel.pinnedColumnsLength removed
   * EasyTableColumnSort.cellBackground added
   * EasyTableColumnSort.cellOverflow added
   * RowThemeData.lastDividerVisible added
@@ -33,16 +48,7 @@
   * ColumnSort.sortType renamed to ColumnSort.order
   * EasyTableThemeData.columnDividerFillHeight added
   * EasyTable.rowColor added
-  * EasyTableModel
-    * rowsLength to originalRowsLength
-    * isRowsEmpty to isOriginalRowsEmpty
-    * isRowsNotEmpty to isOriginalRowsNotEmpty
-    * removeVisibleRowAt to removeRowAt 
-    * visibleRowsLength to rowsLength
-    * isVisibleRowsEmpty to isRowsEmpty
-    * isVisibleRowsNotEmpty to isRowsNotEmpty
-    * visibleRowAt to rowAt
-
+  
 ## 1.6.0
 
 * Multiple column sort.

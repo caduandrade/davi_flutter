@@ -29,6 +29,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   EasyTableModel<Character>? _model;
+  bool _headerVisible = HeaderThemeDataDefaults.visible;
   bool _fewRows = false;
   bool _leftPinned = false;
   bool _rowColor = false;
@@ -113,6 +114,7 @@ class _HomePageState extends State<HomePage> {
                 : null),
         data: EasyTableThemeData(
             columnDividerFillHeight: _columnDividerFillHeight,
+            header: HeaderThemeData(visible: _headerVisible),
             cell: CellThemeData(
                 nullValueColor: _nullValueColor
                     ? (index, hovered) => Colors.grey[200]
@@ -152,6 +154,8 @@ class _HomePageState extends State<HomePage> {
                   child: const Text('Remove first column')),
               CheckboxUtil.build(
                   value: _fewRows, onChanged: _onFewRows, text: 'Few rows'),
+              CheckboxUtil.build(
+                  value: _headerVisible, onChanged: _onHeaderVisible, text: 'Header visible'),
               CheckboxUtil.build(
                   value: _leftPinned,
                   onChanged: _onLeftPinned,
@@ -211,6 +215,12 @@ class _HomePageState extends State<HomePage> {
   void _onColumnDividerFillHeight() {
     setState(() {
       _columnDividerFillHeight = !_columnDividerFillHeight;
+    });
+  }
+
+  void _onHeaderVisible(){
+    setState(() {
+      _headerVisible = !_headerVisible;
     });
   }
 

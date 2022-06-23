@@ -40,8 +40,14 @@ class TableScrollbarThemeData {
   final Color unpinnedHorizontalBorderColor;
   final Color unpinnedHorizontalColor;
   final Color thumbColor;
+
+  /// Display the horizontal scrollbar only when needed.
   final bool horizontalOnlyWhenNeeded;
+
+  /// Display the vertical scrollbar only when needed.
   final bool verticalOnlyWhenNeeded;
+
+  /// The pinned column divider color.
   final Color? columnDividerColor;
 
   @override

@@ -148,11 +148,7 @@ class TableLayoutRenderBox<ROW> extends RenderBox
 
   @override
   double computeMinIntrinsicHeight(double width) {
-    double height = 0;
-    if (_layoutSettings.themeMetrics.hasHeader) {
-      height += _layoutSettings.themeMetrics.headerHeight;
-    }
-    return height;
+    return _layoutSettings.headerBounds.height;
   }
 
   @override
@@ -203,15 +199,14 @@ class TableLayoutRenderBox<ROW> extends RenderBox
         (_theme.header.columnDividerColor != null ||
             _theme.columnDividerColor != null ||
             _theme.scrollbar.columnDividerColor != null)) {
-      _LastRowWidgetMetrics? lastRowWidgetMetrics;
+      _MetricsForLastRowWidget? metricsForLastRowWidget;
       if (_layoutSettings.hasLastRowWidget) {
         final int rowIndex = _layoutSettings.rowsLength - 1;
         if (rowIndex >= _layoutSettings.firstRowIndex &&
             rowIndex <
                 _layoutSettings.firstRowIndex +
                     _layoutSettings.visibleRowsLength) {
-          final double top1 =
-              offset.dy + _layoutSettings.themeMetrics.headerHeight;
+          final double top1 = offset.dy + _layoutSettings.headerBounds.height;
           final double lastRowWidgetTop = _layoutSettings.headerBounds.height +
               (rowIndex * _layoutSettings.themeMetrics.rowHeight) -
               _layoutSettings.offsets.vertical +
@@ -223,14 +218,15 @@ class TableLayoutRenderBox<ROW> extends RenderBox
               lastRowWidgetTop -
               _layoutSettings.themeMetrics.cellHeight +
               offset.dy +
-              _layoutSettings.themeMetrics.headerHeight;
-          lastRowWidgetMetrics = _LastRowWidgetMetrics(
+              _layoutSettings.headerBounds.height;
+          metricsForLastRowWidget = _MetricsForLastRowWidget(
               top1: top1, height1: height1, top2: top2, height2: height2);
         }
       }
 
       Paint? headerPaint;
-      if (_theme.header.columnDividerColor != null) {
+      if (_layoutSettings.themeMetrics.hasHeader &&
+          _theme.header.columnDividerColor != null) {
         headerPaint = Paint()..color = _theme.header.columnDividerColor!;
       }
       Paint? columnPaint;
@@ -265,21 +261,21 @@ class TableLayoutRenderBox<ROW> extends RenderBox
               headerPaint);
         }
         if (columnPaint != null) {
-          if (lastRowWidgetMetrics != null) {
+          if (metricsForLastRowWidget != null) {
             context.canvas.drawRect(
                 Rect.fromLTWH(
                     left,
-                    lastRowWidgetMetrics.top1,
+                    metricsForLastRowWidget.top1,
                     _layoutSettings.themeMetrics.columnDividerThickness,
-                    lastRowWidgetMetrics.height1),
+                    metricsForLastRowWidget.height1),
                 columnPaint);
             if (_theme.columnDividerFillHeight) {
               context.canvas.drawRect(
                   Rect.fromLTWH(
                       left,
-                      lastRowWidgetMetrics.top2,
+                      metricsForLastRowWidget.top2,
                       _layoutSettings.themeMetrics.columnDividerThickness,
-                      lastRowWidgetMetrics.height2),
+                      metricsForLastRowWidget.height2),
                   columnPaint);
             }
           } else {
@@ -287,7 +283,7 @@ class TableLayoutRenderBox<ROW> extends RenderBox
               context.canvas.drawRect(
                   Rect.fromLTWH(
                       left,
-                      offset.dy + _layoutSettings.themeMetrics.headerHeight,
+                      offset.dy + _layoutSettings.headerBounds.height,
                       _layoutSettings.themeMetrics.columnDividerThickness,
                       _layoutSettings.cellsBounds.height),
                   columnPaint);
@@ -295,7 +291,7 @@ class TableLayoutRenderBox<ROW> extends RenderBox
               context.canvas.drawRect(
                   Rect.fromLTWH(
                       left,
-                      offset.dy + _layoutSettings.themeMetrics.headerHeight,
+                      offset.dy + _layoutSettings.headerBounds.height,
                       _layoutSettings.themeMetrics.columnDividerThickness,
                       _layoutSettings.visibleRowsLength *
                           _layoutSettings.themeMetrics.rowHeight),
@@ -324,31 +320,42 @@ class TableLayoutRenderBox<ROW> extends RenderBox
                 headerPaint);
           }
           if (columnPaint != null) {
-            if (lastRowWidgetMetrics != null) {
+            if (metricsForLastRowWidget != null) {
               context.canvas.drawRect(
                   Rect.fromLTWH(
                       left,
-                      lastRowWidgetMetrics.top1,
+                      metricsForLastRowWidget.top1,
                       _layoutSettings.themeMetrics.columnDividerThickness,
-                      lastRowWidgetMetrics.height1),
+                      metricsForLastRowWidget.height1),
                   columnPaint);
               if (_theme.columnDividerFillHeight) {
                 context.canvas.drawRect(
                     Rect.fromLTWH(
                         left,
-                        lastRowWidgetMetrics.top2,
+                        metricsForLastRowWidget.top2,
                         _layoutSettings.themeMetrics.columnDividerThickness,
-                        lastRowWidgetMetrics.height2),
+                        metricsForLastRowWidget.height2),
                     columnPaint);
               }
             } else {
-              context.canvas.drawRect(
-                  Rect.fromLTWH(
-                      left,
-                      offset.dy + _layoutSettings.themeMetrics.headerHeight,
-                      _layoutSettings.themeMetrics.columnDividerThickness,
-                      _layoutSettings.cellsBounds.height),
-                  columnPaint);
+              if (_theme.columnDividerFillHeight) {
+                context.canvas.drawRect(
+                    Rect.fromLTWH(
+                        left,
+                        offset.dy + _layoutSettings.headerBounds.height,
+                        _layoutSettings.themeMetrics.columnDividerThickness,
+                        _layoutSettings.cellsBounds.height),
+                    columnPaint);
+              } else {
+                context.canvas.drawRect(
+                    Rect.fromLTWH(
+                        left,
+                        offset.dy + _layoutSettings.headerBounds.height,
+                        _layoutSettings.themeMetrics.columnDividerThickness,
+                        _layoutSettings.visibleRowsLength *
+                            _layoutSettings.themeMetrics.rowHeight),
+                    columnPaint);
+              }
             }
           }
           if (_layoutSettings.hasHorizontalScrollbar &&
@@ -357,7 +364,7 @@ class TableLayoutRenderBox<ROW> extends RenderBox
                 Rect.fromLTWH(
                     left,
                     offset.dy +
-                        _layoutSettings.themeMetrics.headerHeight +
+                        _layoutSettings.headerBounds.height +
                         _layoutSettings.cellsBounds.height,
                     _layoutSettings.themeMetrics.columnDividerThickness,
                     _layoutSettings.themeMetrics.scrollbarHeight),
@@ -394,8 +401,9 @@ class TableLayoutRenderBox<ROW> extends RenderBox
   }
 }
 
-class _LastRowWidgetMetrics {
-  _LastRowWidgetMetrics(
+/// Cells metrics when last row widget is visible
+class _MetricsForLastRowWidget {
+  _MetricsForLastRowWidget(
       {required this.top1,
       required this.height1,
       required this.top2,
