@@ -193,7 +193,6 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
       }
 
       table = Listener(
-        child: table,
         behavior: HitTestBehavior.translucent,
         onPointerDown: (pointer) {
           if (widget.focusable) {
@@ -206,6 +205,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
             _onPointerScroll(pointerSignal, themeMetrics.rowHeight);
           }
         },
+        child: table,
       );
 
       if (widget.focusable) {
@@ -218,7 +218,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
     }
 
     if (theme.decoration != null) {
-      table = Container(child: table, decoration: theme.decoration);
+      table = Container(decoration: theme.decoration, child: table);
     }
     return table;
   }

@@ -178,13 +178,13 @@ class RowWidgetState<ROW> extends State<RowWidget<ROW>> {
       }
     }
     if (child != null) {
-      child = Align(child: child, alignment: alignment);
+      child = Align(alignment: alignment, child: child);
       if (padding != null) {
         child = Padding(padding: padding, child: child);
       }
     }
     if (background != null) {
-      child = Container(child: child, color: background);
+      child = Container(color: background, child: child);
     }
     return ClipRect(child: child);
   }

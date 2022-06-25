@@ -56,9 +56,9 @@ class TableScrollbar extends StatelessWidget {
                     behavior: ScrollConfiguration.of(context)
                         .copyWith(scrollbars: false),
                     child: SingleChildScrollView(
-                        child: _sizedBox(),
                         controller: scrollController,
-                        scrollDirection: axis)))));
+                        scrollDirection: axis,
+                        child: _sizedBox())))));
 
     return Listener(
         onPointerDown: (event) => onDragScroll(true),

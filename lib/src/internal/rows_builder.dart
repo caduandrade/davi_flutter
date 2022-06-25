@@ -55,12 +55,12 @@ class RowsBuilder<ROW> extends StatelessWidget {
             color: rowColor,
             columnResizing:
                 model != null ? model!.columnInResizing != null : false);
-        children.add(RowsLayoutChild(index: rowIndex, child: row, last: false));
+        children.add(RowsLayoutChild(index: rowIndex, last: false, child: row));
       }
       if (lastRowWidget != null &&
           children.length < layoutSettings.visibleRowsLength) {
         children.add(RowsLayoutChild(
-            index: model!.rowsLength, child: lastRowWidget!, last: true));
+            index: model!.rowsLength, last: true, child: lastRowWidget!));
       }
 
       RowsPaintingSettings paintSettings = RowsPaintingSettings(

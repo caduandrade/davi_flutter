@@ -44,9 +44,9 @@ class _EasyTableHeaderCellState extends State<EasyTableHeaderCell> {
       children.add(widget.column.leading!);
     }
     children.add(AxisLayoutChild(
-        child: _textWidget(context),
         shrink: theme.expandableName ? 0 : 1,
-        expand: theme.expandableName ? 1 : 0));
+        expand: theme.expandableName ? 1 : 0,
+        child: _textWidget(context)));
 
     final TableSortOrder? order = widget.column.order;
     if (order != null) {
@@ -70,8 +70,8 @@ class _EasyTableHeaderCellState extends State<EasyTableHeaderCell> {
 
     Widget header = AxisLayout(
         axis: Axis.horizontal,
-        children: children,
-        crossAlignment: CrossAlignment.stretch);
+        crossAlignment: CrossAlignment.stretch,
+        children: children);
     final EdgeInsets? padding = widget.column.headerPadding ?? theme.padding;
     if (padding != null) {
       header = Padding(padding: padding, child: header);
@@ -86,21 +86,21 @@ class _EasyTableHeaderCellState extends State<EasyTableHeaderCell> {
               },
               child: GestureDetector(
                   behavior: HitTestBehavior.opaque,
-                  child: header,
                   onTap: enabled
                       ? () => _onHeaderPressed(
                           model: widget.model, column: widget.column)
-                      : null)));
+                      : null,
+                  child: header)));
     }
 
     if (resizable) {
       header = Stack(clipBehavior: Clip.none, children: [
         Positioned.fill(child: header),
         Positioned(
-            child: _resizeWidget(context: context, resizing: resizing),
             top: 0,
             bottom: 0,
-            right: 0)
+            right: 0,
+            child: _resizeWidget(context: context, resizing: resizing))
       ]);
     }
     return ClipRect(child: header);
@@ -115,8 +115,8 @@ class _EasyTableHeaderCellState extends State<EasyTableHeaderCell> {
           style: widget.column.headerTextStyle ?? theme.headerCell.textStyle);
     }
     return Align(
-        child: text,
-        alignment: widget.column.headerAlignment ?? theme.headerCell.alignment);
+        alignment: widget.column.headerAlignment ?? theme.headerCell.alignment,
+        child: text);
   }
 
   Widget _resizeWidget({required BuildContext context, required resizing}) {
