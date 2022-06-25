@@ -26,6 +26,7 @@
   * `TableScrollbarThemeData.verticalOnlyWhenNeeded`
 * Renamed
   * `ColumnSort.sortType` to `ColumnSort.order`
+  * `EasyTable.multiSortEnabled` to `EasyTable.multiSort`
   * `EasyTable.onHoverListener` to `EasyTable.onHover`
   * `EasyTable.onLastVisibleRowListener` to `EasyTable.onLastVisibleRow`
   * `EasyTableModel.isRowsEmpty` to `EasyTableModel.isOriginalRowsEmpty`

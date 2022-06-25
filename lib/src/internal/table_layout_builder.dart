@@ -23,7 +23,7 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
       {Key? key,
       required this.onHover,
       required this.scrollControllers,
-      required this.multiSortEnabled,
+      required this.multiSort,
       required this.onLastVisibleRow,
       required this.model,
       required this.themeMetrics,
@@ -41,7 +41,7 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
   final OnRowHoverListener? onHover;
   final TableScrollControllers scrollControllers;
   final EasyTableModel<ROW>? model;
-  final bool multiSortEnabled;
+  final bool multiSort;
   final bool columnsFit;
   final int? visibleRowsLength;
   final OnDragScroll onDragScroll;
@@ -88,7 +88,7 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
           layoutSettings: layoutSettings,
           model: model,
           resizable: !columnsFit,
-          multiSortEnabled: multiSortEnabled));
+          multiSort: multiSort));
       if (layoutSettings.hasVerticalScrollbar) {
         children.add(TableLayoutChild.topCorner());
       }

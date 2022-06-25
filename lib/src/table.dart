@@ -37,7 +37,7 @@ class EasyTable<ROW> extends StatefulWidget {
       this.columnsFit = false,
       int? visibleRowsCount,
       this.focusable = true,
-      this.multiSortEnabled = false,
+      this.multiSort = false,
       this.lastRowWidget,
       this.rowColor,
       this.onLastRowWidget})
@@ -59,7 +59,7 @@ class EasyTable<ROW> extends StatefulWidget {
   final int? _visibleRowsCount;
   final OnLastVisibleRowListener? onLastVisibleRow;
   final bool focusable;
-  final bool multiSortEnabled;
+  final bool multiSort;
   final Widget? lastRowWidget;
   final OnLastRowWidgetListener? onLastRowWidget;
 
@@ -165,7 +165,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
     Widget table = ClipRect(
         child: TableLayoutBuilder(
             onHover: widget.onHover != null ? _setHoveredRowIndex : null,
-            multiSortEnabled: widget.multiSortEnabled,
+            multiSort: widget.multiSort,
             scrollControllers: _scrollControllers,
             columnsFit: widget.columnsFit,
             themeMetrics: themeMetrics,

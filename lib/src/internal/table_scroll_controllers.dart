@@ -44,7 +44,9 @@ class TableScrollControllers {
   }
 
   ScrollController get vertical => _vertical;
+
   ScrollController get unpinnedContentArea => _unpinnedContentArea;
+
   ScrollController get leftPinnedContentArea => _leftPinnedContentArea;
 
   double get leftPinnedContentAreaOffset {

@@ -20,7 +20,7 @@ class TableLayoutChild<ROW> extends ParentDataWidget<TableLayoutParentData> {
       {required TableLayoutSettings<ROW> layoutSettings,
       required EasyTableModel<ROW>? model,
       required bool resizable,
-      required bool multiSortEnabled}) {
+      required bool multiSort}) {
     return TableLayoutChild._(
         id: LayoutChildId.header,
         child: model != null
@@ -28,7 +28,7 @@ class TableLayoutChild<ROW> extends ParentDataWidget<TableLayoutParentData> {
                 layoutSettings: layoutSettings,
                 model: model,
                 resizable: resizable,
-                multiSortEnabled: multiSortEnabled)
+                multiSort: multiSort)
             : Container());
   }
 

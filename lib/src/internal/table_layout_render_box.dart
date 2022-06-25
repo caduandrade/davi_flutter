@@ -28,6 +28,7 @@ class TableLayoutRenderBox<ROW> extends RenderBox
   RenderBox? _bottomCorner;
 
   EasyTableThemeData _theme;
+
   set theme(EasyTableThemeData value) {
     _theme = value;
   }

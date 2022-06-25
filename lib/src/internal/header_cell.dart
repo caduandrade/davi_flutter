@@ -12,13 +12,13 @@ class EasyTableHeaderCell<ROW> extends StatefulWidget {
       required this.model,
       required this.column,
       required this.resizable,
-      required this.multiSortEnabled})
+      required this.multiSort})
       : super(key: key);
 
   final EasyTableModel<ROW> model;
   final EasyTableColumn<ROW> column;
   final bool resizable;
-  final bool multiSortEnabled;
+  final bool multiSort;
 
   @override
   State<StatefulWidget> createState() => _EasyTableHeaderCellState();
@@ -164,7 +164,7 @@ class _EasyTableHeaderCellState extends State<EasyTableHeaderCell> {
       {required EasyTableModel model, required EasyTableColumn column}) {
     if (model.isSorted == false) {
       model.sortByColumn(column: column, sortOrder: TableSortOrder.ascending);
-    } else if (widget.multiSortEnabled) {
+    } else if (widget.multiSort) {
       widget.model.multiSortByColumn(widget.column);
     } else {
       final TableSortOrder? order = widget.column.order;

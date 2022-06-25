@@ -11,6 +11,7 @@
 * Highly customized.
 * Pinned columns.
 * Multiple sortable.
+* Infinite scroll.
 
 ## Usage
 

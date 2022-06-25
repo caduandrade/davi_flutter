@@ -17,13 +17,13 @@ class HeaderWidget<ROW> extends StatelessWidget {
       required this.layoutSettings,
       required this.model,
       required this.resizable,
-      required this.multiSortEnabled})
+      required this.multiSort})
       : super(key: key);
 
   final TableLayoutSettings<ROW> layoutSettings;
   final EasyTableModel<ROW> model;
   final bool resizable;
-  final bool multiSortEnabled;
+  final bool multiSort;
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +43,7 @@ class HeaderWidget<ROW> extends StatelessWidget {
           model: model,
           column: column,
           resizable: resizable,
-          multiSortEnabled: multiSortEnabled);
+          multiSort: multiSort);
       children.add(ColumnsLayoutChild<ROW>(index: columnIndex, child: cell));
     }
 

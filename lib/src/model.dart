@@ -282,9 +282,12 @@ class EasyTableModel<ROW> extends ChangeNotifier {
 
 mixin ColumnSortMixin {
   int? _priority;
+
   int? get priority => _priority;
   TableSortOrder? _order;
+
   TableSortOrder? get order => _order;
+
   void _clearSortData() {
     _priority = null;
     _order = null;
