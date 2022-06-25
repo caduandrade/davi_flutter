@@ -14,12 +14,32 @@ class RowThemeData {
       this.dividerColor = RowThemeDataDefaults.dividerColor,
       this.fillHeight = RowThemeDataDefaults.fillHeight});
 
+  /// The bottom row color.
+  ///
+  /// See also:
+  ///
+  ///   * [RowThemeData.zebraColor]
   final ThemeRowColor? color;
+
+  /// The row background color when it's hovered.
+  ///
+  /// It's will be painted above the [color] and under column and cell colors.
   final ThemeRowColor? hoverBackground;
+
+  /// The row foreground color when it's hovered.
+  ///
+  /// It's will be painted above all.
   final ThemeRowColor? hoverForeground;
   final double dividerThickness;
   final Color? dividerColor;
+
+  /// Indicates whether the last row divider will be painted.
+  ///
+  /// It is used when the rows do not fill the entire existing height.
   final bool lastDividerVisible;
+
+  /// Indicates whether to fill the entire height by painting
+  /// the color of the rows.
   final bool fillHeight;
 
   @override

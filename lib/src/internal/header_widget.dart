@@ -50,14 +50,19 @@ class HeaderWidget<ROW> extends StatelessWidget {
     Widget header =
         ColumnsLayout(layoutSettings: layoutSettings, children: children);
 
+    Color? color = theme.header.color;
+    BoxBorder? border;
     if (theme.header.bottomBorderHeight > 0 &&
         theme.header.bottomBorderColor != null) {
+      border = Border(
+          bottom: BorderSide(
+              width: theme.header.bottomBorderHeight,
+              color: theme.header.bottomBorderColor!));
+    }
+
+    if (color != null || border != null) {
       header = Container(
-          decoration: BoxDecoration(
-              border: Border(
-                  bottom: BorderSide(
-                      width: theme.header.bottomBorderHeight,
-                      color: theme.header.bottomBorderColor!))),
+          decoration: BoxDecoration(border: border, color: color),
           child: header);
     }
     return header;

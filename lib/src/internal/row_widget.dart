@@ -91,39 +91,39 @@ class RowWidgetState<ROW> extends State<RowWidget<ROW>> {
       color = widget.color!(_rowData);
     }
 
-    if (!widget.scrolling && !widget.columnResizing) {
-      if (widget.rowCallbacks.hasCallback ||
-          theme.row.hoverBackground != null ||
-          theme.row.hoverForeground != null ||
-          widget.onHover != null) {
-        if (_rowData.hovered && theme.row.hoverBackground != null) {
-          // replace row color
-          color = theme.row.hoverBackground!(widget.index);
-        }
-        _ColorPainter? hoverBackground;
-        if (color != null) {
-          // row color or hover background
-          hoverBackground = _ColorPainter(color);
-        }
-        _ColorPainter? hoverForeground;
-        if (_rowData.hovered && theme.row.hoverForeground != null) {
-          Color? color = theme.row.hoverForeground!(widget.index);
-          if (color != null) {
-            hoverForeground = _ColorPainter(color);
-          }
-        }
-        layout = CustomPaint(
-            painter: hoverBackground,
-            foregroundPainter: hoverForeground,
-            child: layout);
-        layout = MouseRegion(
-            onEnter: _onEnter,
-            cursor: widget.rowCallbacks.hasCallback
-                ? SystemMouseCursors.click
-                : MouseCursor.defer,
-            onExit: _onExit,
-            child: layout);
+    if (!widget.scrolling &&
+        !widget.columnResizing &&
+        (widget.rowCallbacks.hasCallback ||
+            theme.row.hoverBackground != null ||
+            theme.row.hoverForeground != null ||
+            widget.onHover != null)) {
+      if (_rowData.hovered && theme.row.hoverBackground != null) {
+        // replace row color
+        color = theme.row.hoverBackground!(widget.index);
       }
+      _ColorPainter? hoverBackground;
+      if (color != null) {
+        // row color or hover background
+        hoverBackground = _ColorPainter(color);
+      }
+      _ColorPainter? hoverForeground;
+      if (_rowData.hovered && theme.row.hoverForeground != null) {
+        Color? color = theme.row.hoverForeground!(widget.index);
+        if (color != null) {
+          hoverForeground = _ColorPainter(color);
+        }
+      }
+      layout = CustomPaint(
+          painter: hoverBackground,
+          foregroundPainter: hoverForeground,
+          child: layout);
+      layout = MouseRegion(
+          onEnter: _onEnter,
+          cursor: widget.rowCallbacks.hasCallback
+              ? SystemMouseCursors.click
+              : MouseCursor.defer,
+          onExit: _onExit,
+          child: layout);
     } else if (color != null) {
       layout = Container(color: color, child: layout);
     }

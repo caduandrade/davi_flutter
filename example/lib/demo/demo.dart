@@ -38,6 +38,7 @@ class _HomePageState extends State<HomePage> {
   bool _rowFillHeight = RowThemeDataDefaults.fillHeight;
   bool _nullValueColor = true;
   bool _lastRowWidget = false;
+  bool _lastRowDividerVisible = RowThemeDataDefaults.lastDividerVisible;
   bool _columnDividerFillHeight =
       EasyTableThemeDataDefaults.columnDividerFillHeight;
   RowThemeColor _demoBackground = RowThemeColor.none;
@@ -136,6 +137,7 @@ class _HomePageState extends State<HomePage> {
     }
     return RowThemeData(
         color: color,
+        lastDividerVisible: _lastRowDividerVisible,
         fillHeight: _rowFillHeight,
         hoverBackground: _hoverBackground ? (index) => Colors.blue[50] : null,
         hoverForeground:
@@ -186,6 +188,8 @@ class _HomePageState extends State<HomePage> {
                   text: 'Null value color'),
               CheckboxUtil.build(
                   value: _rowColor, onChanged: _onRowColor, text: 'Row color'),
+              CheckboxUtil.build(
+                  value: _lastRowDividerVisible, onChanged: _onLastRowDividerVisible, text: 'Last row divider visible'),
               const Text('Row theme color'),
               IntrinsicWidth(
                   child: ListTile(
@@ -242,6 +246,12 @@ class _HomePageState extends State<HomePage> {
     if (_model != null && _model!.isColumnsNotEmpty) {
       _model!.removeColumnAt(0);
     }
+  }
+
+  void _onLastRowDividerVisible(){
+    setState(() {
+      _lastRowDividerVisible = !_lastRowDividerVisible;
+    });
   }
 
   void _onRowColor() {

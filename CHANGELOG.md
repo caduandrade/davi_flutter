@@ -6,6 +6,7 @@
   * More theme configurations.
 * New theme properties
   * `HeaderThemeData.visible`
+  * `HeaderThemeData.color`
   * `HeaderCellThemeData.height`
   * `TableScrollbarThemeData.columnDividerColor`
   * `TableScrollbarThemeData.verticalOnlyWhenNeeded`

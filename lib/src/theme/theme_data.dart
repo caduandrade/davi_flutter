@@ -80,8 +80,8 @@ class EasyTableThemeData {
 }
 
 class EasyTableThemeDataDefaults {
-  static const bool columnDividerFillHeight = false;
-  static const double columnDividerThickness = 3;
+  static const bool columnDividerFillHeight = true;
+  static const double columnDividerThickness = 1;
   static const BoxDecoration tableDecoration = BoxDecoration(
       border: Border(
           bottom: BorderSide(color: Colors.grey),
