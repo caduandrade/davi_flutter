@@ -1,54 +1,59 @@
 ## 2.0.0
 
 * Improvements
-  * Property to display vertical scrollbar only when needed.
-  * Header visibility.
-  * More theme configurations.
+  * Property to display vertical scrollbar only when needed
+  * Header visibility
+  * `lastRowWidget` to allow proper infinite scrolling within the table body
+  * More theme configurations
+* New `EasyTable` properties
+  * `lastRowWidget`
+  * `onLastRowWidget`
+  * `rowColor`
+* New `EasyTableColumn` properties 
+  * `cellBackground`
+  * `cellOverflow`
 * New theme properties
-  * `HeaderThemeData.visible`
-  * `HeaderThemeData.color`
+  * `CellThemeData.overflow`
+  * `EasyTableThemeData.columnDividerFillHeight`
   * `HeaderCellThemeData.height`
+  * `HeaderThemeData.color`
+  * `HeaderThemeData.visible`
+  * `RowThemeData.fillHeight`
+  * `RowThemeData.hoverForeground`
+  * `RowThemeData.lastDividerVisible`
+  * `TableScrollbarThemeData.borderThickness`
   * `TableScrollbarThemeData.columnDividerColor`
   * `TableScrollbarThemeData.verticalOnlyWhenNeeded`
-  * `TableScrollbarThemeData.borderThickness`
-  * `CellThemeData.overflow`
 * Renamed
-  * `EasyTableModel.rowsLength` to `EasyTableModel.originalRowsLength`
+  * `ColumnSort.sortType` to `ColumnSort.order`
+  * `EasyTable.onHoverListener` to `EasyTable.onHover`
+  * `EasyTable.onLastVisibleRowListener` to `EasyTable.onLastVisibleRow`
   * `EasyTableModel.isRowsEmpty` to `EasyTableModel.isOriginalRowsEmpty`
   * `EasyTableModel.isRowsNotEmpty` to `EasyTableModel.isOriginalRowsNotEmpty`
-  * `EasyTableModel.removeVisibleRowAt` to `EasyTableModel.removeRowAt`
-  * `EasyTableModel.visibleRowsLength` to `EasyTableModel.rowsLength`
   * `EasyTableModel.isVisibleRowsEmpty` to `EasyTableModel.isRowsEmpty`
   * `EasyTableModel.isVisibleRowsNotEmpty` to `EasyTableModel.isRowsNotEmpty`
+  * `EasyTableModel.removeVisibleRowAt` to `EasyTableModel.removeRowAt`
+  * `EasyTableModel.rowsLength` to `EasyTableModel.originalRowsLength`
   * `EasyTableModel.visibleRowAt` to `EasyTableModel.rowAt`
+  * `EasyTableModel.visibleRowsLength` to `EasyTableModel.rowsLength`
+  * `EasyTableSortType` to `TableSortOrder`
+  * `RowThemeData.hoveredColor` to `RowThemeData.hoverBackground`
+* Changed
+  * `CellStyleBuilder` parameter `(ROW row)` to `(RowData<ROW> data)`
+  * `EasyTableCellBuilder` parameters from `(ROW row, int rowIndex)` to `(RowData<ROW> data)`  
+  * `EasyTableColumn.background` changed from `Color` to `CellBackgroundBuilder<ROW>`
+  * `EasyTableColumnSort.pinned` bool to `EasyTableColumnSort.pinStatus` enum
+* Moved
+  * `EasyTable.cellContentHeight` to `CellThemeData.contentHeight`
 * Removed
-  * `HeaderThemeData.height`  
-  * `EasyTableModel.pinnedColumnsWidth`
-  * `EasyTableModel.unpinnedColumnsWidth`
+  * `CellIcon.alignment` (already exists on `CellStyle`)
+  * `CellIcon.background` (already exists on `CellStyle`)
   * `EasyTableModel.allColumnsWidth`
-  * `EasyTableModel.unpinnedColumnsLength`
   * `EasyTableModel.pinnedColumnsLength`
-
-* Changes (TODO)
-  * CellIcon.background and CellIcon.alignment removed (already exists on CellStyle)
-  * EasyTable.cellContentHeight moved to CellThemeData.contentHeight
-  * EasyTableColumnSort.pinned changed to EasyTableColumnSort.pinStatus
-  * EasyTableColumnSort.cellBackground added
-  * EasyTableColumnSort.cellOverflow added
-  * RowThemeData.lastDividerVisible added
-  * RowThemeData.fillHeight added
-  * EasyTable.onHoverListener renamed to onHover
-  * EasyTableCellBuilder parameters ROW row, int rowIndex to RowData<ROW> data
-  * CellStyleBuilder parameter ROW row to RowData data
-  * EasyTableColumn .background changed from Color to CellBackgroundBuilder<ROW>
-  * RowThemeData.hoveredColor renamed to hoverBackground
-  * RowThemeData.hoverForeground added
-  * EasyTable.onLastVisibleRowListener renamed to onLastVisibleRow
-  * EasyTable.onLastRowWidget and EasyTable.lastRowWidget add 
-  * EasyTableSortType renamed to TableSortOrder
-  * ColumnSort.sortType renamed to ColumnSort.order
-  * EasyTableThemeData.columnDividerFillHeight added
-  * EasyTable.rowColor added
+  * `EasyTableModel.pinnedColumnsWidth`
+  * `EasyTableModel.unpinnedColumnsLength`
+  * `EasyTableModel.unpinnedColumnsWidth`
+  * `HeaderThemeData.height`
   
 ## 1.6.0
 
