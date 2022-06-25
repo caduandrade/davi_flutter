@@ -95,7 +95,7 @@ Widget build(BuildContext context) {
 ### Multiple sort
 
 ```dart
-  EasyTable(_model, multiSortEnabled: true);
+  EasyTable(_model, multiSort: true);
 ```
 
 ### Column style
@@ -138,6 +138,29 @@ Widget build(BuildContext context) {
 ## Row
 
 ### Row color
+
+```dart
+    _model = EasyTableModel<Person>(rows: rows, columns: [
+      EasyTableColumn(name: 'Name', stringValue: (row) => row.name),
+      EasyTableColumn(name: 'Age', intValue: (row) => row.age)
+    ]);
+```
+
+```dart
+  @override
+  Widget build(BuildContext context) {
+    return EasyTable<Person>(_model, rowColor: _rowColor);
+  }
+
+  Color? _rowColor(RowData<Person> data) {
+    if (data.row.age < 20) {
+      return Colors.green[50]!;
+    } else if (data.row.age > 30 && data.row.age < 50) {
+      return Colors.orange[50]!;
+    }
+    return null;
+  }
+```
 
 ### Row callbacks
 
@@ -206,7 +229,7 @@ void _onRowDoubleTap(BuildContext context, Person person) {
         setState(() {
           _loading = false;
           List<Value> newValues =
-              List.generate(30, (index) => Value(_model!.rowsLength + index));
+              List.generate(15, (index) => Value(_model!.rowsLength + index));
           _model!.addRows(newValues);
         });
       });
@@ -270,15 +293,20 @@ EasyTableTheme(
 ### Header
 
 ```dart
-EasyTableTheme(
+    EasyTableTheme(
         child: EasyTable<Person>(_model),
         data: EasyTableThemeData(
-            header: const HeaderThemeData(
-                bottomBorderHeight: 4, bottomBorderColor: Colors.blue),
+            header: HeaderThemeData(
+                color: Colors.green[50],
+                bottomBorderHeight: 4,
+                bottomBorderColor: Colors.blue),
             headerCell: HeaderCellThemeData(
                 height: 40,
                 alignment: Alignment.center,
-                textStyle: const TextStyle(fontStyle: FontStyle.italic),
+                textStyle: const TextStyle(
+                    fontStyle: FontStyle.italic,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blue),
                 resizeAreaWidth: 10,
                 resizeAreaHoverColor: Colors.blue.withOpacity(.5),
                 sortIconColor: Colors.green,
@@ -346,12 +374,12 @@ EasyTableTheme(
 ### Scrollbar
 
 ```dart
-EasyTableTheme(
+    EasyTableTheme(
         child: EasyTable<Person>(_model),
-        data:  const EasyTableThemeData(
+        data: const EasyTableThemeData(
             scrollbar: TableScrollbarThemeData(
-              thickness: 16,
-              thumbColor: Colors.black,
+                thickness: 16,
+                thumbColor: Colors.black,
                 pinnedHorizontalColor: Colors.yellow,
                 unpinnedHorizontalColor: Colors.green,
                 verticalColor: Colors.blue,
@@ -364,11 +392,12 @@ EasyTableTheme(
 #### Scrollbar always visible
 
 ```dart
-EasyTableTheme(
-        child: EasyTable<Person>(_model),
+    EasyTableTheme(
         data: const EasyTableThemeData(
-            scrollbar:
-                TableScrollbarThemeData(horizontalOnlyWhenNeeded: true)));
+            scrollbar: TableScrollbarThemeData(
+                horizontalOnlyWhenNeeded: false,
+                verticalOnlyWhenNeeded: false)),
+        child: EasyTable<Person>(_model));
 ```
 
 ![](https://caduandrade.github.io/easy_table_flutter/horizontal_scrollbar_when_needed_v1.png)
