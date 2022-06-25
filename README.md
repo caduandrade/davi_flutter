@@ -15,27 +15,31 @@
 ## Usage
 
 * [Get started](#get-started)
-* [Columns fit](#columns-fit)
-* [Multiple sort](#multiple-sort)
-* [Column style](#column-style)
-* [Cell style](#cell-style)
-* [Custom cell widget](#custom-cell-widget)
-* [Pinned column](#pinned-column)
+* Column
+  * [Columns fit](#columns-fit)
+  * [Multiple sort](#multiple-sort)
+  * [Column style](#column-style)
+  * [Pinned column](#pinned-column)
 * Row
+  * [Row color](#row-color) 
   * [Row callbacks](#row-callbacks)
   * [Row hover listener](#row-hover-listener)
   * [Infinite scroll](#infinite-scroll)
+* Cell
+  * [Cell style](#cell-style)
+  * [Custom cell widget](#custom-cell-widget)
 * Theme
   * [Dividers thickness and color](#dividers-thickness-and-color) 
   * [Header](#header)
+    * [Hidden header](#hidden-header)  
   * Row
-    * [Row color](#row-color) 
+    * [Row color](#theme-row-color) 
     * [Row zebra color](#row-zebra-color)
     * [Row hover background](#row-hover-background)
     * [Row hover foreground](#row-hover-foreground)
     * [Row fill height](#row-fill-height)
   * [Scrollbar](#scrollbar)
-    * [Horizontal scrollbar only when needed](#horizontal-scrollbar-only-when-needed) 
+    * [Scrollbar always visible](#scrollbar-always-visible) 
   * Cell
     * [Null value color](#null-value-color)
 * [Support this project](#support-this-project)
@@ -70,7 +74,9 @@ Widget build(BuildContext context) {
 
 ![](https://caduandrade.github.io/easy_table_flutter/get_started_v4.png)
 
-## Columns fit
+## Column
+
+### Columns fit
 
 ```dart
     _model = EasyTableModel<Person>(rows: rows, columns: [
@@ -85,13 +91,13 @@ Widget build(BuildContext context) {
 
 ![](https://caduandrade.github.io/easy_table_flutter/columns_fit_v3.png)
 
-## Multiple sort
+### Multiple sort
 
 ```dart
   EasyTable(_model, multiSortEnabled: true);
 ```
 
-## Column style
+### Column style
 
 ```dart
     _model = EasyTableModel<Person>(rows: rows, columns: [
@@ -109,38 +115,7 @@ Widget build(BuildContext context) {
 
 ![](https://caduandrade.github.io/easy_table_flutter/column_style_v1.png)
 
-## Cell style
-
-```dart
-    _model = EasyTableModel<Person>(rows: rows, columns: [
-      EasyTableColumn(name: 'Name', stringValue: (row) => row.name),
-      EasyTableColumn(
-          name: 'Age',
-          intValue: (row) => row.age,
-          cellStyleBuilder: (data) => data.row.age >= 30 && data.row.age < 40
-              ? CellStyle(
-                  background: Colors.blue[800],
-                  alignment: Alignment.center,
-                  textStyle: const TextStyle(color: Colors.white))
-              : null)
-    ]);
-```
-
-## Custom cell widget
-
-```dart
-    _model = EasyTableModel<Person>(rows: rows, columns: [
-      EasyTableColumn(name: 'Name', stringValue: (row) => row.name),
-      EasyTableColumn(
-          name: 'Rate',
-          width: 150,
-          cellBuilder: (context, data) => StarsWidget(stars: data.row.stars))
-    ]);
-```
-
-![](https://caduandrade.github.io/easy_table_flutter/custom_cell_widget_v1.png)
-
-## Pinned column
+### Pinned column
 
 ```dart
     _model = EasyTableModel(rows: persons, columns: [
@@ -160,6 +135,8 @@ Widget build(BuildContext context) {
 ![](https://caduandrade.github.io/easy_table_flutter/pinned_column_v3.png)
 
 ## Row
+
+### Row color
 
 ### Row callbacks
 
@@ -238,6 +215,39 @@ void _onRowDoubleTap(BuildContext context, Person person) {
 
 ![](https://caduandrade.github.io/easy_table_flutter/infinite_scroll_v2.gif)
 
+## Cell
+
+### Cell style
+
+```dart
+    _model = EasyTableModel<Person>(rows: rows, columns: [
+      EasyTableColumn(name: 'Name', stringValue: (row) => row.name),
+      EasyTableColumn(
+          name: 'Age',
+          intValue: (row) => row.age,
+          cellStyleBuilder: (data) => data.row.age >= 30 && data.row.age < 40
+              ? CellStyle(
+                  background: Colors.blue[800],
+                  alignment: Alignment.center,
+                  textStyle: const TextStyle(color: Colors.white))
+              : null)
+    ]);
+```
+
+### Custom cell widget
+
+```dart
+    _model = EasyTableModel<Person>(rows: rows, columns: [
+      EasyTableColumn(name: 'Name', stringValue: (row) => row.name),
+      EasyTableColumn(
+          name: 'Rate',
+          width: 150,
+          cellBuilder: (context, data) => StarsWidget(stars: data.row.stars))
+    ]);
+```
+
+![](https://caduandrade.github.io/easy_table_flutter/custom_cell_widget_v1.png)
+
 ## Theme
 
 ### Dividers thickness and color
@@ -285,7 +295,7 @@ EasyTableTheme(
 
 ### Row
 
-#### Row color
+#### Theme Row color
 
 ```dart
 EasyTableTheme(
@@ -350,7 +360,7 @@ EasyTableTheme(
                 verticalBorderColor: Colors.pink)));
 ```
 
-#### Horizontal scrollbar only when needed
+#### Scrollbar always visible
 
 ```dart
 EasyTableTheme(
