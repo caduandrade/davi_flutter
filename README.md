@@ -73,7 +73,7 @@ Widget build(BuildContext context) {
 }
 ```
 
-![](https://caduandrade.github.io/easy_table_flutter/get_started_v4.png)
+![](https://caduandrade.github.io/easy_table_flutter/get_started_v5.png)
 
 ## Column
 
@@ -90,13 +90,15 @@ Widget build(BuildContext context) {
   EasyTable<Person>(_model, columnsFit: true);
 ```
 
-![](https://caduandrade.github.io/easy_table_flutter/columns_fit_v3.png)
+![](https://caduandrade.github.io/easy_table_flutter/columns_fit_v4.png)
 
 ### Multiple sort
 
 ```dart
   EasyTable(_model, multiSort: true);
 ```
+
+![](https://caduandrade.github.io/easy_table_flutter/multiple_sort_v1.png)
 
 ### Column style
 
@@ -114,7 +116,7 @@ Widget build(BuildContext context) {
     ]);
 ```
 
-![](https://caduandrade.github.io/easy_table_flutter/column_style_v1.png)
+![](https://caduandrade.github.io/easy_table_flutter/column_style_v2.png)
 
 ### Pinned column
 
@@ -133,7 +135,7 @@ Widget build(BuildContext context) {
     ]);
 ```
 
-![](https://caduandrade.github.io/easy_table_flutter/pinned_column_v3.png)
+![](https://caduandrade.github.io/easy_table_flutter/pinned_column_v4.png)
 
 ## Row
 
@@ -161,6 +163,8 @@ Widget build(BuildContext context) {
     return null;
   }
 ```
+
+![](https://caduandrade.github.io/easy_table_flutter/row_color_v1.png)
 
 ### Row callbacks
 
@@ -237,7 +241,7 @@ void _onRowDoubleTap(BuildContext context, Person person) {
   }
 ```
 
-![](https://caduandrade.github.io/easy_table_flutter/infinite_scroll_v2.gif)
+![](https://caduandrade.github.io/easy_table_flutter/infinite_scroll_v3.gif)
 
 ## Cell
 
@@ -258,6 +262,8 @@ void _onRowDoubleTap(BuildContext context, Person person) {
     ]);
 ```
 
+![](https://caduandrade.github.io/easy_table_flutter/cell_style_v1.png)
+
 ### Custom cell widget
 
 ```dart
@@ -270,7 +276,7 @@ void _onRowDoubleTap(BuildContext context, Person person) {
     ]);
 ```
 
-![](https://caduandrade.github.io/easy_table_flutter/custom_cell_widget_v1.png)
+![](https://caduandrade.github.io/easy_table_flutter/custom_cell_widget_v2.png)
 
 ## Theme
 
@@ -288,7 +294,7 @@ EasyTableTheme(
                 TableScrollbarThemeData(columnDividerColor: Colors.orange)));
 ```
 
-![](https://caduandrade.github.io/easy_table_flutter/theme_divider_v2.png)
+![](https://caduandrade.github.io/easy_table_flutter/theme_divider_v3.png)
 
 ### Header
 
@@ -313,6 +319,8 @@ EasyTableTheme(
                 expandableName: false)));
 ```
 
+![](https://caduandrade.github.io/easy_table_flutter/header_v1.png)
+
 #### Hidden header
 
 ```dart
@@ -321,6 +329,8 @@ EasyTableTheme(
         data:
             const EasyTableThemeData(header: HeaderThemeData(visible: false)));
 ```
+
+![](https://caduandrade.github.io/easy_table_flutter/hidden_header_v1.png)
 
 ### Row
 
@@ -333,6 +343,8 @@ EasyTableTheme(
         child: EasyTable<Person>(_model));
 ```
 
+![](https://caduandrade.github.io/easy_table_flutter/theme_row_color_v1.png)
+
 #### Row zebra color
 
 ```dart
@@ -342,6 +354,8 @@ EasyTableTheme(
         child: EasyTable<Person>(_model));
 ```
 
+![](https://caduandrade.github.io/easy_table_flutter/theme_row_zebra_color_v1.png)
+
 #### Row hover background
 
 ```dart
@@ -350,6 +364,8 @@ EasyTableTheme(
             row: RowThemeData(hoverBackground: (rowIndex) => Colors.blue[50])),
         child: EasyTable<Person>(_model));
 ```
+
+![](https://caduandrade.github.io/easy_table_flutter/theme_row_hover_background_v1.png)
 
 #### Row hover foreground
 
@@ -361,6 +377,8 @@ EasyTableTheme(
         child: EasyTable<Person>(_model));
 ```
 
+![](https://caduandrade.github.io/easy_table_flutter/theme_row_hover_foreground_v1.png)
+
 #### Row fill height
 
 ```dart
@@ -370,6 +388,8 @@ EasyTableTheme(
                 fillHeight: true, color: RowThemeData.zebraColor())),
         child: EasyTable<Person>(_model));
 ```
+
+![](https://caduandrade.github.io/easy_table_flutter/theme_roll_fill_height_v1.png)
 
 ### Scrollbar
 
@@ -389,6 +409,8 @@ EasyTableTheme(
                 verticalBorderColor: Colors.pink)));
 ```
 
+![](https://caduandrade.github.io/easy_table_flutter/theme_scrollbar_v1.png)
+
 #### Scrollbar always visible
 
 ```dart
@@ -400,7 +422,7 @@ EasyTableTheme(
         child: EasyTable<Person>(_model));
 ```
 
-![](https://caduandrade.github.io/easy_table_flutter/horizontal_scrollbar_when_needed_v1.png)
+![](https://caduandrade.github.io/easy_table_flutter/scrollbar_always_visible_v1.png)
 
 > A warning is being displayed in the console due to a bug in Flutter: https://github.com/flutter/flutter/issues/103939.
 > The error happens when the horizontal scrollbar is hidden after being visible.
@@ -433,7 +455,7 @@ EasyTableTheme(
                 nullValueColor: ((rowIndex, hovered) => Colors.grey[300]))));
 ```
 
-![](https://caduandrade.github.io/easy_table_flutter/null_cell_color_v2.png)
+![](https://caduandrade.github.io/easy_table_flutter/null_cell_color_v3.png)
 
 ## TODO
 

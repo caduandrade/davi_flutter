@@ -157,7 +157,9 @@ class _HomePageState extends State<HomePage> {
               CheckboxUtil.build(
                   value: _fewRows, onChanged: _onFewRows, text: 'Few rows'),
               CheckboxUtil.build(
-                  value: _headerVisible, onChanged: _onHeaderVisible, text: 'Header visible'),
+                  value: _headerVisible,
+                  onChanged: _onHeaderVisible,
+                  text: 'Header visible'),
               CheckboxUtil.build(
                   value: _leftPinned,
                   onChanged: _onLeftPinned,
@@ -189,7 +191,9 @@ class _HomePageState extends State<HomePage> {
               CheckboxUtil.build(
                   value: _rowColor, onChanged: _onRowColor, text: 'Row color'),
               CheckboxUtil.build(
-                  value: _lastRowDividerVisible, onChanged: _onLastRowDividerVisible, text: 'Last row divider visible'),
+                  value: _lastRowDividerVisible,
+                  onChanged: _onLastRowDividerVisible,
+                  text: 'Last row divider visible'),
               const Text('Row theme color'),
               IntrinsicWidth(
                   child: ListTile(
@@ -222,7 +226,7 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  void _onHeaderVisible(){
+  void _onHeaderVisible() {
     setState(() {
       _headerVisible = !_headerVisible;
     });
@@ -248,7 +252,7 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  void _onLastRowDividerVisible(){
+  void _onLastRowDividerVisible() {
     setState(() {
       _lastRowDividerVisible = !_lastRowDividerVisible;
     });
