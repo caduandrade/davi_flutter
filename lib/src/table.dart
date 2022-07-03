@@ -287,7 +287,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
         }
       }
     }
-    return KeyEventResult.handled;
+    return KeyEventResult.ignored;
   }
 
   void _onDragScroll(bool start) {
