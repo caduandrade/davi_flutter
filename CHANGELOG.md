@@ -1,3 +1,8 @@
+## 2.0.1
+
+* Bugfix
+  * Child text field does not change with typing events.
+
 ## 2.0.0
 
 * Improvements
