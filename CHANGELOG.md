@@ -2,6 +2,7 @@
 
 * Bugfix
   * Child text field does not change with typing events.
+  * Focus traversal skipping child.
 
 ## 2.0.0
 
