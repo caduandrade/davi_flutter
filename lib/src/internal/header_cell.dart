@@ -80,17 +80,13 @@ class _EasyTableHeaderCellState extends State<EasyTableHeaderCell> {
     if (sortable) {
       header = MouseRegion(
           cursor: enabled ? SystemMouseCursors.click : MouseCursor.defer,
-          child: Focus(
-              onKeyEvent: (node, event) {
-                return KeyEventResult.handled;
-              },
-              child: GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTap: enabled
-                      ? () => _onHeaderPressed(
-                          model: widget.model, column: widget.column)
-                      : null,
-                  child: header)));
+          child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: enabled
+                  ? () => _onHeaderPressed(
+                      model: widget.model, column: widget.column)
+                  : null,
+              child: header));
     }
 
     if (resizable) {

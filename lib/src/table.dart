@@ -79,8 +79,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
 
   bool _lastRowWidgetVisible = false;
   int _lastVisibleRow = -1;
-  final FocusNode _focusNode = FocusNode();
-  bool _focused = false;
+  final FocusNode _focusNode = FocusNode(debugLabel: 'EasyTable');
 
   void _setHoveredRowIndex(int? rowIndex) {
     if (widget.model != null && _hoveredRowIndex != rowIndex) {
@@ -197,7 +196,6 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
         onPointerDown: (pointer) {
           if (widget.focusable) {
             _focusNode.requestFocus();
-            _focused = true;
           }
         },
         onPointerSignal: (pointerSignal) {
@@ -245,14 +243,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
   KeyEventResult _handleKeyPress(
       FocusNode node, RawKeyEvent event, double rowHeight) {
     if (event is RawKeyUpEvent) {
-      if (event.logicalKey == LogicalKeyboardKey.tab) {
-        if (_focused) {
-          _focused = false;
-          node.nextFocus();
-        } else {
-          _focused = true;
-        }
-      } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+      if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
         if (_scrollControllers.vertical.hasClients) {
           double target = math.min(
               _scrollControllers.vertical.position.pixels + rowHeight,
