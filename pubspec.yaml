@@ -1,6 +1,6 @@
 name: easy_table
 description: A full customized data table that builds the cells on demand. Focused on Web/Desktop Applications. Bidirectional scroll bars.
-version: 2.0.0
+version: 2.0.1
 homepage: https://github.com/caduandrade/easy_table_flutter
 
 environment:

@@ -463,6 +463,7 @@ EasyTableTheme(
 * Header grouping
 * Row selection
 * Column reorder
+* Cell merge
 * Pinned column on right
 * Filter
 * And everything else, the sky is the limit
