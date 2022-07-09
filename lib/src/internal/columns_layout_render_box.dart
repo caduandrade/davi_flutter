@@ -1,4 +1,3 @@
-import 'package:easy_table/src/column.dart';
 import 'package:easy_table/src/internal/columns_layout_parent_data.dart';
 import 'package:easy_table/src/internal/column_metrics.dart';
 import 'package:easy_table/src/internal/table_layout_settings.dart';
@@ -11,12 +10,12 @@ class ColumnsLayoutRenderBox<ROW> extends RenderBox
     with
         ContainerRenderObjectMixin<RenderBox, ColumnsLayoutParentData>,
         RenderBoxContainerDefaultsMixin<RenderBox, ColumnsLayoutParentData> {
-  ColumnsLayoutRenderBox({required TableLayoutSettings<ROW> layoutSettings})
+  ColumnsLayoutRenderBox({required TableLayoutSettings layoutSettings})
       : _layoutSettings = layoutSettings;
 
-  TableLayoutSettings<ROW> _layoutSettings;
+  TableLayoutSettings _layoutSettings;
 
-  set layoutSettings(TableLayoutSettings<ROW> value) {
+  set layoutSettings(TableLayoutSettings value) {
     if (_layoutSettings != value) {
       //TODO maybe can check only row height and column widths
       _layoutSettings = value;
@@ -42,10 +41,9 @@ class ColumnsLayoutRenderBox<ROW> extends RenderBox
       final RenderBox renderBox = child as RenderBox;
       final ColumnsLayoutParentData parentData = child._parentData();
       final int columnIndex = parentData.index!;
-      final ColumnMetrics<ROW> columnMetrics =
+      final ColumnMetrics columnMetrics =
           _layoutSettings.columnsMetrics[columnIndex];
-      final EasyTableColumn<ROW> column = columnMetrics.column;
-      final PinStatus pinStatus = _layoutSettings.pinStatus(column);
+      final PinStatus pinStatus = columnMetrics.pinStatus;
       final double offset = _layoutSettings.offsets.getHorizontal(pinStatus);
       renderBox.layout(
           BoxConstraints.tightFor(
@@ -63,10 +61,9 @@ class ColumnsLayoutRenderBox<ROW> extends RenderBox
     while (child != null) {
       final ColumnsLayoutParentData childParentData = child._parentData();
       final int columnIndex = childParentData.index!;
-      final ColumnMetrics<ROW> columnMetrics =
+      final ColumnMetrics columnMetrics =
           _layoutSettings.columnsMetrics[columnIndex];
-      final EasyTableColumn<ROW> column = columnMetrics.column;
-      final PinStatus pinStatus = _layoutSettings.pinStatus(column);
+      final PinStatus pinStatus = columnMetrics.pinStatus;
       final Rect bounds = _layoutSettings.getAreaBounds(pinStatus);
       context.canvas.save();
       context.canvas.clipRect(bounds.translate(offset.dx, offset.dy));
@@ -82,10 +79,9 @@ class ColumnsLayoutRenderBox<ROW> extends RenderBox
     while (child != null) {
       final ColumnsLayoutParentData childParentData = child._parentData();
       final int columnIndex = childParentData.index!;
-      final ColumnMetrics<ROW> columnMetrics =
+      final ColumnMetrics columnMetrics =
           _layoutSettings.columnsMetrics[columnIndex];
-      final EasyTableColumn<ROW> column = columnMetrics.column;
-      final PinStatus pinStatus = _layoutSettings.pinStatus(column);
+      final PinStatus pinStatus = columnMetrics.pinStatus;
       final Rect bounds = _layoutSettings.getAreaBounds(pinStatus);
       if (bounds.contains(position)) {
         final bool isHit = result.addWithPaintOffset(

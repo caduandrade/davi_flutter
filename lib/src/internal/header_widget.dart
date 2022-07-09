@@ -1,7 +1,6 @@
 import 'package:easy_table/src/column.dart';
 import 'package:easy_table/src/internal/columns_layout_child.dart';
 import 'package:easy_table/src/internal/columns_layout.dart';
-import 'package:easy_table/src/internal/column_metrics.dart';
 import 'package:easy_table/src/internal/table_layout_settings.dart';
 import 'package:easy_table/src/internal/header_cell.dart';
 import 'package:easy_table/src/model.dart';
@@ -20,7 +19,7 @@ class HeaderWidget<ROW> extends StatelessWidget {
       required this.multiSort})
       : super(key: key);
 
-  final TableLayoutSettings<ROW> layoutSettings;
+  final TableLayoutSettings layoutSettings;
   final EasyTableModel<ROW> model;
   final bool resizable;
   final bool multiSort;
@@ -32,11 +31,9 @@ class HeaderWidget<ROW> extends StatelessWidget {
     List<ColumnsLayoutChild<ROW>> children = [];
 
     for (int columnIndex = 0;
-        columnIndex < layoutSettings.columnsMetrics.length;
+        columnIndex < model.columnsLength;
         columnIndex++) {
-      final ColumnMetrics<ROW> columnMetrics =
-          layoutSettings.columnsMetrics[columnIndex];
-      final EasyTableColumn<ROW> column = columnMetrics.column;
+      final EasyTableColumn<ROW> column = model.columnAt(columnIndex);
 
       final Widget cell = EasyTableHeaderCell<ROW>(
           key: ValueKey<int>(columnIndex),

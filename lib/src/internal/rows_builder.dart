@@ -26,7 +26,7 @@ class RowsBuilder<ROW> extends StatelessWidget {
       : super(key: key);
 
   final EasyTableModel<ROW>? model;
-  final TableLayoutSettings<ROW> layoutSettings;
+  final TableLayoutSettings layoutSettings;
   final bool scrolling;
   final OnRowHoverListener? onHover;
   final RowCallbacks<ROW> rowCallbacks;
@@ -53,6 +53,7 @@ class RowsBuilder<ROW> extends StatelessWidget {
             rowCallbacks: rowCallbacks,
             scrolling: scrolling,
             color: rowColor,
+            model: model!,
             columnResizing:
                 model != null ? model!.columnInResizing != null : false);
         children.add(RowsLayoutChild(index: rowIndex, last: false, child: row));

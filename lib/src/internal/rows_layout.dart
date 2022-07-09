@@ -17,12 +17,12 @@ class RowsLayout<ROW> extends MultiChildRenderObjectWidget {
       required List<RowsLayoutChild> children})
       : super(key: key, children: children);
 
-  final TableLayoutSettings<ROW> layoutSettings;
+  final TableLayoutSettings layoutSettings;
   final RowsPaintingSettings paintSettings;
 
   @override
   RenderObject createRenderObject(BuildContext context) {
-    return RowsLayoutRenderBox<ROW>(
+    return RowsLayoutRenderBox(
         layoutSettings: layoutSettings, paintSettings: paintSettings);
   }
 

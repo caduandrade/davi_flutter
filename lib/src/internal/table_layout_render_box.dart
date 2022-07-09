@@ -1,4 +1,3 @@
-import 'package:easy_table/src/column.dart';
 import 'package:easy_table/src/internal/layout_child_id.dart';
 import 'package:easy_table/src/internal/table_layout_parent_data.dart';
 import 'package:easy_table/src/internal/column_metrics.dart';
@@ -14,7 +13,7 @@ class TableLayoutRenderBox<ROW> extends RenderBox
         ContainerRenderObjectMixin<RenderBox, TableLayoutParentData>,
         RenderBoxContainerDefaultsMixin<RenderBox, TableLayoutParentData> {
   TableLayoutRenderBox(
-      {required TableLayoutSettings<ROW> layoutSettings,
+      {required TableLayoutSettings layoutSettings,
       required EasyTableThemeData theme})
       : _layoutSettings = layoutSettings,
         _theme = theme;
@@ -33,9 +32,9 @@ class TableLayoutRenderBox<ROW> extends RenderBox
     _theme = value;
   }
 
-  TableLayoutSettings<ROW> _layoutSettings;
+  TableLayoutSettings _layoutSettings;
 
-  set layoutSettings(TableLayoutSettings<ROW> value) {
+  set layoutSettings(TableLayoutSettings value) {
     if (_layoutSettings != value) {
       _layoutSettings = value;
       markNeedsLayout();
@@ -239,10 +238,9 @@ class TableLayoutRenderBox<ROW> extends RenderBox
       for (int columnIndex = 0;
           columnIndex < _layoutSettings.columnsMetrics.length;
           columnIndex++) {
-        final ColumnMetrics<ROW> columnMetrics =
+        final ColumnMetrics columnMetrics =
             _layoutSettings.columnsMetrics[columnIndex];
-        final EasyTableColumn<ROW> column = columnMetrics.column;
-        final PinStatus pinStatus = _layoutSettings.pinStatus(column);
+        final PinStatus pinStatus = columnMetrics.pinStatus;
         final Rect areaBounds = _layoutSettings.getAreaBounds(pinStatus);
         final double scrollOffset =
             _layoutSettings.offsets.getHorizontal(pinStatus);

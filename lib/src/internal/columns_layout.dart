@@ -14,7 +14,7 @@ class ColumnsLayout<ROW> extends MultiChildRenderObjectWidget {
       required List<ColumnsLayoutChild> children})
       : super(key: key, children: children);
 
-  final TableLayoutSettings<ROW> layoutSettings;
+  final TableLayoutSettings layoutSettings;
 
   @override
   RenderObject createRenderObject(BuildContext context) {

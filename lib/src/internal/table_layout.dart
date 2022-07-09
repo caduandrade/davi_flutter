@@ -17,7 +17,7 @@ class TableLayout<ROW> extends MultiChildRenderObjectWidget {
       required List<TableLayoutChild> children})
       : super(key: key, children: children);
 
-  final TableLayoutSettings<ROW> layoutSettings;
+  final TableLayoutSettings layoutSettings;
   final EasyTableThemeData theme;
 
   @override

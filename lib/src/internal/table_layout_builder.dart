@@ -60,7 +60,7 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
   Widget _builder(BuildContext context, BoxConstraints constraints) {
     final EasyTableThemeData theme = EasyTableTheme.of(context);
 
-    TableLayoutSettings<ROW> layoutSettings = TableLayoutSettings<ROW>(
+    TableLayoutSettings layoutSettings = TableLayoutSettings(
         constraints: constraints,
         model: model,
         theme: theme,

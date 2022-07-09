@@ -13,9 +13,9 @@ import 'package:meta/meta.dart';
 import 'package:collection/collection.dart';
 
 @internal
-class TableLayoutSettings<ROW> {
+class TableLayoutSettings {
   factory TableLayoutSettings(
-      {required EasyTableModel<ROW>? model,
+      {required EasyTableModel? model,
       required BoxConstraints constraints,
       required bool columnsFit,
       required TableThemeMetrics themeMetrics,
@@ -47,7 +47,7 @@ class TableLayoutSettings<ROW> {
     final double height;
 
     // This will hold all columns metrics (width and offset)
-    final List<ColumnMetrics<ROW>> columnsMetrics;
+    final List<ColumnMetrics> columnsMetrics;
 
     double leftPinnedContentWidth = 0;
     double unpinnedContentWidth = 0;
@@ -82,20 +82,20 @@ class TableLayoutSettings<ROW> {
             0,
             constraints.maxWidth -
                 (hasVerticalScrollbar ? themeMetrics.scrollbar.width : 0));
-        columnsMetrics = UnmodifiableListView<ColumnMetrics<ROW>>(
-            ColumnMetrics.columnsFit<ROW>(
+        columnsMetrics = UnmodifiableListView<ColumnMetrics>(
+            ColumnMetrics.columnsFit(
                 model: model,
                 dividerThickness: themeMetrics.columnDividerThickness,
                 maxWidth: unpinnedContentWidth));
         hasHorizontalScrollbar = false;
       } else {
         // resizable columns
-        columnsMetrics = UnmodifiableListView<ColumnMetrics<ROW>>(
-            ColumnMetrics.resizable<ROW>(
+        columnsMetrics = UnmodifiableListView<ColumnMetrics>(
+            ColumnMetrics.resizable(
                 model: model,
                 dividerThickness: themeMetrics.columnDividerThickness));
 
-        for (ColumnMetrics<ROW> columnMetrics in columnsMetrics) {
+        for (ColumnMetrics columnMetrics in columnsMetrics) {
           if (columnMetrics.pinStatus == PinStatus.none) {
             unpinnedContentWidth = columnMetrics.offset + columnMetrics.width;
           } else if (columnMetrics.pinStatus == PinStatus.left) {
@@ -155,7 +155,7 @@ class TableLayoutSettings<ROW> {
       }
     } else {
       // null model
-      columnsMetrics = UnmodifiableListView<ColumnMetrics<ROW>>([]);
+      columnsMetrics = UnmodifiableListView<ColumnMetrics>([]);
     }
 
     final int firstRowIndex =
@@ -362,7 +362,7 @@ class TableLayoutSettings<ROW> {
   /// The number of rows that can be visible at the available height.
   final int maxVisibleRowsLength;
   final int visibleRowsLength;
-  final List<ColumnMetrics<ROW>> columnsMetrics;
+  final List<ColumnMetrics> columnsMetrics;
   final Rect headerBounds;
   final Rect cellsBounds;
   final Rect unpinnedHorizontalScrollbarsBounds;
@@ -381,7 +381,7 @@ class TableLayoutSettings<ROW> {
     throw ArgumentError('Not recognized $pinStatus');
   }
 
-  PinStatus pinStatus(EasyTableColumn<ROW> column) {
+  PinStatus pinStatus(EasyTableColumn column) {
     if (columnsFit) {
       return PinStatus.none;
     }

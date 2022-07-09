@@ -17,7 +17,7 @@ import 'package:meta/meta.dart';
 @internal
 class TableLayoutChild<ROW> extends ParentDataWidget<TableLayoutParentData> {
   factory TableLayoutChild.header(
-      {required TableLayoutSettings<ROW> layoutSettings,
+      {required TableLayoutSettings layoutSettings,
       required EasyTableModel<ROW>? model,
       required bool resizable,
       required bool multiSort}) {
@@ -34,7 +34,7 @@ class TableLayoutChild<ROW> extends ParentDataWidget<TableLayoutParentData> {
 
   factory TableLayoutChild.rows(
       {required EasyTableModel<ROW>? model,
-      required TableLayoutSettings<ROW> layoutSettings,
+      required TableLayoutSettings layoutSettings,
       required bool scrolling,
       required OnRowHoverListener? onHover,
       required RowCallbacks<ROW> rowCallbacks,

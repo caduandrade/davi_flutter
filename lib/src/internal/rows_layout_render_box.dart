@@ -5,19 +5,19 @@ import 'package:flutter/rendering.dart';
 import 'package:meta/meta.dart';
 
 @internal
-class RowsLayoutRenderBox<ROW> extends RenderBox
+class RowsLayoutRenderBox extends RenderBox
     with
         ContainerRenderObjectMixin<RenderBox, RowsLayoutParentData>,
         RenderBoxContainerDefaultsMixin<RenderBox, RowsLayoutParentData> {
   RowsLayoutRenderBox(
-      {required TableLayoutSettings<ROW> layoutSettings,
+      {required TableLayoutSettings layoutSettings,
       required RowsPaintingSettings paintSettings})
       : _layoutSettings = layoutSettings,
         _paintSettings = paintSettings;
 
-  TableLayoutSettings<ROW> _layoutSettings;
+  TableLayoutSettings _layoutSettings;
 
-  set layoutSettings(TableLayoutSettings<ROW> value) {
+  set layoutSettings(TableLayoutSettings value) {
     if (_layoutSettings != value) {
       _layoutSettings = value;
       markNeedsLayout();

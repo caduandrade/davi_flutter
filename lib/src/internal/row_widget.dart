@@ -1,16 +1,8 @@
-import 'package:easy_table/src/cell_icon.dart';
-import 'package:easy_table/src/cell_style.dart';
-import 'package:easy_table/src/column.dart';
+import 'package:easy_table/easy_table.dart';
 import 'package:easy_table/src/internal/columns_layout_child.dart';
 import 'package:easy_table/src/internal/columns_layout.dart';
 import 'package:easy_table/src/internal/row_callbacks.dart';
-import 'package:easy_table/src/internal/column_metrics.dart';
 import 'package:easy_table/src/internal/table_layout_settings.dart';
-import 'package:easy_table/src/row_color.dart';
-import 'package:easy_table/src/row_data.dart';
-import 'package:easy_table/src/row_hover_listener.dart';
-import 'package:easy_table/src/theme/theme.dart';
-import 'package:easy_table/src/theme/theme_data.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
@@ -25,6 +17,7 @@ class RowWidget<ROW> extends StatefulWidget {
       required this.scrolling,
       required this.columnResizing,
       required this.color,
+      required this.model,
       required this.rowCallbacks})
       : super(key: ValueKey<int>(index));
 
@@ -33,7 +26,8 @@ class RowWidget<ROW> extends StatefulWidget {
   final bool scrolling;
   final bool columnResizing;
   final OnRowHoverListener? onHover;
-  final TableLayoutSettings<ROW> layoutSettings;
+  final EasyTableModel<ROW> model;
+  final TableLayoutSettings layoutSettings;
   final RowCallbacks<ROW> rowCallbacks;
   final EasyTableRowColor<ROW>? color;
 
@@ -64,11 +58,9 @@ class RowWidgetState<ROW> extends State<RowWidget<ROW>> {
     List<ColumnsLayoutChild<ROW>> children = [];
 
     for (int columnIndex = 0;
-        columnIndex < widget.layoutSettings.columnsMetrics.length;
+        columnIndex < widget.model.columnsLength;
         columnIndex++) {
-      final ColumnMetrics<ROW> columnMetrics =
-          widget.layoutSettings.columnsMetrics[columnIndex];
-      final EasyTableColumn<ROW> column = columnMetrics.column;
+      final EasyTableColumn<ROW> column = widget.model.columnAt(columnIndex);
       final Widget cell =
           _buildCellWidget(context: context, column: column, theme: theme);
       children.add(ColumnsLayoutChild<ROW>(index: columnIndex, child: cell));
