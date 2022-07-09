@@ -47,7 +47,7 @@ class RowsLayoutRenderBox<ROW> extends RenderBox
 
   @override
   void performLayout() {
-    final double rowHeight = _layoutSettings.themeMetrics.rowHeight;
+    final double rowHeight = _layoutSettings.themeMetrics.row.height;
 
     visitChildren((child) {
       final RenderBox renderBox = child as RenderBox;
@@ -57,7 +57,7 @@ class RowsLayoutRenderBox<ROW> extends RenderBox
       renderBox.layout(
           BoxConstraints.tightFor(
               width: constraints.maxWidth,
-              height: _layoutSettings.themeMetrics.cellHeight),
+              height: _layoutSettings.themeMetrics.cell.height),
           parentUsesSize: true);
 
       final double y =
@@ -85,19 +85,19 @@ class RowsLayoutRenderBox<ROW> extends RenderBox
         Color? color = _paintSettings.rowColor!(rowIndex);
         if (color != null) {
           Paint paint = Paint()..color = color;
-          double top = (rowIndex * _layoutSettings.themeMetrics.rowHeight) -
+          double top = (rowIndex * _layoutSettings.themeMetrics.row.height) -
               _layoutSettings.offsets.vertical +
               offset.dy;
           context.canvas.drawRect(
               Rect.fromLTWH(offset.dx, top, _layoutSettings.cellsBounds.width,
-                  _layoutSettings.themeMetrics.cellHeight),
+                  _layoutSettings.themeMetrics.cell.height),
               paint);
         }
       }
     }
     defaultPaint(context, offset);
     // dividers
-    if (_layoutSettings.themeMetrics.rowDividerThickness > 0 &&
+    if (_layoutSettings.themeMetrics.row.dividerThickness > 0 &&
         _paintSettings.divisorColor != null) {
       Paint paint = Paint()..color = _paintSettings.divisorColor!;
       int last = _layoutSettings.firstRowIndex;
@@ -112,13 +112,13 @@ class RowsLayoutRenderBox<ROW> extends RenderBox
       for (int rowIndex = _layoutSettings.firstRowIndex;
           rowIndex < last;
           rowIndex++) {
-        double top = (rowIndex * _layoutSettings.themeMetrics.rowHeight) -
+        double top = (rowIndex * _layoutSettings.themeMetrics.row.height) -
             _layoutSettings.offsets.vertical +
-            _layoutSettings.themeMetrics.cellHeight +
+            _layoutSettings.themeMetrics.cell.height +
             offset.dy;
         context.canvas.drawRect(
             Rect.fromLTWH(offset.dx, top, _layoutSettings.cellsBounds.width,
-                _layoutSettings.themeMetrics.rowDividerThickness),
+                _layoutSettings.themeMetrics.row.dividerThickness),
             paint);
       }
     }

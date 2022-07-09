@@ -2,7 +2,7 @@ import 'dart:math' as math;
 import 'package:easy_table/src/internal/row_callbacks.dart';
 import 'package:easy_table/src/internal/table_layout_builder.dart';
 import 'package:easy_table/src/internal/table_scroll_controllers.dart';
-import 'package:easy_table/src/internal/table_theme_metrics.dart';
+import 'package:easy_table/src/internal/theme_metrics/theme_metrics.dart';
 import 'package:easy_table/src/last_row_widget_listener.dart';
 import 'package:easy_table/src/model.dart';
 import 'package:easy_table/src/last_visible_row_listener.dart';
@@ -200,7 +200,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
         },
         onPointerSignal: (pointerSignal) {
           if (pointerSignal is PointerScrollEvent) {
-            _onPointerScroll(pointerSignal, themeMetrics.rowHeight);
+            _onPointerScroll(pointerSignal, themeMetrics.row.height);
           }
         },
         child: table,
@@ -210,7 +210,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
         table = Focus(
             focusNode: _focusNode,
             onKey: (node, event) =>
-                _handleKeyPress(node, event, themeMetrics.rowHeight),
+                _handleKeyPress(node, event, themeMetrics.row.height),
             child: table);
       }
     }

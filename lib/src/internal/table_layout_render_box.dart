@@ -114,11 +114,11 @@ class TableLayoutRenderBox<ROW> extends RenderBox
     if (_topCorner != null) {
       _topCorner!.layout(
           BoxConstraints.tightFor(
-              width: _layoutSettings.themeMetrics.scrollbarWidth,
-              height: _layoutSettings.themeMetrics.headerHeight),
+              width: _layoutSettings.themeMetrics.scrollbar.width,
+              height: _layoutSettings.themeMetrics.header.height),
           parentUsesSize: true);
       _topCorner!._parentData().offset = Offset(
-          constraints.maxWidth - _layoutSettings.themeMetrics.scrollbarWidth,
+          constraints.maxWidth - _layoutSettings.themeMetrics.scrollbar.width,
           0);
     }
 
@@ -126,13 +126,13 @@ class TableLayoutRenderBox<ROW> extends RenderBox
     if (_bottomCorner != null) {
       _bottomCorner!.layout(
           BoxConstraints.tightFor(
-              width: _layoutSettings.themeMetrics.scrollbarWidth,
-              height: _layoutSettings.themeMetrics.scrollbarHeight),
+              width: _layoutSettings.themeMetrics.scrollbar.width,
+              height: _layoutSettings.themeMetrics.scrollbar.height),
           parentUsesSize: true);
       _bottomCorner!._parentData().offset = Offset(
-          constraints.maxWidth - _layoutSettings.themeMetrics.scrollbarWidth,
+          constraints.maxWidth - _layoutSettings.themeMetrics.scrollbar.width,
           _layoutSettings.height -
-              _layoutSettings.themeMetrics.scrollbarHeight);
+              _layoutSettings.themeMetrics.scrollbar.height);
     }
 
     size = computeDryLayout(constraints);
@@ -156,8 +156,8 @@ class TableLayoutRenderBox<ROW> extends RenderBox
   double computeMaxIntrinsicHeight(double width) {
     return computeMinIntrinsicHeight(width) +
         (_layoutSettings.visibleRowsLength *
-            _layoutSettings.themeMetrics.cellHeight) +
-        _layoutSettings.themeMetrics.scrollbarHeight;
+            _layoutSettings.themeMetrics.cell.height) +
+        _layoutSettings.themeMetrics.scrollbar.height;
   }
 
   @override
@@ -209,15 +209,15 @@ class TableLayoutRenderBox<ROW> extends RenderBox
                     _layoutSettings.visibleRowsLength) {
           final double top1 = offset.dy + _layoutSettings.headerBounds.height;
           final double lastRowWidgetTop = _layoutSettings.headerBounds.height +
-              (rowIndex * _layoutSettings.themeMetrics.rowHeight) -
+              (rowIndex * _layoutSettings.themeMetrics.row.height) -
               _layoutSettings.offsets.vertical +
               offset.dy;
           final height1 = lastRowWidgetTop - top1;
           final top2 =
-              lastRowWidgetTop + _layoutSettings.themeMetrics.cellHeight;
+              lastRowWidgetTop + _layoutSettings.themeMetrics.cell.height;
           final height2 = _layoutSettings.cellsBounds.height -
               lastRowWidgetTop -
-              _layoutSettings.themeMetrics.cellHeight +
+              _layoutSettings.themeMetrics.cell.height +
               offset.dy +
               _layoutSettings.headerBounds.height;
           metricsForLastRowWidget = _MetricsForLastRowWidget(
@@ -226,7 +226,7 @@ class TableLayoutRenderBox<ROW> extends RenderBox
       }
 
       Paint? headerPaint;
-      if (_layoutSettings.themeMetrics.hasHeader &&
+      if (_layoutSettings.themeMetrics.header.visible &&
           _theme.header.columnDividerColor != null) {
         headerPaint = Paint()..color = _theme.header.columnDividerColor!;
       }
@@ -258,7 +258,7 @@ class TableLayoutRenderBox<ROW> extends RenderBox
                   left,
                   offset.dy,
                   _layoutSettings.themeMetrics.columnDividerThickness,
-                  _layoutSettings.themeMetrics.headerCellHeight),
+                  _layoutSettings.themeMetrics.headerCell.height),
               headerPaint);
         }
         if (columnPaint != null) {
@@ -295,7 +295,7 @@ class TableLayoutRenderBox<ROW> extends RenderBox
                       offset.dy + _layoutSettings.headerBounds.height,
                       _layoutSettings.themeMetrics.columnDividerThickness,
                       _layoutSettings.visibleRowsLength *
-                          _layoutSettings.themeMetrics.rowHeight),
+                          _layoutSettings.themeMetrics.row.height),
                   columnPaint);
             }
           }
@@ -317,7 +317,7 @@ class TableLayoutRenderBox<ROW> extends RenderBox
                     left,
                     offset.dy,
                     _layoutSettings.themeMetrics.columnDividerThickness,
-                    _layoutSettings.themeMetrics.headerCellHeight),
+                    _layoutSettings.themeMetrics.headerCell.height),
                 headerPaint);
           }
           if (columnPaint != null) {
@@ -354,7 +354,7 @@ class TableLayoutRenderBox<ROW> extends RenderBox
                         offset.dy + _layoutSettings.headerBounds.height,
                         _layoutSettings.themeMetrics.columnDividerThickness,
                         _layoutSettings.visibleRowsLength *
-                            _layoutSettings.themeMetrics.rowHeight),
+                            _layoutSettings.themeMetrics.row.height),
                     columnPaint);
               }
             }
@@ -368,7 +368,7 @@ class TableLayoutRenderBox<ROW> extends RenderBox
                         _layoutSettings.headerBounds.height +
                         _layoutSettings.cellsBounds.height,
                     _layoutSettings.themeMetrics.columnDividerThickness,
-                    _layoutSettings.themeMetrics.scrollbarHeight),
+                    _layoutSettings.themeMetrics.scrollbar.height),
                 Paint()..color = _theme.scrollbar.columnDividerColor!);
           }
           context.canvas.restore();

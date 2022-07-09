@@ -3,7 +3,7 @@ import 'dart:math' as math;
 import 'package:easy_table/src/column.dart';
 import 'package:easy_table/src/internal/column_metrics.dart';
 import 'package:easy_table/src/internal/row_range.dart';
-import 'package:easy_table/src/internal/table_theme_metrics.dart';
+import 'package:easy_table/src/internal/theme_metrics/theme_metrics.dart';
 import 'package:easy_table/src/pin_status.dart';
 import 'package:easy_table/src/internal/scroll_offsets.dart';
 import 'package:easy_table/src/model.dart';
@@ -55,18 +55,18 @@ class TableLayoutSettings<ROW> {
     // It is not possible to identify the need for a vertical and horizontal
     // scrollbar at the same time. Let's try the vertical first considering
     // the possibility that the horizontal might not be visible initially.
-    // Its condition may change if horizontal is required.
+    // We will recalculate if the horizontal becomes necessary.
     bool hasHorizontalScrollbar = !theme.scrollbar.horizontalOnlyWhenNeeded;
     bool needVerticalScrollbar = false;
     if (constraints.hasBoundedHeight) {
       final double availableRowsHeight = math.max(
           0,
           constraints.maxHeight -
-              (themeMetrics.hasHeader ? themeMetrics.headerHeight : 0) -
-              (hasHorizontalScrollbar ? themeMetrics.scrollbarHeight : 0));
+              (themeMetrics.header.visible ? themeMetrics.header.height : 0) -
+              (hasHorizontalScrollbar ? themeMetrics.scrollbar.height : 0));
       needVerticalScrollbar = model != null
-          ? (rowsLength * themeMetrics.rowHeight) -
-                  themeMetrics.rowDividerThickness >
+          ? (rowsLength * themeMetrics.row.height) -
+                  themeMetrics.row.dividerThickness >
               availableRowsHeight
           : false;
     } else {
@@ -81,7 +81,7 @@ class TableLayoutSettings<ROW> {
         unpinnedContentWidth = math.max(
             0,
             constraints.maxWidth -
-                (hasVerticalScrollbar ? themeMetrics.scrollbarWidth : 0));
+                (hasVerticalScrollbar ? themeMetrics.scrollbar.width : 0));
         columnsMetrics = UnmodifiableListView<ColumnMetrics<ROW>>(
             ColumnMetrics.columnsFit<ROW>(
                 model: model,
@@ -113,7 +113,7 @@ class TableLayoutSettings<ROW> {
         final double maxContentAreaWidth = math.max(
             0,
             constraints.maxWidth -
-                (hasVerticalScrollbar ? themeMetrics.scrollbarWidth : 0));
+                (hasVerticalScrollbar ? themeMetrics.scrollbar.width : 0));
 
         final bool needLeftPinnedHorizontalScrollbar =
             leftPinnedContentWidth > maxContentAreaWidth;
@@ -136,15 +136,17 @@ class TableLayoutSettings<ROW> {
         if (!lastHasHorizontalScrollbar && hasHorizontalScrollbar) {
           // The horizontal scrollbar became visible.
           // The available height will be smaller.
-          // Maybe now there needs to be a vertical scrollbar.
+          // Maybe now it needs to have a vertical scrollbar.
           if (constraints.hasBoundedHeight) {
             final double availableRowsHeight = math.max(
                 0,
                 constraints.maxHeight -
-                    (themeMetrics.hasHeader ? themeMetrics.headerHeight : 0) -
-                    themeMetrics.scrollbarHeight);
-            needVerticalScrollbar = (rowsLength * themeMetrics.rowHeight) -
-                    themeMetrics.rowDividerThickness >
+                    (themeMetrics.header.visible
+                        ? themeMetrics.header.height
+                        : 0) -
+                    themeMetrics.scrollbar.height);
+            needVerticalScrollbar = (rowsLength * themeMetrics.row.height) -
+                    themeMetrics.row.dividerThickness >
                 availableRowsHeight;
           }
           hasVerticalScrollbar =
@@ -157,12 +159,12 @@ class TableLayoutSettings<ROW> {
     }
 
     final int firstRowIndex =
-        (offsets.vertical / themeMetrics.rowHeight).floor();
+        (offsets.vertical / themeMetrics.row.height).floor();
     final double contentHeight = model != null
         ? math.max(
             0,
-            (rowsLength * themeMetrics.rowHeight) -
-                themeMetrics.rowDividerThickness)
+            (rowsLength * themeMetrics.row.height) -
+                themeMetrics.row.dividerThickness)
         : 0;
 
     // Now let's set the screen boundaries!
@@ -170,9 +172,9 @@ class TableLayoutSettings<ROW> {
     final double contentAreaWidth = math.max(
         0,
         constraints.maxWidth -
-            (hasVerticalScrollbar ? themeMetrics.scrollbarWidth : 0));
-    final Rect headerBounds = themeMetrics.hasHeader
-        ? Rect.fromLTWH(0, 0, contentAreaWidth, themeMetrics.headerHeight)
+            (hasVerticalScrollbar ? themeMetrics.scrollbar.width : 0));
+    final Rect headerBounds = themeMetrics.header.visible
+        ? Rect.fromLTWH(0, 0, contentAreaWidth, themeMetrics.header.height)
         : Rect.zero;
     final Rect cellsBounds;
     final Rect horizontalScrollbarBounds;
@@ -187,7 +189,9 @@ class TableLayoutSettings<ROW> {
               0,
               constraints.maxHeight -
                   headerBounds.height -
-                  (hasHorizontalScrollbar ? themeMetrics.scrollbarHeight : 0)));
+                  (hasHorizontalScrollbar
+                      ? themeMetrics.scrollbar.height
+                      : 0)));
     } else {
       // unbounded height
       cellsBounds = Rect.fromLTWH(
@@ -196,13 +200,13 @@ class TableLayoutSettings<ROW> {
           contentAreaWidth,
           math.max(
               0,
-              (visibleRowsLength! * themeMetrics.rowHeight) -
-                  themeMetrics.rowDividerThickness));
+              (visibleRowsLength! * themeMetrics.row.height) -
+                  themeMetrics.row.dividerThickness));
     }
     final int maxVisibleRowsLength = RowRange.maxVisibleRowsLength(
         scrollOffset: offsets.vertical,
         height: cellsBounds.height,
-        rowHeight: themeMetrics.rowHeight);
+        rowHeight: themeMetrics.row.height);
     final int effectiveVisibleRowsLength =
         model != null ? math.min(rowsLength, maxVisibleRowsLength) : 0;
 
@@ -210,13 +214,13 @@ class TableLayoutSettings<ROW> {
       final double top = headerBounds.height + cellsBounds.height;
       final double leftDivisorWidth =
           leftPinnedContentWidth > 0 ? themeMetrics.columnDividerThickness : 0;
-      horizontalScrollbarBounds =
-          Rect.fromLTWH(0, top, contentAreaWidth, themeMetrics.scrollbarHeight);
+      horizontalScrollbarBounds = Rect.fromLTWH(
+          0, top, contentAreaWidth, themeMetrics.scrollbar.height);
       leftPinnedHorizontalScrollbarBounds = Rect.fromLTWH(
           0,
           top,
           math.min(leftPinnedContentWidth, contentAreaWidth),
-          themeMetrics.scrollbarHeight);
+          themeMetrics.scrollbar.height);
       unpinnedHorizontalScrollbarsBounds = Rect.fromLTWH(
           leftPinnedHorizontalScrollbarBounds.width + leftDivisorWidth,
           top,
@@ -225,7 +229,7 @@ class TableLayoutSettings<ROW> {
               contentAreaWidth -
                   leftPinnedHorizontalScrollbarBounds.width -
                   leftDivisorWidth),
-          themeMetrics.scrollbarHeight);
+          themeMetrics.scrollbar.height);
     } else {
       horizontalScrollbarBounds = Rect.zero;
       leftPinnedHorizontalScrollbarBounds = Rect.zero;
@@ -239,7 +243,7 @@ class TableLayoutSettings<ROW> {
     final Rect verticalScrollbarBounds = Rect.fromLTWH(
         cellsBounds.width,
         headerBounds.bottom,
-        hasVerticalScrollbar ? themeMetrics.scrollbarWidth : 0,
+        hasVerticalScrollbar ? themeMetrics.scrollbar.width : 0,
         cellsBounds.height);
 
     final Rect leftPinnedAreaBounds = Rect.fromLTWH(
@@ -259,7 +263,7 @@ class TableLayoutSettings<ROW> {
         math.max(0, cellsBounds.width - unpinnedOffset),
         headerBounds.height + cellsBounds.height);
 
-    // Calculating the hashCode in advance. Will save 1 ms ;-)
+    // Calculating the hashCode in advance.
 
     IterableEquality iterableEquality = const IterableEquality();
     final int hashCode = iterableEquality.hash(columnsMetrics) ^
@@ -285,6 +289,8 @@ class TableLayoutSettings<ROW> {
         hasVerticalScrollbar.hashCode ^
         hasHorizontalScrollbar.hashCode ^
         unpinnedAreaBounds.hashCode;
+
+    // Mission accomplished!
 
     return TableLayoutSettings._(
         columnsFit: columnsFit,
@@ -338,12 +344,7 @@ class TableLayoutSettings<ROW> {
       required this.verticalScrollbarBounds,
       required this.leftPinnedAreaBounds,
       required this.unpinnedAreaBounds,
-      required this.hashCode}) {
-    _areaBounds = {
-      PinStatus.left: leftPinnedAreaBounds,
-      PinStatus.none: unpinnedAreaBounds
-    };
-  }
+      required this.hashCode});
 
   final TableThemeMetrics themeMetrics;
   final bool columnsFit;
@@ -370,10 +371,14 @@ class TableLayoutSettings<ROW> {
   final Rect verticalScrollbarBounds;
   final Rect leftPinnedAreaBounds;
   final Rect unpinnedAreaBounds;
-  late final Map<PinStatus, Rect> _areaBounds;
 
   Rect getAreaBounds(PinStatus pinStatus) {
-    return _areaBounds[pinStatus]!;
+    if (pinStatus == PinStatus.none) {
+      return unpinnedAreaBounds;
+    } else if (pinStatus == PinStatus.left) {
+      return leftPinnedAreaBounds;
+    }
+    throw ArgumentError('Not recognized $pinStatus');
   }
 
   PinStatus pinStatus(EasyTableColumn<ROW> column) {

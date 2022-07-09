@@ -94,7 +94,7 @@ class Character {
       list.add(_character(name: name, male: true, random: random));
     }
     list.shuffle();
-    return list.sublist(0, 53);
+    return list;
   }
 
   static Future<List<String>> _readNames(String filePath) async {

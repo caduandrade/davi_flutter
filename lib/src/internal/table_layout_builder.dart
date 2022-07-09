@@ -6,7 +6,7 @@ import 'package:easy_table/src/internal/row_range.dart';
 import 'package:easy_table/src/internal/table_layout_settings.dart';
 import 'package:easy_table/src/internal/table_scroll_controllers.dart';
 import 'package:easy_table/src/internal/table_scrollbar.dart';
-import 'package:easy_table/src/internal/table_theme_metrics.dart';
+import 'package:easy_table/src/internal/theme_metrics/theme_metrics.dart';
 import 'package:easy_table/src/last_row_widget_listener.dart';
 import 'package:easy_table/src/last_visible_row_listener.dart';
 import 'package:easy_table/src/model.dart';
@@ -83,7 +83,7 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
               onDragScroll: onDragScroll)));
     }
 
-    if (themeMetrics.hasHeader) {
+    if (themeMetrics.header.visible) {
       children.add(TableLayoutChild.header(
           layoutSettings: layoutSettings,
           model: model,
@@ -136,7 +136,7 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
             RowRange? rowRange = RowRange.build(
                 scrollOffset: scrollControllers.verticalOffset,
                 height: layoutSettings.cellsBounds.height,
-                rowHeight: themeMetrics.rowHeight);
+                rowHeight: themeMetrics.row.height);
             if (rowRange != null) {
               if (hasLastRowListener) {
                 onLastRowWidget!(rowRange.lastIndex >= model!.rowsLength);

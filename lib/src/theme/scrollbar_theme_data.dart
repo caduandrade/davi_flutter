@@ -4,30 +4,29 @@ import 'package:flutter/material.dart';
 /// Defines the configuration of the overall visual [TableScrollbarThemeData] for a widget subtree within the app.
 class TableScrollbarThemeData {
   /// Builds a theme data.
-  const TableScrollbarThemeData({
-    this.radius,
-    this.margin = TableScrollbarThemeDataDefaults.margin,
-    this.borderThickness = TableScrollbarThemeDataDefaults.borderThickness,
-    this.thickness = TableScrollbarThemeDataDefaults.thickness,
-    this.verticalBorderColor =
-        TableScrollbarThemeDataDefaults.verticalBorderColor,
-    this.verticalColor = TableScrollbarThemeDataDefaults.verticalColor,
-    this.pinnedHorizontalBorderColor =
-        TableScrollbarThemeDataDefaults.pinnedHorizontalBorderColor,
-    this.pinnedHorizontalColor =
-        TableScrollbarThemeDataDefaults.pinnedHorizontalColor,
-    this.unpinnedHorizontalBorderColor =
-        TableScrollbarThemeDataDefaults.unpinnedHorizontalBorderColor,
-    this.unpinnedHorizontalColor =
-        TableScrollbarThemeDataDefaults.unpinnedHorizontalColor,
-    this.thumbColor = TableScrollbarThemeDataDefaults.thumbColor,
-    this.horizontalOnlyWhenNeeded =
-        TableScrollbarThemeDataDefaults.horizontalOnlyWhenNeeded,
-    this.verticalOnlyWhenNeeded =
-        TableScrollbarThemeDataDefaults.verticalOnlyWhenNeeded,
-    this.columnDividerColor =
-        TableScrollbarThemeDataDefaults.columnDividerColor,
-  });
+  const TableScrollbarThemeData(
+      {this.radius,
+      this.margin = TableScrollbarThemeDataDefaults.margin,
+      this.borderThickness = TableScrollbarThemeDataDefaults.borderThickness,
+      this.thickness = TableScrollbarThemeDataDefaults.thickness,
+      this.verticalBorderColor =
+          TableScrollbarThemeDataDefaults.verticalBorderColor,
+      this.verticalColor = TableScrollbarThemeDataDefaults.verticalColor,
+      this.pinnedHorizontalBorderColor =
+          TableScrollbarThemeDataDefaults.pinnedHorizontalBorderColor,
+      this.pinnedHorizontalColor =
+          TableScrollbarThemeDataDefaults.pinnedHorizontalColor,
+      this.unpinnedHorizontalBorderColor =
+          TableScrollbarThemeDataDefaults.unpinnedHorizontalBorderColor,
+      this.unpinnedHorizontalColor =
+          TableScrollbarThemeDataDefaults.unpinnedHorizontalColor,
+      this.thumbColor = TableScrollbarThemeDataDefaults.thumbColor,
+      this.horizontalOnlyWhenNeeded =
+          TableScrollbarThemeDataDefaults.horizontalOnlyWhenNeeded,
+      this.verticalOnlyWhenNeeded =
+          TableScrollbarThemeDataDefaults.verticalOnlyWhenNeeded,
+      this.columnDividerColor =
+          TableScrollbarThemeDataDefaults.columnDividerColor});
 
   final Radius? radius;
   final double margin;
