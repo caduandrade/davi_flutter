@@ -3,13 +3,13 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-name: Dart
+name: Test
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "42-layout-based-on-cells-instead-of-rows" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "42-layout-based-on-cells-instead-of-rows" ]
 
 jobs:
   build:
