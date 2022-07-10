@@ -1,5 +1,3 @@
-import 'package:easy_table/easy_table.dart';
-import 'package:easy_table/src/internal/column_metrics.dart';
 import 'package:easy_table/src/internal/row_range.dart';
 import 'package:flutter_test/flutter_test.dart';
 
