@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:easy_table/src/column.dart';
 import 'package:easy_table/src/internal/column_metrics.dart';
+import 'package:easy_table/src/internal/layout_utils.dart';
 import 'package:easy_table/src/internal/row_range.dart';
 import 'package:easy_table/src/internal/theme_metrics/theme_metrics.dart';
 import 'package:easy_table/src/pin_status.dart';
@@ -203,9 +204,9 @@ class TableLayoutSettings {
               (visibleRowsLength! * themeMetrics.row.height) -
                   themeMetrics.row.dividerThickness));
     }
-    final int maxVisibleRowsLength = RowRange.maxVisibleRowsLength(
+    final int maxVisibleRowsLength = LayoutUtils.maxVisibleRowsLength(
         scrollOffset: offsets.vertical,
-        height: cellsBounds.height,
+        visibleAreaHeight: cellsBounds.height,
         rowHeight: themeMetrics.row.height);
     final int effectiveVisibleRowsLength =
         model != null ? math.min(rowsLength, maxVisibleRowsLength) : 0;

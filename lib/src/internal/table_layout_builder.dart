@@ -135,7 +135,7 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
           onNotification: (notification) {
             RowRange? rowRange = RowRange.build(
                 scrollOffset: scrollControllers.verticalOffset,
-                height: layoutSettings.cellsBounds.height,
+                visibleAreaHeight: layoutSettings.cellsBounds.height,
                 rowHeight: themeMetrics.row.height);
             if (rowRange != null) {
               if (hasLastRowListener) {
