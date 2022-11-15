@@ -70,6 +70,7 @@ class _HomePageState extends State<HomePage> {
           width: 100,
           stringValue: (row) => row.name),
       EasyTableColumn(
+          pinStatus: _leftPinned ? PinStatus.left : PinStatus.none,
           name: 'Gender',
           width: 80,
           iconValue: (row) => row.male

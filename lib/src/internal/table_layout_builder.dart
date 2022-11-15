@@ -1,10 +1,12 @@
 import 'dart:math' as math;
-import 'package:easy_table/src/internal/table_layout_child.dart';
+
 import 'package:easy_table/src/internal/row_callbacks.dart';
-import 'package:easy_table/src/internal/table_layout.dart';
 import 'package:easy_table/src/internal/row_range.dart';
+import 'package:easy_table/src/internal/scroll_controllers.dart';
+import 'package:easy_table/src/internal/scroll_offsets.dart';
+import 'package:easy_table/src/internal/table_layout.dart';
+import 'package:easy_table/src/internal/table_layout_child.dart';
 import 'package:easy_table/src/internal/table_layout_settings.dart';
-import 'package:easy_table/src/internal/table_scroll_controllers.dart';
 import 'package:easy_table/src/internal/table_scrollbar.dart';
 import 'package:easy_table/src/internal/theme_metrics/theme_metrics.dart';
 import 'package:easy_table/src/last_row_widget_listener.dart';
@@ -39,7 +41,7 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
 
   final OnLastVisibleRowListener? onLastVisibleRow;
   final OnRowHoverListener? onHover;
-  final TableScrollControllers scrollControllers;
+  final ScrollControllers scrollControllers;
   final EasyTableModel<ROW>? model;
   final bool multiSort;
   final bool columnsFit;
@@ -60,12 +62,14 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
   Widget _builder(BuildContext context, BoxConstraints constraints) {
     final EasyTableThemeData theme = EasyTableTheme.of(context);
 
+    final HorizontalScrollOffsets horizontalScrollOffsets =
+        HorizontalScrollOffsets(scrollControllers);
+
     TableLayoutSettings layoutSettings = TableLayoutSettings(
         constraints: constraints,
         model: model,
         theme: theme,
         columnsFit: columnsFit,
-        offsets: scrollControllers.offsets,
         themeMetrics: themeMetrics,
         visibleRowsLength: visibleRowsLength,
         hasLastRowWidget: lastRowWidget != null);
@@ -88,24 +92,26 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
           layoutSettings: layoutSettings,
           model: model,
           resizable: !columnsFit,
-          multiSort: multiSort));
+          multiSort: multiSort,
+          horizontalScrollOffsets: horizontalScrollOffsets));
       if (layoutSettings.hasVerticalScrollbar) {
         children.add(TableLayoutChild.topCorner());
       }
     }
 
     if (layoutSettings.hasHorizontalScrollbar) {
+      Widget leftPinnedHorizontalScrollbar = TableScrollbar(
+          axis: Axis.horizontal,
+          scrollController: scrollControllers.leftPinnedHorizontal,
+          color: theme.scrollbar.pinnedHorizontalColor,
+          borderColor: theme.scrollbar.pinnedHorizontalBorderColor,
+          contentSize: layoutSettings.leftPinnedContentWidth,
+          onDragScroll: onDragScroll);
       children.add(TableLayoutChild.leftPinnedHorizontalScrollbar(
-          TableScrollbar(
-              axis: Axis.horizontal,
-              scrollController: scrollControllers.leftPinnedContentArea,
-              color: theme.scrollbar.pinnedHorizontalColor,
-              borderColor: theme.scrollbar.pinnedHorizontalBorderColor,
-              contentSize: layoutSettings.leftPinnedContentWidth,
-              onDragScroll: onDragScroll)));
+          leftPinnedHorizontalScrollbar));
       children.add(TableLayoutChild.unpinnedHorizontalScrollbar(TableScrollbar(
           axis: Axis.horizontal,
-          scrollController: scrollControllers.unpinnedContentArea,
+          scrollController: scrollControllers.unpinnedHorizontal,
           color: theme.scrollbar.unpinnedHorizontalColor,
           borderColor: theme.scrollbar.unpinnedHorizontalBorderColor,
           contentSize: layoutSettings.unpinnedContentWidth,
@@ -119,13 +125,18 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
         model: model,
         layoutSettings: layoutSettings,
         scrolling: scrolling,
+        horizontalScrollOffsets: horizontalScrollOffsets,
+        verticalScrollController: scrollControllers.vertical,
         onHover: onHover,
         rowCallbacks: rowCallbacks,
         rowColor: rowColor,
         lastRowWidget: lastRowWidget));
 
     Widget layout = TableLayout<ROW>(
-        layoutSettings: layoutSettings, theme: theme, children: children);
+        layoutSettings: layoutSettings,
+        theme: theme,
+        horizontalScrollOffsets: horizontalScrollOffsets,
+        children: children);
     final bool hasLastRowListener =
         onLastRowWidget != null && layoutSettings.hasLastRowWidget;
     final bool hasListener = hasLastRowListener || onLastVisibleRow != null;
@@ -134,7 +145,9 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
           child: layout,
           onNotification: (notification) {
             RowRange? rowRange = RowRange.build(
-                scrollOffset: scrollControllers.verticalOffset,
+                scrollOffset: scrollControllers.vertical.hasClients
+                    ? scrollControllers.vertical.offset
+                    : 0,
                 visibleAreaHeight: layoutSettings.cellsBounds.height,
                 rowHeight: themeMetrics.row.height);
             if (rowRange != null) {

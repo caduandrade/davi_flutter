@@ -1,5 +1,5 @@
-import 'package:easy_table/src/internal/rows_layout_parent_data.dart';
 import 'package:easy_table/src/internal/rows_layout.dart';
+import 'package:easy_table/src/internal/rows_layout_parent_data.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';

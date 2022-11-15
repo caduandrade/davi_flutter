@@ -1,11 +1,12 @@
 import 'dart:math' as math;
+
 import 'package:easy_table/src/internal/row_callbacks.dart';
+import 'package:easy_table/src/internal/scroll_controllers.dart';
 import 'package:easy_table/src/internal/table_layout_builder.dart';
-import 'package:easy_table/src/internal/table_scroll_controllers.dart';
 import 'package:easy_table/src/internal/theme_metrics/theme_metrics.dart';
 import 'package:easy_table/src/last_row_widget_listener.dart';
-import 'package:easy_table/src/model.dart';
 import 'package:easy_table/src/last_visible_row_listener.dart';
+import 'package:easy_table/src/model.dart';
 import 'package:easy_table/src/row_callback_typedefs.dart';
 import 'package:easy_table/src/row_color.dart';
 import 'package:easy_table/src/row_hover_listener.dart';
@@ -71,7 +72,7 @@ class EasyTable<ROW> extends StatefulWidget {
 
 /// The [EasyTable] state.
 class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
-  late final TableScrollControllers _scrollControllers;
+  late ScrollControllers scrollControllers;
 
   bool _scrolling = false;
 
@@ -93,19 +94,20 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
   @override
   void initState() {
     super.initState();
-    _scrollControllers = TableScrollControllers(
-        vertical: widget.verticalScrollController,
+    scrollControllers = ScrollControllers(
         unpinnedHorizontal: widget.unpinnedHorizontalScrollController,
-        leftPinnedHorizontal: widget.pinnedHorizontalScrollController);
+        leftPinnedHorizontal: widget.pinnedHorizontalScrollController,
+        vertical: widget.verticalScrollController);
+    scrollControllers.unpinnedHorizontal.addListener(_rebuild);
+    scrollControllers.leftPinnedHorizontal.addListener(_rebuild);
     widget.model?.addListener(_rebuild);
-    _scrollControllers.addListener(_rebuild);
   }
 
   @override
   void dispose() {
     widget.model?.dispose();
     _focusNode.dispose();
-    _scrollControllers.dispose();
+    scrollControllers.dispose();
     super.dispose();
   }
 
@@ -116,20 +118,26 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
       oldWidget.model?.removeListener(_rebuild);
       widget.model?.addListener(_rebuild);
     }
-    if (widget.verticalScrollController != null) {
-      _scrollControllers.setVerticalScrollController(
-          scrollController: widget.verticalScrollController!,
-          listener: _rebuild);
+    if (widget.verticalScrollController != null &&
+        scrollControllers.vertical != widget.verticalScrollController) {
+      scrollControllers.vertical.dispose();
+      scrollControllers.vertical = widget.verticalScrollController!;
     }
-    if (widget.unpinnedHorizontalScrollController != null) {
-      _scrollControllers.setUnpinnedScrollController(
-          scrollController: widget.unpinnedHorizontalScrollController!,
-          listener: _rebuild);
+    if (widget.unpinnedHorizontalScrollController != null &&
+        scrollControllers.unpinnedHorizontal !=
+            widget.unpinnedHorizontalScrollController) {
+      scrollControllers.unpinnedHorizontal.dispose();
+      scrollControllers.unpinnedHorizontal =
+          widget.unpinnedHorizontalScrollController!;
+      scrollControllers.unpinnedHorizontal.addListener(_rebuild);
     }
-    if (widget.pinnedHorizontalScrollController != null) {
-      _scrollControllers.setLeftPinnedScrollController(
-          scrollController: widget.pinnedHorizontalScrollController!,
-          listener: _rebuild);
+    if (widget.pinnedHorizontalScrollController != null &&
+        scrollControllers.leftPinnedHorizontal !=
+            widget.pinnedHorizontalScrollController) {
+      scrollControllers.leftPinnedHorizontal.dispose();
+      scrollControllers.leftPinnedHorizontal =
+          widget.pinnedHorizontalScrollController!;
+      scrollControllers.leftPinnedHorizontal.addListener(_rebuild);
     }
   }
 
@@ -165,7 +173,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
         child: TableLayoutBuilder(
             onHover: widget.onHover != null ? _setHoveredRowIndex : null,
             multiSort: widget.multiSort,
-            scrollControllers: _scrollControllers,
+            scrollControllers: scrollControllers,
             columnsFit: widget.columnsFit,
             themeMetrics: themeMetrics,
             visibleRowsLength: widget.visibleRowsCount,
@@ -222,19 +230,17 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
   }
 
   void _onPointerScroll(PointerScrollEvent event, double rowHeight) {
-    if (event.scrollDelta.dy > 0) {
-      if (_scrollControllers.vertical.hasClients) {
+    if (scrollControllers.vertical.hasClients) {
+      if (event.scrollDelta.dy > 0) {
         double target = math.min(
-            _scrollControllers.vertical.position.pixels + rowHeight,
-            _scrollControllers.vertical.position.maxScrollExtent);
-        _scrollControllers.vertical.animateTo(target,
+            scrollControllers.vertical.position.pixels + rowHeight,
+            scrollControllers.vertical.position.maxScrollExtent);
+        scrollControllers.vertical.animateTo(target,
             duration: const Duration(milliseconds: 30), curve: Curves.ease);
-      }
-    } else if (event.scrollDelta.dy < 0) {
-      if (_scrollControllers.vertical.hasClients) {
-        double target = math.max(
-            _scrollControllers.vertical.position.pixels - rowHeight, 0);
-        _scrollControllers.vertical.animateTo(target,
+      } else if (event.scrollDelta.dy < 0) {
+        double target =
+            math.max(scrollControllers.vertical.position.pixels - rowHeight, 0);
+        scrollControllers.vertical.animateTo(target,
             duration: const Duration(milliseconds: 30), curve: Curves.ease);
       }
     }
@@ -243,37 +249,31 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
   KeyEventResult _handleKeyPress(
       FocusNode node, RawKeyEvent event, double rowHeight) {
     if (event is RawKeyUpEvent) {
-      if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-        if (_scrollControllers.vertical.hasClients) {
+      if (scrollControllers.vertical.hasClients) {
+        if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
           double target = math.min(
-              _scrollControllers.vertical.position.pixels + rowHeight,
-              _scrollControllers.vertical.position.maxScrollExtent);
-          _scrollControllers.vertical.animateTo(target,
+              scrollControllers.vertical.position.pixels + rowHeight,
+              scrollControllers.vertical.position.maxScrollExtent);
+          scrollControllers.vertical.animateTo(target,
               duration: const Duration(milliseconds: 30), curve: Curves.ease);
-        }
-      } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-        if (_scrollControllers.vertical.hasClients) {
+        } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
           double target = math.max(
-              _scrollControllers.vertical.position.pixels - rowHeight, 0);
-          _scrollControllers.vertical.animateTo(target,
+              scrollControllers.vertical.position.pixels - rowHeight, 0);
+          scrollControllers.vertical.animateTo(target,
               duration: const Duration(milliseconds: 30), curve: Curves.ease);
-        }
-      } else if (event.logicalKey == LogicalKeyboardKey.pageDown) {
-        if (_scrollControllers.vertical.hasClients) {
+        } else if (event.logicalKey == LogicalKeyboardKey.pageDown) {
           double target = math.min(
-              _scrollControllers.vertical.position.pixels +
-                  _scrollControllers.vertical.position.viewportDimension,
-              _scrollControllers.vertical.position.maxScrollExtent);
-          _scrollControllers.vertical.animateTo(target,
+              scrollControllers.vertical.position.pixels +
+                  scrollControllers.vertical.position.viewportDimension,
+              scrollControllers.vertical.position.maxScrollExtent);
+          scrollControllers.vertical.animateTo(target,
               duration: const Duration(milliseconds: 30), curve: Curves.ease);
-        }
-      } else if (event.logicalKey == LogicalKeyboardKey.pageUp) {
-        if (_scrollControllers.vertical.hasClients) {
+        } else if (event.logicalKey == LogicalKeyboardKey.pageUp) {
           double target = math.max(
-              _scrollControllers.vertical.position.pixels -
-                  _scrollControllers.vertical.position.viewportDimension,
+              scrollControllers.vertical.position.pixels -
+                  scrollControllers.vertical.position.viewportDimension,
               0);
-          _scrollControllers.vertical.animateTo(target,
+          scrollControllers.vertical.animateTo(target,
               duration: const Duration(milliseconds: 30), curve: Curves.ease);
         }
       }

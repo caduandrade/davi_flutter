@@ -1,6 +1,8 @@
 import 'package:flutter/widgets.dart';
+import 'package:meta/meta.dart';
 
 /// Local key for each table cell
+@internal
 class CellKey extends LocalKey {
   final int row;
   final int column;

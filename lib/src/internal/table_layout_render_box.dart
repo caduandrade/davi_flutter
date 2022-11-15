@@ -1,8 +1,10 @@
+import 'dart:math' as math;
+
 import 'package:easy_table/src/internal/layout_child_id.dart';
+import 'package:easy_table/src/internal/layout_utils.dart';
+import 'package:easy_table/src/internal/scroll_offsets.dart';
 import 'package:easy_table/src/internal/table_layout_parent_data.dart';
-import 'package:easy_table/src/internal/column_metrics.dart';
 import 'package:easy_table/src/internal/table_layout_settings.dart';
-import 'package:easy_table/src/pin_status.dart';
 import 'package:easy_table/src/theme/theme_data.dart';
 import 'package:flutter/rendering.dart';
 import 'package:meta/meta.dart';
@@ -14,9 +16,11 @@ class TableLayoutRenderBox<ROW> extends RenderBox
         RenderBoxContainerDefaultsMixin<RenderBox, TableLayoutParentData> {
   TableLayoutRenderBox(
       {required TableLayoutSettings layoutSettings,
-      required EasyTableThemeData theme})
+      required EasyTableThemeData theme,
+      required HorizontalScrollOffsets horizontalScrollOffsets})
       : _layoutSettings = layoutSettings,
-        _theme = theme;
+        _theme = theme,
+        _horizontalScrollOffsets = horizontalScrollOffsets;
 
   RenderBox? _header;
   RenderBox? _rows;
@@ -25,6 +29,15 @@ class TableLayoutRenderBox<ROW> extends RenderBox
   RenderBox? _leftPinnedHorizontalScrollbar;
   RenderBox? _topCorner;
   RenderBox? _bottomCorner;
+
+  HorizontalScrollOffsets _horizontalScrollOffsets;
+
+  set horizontalScrollOffsets(HorizontalScrollOffsets value) {
+    if (_horizontalScrollOffsets != value) {
+      _horizontalScrollOffsets = value;
+      markNeedsPaint();
+    }
+  }
 
   EasyTableThemeData _theme;
 
@@ -153,9 +166,14 @@ class TableLayoutRenderBox<ROW> extends RenderBox
 
   @override
   double computeMaxIntrinsicHeight(double width) {
+    final int maxVisibleRowsLength = LayoutUtils.maxVisibleRowsLength(
+        scrollOffset: 0,
+        visibleAreaHeight: _layoutSettings.cellsBounds.height,
+        rowHeight: _layoutSettings.themeMetrics.row.height);
+    final int visibleRowsLength =
+        math.min(_layoutSettings.rowsLength, maxVisibleRowsLength);
     return computeMinIntrinsicHeight(width) +
-        (_layoutSettings.visibleRowsLength *
-            _layoutSettings.themeMetrics.cell.height) +
+        (visibleRowsLength * _layoutSettings.themeMetrics.cell.height) +
         _layoutSettings.themeMetrics.scrollbar.height;
   }
 
@@ -194,184 +212,26 @@ class TableLayoutRenderBox<ROW> extends RenderBox
         child: _rows,
         clipBounds: _layoutSettings.cellsBounds);
 
-    // column dividers
-    if (_theme.columnDividerThickness > 0 &&
-        (_theme.header.columnDividerColor != null ||
-            _theme.columnDividerColor != null ||
-            _theme.scrollbar.columnDividerColor != null)) {
-      _MetricsForLastRowWidget? metricsForLastRowWidget;
-      if (_layoutSettings.hasLastRowWidget) {
-        final int rowIndex = _layoutSettings.rowsLength - 1;
-        if (rowIndex >= _layoutSettings.firstRowIndex &&
-            rowIndex <
-                _layoutSettings.firstRowIndex +
-                    _layoutSettings.visibleRowsLength) {
-          final double top1 = offset.dy + _layoutSettings.headerBounds.height;
-          final double lastRowWidgetTop = _layoutSettings.headerBounds.height +
-              (rowIndex * _layoutSettings.themeMetrics.row.height) -
-              _layoutSettings.offsets.vertical +
-              offset.dy;
-          final height1 = lastRowWidgetTop - top1;
-          final top2 =
-              lastRowWidgetTop + _layoutSettings.themeMetrics.cell.height;
-          final height2 = _layoutSettings.cellsBounds.height -
-              lastRowWidgetTop -
-              _layoutSettings.themeMetrics.cell.height +
+    // scrollbar column divider
+    if (_layoutSettings.themeMetrics.columnDividerThickness > 0 &&
+        _layoutSettings.leftPinnedHorizontalScrollbarBounds.width > 0 &&
+        _layoutSettings.leftPinnedHorizontalScrollbarBounds.width <
+            _layoutSettings.cellsBounds.width &&
+        _theme.scrollbar.columnDividerColor != null) {
+      context.canvas.save();
+      context.canvas.clipRect(Rect.fromLTWH(offset.dx, offset.dy,
+          _layoutSettings.cellsBounds.width, _layoutSettings.height));
+      context.canvas.drawRect(
+          Rect.fromLTWH(
+              offset.dx +
+                  _layoutSettings.leftPinnedHorizontalScrollbarBounds.width,
               offset.dy +
-              _layoutSettings.headerBounds.height;
-          metricsForLastRowWidget = _MetricsForLastRowWidget(
-              top1: top1, height1: height1, top2: top2, height2: height2);
-        }
-      }
-
-      Paint? headerPaint;
-      if (_layoutSettings.themeMetrics.header.visible &&
-          _theme.header.columnDividerColor != null) {
-        headerPaint = Paint()..color = _theme.header.columnDividerColor!;
-      }
-      Paint? columnPaint;
-      if (_theme.columnDividerColor != null) {
-        columnPaint = Paint()..color = _theme.columnDividerColor!;
-      }
-
-      bool needAreaDivisor = false;
-      for (int columnIndex = 0;
-          columnIndex < _layoutSettings.columnsMetrics.length;
-          columnIndex++) {
-        final ColumnMetrics columnMetrics =
-            _layoutSettings.columnsMetrics[columnIndex];
-        final PinStatus pinStatus = columnMetrics.pinStatus;
-        final Rect areaBounds = _layoutSettings.getAreaBounds(pinStatus);
-        final double scrollOffset =
-            _layoutSettings.offsets.getHorizontal(pinStatus);
-        double left = offset.dx +
-            columnMetrics.offset +
-            columnMetrics.width -
-            scrollOffset;
-        context.canvas.save();
-        context.canvas.clipRect(areaBounds.translate(offset.dx, offset.dy));
-        if (headerPaint != null) {
-          context.canvas.drawRect(
-              Rect.fromLTWH(
-                  left,
-                  offset.dy,
-                  _layoutSettings.themeMetrics.columnDividerThickness,
-                  _layoutSettings.themeMetrics.headerCell.height),
-              headerPaint);
-        }
-        if (columnPaint != null) {
-          if (metricsForLastRowWidget != null) {
-            context.canvas.drawRect(
-                Rect.fromLTWH(
-                    left,
-                    metricsForLastRowWidget.top1,
-                    _layoutSettings.themeMetrics.columnDividerThickness,
-                    metricsForLastRowWidget.height1),
-                columnPaint);
-            if (_theme.columnDividerFillHeight) {
-              context.canvas.drawRect(
-                  Rect.fromLTWH(
-                      left,
-                      metricsForLastRowWidget.top2,
-                      _layoutSettings.themeMetrics.columnDividerThickness,
-                      metricsForLastRowWidget.height2),
-                  columnPaint);
-            }
-          } else {
-            if (_theme.columnDividerFillHeight) {
-              context.canvas.drawRect(
-                  Rect.fromLTWH(
-                      left,
-                      offset.dy + _layoutSettings.headerBounds.height,
-                      _layoutSettings.themeMetrics.columnDividerThickness,
-                      _layoutSettings.cellsBounds.height),
-                  columnPaint);
-            } else {
-              context.canvas.drawRect(
-                  Rect.fromLTWH(
-                      left,
-                      offset.dy + _layoutSettings.headerBounds.height,
-                      _layoutSettings.themeMetrics.columnDividerThickness,
-                      _layoutSettings.visibleRowsLength *
-                          _layoutSettings.themeMetrics.row.height),
-                  columnPaint);
-            }
-          }
-        }
-        context.canvas.restore();
-        if (pinStatus == PinStatus.left) {
-          needAreaDivisor = true;
-        } else if (needAreaDivisor && pinStatus == PinStatus.none) {
-          needAreaDivisor = false;
-          context.canvas.save();
-          context.canvas.clipRect(Rect.fromLTWH(offset.dx, offset.dy,
-              _layoutSettings.cellsBounds.width, _layoutSettings.height));
-          left = offset.dx +
-              columnMetrics.offset -
-              _layoutSettings.themeMetrics.columnDividerThickness;
-          if (headerPaint != null) {
-            context.canvas.drawRect(
-                Rect.fromLTWH(
-                    left,
-                    offset.dy,
-                    _layoutSettings.themeMetrics.columnDividerThickness,
-                    _layoutSettings.themeMetrics.headerCell.height),
-                headerPaint);
-          }
-          if (columnPaint != null) {
-            if (metricsForLastRowWidget != null) {
-              context.canvas.drawRect(
-                  Rect.fromLTWH(
-                      left,
-                      metricsForLastRowWidget.top1,
-                      _layoutSettings.themeMetrics.columnDividerThickness,
-                      metricsForLastRowWidget.height1),
-                  columnPaint);
-              if (_theme.columnDividerFillHeight) {
-                context.canvas.drawRect(
-                    Rect.fromLTWH(
-                        left,
-                        metricsForLastRowWidget.top2,
-                        _layoutSettings.themeMetrics.columnDividerThickness,
-                        metricsForLastRowWidget.height2),
-                    columnPaint);
-              }
-            } else {
-              if (_theme.columnDividerFillHeight) {
-                context.canvas.drawRect(
-                    Rect.fromLTWH(
-                        left,
-                        offset.dy + _layoutSettings.headerBounds.height,
-                        _layoutSettings.themeMetrics.columnDividerThickness,
-                        _layoutSettings.cellsBounds.height),
-                    columnPaint);
-              } else {
-                context.canvas.drawRect(
-                    Rect.fromLTWH(
-                        left,
-                        offset.dy + _layoutSettings.headerBounds.height,
-                        _layoutSettings.themeMetrics.columnDividerThickness,
-                        _layoutSettings.visibleRowsLength *
-                            _layoutSettings.themeMetrics.row.height),
-                    columnPaint);
-              }
-            }
-          }
-          if (_layoutSettings.hasHorizontalScrollbar &&
-              _theme.scrollbar.columnDividerColor != null) {
-            context.canvas.drawRect(
-                Rect.fromLTWH(
-                    left,
-                    offset.dy +
-                        _layoutSettings.headerBounds.height +
-                        _layoutSettings.cellsBounds.height,
-                    _layoutSettings.themeMetrics.columnDividerThickness,
-                    _layoutSettings.themeMetrics.scrollbar.height),
-                Paint()..color = _theme.scrollbar.columnDividerColor!);
-          }
-          context.canvas.restore();
-        }
-      }
+                  _layoutSettings.headerBounds.height +
+                  _layoutSettings.cellsBounds.height,
+              _layoutSettings.themeMetrics.columnDividerThickness,
+              _layoutSettings.leftPinnedHorizontalScrollbarBounds.height),
+          Paint()..color = _theme.scrollbar.columnDividerColor!);
+      context.canvas.restore();
     }
   }
 
@@ -398,20 +258,6 @@ class TableLayoutRenderBox<ROW> extends RenderBox
       }
     }
   }
-}
-
-/// Cells metrics when last row widget is visible
-class _MetricsForLastRowWidget {
-  _MetricsForLastRowWidget(
-      {required this.top1,
-      required this.height1,
-      required this.top2,
-      required this.height2});
-
-  final double top1;
-  final double height1;
-  final double top2;
-  final double height2;
 }
 
 /// Utility extension to facilitate obtaining parent data.

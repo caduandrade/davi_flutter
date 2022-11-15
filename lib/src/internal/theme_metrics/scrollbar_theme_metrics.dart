@@ -10,6 +10,7 @@ class TableScrollbarThemeMetrics {
   final double borderThickness;
 
   double get width => borderThickness + thickness;
+
   double get height => borderThickness + thickness;
 
   @override

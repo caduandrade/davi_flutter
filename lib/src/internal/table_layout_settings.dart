@@ -1,16 +1,14 @@
 import 'dart:math' as math;
 
+import 'package:collection/collection.dart';
 import 'package:easy_table/src/column.dart';
 import 'package:easy_table/src/internal/column_metrics.dart';
-import 'package:easy_table/src/internal/layout_utils.dart';
 import 'package:easy_table/src/internal/theme_metrics/theme_metrics.dart';
-import 'package:easy_table/src/pin_status.dart';
-import 'package:easy_table/src/internal/scroll_offsets.dart';
 import 'package:easy_table/src/model.dart';
+import 'package:easy_table/src/pin_status.dart';
 import 'package:easy_table/src/theme/theme_data.dart';
 import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
-import 'package:collection/collection.dart';
 
 @internal
 class TableLayoutSettings {
@@ -20,7 +18,6 @@ class TableLayoutSettings {
       required bool columnsFit,
       required TableThemeMetrics themeMetrics,
       required int? visibleRowsLength,
-      required TableScrollOffsets offsets,
       required bool hasLastRowWidget,
       required EasyTableThemeData theme}) {
     if (!constraints.hasBoundedWidth) {
@@ -41,7 +38,7 @@ class TableLayoutSettings {
     final int rowsLength =
         (model != null ? model.rowsLength : 0) + (hasLastRowWidget ? 1 : 0);
 
-    // Let's find out the dynamic values given the constraints!!!
+    // Let's find out the dynamic metrics given the constraints!!!
     // I'm so excited!!!
 
     final double height;
@@ -158,8 +155,6 @@ class TableLayoutSettings {
       columnsMetrics = UnmodifiableListView<ColumnMetrics>([]);
     }
 
-    final int firstRowIndex =
-        (offsets.vertical / themeMetrics.row.height).floor();
     final double contentHeight = model != null
         ? math.max(
             0,
@@ -203,13 +198,6 @@ class TableLayoutSettings {
               (visibleRowsLength! * themeMetrics.row.height) -
                   themeMetrics.row.dividerThickness));
     }
-    final int maxVisibleRowsLength = LayoutUtils.maxVisibleRowsLength(
-        scrollOffset: offsets.vertical,
-        visibleAreaHeight: cellsBounds.height,
-        rowHeight: themeMetrics.row.height);
-    final int effectiveVisibleRowsLength =
-        model != null ? math.min(rowsLength, maxVisibleRowsLength) : 0;
-
     if (hasHorizontalScrollbar) {
       final double top = headerBounds.height + cellsBounds.height;
       final double leftDivisorWidth =
@@ -268,14 +256,10 @@ class TableLayoutSettings {
     IterableEquality iterableEquality = const IterableEquality();
     final int hashCode = iterableEquality.hash(columnsMetrics) ^
         height.hashCode ^
-        offsets.hashCode ^
         rowsLength.hashCode ^
         columnsFit.hashCode ^
-        firstRowIndex.hashCode ^
         contentHeight.hashCode ^
         themeMetrics.hashCode ^
-        effectiveVisibleRowsLength.hashCode ^
-        maxVisibleRowsLength.hashCode ^
         hasLastRowWidget.hashCode ^
         headerBounds.hashCode ^
         cellsBounds.hashCode ^
@@ -296,13 +280,9 @@ class TableLayoutSettings {
         columnsFit: columnsFit,
         height: height,
         themeMetrics: themeMetrics,
-        offsets: offsets,
-        firstRowIndex: firstRowIndex,
         contentHeight: contentHeight,
         hasVerticalScrollbar: hasVerticalScrollbar,
         hasHorizontalScrollbar: hasHorizontalScrollbar,
-        visibleRowsLength: effectiveVisibleRowsLength,
-        maxVisibleRowsLength: maxVisibleRowsLength,
         columnsMetrics: columnsMetrics,
         hasLastRowWidget: hasLastRowWidget,
         rowsLength: rowsLength,
@@ -326,15 +306,11 @@ class TableLayoutSettings {
       required this.leftPinnedContentWidth,
       required this.unpinnedContentWidth,
       required this.height,
-      required this.offsets,
       required this.hasLastRowWidget,
       required this.rowsLength,
-      required this.firstRowIndex,
       required this.contentHeight,
       required this.hasVerticalScrollbar,
       required this.hasHorizontalScrollbar,
-      required this.visibleRowsLength,
-      required this.maxVisibleRowsLength,
       required this.columnsMetrics,
       required this.headerBounds,
       required this.cellsBounds,
@@ -349,8 +325,6 @@ class TableLayoutSettings {
   final TableThemeMetrics themeMetrics;
   final bool columnsFit;
   final double height;
-  final TableScrollOffsets offsets;
-  final int firstRowIndex;
   final double contentHeight;
   final double unpinnedContentWidth;
   final double leftPinnedContentWidth;
@@ -358,10 +332,6 @@ class TableLayoutSettings {
   final bool hasHorizontalScrollbar;
   final bool hasLastRowWidget;
   final int rowsLength;
-
-  /// The number of rows that can be visible at the available height.
-  final int maxVisibleRowsLength;
-  final int visibleRowsLength;
   final List<ColumnMetrics> columnsMetrics;
   final Rect headerBounds;
   final Rect cellsBounds;

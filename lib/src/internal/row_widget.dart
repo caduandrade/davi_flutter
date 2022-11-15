@@ -1,7 +1,9 @@
 import 'package:easy_table/easy_table.dart';
-import 'package:easy_table/src/internal/columns_layout_child.dart';
+import 'package:easy_table/src/internal/cell_widget.dart';
 import 'package:easy_table/src/internal/columns_layout.dart';
+import 'package:easy_table/src/internal/columns_layout_child.dart';
 import 'package:easy_table/src/internal/row_callbacks.dart';
+import 'package:easy_table/src/internal/scroll_offsets.dart';
 import 'package:easy_table/src/internal/table_layout_settings.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +20,8 @@ class RowWidget<ROW> extends StatefulWidget {
       required this.columnResizing,
       required this.color,
       required this.model,
-      required this.rowCallbacks})
+      required this.rowCallbacks,
+      required this.horizontalScrollOffsets})
       : super(key: ValueKey<int>(index));
 
   final ROW row;
@@ -30,6 +33,7 @@ class RowWidget<ROW> extends StatefulWidget {
   final TableLayoutSettings layoutSettings;
   final RowCallbacks<ROW> rowCallbacks;
   final EasyTableRowColor<ROW>? color;
+  final HorizontalScrollOffsets horizontalScrollOffsets;
 
   @override
   State<StatefulWidget> createState() => RowWidgetState<ROW>();
@@ -61,13 +65,17 @@ class RowWidgetState<ROW> extends State<RowWidget<ROW>> {
         columnIndex < widget.model.columnsLength;
         columnIndex++) {
       final EasyTableColumn<ROW> column = widget.model.columnAt(columnIndex);
-      final Widget cell =
-          _buildCellWidget(context: context, column: column, theme: theme);
+      final CellWidget<ROW> cell = CellWidget(
+          column: column, columnIndex: columnIndex, rowData: _rowData);
+
       children.add(ColumnsLayoutChild<ROW>(index: columnIndex, child: cell));
     }
 
     Widget layout = ColumnsLayout(
-        layoutSettings: widget.layoutSettings, children: children);
+        layoutSettings: widget.layoutSettings,
+        horizontalScrollOffsets: widget.horizontalScrollOffsets,
+        paintDividerColumns: false,
+        children: children);
 
     if (widget.rowCallbacks.hasCallback) {
       layout = GestureDetector(
@@ -123,64 +131,6 @@ class RowWidgetState<ROW> extends State<RowWidget<ROW>> {
     return layout;
   }
 
-  Widget _buildCellWidget(
-      {required BuildContext context,
-      required EasyTableColumn<ROW> column,
-      required EasyTableThemeData theme}) {
-    // Theme
-    EdgeInsets? padding = theme.cell.padding;
-    Alignment? alignment = theme.cell.alignment;
-    TextStyle? textStyle = theme.cell.textStyle;
-    TextOverflow? overflow = theme.cell.overflow;
-    // Entire column
-    padding = column.cellPadding ?? padding;
-    alignment = column.cellAlignment ?? alignment;
-    Color? background =
-        column.cellBackground != null ? column.cellBackground!(_rowData) : null;
-    textStyle = column.cellTextStyle ?? textStyle;
-    overflow = column.cellOverflow ?? overflow;
-    // Single cell
-    if (column.cellStyleBuilder != null) {
-      CellStyle? cellStyle = column.cellStyleBuilder!(_rowData);
-      if (cellStyle != null) {
-        padding = cellStyle.padding ?? padding;
-        alignment = cellStyle.alignment ?? alignment;
-        background = cellStyle.background ?? background;
-        textStyle = cellStyle.textStyle ?? textStyle;
-        overflow = cellStyle.overflow ?? overflow;
-      }
-    }
-
-    Widget? child;
-    if (column.cellBuilder != null) {
-      child = column.cellBuilder!(context, _rowData);
-    } else if (column.iconValueMapper != null) {
-      CellIcon? cellIcon = column.iconValueMapper!(widget.row);
-      if (cellIcon != null) {
-        child = Icon(cellIcon.icon, color: cellIcon.color, size: cellIcon.size);
-      }
-    } else {
-      String? value = _stringValue(column: column, row: widget.row);
-      if (value != null) {
-        child = Text(value,
-            overflow: overflow ?? theme.cell.overflow,
-            style: textStyle ?? theme.cell.textStyle);
-      } else if (theme.cell.nullValueColor != null) {
-        background = theme.cell.nullValueColor!(widget.index, _rowData.hovered);
-      }
-    }
-    if (child != null) {
-      child = Align(alignment: alignment, child: child);
-      if (padding != null) {
-        child = Padding(padding: padding, child: child);
-      }
-    }
-    if (background != null) {
-      child = Container(color: background, child: child);
-    }
-    return ClipRect(child: child);
-  }
-
   GestureTapCallback? _buildOnTap() {
     if (widget.rowCallbacks.onRowTap != null) {
       return () => widget.rowCallbacks.onRowTap!(widget.row);
@@ -198,27 +148,6 @@ class RowWidgetState<ROW> extends State<RowWidget<ROW>> {
   GestureTapCallback? _buildOnSecondaryTap() {
     if (widget.rowCallbacks.onRowSecondaryTap != null) {
       return () => widget.rowCallbacks.onRowSecondaryTap!(widget.row);
-    }
-    return null;
-  }
-
-  String? _stringValue(
-      {required EasyTableColumn<ROW> column, required ROW row}) {
-    if (column.stringValueMapper != null) {
-      return column.stringValueMapper!(row);
-    } else if (column.intValueMapper != null) {
-      return column.intValueMapper!(row)?.toString();
-    } else if (column.doubleValueMapper != null) {
-      final double? doubleValue = column.doubleValueMapper!(row);
-      if (doubleValue != null) {
-        if (column.fractionDigits != null) {
-          return doubleValue.toStringAsFixed(column.fractionDigits!);
-        } else {
-          return doubleValue.toString();
-        }
-      }
-    } else if (column.objectValueMapper != null) {
-      return column.objectValueMapper!(row)?.toString();
     }
     return null;
   }
