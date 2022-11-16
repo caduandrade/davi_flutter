@@ -1,39 +1,41 @@
+import 'package:easy_table/src/internal/scroll_controllers.dart';
 import 'package:easy_table/src/pin_status.dart';
 import 'package:meta/meta.dart';
 
 @internal
-class TableScrollOffsets {
-  TableScrollOffsets(
-      {required this.leftPinnedContentArea,
-      required this.unpinnedContentArea,
-      required this.vertical}) {
-    _horizontal = {
-      PinStatus.left: leftPinnedContentArea,
-      PinStatus.none: unpinnedContentArea
-    };
+class HorizontalScrollOffsets {
+  factory HorizontalScrollOffsets(ScrollControllers scrollControllers) {
+    return HorizontalScrollOffsets._(
+        leftPinned: scrollControllers.leftPinnedHorizontal.hasClients
+            ? scrollControllers.leftPinnedHorizontal.offset
+            : 0,
+        unpinned: scrollControllers.unpinnedHorizontal.hasClients
+            ? scrollControllers.unpinnedHorizontal.offset
+            : 0);
   }
 
-  final double leftPinnedContentArea;
-  final double unpinnedContentArea;
-  final double vertical;
-  late final Map<PinStatus, double> _horizontal;
+  HorizontalScrollOffsets._({required this.leftPinned, required this.unpinned});
 
-  double getHorizontal(PinStatus pinStatus) {
-    return _horizontal[pinStatus]!;
+  final double leftPinned;
+  final double unpinned;
+
+  double getOffset(PinStatus pinStatus) {
+    if (pinStatus == PinStatus.none) {
+      return unpinned;
+    } else if (pinStatus == PinStatus.left) {
+      return leftPinned;
+    }
+    throw ArgumentError('PinStatus not supported: $pinStatus');
   }
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is TableScrollOffsets &&
+      other is HorizontalScrollOffsets &&
           runtimeType == other.runtimeType &&
-          leftPinnedContentArea == other.leftPinnedContentArea &&
-          unpinnedContentArea == other.unpinnedContentArea &&
-          vertical == other.vertical;
+          leftPinned == other.leftPinned &&
+          unpinned == other.unpinned;
 
   @override
-  int get hashCode =>
-      leftPinnedContentArea.hashCode ^
-      unpinnedContentArea.hashCode ^
-      vertical.hashCode;
+  int get hashCode => leftPinned.hashCode ^ unpinned.hashCode;
 }

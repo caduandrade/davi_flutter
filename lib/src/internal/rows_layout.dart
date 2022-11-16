@@ -2,7 +2,10 @@ import 'package:easy_table/src/internal/rows_layout_child.dart';
 import 'package:easy_table/src/internal/rows_layout_element.dart';
 import 'package:easy_table/src/internal/rows_layout_render_box.dart';
 import 'package:easy_table/src/internal/rows_painting_settings.dart';
+import 'package:easy_table/src/internal/scroll_offsets.dart';
 import 'package:easy_table/src/internal/table_layout_settings.dart';
+import 'package:easy_table/src/theme/theme.dart';
+import 'package:easy_table/src/theme/theme_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
@@ -14,16 +17,25 @@ class RowsLayout<ROW> extends MultiChildRenderObjectWidget {
       {Key? key,
       required this.layoutSettings,
       required this.paintSettings,
+      required this.verticalOffset,
+      required this.horizontalScrollOffsets,
       required List<RowsLayoutChild> children})
       : super(key: key, children: children);
 
   final TableLayoutSettings layoutSettings;
   final RowsPaintingSettings paintSettings;
+  final double verticalOffset;
+  final HorizontalScrollOffsets horizontalScrollOffsets;
 
   @override
   RenderObject createRenderObject(BuildContext context) {
+    EasyTableThemeData theme = EasyTableTheme.of(context);
     return RowsLayoutRenderBox(
-        layoutSettings: layoutSettings, paintSettings: paintSettings);
+        layoutSettings: layoutSettings,
+        paintSettings: paintSettings,
+        verticalOffset: verticalOffset,
+        theme: theme,
+        horizontalScrollOffsets: horizontalScrollOffsets);
   }
 
   @override
@@ -34,9 +46,13 @@ class RowsLayout<ROW> extends MultiChildRenderObjectWidget {
   @override
   void updateRenderObject(
       BuildContext context, covariant RowsLayoutRenderBox renderObject) {
+    EasyTableThemeData theme = EasyTableTheme.of(context);
     super.updateRenderObject(context, renderObject);
     renderObject
       ..layoutSettings = layoutSettings
-      ..paintSettings = paintSettings;
+      ..paintSettings = paintSettings
+      ..verticalOffset = verticalOffset
+      ..theme = theme
+      ..horizontalScrollOffsets = horizontalScrollOffsets;
   }
 }

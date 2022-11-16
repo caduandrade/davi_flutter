@@ -2,10 +2,11 @@ import 'package:easy_table/src/internal/header_widget.dart';
 import 'package:easy_table/src/internal/layout_child_id.dart';
 import 'package:easy_table/src/internal/row_callbacks.dart';
 import 'package:easy_table/src/internal/rows_builder.dart';
-import 'package:easy_table/src/internal/table_layout_parent_data.dart';
-import 'package:easy_table/src/internal/table_layout.dart';
-import 'package:easy_table/src/internal/table_layout_settings.dart';
+import 'package:easy_table/src/internal/scroll_offsets.dart';
 import 'package:easy_table/src/internal/table_corner.dart';
+import 'package:easy_table/src/internal/table_layout.dart';
+import 'package:easy_table/src/internal/table_layout_parent_data.dart';
+import 'package:easy_table/src/internal/table_layout_settings.dart';
 import 'package:easy_table/src/internal/table_scrollbar.dart';
 import 'package:easy_table/src/model.dart';
 import 'package:easy_table/src/row_color.dart';
@@ -20,6 +21,7 @@ class TableLayoutChild<ROW> extends ParentDataWidget<TableLayoutParentData> {
       {required TableLayoutSettings layoutSettings,
       required EasyTableModel<ROW>? model,
       required bool resizable,
+      required HorizontalScrollOffsets horizontalScrollOffsets,
       required bool multiSort}) {
     return TableLayoutChild._(
         id: LayoutChildId.header,
@@ -27,6 +29,7 @@ class TableLayoutChild<ROW> extends ParentDataWidget<TableLayoutParentData> {
             ? HeaderWidget(
                 layoutSettings: layoutSettings,
                 model: model,
+                horizontalScrollOffsets: horizontalScrollOffsets,
                 resizable: resizable,
                 multiSort: multiSort)
             : Container());
@@ -36,20 +39,30 @@ class TableLayoutChild<ROW> extends ParentDataWidget<TableLayoutParentData> {
       {required EasyTableModel<ROW>? model,
       required TableLayoutSettings layoutSettings,
       required bool scrolling,
+      required HorizontalScrollOffsets horizontalScrollOffsets,
+      required ScrollController verticalScrollController,
       required OnRowHoverListener? onHover,
       required RowCallbacks<ROW> rowCallbacks,
       required EasyTableRowColor<ROW>? rowColor,
       required Widget? lastRowWidget}) {
     return TableLayoutChild._(
         id: LayoutChildId.rows,
-        child: RowsBuilder<ROW>(
-            model: model,
-            layoutSettings: layoutSettings,
-            onHover: onHover,
-            rowCallbacks: rowCallbacks,
-            scrolling: scrolling,
-            rowColor: rowColor,
-            lastRowWidget: lastRowWidget));
+        child: AnimatedBuilder(
+            animation: verticalScrollController,
+            builder: (BuildContext context, Widget? child) {
+              return RowsBuilder<ROW>(
+                  model: model,
+                  layoutSettings: layoutSettings,
+                  onHover: onHover,
+                  rowCallbacks: rowCallbacks,
+                  scrolling: scrolling,
+                  verticalOffset: verticalScrollController.hasClients
+                      ? verticalScrollController.offset
+                      : 0,
+                  horizontalScrollOffsets: horizontalScrollOffsets,
+                  rowColor: rowColor,
+                  lastRowWidget: lastRowWidget);
+            }));
   }
 
   factory TableLayoutChild.bottomCorner() {
@@ -62,8 +75,7 @@ class TableLayoutChild<ROW> extends ParentDataWidget<TableLayoutParentData> {
         id: LayoutChildId.topCorner, child: const TableCorner(top: true));
   }
 
-  factory TableLayoutChild.leftPinnedHorizontalScrollbar(
-      TableScrollbar scrollbar) {
+  factory TableLayoutChild.leftPinnedHorizontalScrollbar(Widget scrollbar) {
     return TableLayoutChild._(
         id: LayoutChildId.leftPinnedHorizontalScrollbar, child: scrollbar);
   }

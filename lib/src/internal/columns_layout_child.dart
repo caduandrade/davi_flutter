@@ -1,5 +1,5 @@
-import 'package:easy_table/src/internal/columns_layout_parent_data.dart';
 import 'package:easy_table/src/internal/columns_layout.dart';
+import 'package:easy_table/src/internal/columns_layout_parent_data.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
@@ -10,7 +10,7 @@ class ColumnsLayoutChild<ROW>
   ColumnsLayoutChild({
     required this.index,
     required Widget child,
-  }) : super(key: ValueKey<int>(index), child: child);
+  }) : super(key: ValueKey(index), child: child);
 
   final int index;
 

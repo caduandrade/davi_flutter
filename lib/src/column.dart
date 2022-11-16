@@ -1,9 +1,10 @@
 import 'dart:math' as math;
+
 import 'package:easy_table/src/cell_background.dart';
 import 'package:easy_table/src/cell_builder.dart';
 import 'package:easy_table/src/cell_style.dart';
-import 'package:easy_table/src/pin_status.dart';
 import 'package:easy_table/src/model.dart';
+import 'package:easy_table/src/pin_status.dart';
 import 'package:easy_table/src/value_mapper.dart';
 import 'package:flutter/widgets.dart';
 
@@ -52,6 +53,7 @@ class EasyTableColumn<ROW> extends ChangeNotifier with ColumnSortMixin {
       TextOverflow? cellOverflow,
       CellBackgroundBuilder<ROW>? cellBackground,
       TextStyle? headerTextStyle,
+      bool cellClip = false,
       Widget? leading,
       EasyTableCellBuilder<ROW>? cellBuilder,
       EasyTableColumnSort<ROW>? sort,
@@ -153,7 +155,8 @@ class EasyTableColumn<ROW> extends ChangeNotifier with ColumnSortMixin {
         cellAlignment: cellAlignment,
         headerTextStyle: headerTextStyle,
         cellTextStyle: cellTextStyle,
-        cellStyleBuilder: cellStyleBuilder);
+        cellStyleBuilder: cellStyleBuilder,
+        cellClip: cellClip);
   }
 
   EasyTableColumn._(
@@ -180,6 +183,7 @@ class EasyTableColumn<ROW> extends ChangeNotifier with ColumnSortMixin {
       required this.doubleValueMapper,
       required this.objectValueMapper,
       required this.resizable,
+      required this.cellClip,
       required bool sortable,
       required this.cellStyleBuilder})
       : _width = width,
@@ -207,6 +211,7 @@ class EasyTableColumn<ROW> extends ChangeNotifier with ColumnSortMixin {
   final EasyTableObjectValueMapper<ROW>? objectValueMapper;
   final EasyTableIconValueMapper<ROW>? iconValueMapper;
   final CellStyleBuilder<ROW>? cellStyleBuilder;
+  final bool cellClip;
   final bool _sortable;
   double _width;
   double _weight;

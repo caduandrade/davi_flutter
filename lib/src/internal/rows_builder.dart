@@ -1,8 +1,12 @@
+import 'dart:math' as math;
+
+import 'package:easy_table/src/internal/layout_utils.dart';
 import 'package:easy_table/src/internal/row_callbacks.dart';
 import 'package:easy_table/src/internal/row_widget.dart';
-import 'package:easy_table/src/internal/rows_layout_child.dart';
 import 'package:easy_table/src/internal/rows_layout.dart';
+import 'package:easy_table/src/internal/rows_layout_child.dart';
 import 'package:easy_table/src/internal/rows_painting_settings.dart';
+import 'package:easy_table/src/internal/scroll_offsets.dart';
 import 'package:easy_table/src/internal/table_layout_settings.dart';
 import 'package:easy_table/src/model.dart';
 import 'package:easy_table/src/row_color.dart';
@@ -22,12 +26,16 @@ class RowsBuilder<ROW> extends StatelessWidget {
       required this.scrolling,
       required this.rowCallbacks,
       required this.rowColor,
+      required this.verticalOffset,
+      required this.horizontalScrollOffsets,
       required this.lastRowWidget})
       : super(key: key);
 
   final EasyTableModel<ROW>? model;
   final TableLayoutSettings layoutSettings;
   final bool scrolling;
+  final double verticalOffset;
+  final HorizontalScrollOffsets horizontalScrollOffsets;
   final OnRowHoverListener? onHover;
   final RowCallbacks<ROW> rowCallbacks;
   final Widget? lastRowWidget;
@@ -40,9 +48,17 @@ class RowsBuilder<ROW> extends StatelessWidget {
     List<RowsLayoutChild> children = [];
 
     if (model != null) {
-      final int last =
-          layoutSettings.firstRowIndex + layoutSettings.visibleRowsLength;
-      for (int rowIndex = layoutSettings.firstRowIndex;
+      final int firstRowIndex =
+          (verticalOffset / layoutSettings.themeMetrics.row.height).floor();
+      final int maxVisibleRowsLength = LayoutUtils.maxVisibleRowsLength(
+          scrollOffset: verticalOffset,
+          visibleAreaHeight: layoutSettings.cellsBounds.height,
+          rowHeight: layoutSettings.themeMetrics.row.height);
+      final int visibleRowsLength =
+          math.min(layoutSettings.rowsLength, maxVisibleRowsLength);
+
+      final int last = firstRowIndex + visibleRowsLength;
+      for (int rowIndex = firstRowIndex;
           rowIndex < last && rowIndex < model!.rowsLength;
           rowIndex++) {
         RowWidget<ROW> row = RowWidget<ROW>(
@@ -52,14 +68,14 @@ class RowsBuilder<ROW> extends StatelessWidget {
             layoutSettings: layoutSettings,
             rowCallbacks: rowCallbacks,
             scrolling: scrolling,
+            horizontalScrollOffsets: horizontalScrollOffsets,
             color: rowColor,
             model: model!,
             columnResizing:
                 model != null ? model!.columnInResizing != null : false);
         children.add(RowsLayoutChild(index: rowIndex, last: false, child: row));
       }
-      if (lastRowWidget != null &&
-          children.length < layoutSettings.visibleRowsLength) {
+      if (lastRowWidget != null && children.length < visibleRowsLength) {
         children.add(RowsLayoutChild(
             index: model!.rowsLength, last: true, child: lastRowWidget!));
       }
@@ -68,11 +84,17 @@ class RowsBuilder<ROW> extends StatelessWidget {
           divisorColor: theme.row.dividerColor,
           fillHeight: theme.row.fillHeight,
           lastRowDividerVisible: theme.row.lastDividerVisible,
-          rowColor: theme.row.color);
+          rowColor: theme.row.color,
+          visibleRowsLength: visibleRowsLength,
+          maxVisibleRowsLength: maxVisibleRowsLength,
+          firstRowIndex: firstRowIndex);
+
       return ClipRect(
           child: RowsLayout<ROW>(
               layoutSettings: layoutSettings,
               paintSettings: paintSettings,
+              verticalOffset: verticalOffset,
+              horizontalScrollOffsets: horizontalScrollOffsets,
               children: children));
     }
 

@@ -1,3 +1,4 @@
+import 'package:easy_table/src/internal/scroll_offsets.dart';
 import 'package:easy_table/src/internal/table_layout_child.dart';
 import 'package:easy_table/src/internal/table_layout_element.dart';
 import 'package:easy_table/src/internal/table_layout_render_box.dart';
@@ -14,16 +15,20 @@ class TableLayout<ROW> extends MultiChildRenderObjectWidget {
       {Key? key,
       required this.layoutSettings,
       required this.theme,
+      required this.horizontalScrollOffsets,
       required List<TableLayoutChild> children})
       : super(key: key, children: children);
 
   final TableLayoutSettings layoutSettings;
   final EasyTableThemeData theme;
+  final HorizontalScrollOffsets horizontalScrollOffsets;
 
   @override
   RenderObject createRenderObject(BuildContext context) {
     return TableLayoutRenderBox<ROW>(
-        layoutSettings: layoutSettings, theme: theme);
+        layoutSettings: layoutSettings,
+        theme: theme,
+        horizontalScrollOffsets: horizontalScrollOffsets);
   }
 
   @override
@@ -37,6 +42,7 @@ class TableLayout<ROW> extends MultiChildRenderObjectWidget {
     super.updateRenderObject(context, renderObject);
     renderObject
       ..layoutSettings = layoutSettings
-      ..theme = theme;
+      ..theme = theme
+      ..horizontalScrollOffsets = horizontalScrollOffsets;
   }
 }
