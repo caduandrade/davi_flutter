@@ -7,9 +7,9 @@ name: Format
 
 on:
   push:
-    branches: [ "42-layout-based-on-cells-instead-of-rows" ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ "42-layout-based-on-cells-instead-of-rows" ]
+    branches: [ "main" ]
 
 jobs:
   build:

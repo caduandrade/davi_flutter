@@ -1,3 +1,12 @@
+## 2.1.0
+
+* Improvements
+  * Improved performance by avoiding unnecessary rebuilds. 
+* Bugfix
+  * Scrolling does not work with a trackpad on macOS.
+* New `EasyTableColumn` property
+  * `cellClip`
+
 ## 2.0.1
 
 * Bugfix

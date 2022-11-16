@@ -1,6 +1,5 @@
-import 'dart:ui';
-
 import 'package:easy_table/src/theme/theme_row_color.dart';
+import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
 @internal
