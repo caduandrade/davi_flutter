@@ -73,6 +73,7 @@ class _HomePageState extends State<HomePage> {
           pinStatus: _leftPinned ? PinStatus.left : PinStatus.none,
           name: 'Gender',
           width: 80,
+          cellClip: true,
           iconValue: (row) => row.male
               ? CellIcon(icon: Icons.male, color: Colors.blue[700]!)
               : CellIcon(icon: Icons.female, color: Colors.pink[600]!)),
@@ -82,6 +83,7 @@ class _HomePageState extends State<HomePage> {
       EasyTableColumn(
           name: 'Skills',
           width: 100,
+          cellClip: true,
           cellBuilder: (context, data) =>
               SkillsWidget(skills: data.row.skills)),
       EasyTableColumn(
