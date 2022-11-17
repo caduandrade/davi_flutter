@@ -116,7 +116,7 @@ class _HomePageState extends State<HomePage> {
             lastRowWidget: _lastRowWidget
                 ? const Center(child: Text('LAST ROW WIDGET'))
                 : null,
-        onLastRowWidget: _lastRowWidget?_onLastRowWidget:null),
+            onLastRowWidget: _lastRowWidget ? _onLastRowWidget : null),
         data: EasyTableThemeData(
             columnDividerFillHeight: _columnDividerFillHeight,
             header: HeaderThemeData(visible: _headerVisible),
