@@ -8,6 +8,8 @@ import 'package:easy_table/src/internal/table_layout.dart';
 import 'package:easy_table/src/internal/table_layout_parent_data.dart';
 import 'package:easy_table/src/internal/table_layout_settings.dart';
 import 'package:easy_table/src/internal/table_scrollbar.dart';
+import 'package:easy_table/src/last_row_widget_listener.dart';
+import 'package:easy_table/src/last_visible_row_listener.dart';
 import 'package:easy_table/src/model.dart';
 import 'package:easy_table/src/row_color.dart';
 import 'package:easy_table/src/row_hover_listener.dart';
@@ -44,7 +46,9 @@ class TableLayoutChild<ROW> extends ParentDataWidget<TableLayoutParentData> {
       required OnRowHoverListener? onHover,
       required RowCallbacks<ROW> rowCallbacks,
       required EasyTableRowColor<ROW>? rowColor,
-      required Widget? lastRowWidget}) {
+      required Widget? lastRowWidget,
+        required OnLastRowWidgetListener onLastRowWidget,
+        required OnLastVisibleRowListener onLastVisibleRow}) {
     return TableLayoutChild._(
         id: LayoutChildId.rows,
         child: AnimatedBuilder(
@@ -61,7 +65,9 @@ class TableLayoutChild<ROW> extends ParentDataWidget<TableLayoutParentData> {
                       : 0,
                   horizontalScrollOffsets: horizontalScrollOffsets,
                   rowColor: rowColor,
-                  lastRowWidget: lastRowWidget);
+                  lastRowWidget: lastRowWidget,
+              onLastRowWidget: onLastRowWidget,
+              onLastVisibleRow: onLastVisibleRow);
             }));
   }
 

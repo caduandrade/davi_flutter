@@ -1,7 +1,4 @@
-import 'dart:math' as math;
-
 import 'package:easy_table/src/internal/row_callbacks.dart';
-import 'package:easy_table/src/internal/row_range.dart';
 import 'package:easy_table/src/internal/scroll_controllers.dart';
 import 'package:easy_table/src/internal/scroll_offsets.dart';
 import 'package:easy_table/src/internal/table_layout.dart';
@@ -39,7 +36,7 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
       required this.rowColor})
       : super(key: key);
 
-  final OnLastVisibleRowListener? onLastVisibleRow;
+  final OnLastVisibleRowListener onLastVisibleRow;
   final OnRowHoverListener? onHover;
   final ScrollControllers scrollControllers;
   final EasyTableModel<ROW>? model;
@@ -51,7 +48,7 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
   final RowCallbacks<ROW> rowCallbacks;
   final TableThemeMetrics themeMetrics;
   final Widget? lastRowWidget;
-  final OnLastRowWidgetListener? onLastRowWidget;
+  final OnLastRowWidgetListener onLastRowWidget;
   final EasyTableRowColor<ROW>? rowColor;
 
   @override
@@ -130,38 +127,14 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
         onHover: onHover,
         rowCallbacks: rowCallbacks,
         rowColor: rowColor,
-        lastRowWidget: lastRowWidget));
+        lastRowWidget: lastRowWidget,
+    onLastVisibleRow: onLastVisibleRow,
+    onLastRowWidget: onLastRowWidget));
 
-    Widget layout = TableLayout<ROW>(
+    return TableLayout<ROW>(
         layoutSettings: layoutSettings,
         theme: theme,
         horizontalScrollOffsets: horizontalScrollOffsets,
         children: children);
-    final bool hasLastRowListener =
-        onLastRowWidget != null && layoutSettings.hasLastRowWidget;
-    final bool hasListener = hasLastRowListener || onLastVisibleRow != null;
-    if (hasListener && model != null) {
-      layout = NotificationListener<ScrollMetricsNotification>(
-          child: layout,
-          onNotification: (notification) {
-            RowRange? rowRange = RowRange.build(
-                scrollOffset: scrollControllers.vertical.hasClients
-                    ? scrollControllers.vertical.offset
-                    : 0,
-                visibleAreaHeight: layoutSettings.cellsBounds.height,
-                rowHeight: themeMetrics.row.height);
-            if (rowRange != null) {
-              if (hasLastRowListener) {
-                onLastRowWidget!(rowRange.lastIndex >= model!.rowsLength);
-              }
-              if (onLastVisibleRow != null && model!.isRowsNotEmpty) {
-                onLastVisibleRow!(
-                    math.min(model!.rowsLength - 1, rowRange.lastIndex));
-              }
-            }
-            return false;
-          });
-    }
-    return layout;
   }
 }

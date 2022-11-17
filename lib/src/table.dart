@@ -175,11 +175,8 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
             columnsFit: widget.columnsFit,
             themeMetrics: themeMetrics,
             visibleRowsLength: widget.visibleRowsCount,
-            onLastRowWidget:
-                widget.onLastRowWidget != null ? _onLastRowWidget : null,
-            onLastVisibleRow: widget.onLastVisibleRow != null
-                ? _onLastVisibleRowListener
-                : null,
+            onLastRowWidget: _onLastRowWidget,
+            onLastVisibleRow: _onLastVisibleRowListener,
             model: widget.model,
             scrolling: _scrolling,
             rowColor: widget.rowColor,

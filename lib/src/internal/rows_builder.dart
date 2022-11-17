@@ -8,6 +8,8 @@ import 'package:easy_table/src/internal/rows_layout_child.dart';
 import 'package:easy_table/src/internal/rows_painting_settings.dart';
 import 'package:easy_table/src/internal/scroll_offsets.dart';
 import 'package:easy_table/src/internal/table_layout_settings.dart';
+import 'package:easy_table/src/last_row_widget_listener.dart';
+import 'package:easy_table/src/last_visible_row_listener.dart';
 import 'package:easy_table/src/model.dart';
 import 'package:easy_table/src/row_color.dart';
 import 'package:easy_table/src/row_hover_listener.dart';
@@ -28,7 +30,9 @@ class RowsBuilder<ROW> extends StatelessWidget {
       required this.rowColor,
       required this.verticalOffset,
       required this.horizontalScrollOffsets,
-      required this.lastRowWidget})
+      required this.lastRowWidget,
+      required this.onLastRowWidget,
+      required this.onLastVisibleRow})
       : super(key: key);
 
   final EasyTableModel<ROW>? model;
@@ -40,6 +44,8 @@ class RowsBuilder<ROW> extends StatelessWidget {
   final RowCallbacks<ROW> rowCallbacks;
   final Widget? lastRowWidget;
   final EasyTableRowColor<ROW>? rowColor;
+  final OnLastRowWidgetListener onLastRowWidget;
+  final OnLastVisibleRowListener onLastVisibleRow;
 
   @override
   Widget build(BuildContext context) {
@@ -57,9 +63,9 @@ class RowsBuilder<ROW> extends StatelessWidget {
       final int visibleRowsLength =
           math.min(layoutSettings.rowsLength, maxVisibleRowsLength);
 
-      final int last = firstRowIndex + visibleRowsLength;
+      final int lastRowIndex = math.min(firstRowIndex + visibleRowsLength, model!.rowsLength-1);
       for (int rowIndex = firstRowIndex;
-          rowIndex < last && rowIndex < model!.rowsLength;
+          rowIndex <= lastRowIndex;
           rowIndex++) {
         RowWidget<ROW> row = RowWidget<ROW>(
             index: rowIndex,
@@ -75,9 +81,13 @@ class RowsBuilder<ROW> extends StatelessWidget {
                 model != null ? model!.columnInResizing != null : false);
         children.add(RowsLayoutChild(index: rowIndex, last: false, child: row));
       }
+      onLastVisibleRow(lastRowIndex);
       if (lastRowWidget != null && children.length < visibleRowsLength) {
         children.add(RowsLayoutChild(
             index: model!.rowsLength, last: true, child: lastRowWidget!));
+        onLastRowWidget(true);
+      } else{
+        onLastRowWidget(false);
       }
 
       RowsPaintingSettings paintSettings = RowsPaintingSettings(
@@ -97,7 +107,8 @@ class RowsBuilder<ROW> extends StatelessWidget {
               horizontalScrollOffsets: horizontalScrollOffsets,
               children: children));
     }
-
+    onLastRowWidget(false);
+    onLastVisibleRow(-1);
     return Container();
   }
 }

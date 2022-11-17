@@ -1,3 +1,8 @@
+## 2.2.0
+
+* Bugfix
+  * Functions `onLastRowWidget` and `onLastVisibleRow` are not working properly.  
+
 ## 2.1.0
 
 * Improvements
