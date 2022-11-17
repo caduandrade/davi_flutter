@@ -1,7 +1,6 @@
 import 'dart:math' as math;
 
 import 'package:collection/collection.dart';
-import 'package:easy_table/src/column.dart';
 import 'package:easy_table/src/internal/column_metrics.dart';
 import 'package:easy_table/src/internal/theme_metrics/theme_metrics.dart';
 import 'package:easy_table/src/model.dart';
@@ -257,7 +256,6 @@ class TableLayoutSettings {
     final int hashCode = iterableEquality.hash(columnsMetrics) ^
         height.hashCode ^
         rowsLength.hashCode ^
-        columnsFit.hashCode ^
         contentHeight.hashCode ^
         themeMetrics.hashCode ^
         hasLastRowWidget.hashCode ^
@@ -277,7 +275,6 @@ class TableLayoutSettings {
     // Mission accomplished!
 
     return TableLayoutSettings._(
-        columnsFit: columnsFit,
         height: height,
         themeMetrics: themeMetrics,
         contentHeight: contentHeight,
@@ -302,7 +299,6 @@ class TableLayoutSettings {
 
   TableLayoutSettings._(
       {required this.themeMetrics,
-      required this.columnsFit,
       required this.leftPinnedContentWidth,
       required this.unpinnedContentWidth,
       required this.height,
@@ -323,7 +319,6 @@ class TableLayoutSettings {
       required this.hashCode});
 
   final TableThemeMetrics themeMetrics;
-  final bool columnsFit;
   final double height;
   final double contentHeight;
   final double unpinnedContentWidth;
@@ -349,13 +344,6 @@ class TableLayoutSettings {
       return leftPinnedAreaBounds;
     }
     throw ArgumentError('Not recognized $pinStatus');
-  }
-
-  PinStatus pinStatus(EasyTableColumn column) {
-    if (columnsFit) {
-      return PinStatus.none;
-    }
-    return column.pinStatus;
   }
 
   @override

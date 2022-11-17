@@ -42,7 +42,7 @@ class EasyTable<ROW> extends StatefulWidget {
       this.lastRowWidget,
       this.rowColor,
       this.onLastRowWidget})
-      : _visibleRowsCount = visibleRowsCount == null || visibleRowsCount > 0
+      : visibleRowsCount = visibleRowsCount == null || visibleRowsCount > 0
             ? visibleRowsCount
             : null,
         super(key: key);
@@ -57,14 +57,12 @@ class EasyTable<ROW> extends StatefulWidget {
   final RowTapCallback<ROW>? onRowTap;
   final RowTapCallback<ROW>? onRowSecondaryTap;
   final bool columnsFit;
-  final int? _visibleRowsCount;
+  final int? visibleRowsCount;
   final OnLastVisibleRowListener? onLastVisibleRow;
   final bool focusable;
   final bool multiSort;
   final Widget? lastRowWidget;
   final OnLastRowWidgetListener? onLastRowWidget;
-
-  int? get visibleRowsCount => _visibleRowsCount;
 
   @override
   State<StatefulWidget> createState() => _EasyTableState<ROW>();
