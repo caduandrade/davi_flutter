@@ -115,7 +115,8 @@ class _HomePageState extends State<HomePage> {
                 : null,
             lastRowWidget: _lastRowWidget
                 ? const Center(child: Text('LAST ROW WIDGET'))
-                : null),
+                : null,
+        onLastRowWidget: _lastRowWidget?_onLastRowWidget:null),
         data: EasyTableThemeData(
             columnDividerFillHeight: _columnDividerFillHeight,
             header: HeaderThemeData(visible: _headerVisible),
@@ -169,7 +170,7 @@ class _HomePageState extends State<HomePage> {
                   text: 'Left pinned'),
               CheckboxUtil.build(
                   value: _lastRowWidget,
-                  onChanged: _onLastRowWidget,
+                  onChanged: _onLastRowWidgetSwitch,
                   text: 'Last row widget'),
               CheckboxUtil.build(
                   value: _columnDividerFillHeight,
@@ -302,7 +303,11 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  void _onLastRowWidget() {
+  void _onLastRowWidget(bool visible) {
+    print('last row widget visible: $visible');
+  }
+
+  void _onLastRowWidgetSwitch() {
     setState(() {
       _lastRowWidget = !_lastRowWidget;
     });
