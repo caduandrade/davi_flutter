@@ -1,7 +1,9 @@
 import 'package:easy_table/src/internal/theme_metrics/cell_theme_metrics.dart';
 import 'package:easy_table/src/theme/row_theme_data.dart';
+import 'package:meta/meta.dart';
 
 /// Stores row theme values that change the table layout.
+@internal
 class RowThemeMetrics {
   RowThemeMetrics(
       {required RowThemeData themeData,

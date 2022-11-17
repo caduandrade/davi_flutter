@@ -1,7 +1,9 @@
 import 'package:easy_table/src/theme/cell_theme_data.dart';
 import 'package:flutter/material.dart';
+import 'package:meta/meta.dart';
 
 /// Stores cell theme values that change the table layout.
+@internal
 class CellThemeMetrics {
   CellThemeMetrics({required CellThemeData themeData})
       : padding = themeData.padding,
