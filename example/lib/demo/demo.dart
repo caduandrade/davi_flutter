@@ -115,8 +115,7 @@ class _HomePageState extends State<HomePage> {
                 : null,
             lastRowWidget: _lastRowWidget
                 ? const Center(child: Text('LAST ROW WIDGET'))
-                : null,
-            onLastRowWidget: _lastRowWidget ? _onLastRowWidget : null),
+                : null),
         data: EasyTableThemeData(
             columnDividerFillHeight: _columnDividerFillHeight,
             header: HeaderThemeData(visible: _headerVisible),
@@ -199,27 +198,21 @@ class _HomePageState extends State<HomePage> {
                   onChanged: _onLastRowDividerVisible,
                   text: 'Last row divider visible'),
               const Text('Row theme color'),
-              IntrinsicWidth(
-                  child: ListTile(
-                      title: const Text('None'),
-                      leading: Radio<RowThemeColor>(
-                          value: RowThemeColor.none,
-                          groupValue: _demoBackground,
-                          onChanged: _onBackgroundChanged))),
-              IntrinsicWidth(
-                  child: ListTile(
-                      title: const Text('Simple'),
-                      leading: Radio<RowThemeColor>(
-                          value: RowThemeColor.simple,
-                          groupValue: _demoBackground,
-                          onChanged: _onBackgroundChanged))),
-              IntrinsicWidth(
-                  child: ListTile(
-                      title: const Text('Zebra'),
-                      leading: Radio<RowThemeColor>(
-                          value: RowThemeColor.zebra,
-                          groupValue: _demoBackground,
-                          onChanged: _onBackgroundChanged)))
+              RadioButton<RowThemeColor>(
+                  text: 'None',
+                  value: RowThemeColor.none,
+                  groupValue: _demoBackground,
+                  onChanged: _onBackgroundChanged),
+              RadioButton<RowThemeColor>(
+                  text: 'Simple',
+                  value: RowThemeColor.simple,
+                  groupValue: _demoBackground,
+                  onChanged: _onBackgroundChanged),
+              RadioButton<RowThemeColor>(
+                  text: 'Zebra',
+                  value: RowThemeColor.zebra,
+                  groupValue: _demoBackground,
+                  onChanged: _onBackgroundChanged)
             ]),
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 0)));
   }
@@ -303,10 +296,6 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  void _onLastRowWidget(bool visible) {
-    print('last row widget visible: $visible');
-  }
-
   void _onLastRowWidgetSwitch() {
     setState(() {
       _lastRowWidget = !_lastRowWidget;
@@ -321,3 +310,27 @@ class _HomePageState extends State<HomePage> {
 }
 
 enum RowThemeColor { none, zebra, simple }
+
+class RadioButton<T> extends StatelessWidget {
+  final String text;
+  final ValueChanged<T?>? onChanged;
+  final T? groupValue;
+  final T value;
+
+  const RadioButton(
+      {required this.text,
+      required this.value,
+      required this.onChanged,
+      required this.groupValue,
+      Key? key})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return IntrinsicWidth(
+        child: Row(children: [
+      Radio<T>(value: value, onChanged: onChanged, groupValue: groupValue),
+      Text(text)
+    ]));
+  }
+}

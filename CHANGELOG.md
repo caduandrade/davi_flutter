@@ -2,6 +2,8 @@
 
 * Bugfix
   * Functions `onLastRowWidget` and `onLastVisibleRow` are not working properly.  
+* API change
+  * The `OnLastVisibleRowListener` function will receive null `lastVisibleRowIndex` instead of `-1` value.
 
 ## 2.1.0
 

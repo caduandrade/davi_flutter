@@ -71,13 +71,10 @@ class EasyTable<ROW> extends StatefulWidget {
 /// The [EasyTable] state.
 class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
   late ScrollControllers _scrollControllers;
-
   bool _scrolling = false;
-
   int? _hoveredRowIndex;
-
   bool _lastRowWidgetVisible = false;
-  int _lastVisibleRow = -1;
+  int? _lastVisibleRow;
   final FocusNode _focusNode = FocusNode(debugLabel: 'EasyTable');
 
   void _setHoveredRowIndex(int? rowIndex) {
@@ -148,7 +145,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
     }
   }
 
-  void _onLastVisibleRowListener(int lastVisibleRowIndex) {
+  void _onLastVisibleRowListener(int? lastVisibleRowIndex) {
     if (widget.onLastVisibleRow != null) {
       if (_lastVisibleRow != lastVisibleRowIndex) {
         _lastVisibleRow = lastVisibleRowIndex;

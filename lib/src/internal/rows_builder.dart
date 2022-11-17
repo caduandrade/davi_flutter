@@ -62,31 +62,36 @@ class RowsBuilder<ROW> extends StatelessWidget {
           rowHeight: layoutSettings.themeMetrics.row.height);
       final int visibleRowsLength =
           math.min(layoutSettings.rowsLength, maxVisibleRowsLength);
-
-      final int lastRowIndex = math.min(firstRowIndex + visibleRowsLength, model!.rowsLength-1);
-      for (int rowIndex = firstRowIndex;
-          rowIndex <= lastRowIndex;
-          rowIndex++) {
-        RowWidget<ROW> row = RowWidget<ROW>(
-            index: rowIndex,
-            row: model!.rowAt(rowIndex),
-            onHover: onHover,
-            layoutSettings: layoutSettings,
-            rowCallbacks: rowCallbacks,
-            scrolling: scrolling,
-            horizontalScrollOffsets: horizontalScrollOffsets,
-            color: rowColor,
-            model: model!,
-            columnResizing:
-                model != null ? model!.columnInResizing != null : false);
-        children.add(RowsLayoutChild(index: rowIndex, last: false, child: row));
+      if (model!.rowsLength > 0) {
+        final int lastRowIndex =
+            math.min(firstRowIndex + visibleRowsLength, model!.rowsLength - 1);
+        for (int rowIndex = firstRowIndex;
+            rowIndex <= lastRowIndex;
+            rowIndex++) {
+          RowWidget<ROW> row = RowWidget<ROW>(
+              index: rowIndex,
+              row: model!.rowAt(rowIndex),
+              onHover: onHover,
+              layoutSettings: layoutSettings,
+              rowCallbacks: rowCallbacks,
+              scrolling: scrolling,
+              horizontalScrollOffsets: horizontalScrollOffsets,
+              color: rowColor,
+              model: model!,
+              columnResizing:
+                  model != null ? model!.columnInResizing != null : false);
+          children
+              .add(RowsLayoutChild(index: rowIndex, last: false, child: row));
+        }
+        onLastVisibleRow(lastRowIndex);
+      } else {
+        onLastVisibleRow(null);
       }
-      onLastVisibleRow(lastRowIndex);
       if (lastRowWidget != null && children.length < visibleRowsLength) {
         children.add(RowsLayoutChild(
             index: model!.rowsLength, last: true, child: lastRowWidget!));
         onLastRowWidget(true);
-      } else{
+      } else {
         onLastRowWidget(false);
       }
 

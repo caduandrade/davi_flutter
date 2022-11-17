@@ -128,8 +128,8 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
         rowCallbacks: rowCallbacks,
         rowColor: rowColor,
         lastRowWidget: lastRowWidget,
-    onLastVisibleRow: onLastVisibleRow,
-    onLastRowWidget: onLastRowWidget));
+        onLastVisibleRow: onLastVisibleRow,
+        onLastRowWidget: onLastRowWidget));
 
     return TableLayout<ROW>(
         layoutSettings: layoutSettings,

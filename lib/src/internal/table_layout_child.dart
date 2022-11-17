@@ -47,8 +47,8 @@ class TableLayoutChild<ROW> extends ParentDataWidget<TableLayoutParentData> {
       required RowCallbacks<ROW> rowCallbacks,
       required EasyTableRowColor<ROW>? rowColor,
       required Widget? lastRowWidget,
-        required OnLastRowWidgetListener onLastRowWidget,
-        required OnLastVisibleRowListener onLastVisibleRow}) {
+      required OnLastRowWidgetListener onLastRowWidget,
+      required OnLastVisibleRowListener onLastVisibleRow}) {
     return TableLayoutChild._(
         id: LayoutChildId.rows,
         child: AnimatedBuilder(
@@ -66,8 +66,8 @@ class TableLayoutChild<ROW> extends ParentDataWidget<TableLayoutParentData> {
                   horizontalScrollOffsets: horizontalScrollOffsets,
                   rowColor: rowColor,
                   lastRowWidget: lastRowWidget,
-              onLastRowWidget: onLastRowWidget,
-              onLastVisibleRow: onLastVisibleRow);
+                  onLastRowWidget: onLastRowWidget,
+                  onLastVisibleRow: onLastVisibleRow);
             }));
   }
 
