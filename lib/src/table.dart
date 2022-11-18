@@ -109,10 +109,6 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
   @override
   void didUpdateWidget(covariant EasyTable<ROW> oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.model != oldWidget.model) {
-      oldWidget.model?.removeListener(_rebuild);
-      widget.model?.addListener(_rebuild);
-    }
     if (widget.verticalScrollController != null &&
         _scrollControllers.vertical != widget.verticalScrollController) {
       _scrollControllers.vertical.dispose();
@@ -133,6 +129,19 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
       _scrollControllers.leftPinnedHorizontal =
           widget.pinnedHorizontalScrollController!;
       _scrollControllers.leftPinnedHorizontal.addListener(_rebuild);
+    }
+    if (widget.model != oldWidget.model) {
+      oldWidget.model?.removeListener(_rebuild);
+      widget.model?.addListener(_rebuild);
+      if (_scrollControllers.vertical.hasClients) {
+        _scrollControllers.vertical.jumpTo(0);
+      }
+      if (_scrollControllers.leftPinnedHorizontal.hasClients) {
+        _scrollControllers.leftPinnedHorizontal.jumpTo(0);
+      }
+      if (_scrollControllers.unpinnedHorizontal.hasClients) {
+        _scrollControllers.unpinnedHorizontal.jumpTo(0);
+      }
     }
   }
 

@@ -1,9 +1,10 @@
 ## 2.2.0
 
 * Bugfix
-  * Functions `onLastRowWidget` and `onLastVisibleRow` are not working properly.  
+  * Functions `onLastRowWidget` and `onLastVisibleRow` are not working properly.
+  * Data is not displayed after creating a new model and scrollbar offset not reset.
 * API change
-  * The `OnLastVisibleRowListener` function will receive null `lastVisibleRowIndex` instead of `-1` value.
+  * The `lastVisibleRowIndex` parameter of the `OnLastVisibleRowListener` function is now nullable.
 
 ## 2.1.0
 
