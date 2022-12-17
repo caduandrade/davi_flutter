@@ -39,7 +39,7 @@ class EasyTableColumn<ROW> extends ChangeNotifier with ColumnSortMixin {
   factory EasyTableColumn(
       {dynamic id,
       double width = 100,
-      double weight = 1,
+      double? grow,
       String? name,
       int? fractionDigits,
       bool sortable = true,
@@ -133,7 +133,7 @@ class EasyTableColumn<ROW> extends ChangeNotifier with ColumnSortMixin {
     return EasyTableColumn._(
         id: id,
         width: width,
-        weight: weight,
+        grow: grow,
         name: name,
         fractionDigits: fractionDigits,
         cellBuilder: cellBuilder,
@@ -162,7 +162,7 @@ class EasyTableColumn<ROW> extends ChangeNotifier with ColumnSortMixin {
   EasyTableColumn._(
       {required this.id,
       required double width,
-      required double weight,
+      double? grow,
       required this.name,
       required this.headerPadding,
       required this.cellPadding,
@@ -187,7 +187,7 @@ class EasyTableColumn<ROW> extends ChangeNotifier with ColumnSortMixin {
       required bool sortable,
       required this.cellStyleBuilder})
       : _width = width,
-        _weight = weight,
+        _grow = grow != null ? math.max(1, grow) : null,
         _sortable = sortable;
 
   final dynamic id;
@@ -214,14 +214,19 @@ class EasyTableColumn<ROW> extends ChangeNotifier with ColumnSortMixin {
   final bool cellClip;
   final bool _sortable;
   double _width;
-  double _weight;
+  double? _grow;
 
-  double get weight => _weight;
+  /// The grow factor to use for this column.
+  ///
+  /// Can be positive or null. If null, the column is not stretchable.
+  double? get grow => _grow;
 
-  set weight(double value) {
-    value = math.max(1, value);
-    if (_weight != value) {
-      _weight = value;
+  set grow(double? value) {
+    if (value != null) {
+      value = math.max(1, value);
+    }
+    if (_grow != value) {
+      _grow = value;
       notifyListeners();
     }
   }

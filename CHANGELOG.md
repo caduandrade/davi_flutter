@@ -1,3 +1,11 @@
+## 2.3.0
+
+* Stretchable column
+  * `EasyTableModel`
+    * The `columnsWeight` method has been removed.
+  * `EasyTableColumn`
+  * The `weight` attribute has been renamed to `grow` and became nullable.
+
 ## 2.2.0
 
 * Bugfix

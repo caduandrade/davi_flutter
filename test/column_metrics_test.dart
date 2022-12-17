@@ -76,7 +76,7 @@ void main() {
       });
       test('Single - Divider - Weight', () {
         EasyTableModel model = EasyTableModel(
-            columns: [EasyTableColumn(pinStatus: PinStatus.left, weight: 2)]);
+            columns: [EasyTableColumn(pinStatus: PinStatus.left, grow: 2)]);
         List<ColumnMetrics> list = ColumnMetrics.columnsFit(
             model: model, maxWidth: 100, dividerThickness: 10);
         expect(list.length, 1);
@@ -86,7 +86,7 @@ void main() {
       });
       test('Single - No divider - Weight', () {
         EasyTableModel model = EasyTableModel(
-            columns: [EasyTableColumn(pinStatus: PinStatus.left, weight: 2)]);
+            columns: [EasyTableColumn(pinStatus: PinStatus.left, grow: 2)]);
         List<ColumnMetrics> list = ColumnMetrics.columnsFit(
             model: model, maxWidth: 100, dividerThickness: 0);
         expect(list.length, 1);
@@ -96,8 +96,8 @@ void main() {
       });
       test('Multiple - Divider - Weight', () {
         EasyTableModel model = EasyTableModel(columns: [
-          EasyTableColumn(pinStatus: PinStatus.left, weight: 2),
-          EasyTableColumn(pinStatus: PinStatus.none, weight: 6)
+          EasyTableColumn(pinStatus: PinStatus.left, grow: 2),
+          EasyTableColumn(pinStatus: PinStatus.none, grow: 6)
         ]);
         List<ColumnMetrics> list = ColumnMetrics.columnsFit(
             model: model, maxWidth: 100, dividerThickness: 20);
@@ -111,8 +111,8 @@ void main() {
       });
       test('Multiple - No divider - Weight', () {
         EasyTableModel model = EasyTableModel(columns: [
-          EasyTableColumn(pinStatus: PinStatus.left, weight: 2),
-          EasyTableColumn(pinStatus: PinStatus.none, weight: 8)
+          EasyTableColumn(pinStatus: PinStatus.left, grow: 2),
+          EasyTableColumn(pinStatus: PinStatus.none, grow: 8)
         ]);
         List<ColumnMetrics> list = ColumnMetrics.columnsFit(
             model: model, maxWidth: 100, dividerThickness: 0);

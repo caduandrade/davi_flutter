@@ -35,11 +35,22 @@ class ColumnMetrics {
     final int dividersLength = math.max(0, model.columnsLength - 1);
     final double availableWidth =
         math.max(0, maxWidth - (dividerThickness * dividersLength));
-    final double columnWidthRatio = availableWidth / model.columnsWeight;
+
+    double totalGrow = 0;
+    for (int i = 0; i < model.columnsLength; i++) {
+      final EasyTableColumn column = model.columnAt(i);
+      if (column.grow == null) {
+        throw StateError(
+            'The columnsFit mode requires that all columns must define a grow value.');
+      }
+      totalGrow += column.grow!;
+    }
+
+    final double columnWidthRatio = availableWidth / totalGrow;
 
     for (int i = 0; i < model.columnsLength; i++) {
       final EasyTableColumn column = model.columnAt(i);
-      final double width = columnWidthRatio * column.weight;
+      final double width = columnWidthRatio * column.grow!;
       list.add(ColumnMetrics(
           width: width, offset: offset, pinStatus: PinStatus.none));
       offset += width + dividerThickness;
