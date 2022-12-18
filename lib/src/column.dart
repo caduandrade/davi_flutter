@@ -218,7 +218,8 @@ class EasyTableColumn<ROW> extends ChangeNotifier with ColumnSortMixin {
 
   /// The grow factor to use for this column.
   ///
-  /// Can be positive or null. If null, the column is not stretchable.
+  /// Can be positive or null.
+  /// See [ColumnWidthBehavior] for more details.
   double? get grow => _grow;
 
   set grow(double? value) {

@@ -4,7 +4,9 @@
   * `EasyTableModel`
     * The `columnsWeight` method has been removed.
   * `EasyTableColumn`
-  * The `weight` attribute has been renamed to `grow` and became nullable.
+    * The `weight` attribute has been renamed to `grow` and became nullable.
+  * `EasyTable`
+    * The `columnsFit` has been renamed to `columnWidthBehavior` and refactor from `bool` to `ColumnWidthBehavior` enum.
 
 ## 2.2.0
 

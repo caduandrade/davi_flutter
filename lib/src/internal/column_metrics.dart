@@ -39,18 +39,14 @@ class ColumnMetrics {
     double totalGrow = 0;
     for (int i = 0; i < model.columnsLength; i++) {
       final EasyTableColumn column = model.columnAt(i);
-      if (column.grow == null) {
-        throw StateError(
-            'The columnsFit mode requires that all columns must define a grow value.');
-      }
-      totalGrow += column.grow!;
+      totalGrow += column.grow ?? 1;
     }
 
     final double columnWidthRatio = availableWidth / totalGrow;
 
     for (int i = 0; i < model.columnsLength; i++) {
       final EasyTableColumn column = model.columnAt(i);
-      final double width = columnWidthRatio * column.grow!;
+      final double width = columnWidthRatio * (column.grow ?? 1);
       list.add(ColumnMetrics(
           width: width, offset: offset, pinStatus: PinStatus.none));
       offset += width + dividerThickness;
@@ -59,19 +55,46 @@ class ColumnMetrics {
   }
 
   static List<ColumnMetrics> resizable(
-      {required EasyTableModel model, required double dividerThickness}) {
-    List<ColumnMetrics> list = [];
+      {required EasyTableModel model,
+      required double maxWidth,
+      required double dividerThickness}) {
     double offset = 0;
+    double totalGrow = 0;
     for (PinStatus pinStatus in PinStatus.values) {
       for (int i = 0; i < model.columnsLength; i++) {
         final EasyTableColumn column = model.columnAt(i);
         if (pinStatus == column.pinStatus) {
-          list.add(ColumnMetrics(
-              width: column.width, offset: offset, pinStatus: pinStatus));
           offset += column.width + dividerThickness;
+          if (column.grow != null) {
+            totalGrow += column.grow!;
+          }
         }
       }
     }
+
+    double? growFactor;
+    if (offset < maxWidth && totalGrow > 0) {
+      final double availableWidth = maxWidth - offset;
+      growFactor = availableWidth / totalGrow;
+    }
+
+    offset = 0;
+    List<ColumnMetrics> list = [];
+    for (PinStatus pinStatus in PinStatus.values) {
+      for (int i = 0; i < model.columnsLength; i++) {
+        final EasyTableColumn column = model.columnAt(i);
+        if (pinStatus == column.pinStatus) {
+          double width = column.width;
+          if (column.grow != null && growFactor != null) {
+            width += column.grow! * growFactor;
+          }
+          list.add(ColumnMetrics(
+              width: width, offset: offset, pinStatus: pinStatus));
+          offset += width + dividerThickness;
+        }
+      }
+    }
+
     return list;
   }
 }
