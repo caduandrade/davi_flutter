@@ -18,6 +18,7 @@
 * [Get started](#get-started)
 * Column
   * [Columns fit](#columns-fit)
+  * [Stretchable column](#stretchable-column)
   * [Multiple sort](#multiple-sort)
   * [Column style](#column-style)
   * [Pinned column](#pinned-column)
@@ -79,18 +80,38 @@ Widget build(BuildContext context) {
 
 ### Columns fit
 
+All columns will fit in the available width.
+
 ```dart
     _model = EasyTableModel<Person>(rows: rows, columns: [
-      EasyTableColumn(name: 'Name', weight: 5, stringValue: (row) => row.name),
-      EasyTableColumn(name: 'Age', weight: 1, intValue: (row) => row.age)
+      EasyTableColumn(name: 'Name', grow: 2, stringValue: (row) => row.name),
+      EasyTableColumn(name: 'Age', grow: 1, intValue: (row) => row.age)
     ]);
 ```
 
 ```dart
-  EasyTable<Person>(_model, columnsFit: true);
+  EasyTable<Person>(_model,
+        columnWidthBehavior: ColumnWidthBehavior.fit);
 ```
 
 ![](https://caduandrade.github.io/easy_table_flutter/columns_fit_v4.png)
+
+### Stretchable column
+
+The remaining width will be distributed to the columns according to the value of the `grow` attribute.
+
+```dart
+    _model = EasyTableModel<Person>(rows: rows, columns: [
+      EasyTableColumn(name: 'Name', grow: 1, stringValue: (row) => row.name),
+      EasyTableColumn(name: 'Age', intValue: (row) => row.age)
+    ]);
+```
+
+```dart
+  EasyTable<Person>(_model);
+```
+
+![](https://caduandrade.github.io/easy_table_flutter/stretchable_column_v1.png)
 
 ### Multiple sort
 
