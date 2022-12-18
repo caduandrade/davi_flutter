@@ -15,7 +15,7 @@ export 'src/row_data.dart';
 export 'src/row_hover_listener.dart';
 export 'src/sort_order.dart';
 export 'src/table.dart';
-export 'src/table.dart';
+export 'src/column_width_behavior.dart';
 export 'src/theme/cell_null_color.dart';
 export 'src/theme/cell_theme_data.dart';
 export 'src/theme/header_cell_theme_data.dart';

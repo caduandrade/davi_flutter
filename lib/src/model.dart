@@ -162,14 +162,6 @@ class EasyTableModel<ROW> extends ChangeNotifier {
     }
   }
 
-  double get columnsWeight {
-    double w = 0;
-    for (EasyTableColumn column in _columns) {
-      w += column.weight;
-    }
-    return w;
-  }
-
   /// Revert to original sort order
   void clearSort() {
     _sortedColumns.clear();

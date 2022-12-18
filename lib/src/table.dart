@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:easy_table/src/column_width_behavior.dart';
 import 'package:easy_table/src/internal/row_callbacks.dart';
 import 'package:easy_table/src/internal/scroll_controllers.dart';
 import 'package:easy_table/src/internal/table_layout_builder.dart';
@@ -35,7 +36,7 @@ class EasyTable<ROW> extends StatefulWidget {
       this.onRowTap,
       this.onRowSecondaryTap,
       this.onRowDoubleTap,
-      this.columnsFit = false,
+      this.columnWidthBehavior = ColumnWidthBehavior.scrollable,
       int? visibleRowsCount,
       this.focusable = true,
       this.multiSort = false,
@@ -56,7 +57,7 @@ class EasyTable<ROW> extends StatefulWidget {
   final RowDoubleTapCallback<ROW>? onRowDoubleTap;
   final RowTapCallback<ROW>? onRowTap;
   final RowTapCallback<ROW>? onRowSecondaryTap;
-  final bool columnsFit;
+  final ColumnWidthBehavior columnWidthBehavior;
   final int? visibleRowsCount;
   final OnLastVisibleRowListener? onLastVisibleRow;
   final bool focusable;
@@ -178,7 +179,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
             onHover: widget.onHover != null ? _setHoveredRowIndex : null,
             multiSort: widget.multiSort,
             scrollControllers: _scrollControllers,
-            columnsFit: widget.columnsFit,
+            columnWidthBehavior: widget.columnWidthBehavior,
             themeMetrics: themeMetrics,
             visibleRowsLength: widget.visibleRowsCount,
             onLastRowWidget: _onLastRowWidget,

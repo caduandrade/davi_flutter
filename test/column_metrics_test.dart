@@ -76,7 +76,7 @@ void main() {
       });
       test('Single - Divider - Weight', () {
         EasyTableModel model = EasyTableModel(
-            columns: [EasyTableColumn(pinStatus: PinStatus.left, weight: 2)]);
+            columns: [EasyTableColumn(pinStatus: PinStatus.left, grow: 2)]);
         List<ColumnMetrics> list = ColumnMetrics.columnsFit(
             model: model, maxWidth: 100, dividerThickness: 10);
         expect(list.length, 1);
@@ -86,7 +86,7 @@ void main() {
       });
       test('Single - No divider - Weight', () {
         EasyTableModel model = EasyTableModel(
-            columns: [EasyTableColumn(pinStatus: PinStatus.left, weight: 2)]);
+            columns: [EasyTableColumn(pinStatus: PinStatus.left, grow: 2)]);
         List<ColumnMetrics> list = ColumnMetrics.columnsFit(
             model: model, maxWidth: 100, dividerThickness: 0);
         expect(list.length, 1);
@@ -96,8 +96,8 @@ void main() {
       });
       test('Multiple - Divider - Weight', () {
         EasyTableModel model = EasyTableModel(columns: [
-          EasyTableColumn(pinStatus: PinStatus.left, weight: 2),
-          EasyTableColumn(pinStatus: PinStatus.none, weight: 6)
+          EasyTableColumn(pinStatus: PinStatus.left, grow: 2),
+          EasyTableColumn(pinStatus: PinStatus.none, grow: 6)
         ]);
         List<ColumnMetrics> list = ColumnMetrics.columnsFit(
             model: model, maxWidth: 100, dividerThickness: 20);
@@ -111,8 +111,8 @@ void main() {
       });
       test('Multiple - No divider - Weight', () {
         EasyTableModel model = EasyTableModel(columns: [
-          EasyTableColumn(pinStatus: PinStatus.left, weight: 2),
-          EasyTableColumn(pinStatus: PinStatus.none, weight: 8)
+          EasyTableColumn(pinStatus: PinStatus.left, grow: 2),
+          EasyTableColumn(pinStatus: PinStatus.none, grow: 8)
         ]);
         List<ColumnMetrics> list = ColumnMetrics.columnsFit(
             model: model, maxWidth: 100, dividerThickness: 0);
@@ -128,15 +128,15 @@ void main() {
     group('Resizable', () {
       test('Empty', () {
         EasyTableModel model = EasyTableModel(columns: []);
-        List<ColumnMetrics> list =
-            ColumnMetrics.resizable(model: model, dividerThickness: 10);
+        List<ColumnMetrics> list = ColumnMetrics.resizable(
+            model: model, maxWidth: 500, dividerThickness: 10);
         expect(list.length, 0);
       });
       test('Single - Divider', () {
         EasyTableModel model = EasyTableModel(
             columns: [EasyTableColumn(pinStatus: PinStatus.left, width: 50)]);
-        List<ColumnMetrics> list =
-            ColumnMetrics.resizable(model: model, dividerThickness: 10);
+        List<ColumnMetrics> list = ColumnMetrics.resizable(
+            model: model, maxWidth: 500, dividerThickness: 10);
         expect(list.length, 1);
         expect(list[0].offset, 0);
         expect(list[0].width, 50);
@@ -145,8 +145,8 @@ void main() {
       test('Single - No divider', () {
         EasyTableModel model = EasyTableModel(
             columns: [EasyTableColumn(pinStatus: PinStatus.left, width: 50)]);
-        List<ColumnMetrics> list =
-            ColumnMetrics.resizable(model: model, dividerThickness: 10);
+        List<ColumnMetrics> list = ColumnMetrics.resizable(
+            model: model, maxWidth: 500, dividerThickness: 10);
         expect(list.length, 1);
         expect(list[0].offset, 0);
         expect(list[0].width, 50);
@@ -157,8 +157,8 @@ void main() {
           EasyTableColumn(pinStatus: PinStatus.left, width: 50),
           EasyTableColumn(pinStatus: PinStatus.none, width: 100)
         ]);
-        List<ColumnMetrics> list =
-            ColumnMetrics.resizable(model: model, dividerThickness: 10);
+        List<ColumnMetrics> list = ColumnMetrics.resizable(
+            model: model, maxWidth: 500, dividerThickness: 10);
         expect(list.length, 2);
         expect(list[0].offset, 0);
         expect(list[0].width, 50);
@@ -172,8 +172,8 @@ void main() {
           EasyTableColumn(pinStatus: PinStatus.left, width: 50),
           EasyTableColumn(pinStatus: PinStatus.none, width: 100)
         ]);
-        List<ColumnMetrics> list =
-            ColumnMetrics.resizable(model: model, dividerThickness: 0);
+        List<ColumnMetrics> list = ColumnMetrics.resizable(
+            model: model, maxWidth: 500, dividerThickness: 0);
         expect(list.length, 2);
         expect(list[0].offset, 0);
         expect(list[0].width, 50);

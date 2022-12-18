@@ -1,3 +1,4 @@
+import 'package:easy_table/src/column_width_behavior.dart';
 import 'package:easy_table/src/internal/row_callbacks.dart';
 import 'package:easy_table/src/internal/scroll_controllers.dart';
 import 'package:easy_table/src/internal/scroll_offsets.dart';
@@ -26,7 +27,7 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
       required this.onLastVisibleRow,
       required this.model,
       required this.themeMetrics,
-      required this.columnsFit,
+      required this.columnWidthBehavior,
       required this.visibleRowsLength,
       required this.rowCallbacks,
       required this.onDragScroll,
@@ -41,7 +42,7 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
   final ScrollControllers scrollControllers;
   final EasyTableModel<ROW>? model;
   final bool multiSort;
-  final bool columnsFit;
+  final ColumnWidthBehavior columnWidthBehavior;
   final int? visibleRowsLength;
   final OnDragScroll onDragScroll;
   final bool scrolling;
@@ -66,7 +67,7 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
         constraints: constraints,
         model: model,
         theme: theme,
-        columnsFit: columnsFit,
+        columnWidthBehavior: columnWidthBehavior,
         themeMetrics: themeMetrics,
         visibleRowsLength: visibleRowsLength,
         hasLastRowWidget: lastRowWidget != null);
@@ -88,7 +89,7 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
       children.add(TableLayoutChild.header(
           layoutSettings: layoutSettings,
           model: model,
-          resizable: !columnsFit,
+          resizable: columnWidthBehavior == ColumnWidthBehavior.scrollable,
           multiSort: multiSort,
           horizontalScrollOffsets: horizontalScrollOffsets));
       if (layoutSettings.hasVerticalScrollbar) {

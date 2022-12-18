@@ -35,8 +35,10 @@ class _EasyTableHeaderCellState extends State<EasyTableHeaderCell> {
     bool resizing = widget.model.columnInResizing == widget.column;
     bool enabled = resizing == false && widget.model.columnInResizing == null;
     bool sortable = widget.column.sortable;
-    bool resizable =
-        widget.resizable && widget.column.resizable && (enabled || resizing);
+    bool resizable = widget.resizable &&
+        widget.column.resizable &&
+        widget.column.grow == null &&
+        (enabled || resizing);
 
     List<Widget> children = [];
 

@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:collection/collection.dart';
+import 'package:easy_table/src/column_width_behavior.dart';
 import 'package:easy_table/src/internal/column_metrics.dart';
 import 'package:easy_table/src/internal/theme_metrics/theme_metrics.dart';
 import 'package:easy_table/src/model.dart';
@@ -14,7 +15,7 @@ class TableLayoutSettings {
   factory TableLayoutSettings(
       {required EasyTableModel? model,
       required BoxConstraints constraints,
-      required bool columnsFit,
+      required ColumnWidthBehavior columnWidthBehavior,
       required TableThemeMetrics themeMetrics,
       required int? visibleRowsLength,
       required bool hasLastRowWidget,
@@ -73,7 +74,7 @@ class TableLayoutSettings {
         !theme.scrollbar.verticalOnlyWhenNeeded || needVerticalScrollbar;
 
     if (model != null) {
-      if (columnsFit) {
+      if (columnWidthBehavior == ColumnWidthBehavior.fit) {
         unpinnedContentWidth = math.max(
             0,
             constraints.maxWidth -
@@ -89,6 +90,12 @@ class TableLayoutSettings {
         columnsMetrics = UnmodifiableListView<ColumnMetrics>(
             ColumnMetrics.resizable(
                 model: model,
+                maxWidth: math.max(
+                    0,
+                    constraints.maxWidth -
+                        (hasVerticalScrollbar
+                            ? themeMetrics.scrollbar.width
+                            : 0)),
                 dividerThickness: themeMetrics.columnDividerThickness));
 
         for (ColumnMetrics columnMetrics in columnsMetrics) {
