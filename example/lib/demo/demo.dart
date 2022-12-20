@@ -42,6 +42,7 @@ class _HomePageState extends State<HomePage> {
   bool _columnDividerFillHeight =
       EasyTableThemeDataDefaults.columnDividerFillHeight;
   RowThemeColor _demoBackground = RowThemeColor.none;
+  bool _columnsWithIcon = true;
 
   @override
   void initState() {
@@ -62,44 +63,53 @@ class _HomePageState extends State<HomePage> {
   }
 
   List<EasyTableColumn<Character>> _buildColumns() {
-    return [
-      EasyTableColumn(
-          pinStatus: _leftPinned ? PinStatus.left : PinStatus.none,
-          leading: const Icon(Icons.person, size: 16),
-          name: 'Name',
-          width: 100,
-          stringValue: (row) => row.name),
-      EasyTableColumn(
+    List<EasyTableColumn<Character>> list = [];
+    list.add(EasyTableColumn(
+        pinStatus: _leftPinned ? PinStatus.left : PinStatus.none,
+        leading: const Icon(Icons.person, size: 16),
+        name: 'Name',
+        width: 100,
+        stringValue: (row) => row.name));
+    if (_columnsWithIcon) {
+      list.add(EasyTableColumn(
           pinStatus: _leftPinned ? PinStatus.left : PinStatus.none,
           name: 'Gender',
           width: 80,
           cellClip: true,
           iconValue: (row) => row.male
               ? CellIcon(icon: Icons.male, color: Colors.blue[700]!)
-              : CellIcon(icon: Icons.female, color: Colors.pink[600]!)),
-      EasyTableColumn(name: 'Race', width: 100, stringValue: (row) => row.race),
-      EasyTableColumn(name: 'Class', width: 110, stringValue: (row) => row.cls),
-      EasyTableColumn(name: 'Level', width: 70, intValue: (row) => row.level),
-      EasyTableColumn(
+              : CellIcon(icon: Icons.female, color: Colors.pink[600]!)));
+    }
+    list.add(EasyTableColumn(
+        name: 'Race', width: 100, stringValue: (row) => row.race));
+    list.add(EasyTableColumn(
+        name: 'Class', width: 110, stringValue: (row) => row.cls));
+    list.add(EasyTableColumn(
+        name: 'Level', width: 70, intValue: (row) => row.level));
+    if (_columnsWithIcon) {
+      list.add(EasyTableColumn(
           name: 'Skills',
           width: 100,
           cellClip: true,
           cellBuilder: (context, data) =>
-              SkillsWidget(skills: data.row.skills)),
-      EasyTableColumn(
-          name: 'Strength', width: 80, intValue: (row) => row.strength),
-      EasyTableColumn(
-          name: 'Dexterity', width: 80, intValue: (row) => row.dexterity),
-      EasyTableColumn(
-          name: 'Intelligence', width: 90, intValue: (row) => row.intelligence),
-      EasyTableColumn(name: 'Life', width: 70, intValue: (row) => row.life),
-      EasyTableColumn(name: 'Mana', width: 70, intValue: (row) => row.mana),
-      EasyTableColumn(
-          name: 'Gold',
-          width: 110,
-          doubleValue: (row) => row.gold, //row.gold,
-          fractionDigits: 2)
-    ];
+              SkillsWidget(skills: data.row.skills)));
+    }
+    list.add(EasyTableColumn(
+        name: 'Strength', width: 80, intValue: (row) => row.strength));
+    list.add(EasyTableColumn(
+        name: 'Dexterity', width: 80, intValue: (row) => row.dexterity));
+    list.add(EasyTableColumn(
+        name: 'Intelligence', width: 90, intValue: (row) => row.intelligence));
+    list.add(
+        EasyTableColumn(name: 'Life', width: 70, intValue: (row) => row.life));
+    list.add(
+        EasyTableColumn(name: 'Mana', width: 70, intValue: (row) => row.mana));
+    list.add(EasyTableColumn(
+        name: 'Gold',
+        width: 110,
+        doubleValue: (row) => row.gold, //row.gold,
+        fractionDigits: 2));
+    return list;
   }
 
   @override
@@ -159,6 +169,10 @@ class _HomePageState extends State<HomePage> {
                   child: const Text('Remove first column')),
               CheckboxUtil.build(
                   value: _fewRows, onChanged: _onFewRows, text: 'Few rows'),
+              CheckboxUtil.build(
+                  value: _columnsWithIcon,
+                  onChanged: _onColumnsWithIcon,
+                  text: 'Columns with icons widget'),
               CheckboxUtil.build(
                   value: _headerVisible,
                   onChanged: _onHeaderVisible,
@@ -305,6 +319,17 @@ class _HomePageState extends State<HomePage> {
   void _onNullValueColor() {
     setState(() {
       _nullValueColor = !_nullValueColor;
+    });
+  }
+
+  void _onColumnsWithIcon() {
+    setState(() {
+      _columnsWithIcon = !_columnsWithIcon;
+      _buildModel().then((model) {
+        setState(() {
+          _model = model;
+        });
+      });
     });
   }
 }
