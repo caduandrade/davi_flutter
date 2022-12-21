@@ -1,3 +1,8 @@
+## 2.4.0
+
+* `CellThemeData`
+  * The `ownInputDecoration` attribute has been added to overrides the `InputDecorationTheme` with a custom theme.
+
 ## 2.3.0
 
 * Stretchable column
