@@ -5,7 +5,7 @@ import 'package:easy_table/src/internal/cell_key.dart';
 import 'package:easy_table/src/row_data.dart';
 import 'package:easy_table/src/theme/theme.dart';
 import 'package:easy_table/src/theme/theme_data.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
 @internal
@@ -75,13 +75,15 @@ class CellWidget<ROW> extends StatelessWidget {
         child = Padding(padding: padding, child: child);
       }
     }
-    if (background != null) {
-      child = Container(color: background, child: child);
-    }
+    // To avoid the bug that makes a cursor disappear
+    // (https://github.com/flutter/flutter/issues/106767),
+    // always build a Container with some color.
+    background = background ?? Colors.transparent;
+    child = Container(color: background, child: child);
     if (column.cellClip) {
       child = ClipRect(child: child);
     }
-    return child ?? Container();
+    return child;
   }
 
   String? _stringValue(

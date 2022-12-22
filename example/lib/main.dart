@@ -68,7 +68,7 @@ class _HomePageState extends State<HomePage> {
           name: 'Editable',
           cellBuilder: _buildField,
           cellBackground: (rowData) =>
-              rowData.row.valid ? Colors.transparent : Colors.red[800]),
+              rowData.row.valid ? null : Colors.red[800])
     ]);
   }
 
