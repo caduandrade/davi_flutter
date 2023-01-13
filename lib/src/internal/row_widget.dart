@@ -19,6 +19,7 @@ class RowWidget<ROW> extends StatefulWidget {
       required this.scrolling,
       required this.columnResizing,
       required this.color,
+      required this.cursor,
       required this.model,
       required this.rowCallbacks,
       required this.horizontalScrollOffsets})
@@ -33,6 +34,7 @@ class RowWidget<ROW> extends StatefulWidget {
   final TableLayoutSettings layoutSettings;
   final RowCallbacks<ROW> rowCallbacks;
   final EasyTableRowColor<ROW>? color;
+  final EasyTableRowCursor<ROW>? cursor;
   final HorizontalScrollOffsets horizontalScrollOffsets;
 
   @override
@@ -119,9 +121,7 @@ class RowWidgetState<ROW> extends State<RowWidget<ROW>> {
           child: layout);
       layout = MouseRegion(
           onEnter: _onEnter,
-          cursor: widget.rowCallbacks.hasCallback
-              ? theme.row.cursor
-              : MouseCursor.defer,
+          cursor: _cursor(theme),
           onExit: _onExit,
           child: layout);
     } else if (color != null) {
@@ -129,6 +129,17 @@ class RowWidgetState<ROW> extends State<RowWidget<ROW>> {
     }
 
     return layout;
+  }
+
+  MouseCursor _cursor(EasyTableThemeData theme) {
+    if (widget.rowCallbacks.hasCallback) {
+      MouseCursor? cursor;
+      if (widget.cursor != null) {
+        cursor = widget.cursor!(_rowData);
+      }
+      return cursor ?? theme.row.cursor;
+    }
+    return MouseCursor.defer;
   }
 
   GestureTapCallback? _buildOnTap() {

@@ -12,6 +12,7 @@ import 'package:easy_table/src/last_row_widget_listener.dart';
 import 'package:easy_table/src/last_visible_row_listener.dart';
 import 'package:easy_table/src/model.dart';
 import 'package:easy_table/src/row_color.dart';
+import 'package:easy_table/src/row_cursor.dart';
 import 'package:easy_table/src/row_hover_listener.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -46,6 +47,7 @@ class TableLayoutChild<ROW> extends ParentDataWidget<TableLayoutParentData> {
       required OnRowHoverListener? onHover,
       required RowCallbacks<ROW> rowCallbacks,
       required EasyTableRowColor<ROW>? rowColor,
+      required EasyTableRowCursor<ROW>? rowCursor,
       required Widget? lastRowWidget,
       required OnLastRowWidgetListener onLastRowWidget,
       required OnLastVisibleRowListener onLastVisibleRow}) {
@@ -65,6 +67,7 @@ class TableLayoutChild<ROW> extends ParentDataWidget<TableLayoutParentData> {
                       : 0,
                   horizontalScrollOffsets: horizontalScrollOffsets,
                   rowColor: rowColor,
+                  rowCursor: rowCursor,
                   lastRowWidget: lastRowWidget,
                   onLastRowWidget: onLastRowWidget,
                   onLastVisibleRow: onLastVisibleRow);

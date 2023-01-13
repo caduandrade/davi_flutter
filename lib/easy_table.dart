@@ -11,6 +11,7 @@ export 'src/model.dart';
 export 'src/pin_status.dart';
 export 'src/row_callback_typedefs.dart';
 export 'src/row_color.dart';
+export 'src/row_cursor.dart';
 export 'src/row_data.dart';
 export 'src/row_hover_listener.dart';
 export 'src/sort_order.dart';
