@@ -12,7 +12,8 @@ class RowThemeData {
       this.hoverForeground,
       this.dividerThickness = RowThemeDataDefaults.dividerThickness,
       this.dividerColor = RowThemeDataDefaults.dividerColor,
-      this.fillHeight = RowThemeDataDefaults.fillHeight});
+      this.fillHeight = RowThemeDataDefaults.fillHeight,
+      this.cursor = RowThemeDataDefaults.cursor});
 
   /// The bottom row color.
   ///
@@ -42,6 +43,8 @@ class RowThemeData {
   /// the color of the rows.
   final bool fillHeight;
 
+  final MouseCursor cursor;
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -53,7 +56,8 @@ class RowThemeData {
           dividerThickness == other.dividerThickness &&
           dividerColor == other.dividerColor &&
           lastDividerVisible == other.lastDividerVisible &&
-          fillHeight == other.fillHeight;
+          fillHeight == other.fillHeight &&
+          cursor == other.cursor;
 
   @override
   int get hashCode =>
@@ -63,7 +67,8 @@ class RowThemeData {
       dividerThickness.hashCode ^
       dividerColor.hashCode ^
       lastDividerVisible.hashCode ^
-      fillHeight.hashCode;
+      fillHeight.hashCode ^
+      cursor.hashCode;
 
   static ThemeRowColor zebraColor(
       {Color? evenColor = const Color(0xFFF5F5F5),
@@ -80,4 +85,5 @@ class RowThemeDataDefaults {
   static const Color dividerColor = Colors.grey;
   static const double dividerThickness = 1;
   static const bool lastDividerVisible = true;
+  static const MouseCursor cursor = SystemMouseCursors.click;
 }

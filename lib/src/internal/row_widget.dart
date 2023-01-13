@@ -120,7 +120,7 @@ class RowWidgetState<ROW> extends State<RowWidget<ROW>> {
       layout = MouseRegion(
           onEnter: _onEnter,
           cursor: widget.rowCallbacks.hasCallback
-              ? SystemMouseCursors.click
+              ? theme.row.cursor
               : MouseCursor.defer,
           onExit: _onExit,
           child: layout);
