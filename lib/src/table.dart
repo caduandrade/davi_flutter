@@ -10,6 +10,7 @@ import 'package:easy_table/src/last_visible_row_listener.dart';
 import 'package:easy_table/src/model.dart';
 import 'package:easy_table/src/row_callback_typedefs.dart';
 import 'package:easy_table/src/row_color.dart';
+import 'package:easy_table/src/row_cursor.dart';
 import 'package:easy_table/src/row_hover_listener.dart';
 import 'package:easy_table/src/theme/theme.dart';
 import 'package:easy_table/src/theme/theme_data.dart';
@@ -42,6 +43,7 @@ class EasyTable<ROW> extends StatefulWidget {
       this.multiSort = false,
       this.lastRowWidget,
       this.rowColor,
+      this.rowCursor,
       this.onLastRowWidget})
       : visibleRowsCount = visibleRowsCount == null || visibleRowsCount > 0
             ? visibleRowsCount
@@ -54,6 +56,7 @@ class EasyTable<ROW> extends StatefulWidget {
   final ScrollController? verticalScrollController;
   final OnRowHoverListener? onHover;
   final EasyTableRowColor<ROW>? rowColor;
+  final EasyTableRowCursor<ROW>? rowCursor;
   final RowDoubleTapCallback<ROW>? onRowDoubleTap;
   final RowTapCallback<ROW>? onRowTap;
   final RowTapCallback<ROW>? onRowSecondaryTap;
@@ -187,6 +190,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
             model: widget.model,
             scrolling: _scrolling,
             rowColor: widget.rowColor,
+            rowCursor: widget.rowCursor,
             lastRowWidget: widget.lastRowWidget,
             rowCallbacks: RowCallbacks(
                 onRowTap: widget.onRowTap,

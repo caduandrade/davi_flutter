@@ -12,6 +12,7 @@ import 'package:easy_table/src/last_row_widget_listener.dart';
 import 'package:easy_table/src/last_visible_row_listener.dart';
 import 'package:easy_table/src/model.dart';
 import 'package:easy_table/src/row_color.dart';
+import 'package:easy_table/src/row_cursor.dart';
 import 'package:easy_table/src/row_hover_listener.dart';
 import 'package:easy_table/src/theme/theme.dart';
 import 'package:easy_table/src/theme/theme_data.dart';
@@ -28,6 +29,7 @@ class RowsBuilder<ROW> extends StatelessWidget {
       required this.scrolling,
       required this.rowCallbacks,
       required this.rowColor,
+      required this.rowCursor,
       required this.verticalOffset,
       required this.horizontalScrollOffsets,
       required this.lastRowWidget,
@@ -44,6 +46,7 @@ class RowsBuilder<ROW> extends StatelessWidget {
   final RowCallbacks<ROW> rowCallbacks;
   final Widget? lastRowWidget;
   final EasyTableRowColor<ROW>? rowColor;
+  final EasyTableRowCursor<ROW>? rowCursor;
   final OnLastRowWidgetListener onLastRowWidget;
   final OnLastVisibleRowListener onLastVisibleRow;
 
@@ -77,6 +80,7 @@ class RowsBuilder<ROW> extends StatelessWidget {
               scrolling: scrolling,
               horizontalScrollOffsets: horizontalScrollOffsets,
               color: rowColor,
+              cursor: rowCursor,
               model: model!,
               columnResizing:
                   model != null ? model!.columnInResizing != null : false);

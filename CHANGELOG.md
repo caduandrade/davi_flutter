@@ -1,7 +1,10 @@
 ## 2.4.0
 
+* Allow customizing hover cursor.
+  * Function `EasyTableRowCursor` to overrides a row cursor.
+  * Theme attribute `RowThemeData.cursorOnTapGesturesOnly` to allow cursor without tap gestures.
 * `CellThemeData`
-  * The `ownInputDecoration` attribute has been added to overrides the `InputDecorationTheme` with a custom theme.
+  * The `ownInputDecoration` attribute has been added to overrides the `InputDecorationTheme` with a custom theme.  
 
 ## 2.3.0
 
