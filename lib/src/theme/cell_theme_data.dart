@@ -11,7 +11,9 @@ class CellThemeData {
       this.contentHeight = CellThemeDataDefaults.contentHeight,
       this.overflow = CellThemeDataDefaults.overflow,
       this.alignment = CellThemeDataDefaults.alignment,
-      this.padding = CellThemeDataDefaults.padding});
+      this.padding = CellThemeDataDefaults.padding,
+      this.overrideInputDecoration =
+          CellThemeDataDefaults.overrideInputDecoration});
 
   /// Defines the text style.
   final TextStyle? textStyle;
@@ -29,6 +31,10 @@ class CellThemeData {
   /// Defines a background when the cell value is null.
   final CellNullColor? nullValueColor;
 
+  /// If [TRUE], overrides the [InputDecorationTheme] by setting it to dense
+  /// and removing the border.
+  final bool overrideInputDecoration;
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -39,7 +45,8 @@ class CellThemeData {
           contentHeight == other.contentHeight &&
           alignment == other.alignment &&
           overflow == other.overflow &&
-          nullValueColor == other.nullValueColor;
+          nullValueColor == other.nullValueColor &&
+          overrideInputDecoration == other.overrideInputDecoration;
 
   @override
   int get hashCode =>
@@ -48,7 +55,8 @@ class CellThemeData {
       contentHeight.hashCode ^
       alignment.hashCode ^
       overflow.hashCode ^
-      nullValueColor.hashCode;
+      nullValueColor.hashCode ^
+      overrideInputDecoration.hashCode;
 }
 
 class CellThemeDataDefaults {
@@ -56,4 +64,5 @@ class CellThemeDataDefaults {
   static const TextOverflow overflow = TextOverflow.ellipsis;
   static const EdgeInsets padding = EdgeInsets.only(left: 8, right: 8);
   static const Alignment alignment = Alignment.centerLeft;
+  static const bool overrideInputDecoration = true;
 }

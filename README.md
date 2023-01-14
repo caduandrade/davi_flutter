@@ -31,6 +31,7 @@
 * Cell
   * [Cell style](#cell-style)
   * [Custom cell widget](#custom-cell-widget)
+  * [Cell edit](#cell-edit)
 * Theme
   * [Dividers thickness and color](#dividers-thickness-and-color) 
   * [Header](#header)
@@ -310,6 +311,79 @@ void _onRowDoubleTap(BuildContext context, Person person) {
 ```
 
 ![](https://caduandrade.github.io/easy_table_flutter/custom_cell_widget_v2.png)
+
+### Cell edit
+
+```dart
+class Person {
+  Person(this.name, this.value);
+
+  final String name;
+  final int value;
+
+  bool _valid = true;
+
+  bool get valid => _valid;
+
+  String _editable = '';
+
+  String get editable => _editable;
+
+  set editable(String value) {
+    _editable = value;
+    _valid = _editable.length < 6;
+  }
+}
+
+class MainWidgetState extends State<MainWidget> {
+  EasyTableModel<Person>? _model;
+
+  @override
+  void initState() {
+    super.initState();
+    List<Person> rows = [
+      Person('Landon', 1),
+      Person('Sari', 0),
+      Person('Julian', 2),
+      Person('Carey', 4),
+      Person('Cadu', 5),
+      Person('Delmar', 2)
+    ];
+    _model = EasyTableModel<Person>(rows: rows, columns: [
+      EasyTableColumn(name: 'Name', stringValue: (row) => row.name),
+      EasyTableColumn(name: 'Value', intValue: (row) => row.value),
+      EasyTableColumn(
+          name: 'Editable',
+          cellBuilder: _buildField,
+          cellBackground: (rowData) =>
+              rowData.row.valid ? null : Colors.red[800])
+    ]);
+  }
+
+  Widget _buildField(BuildContext context, RowData<Person> rowData) {
+    return TextFormField(
+        initialValue: rowData.row.editable,
+        style:
+            TextStyle(color: rowData.row.valid ? Colors.black : Colors.white),
+        onChanged: (value) => _onFieldChange(value, rowData.row));
+  }
+
+  void _onFieldChange(String value, Person person) {
+    final wasValid = person.valid;
+    person.editable = value;
+    if (wasValid != person.valid) {
+      setState(() {
+        // rebuild
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return EasyTable<Person>(_model);
+  }
+}
+```
 
 ## Theme
 

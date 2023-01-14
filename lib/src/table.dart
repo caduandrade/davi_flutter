@@ -243,6 +243,15 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
     if (theme.decoration != null) {
       table = Container(decoration: theme.decoration, child: table);
     }
+
+    if (theme.cell.overrideInputDecoration) {
+      table = Theme(
+          data: ThemeData(
+              inputDecorationTheme: const InputDecorationTheme(
+                  isDense: true, border: InputBorder.none)),
+          child: table);
+    }
+
     return table;
   }
 
