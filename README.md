@@ -1,7 +1,11 @@
-[![](https://img.shields.io/pub/v/davi.svg)](https://pub.dev/packages/davi) ![](https://github.com/caduandrade/davi_flutter/actions/workflows/test.yml/badge.svg) [![](https://img.shields.io/badge/demo-try%20it%20out-blue)](https://caduandrade.github.io/davi_flutter_demo/) [![](https://img.shields.io/badge/Flutter-%E2%9D%A4-red)](https://flutter.dev/) [![](https://img.shields.io/badge/donate-crypto-green)](#support-this-project) ![](https://img.shields.io/badge/%F0%9F%91%8D%20and%20%E2%AD%90-are%20free-yellow)
+[![](https://img.shields.io/pub/v/davi.svg)](https://pub.dev/packages/davi)
+![](https://github.com/caduandrade/davi_flutter/actions/workflows/test.yml/badge.svg)
+[![](https://img.shields.io/badge/demo-try%20it%20out-blue)](https://caduandrade.github.io/davi_flutter_demo/)
+[![](https://img.shields.io/badge/Flutter-%E2%9D%A4-red)](https://flutter.dev/)
+![](https://img.shields.io/badge/%F0%9F%91%8D%20and%20%E2%AD%90-are%20free-yellow)
 
-# Davi
-
+![](https://caduandrade.github.io/davi_flutter/davi_logo_v1.png)
+---
 ![](https://caduandrade.github.io/davi_flutter/easy_table_v5.png)
 
 * Ready for a large number of data. Building cells on demand.
