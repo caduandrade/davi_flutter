@@ -19,6 +19,7 @@ class RowWidget<ROW> extends StatefulWidget {
       required this.scrolling,
       required this.columnResizing,
       required this.color,
+      required this.cursor,
       required this.model,
       required this.rowCallbacks,
       required this.horizontalScrollOffsets})
@@ -33,6 +34,7 @@ class RowWidget<ROW> extends StatefulWidget {
   final TableLayoutSettings layoutSettings;
   final RowCallbacks<ROW> rowCallbacks;
   final EasyTableRowColor<ROW>? color;
+  final EasyTableRowCursor<ROW>? cursor;
   final HorizontalScrollOffsets horizontalScrollOffsets;
 
   @override
@@ -96,7 +98,8 @@ class RowWidgetState<ROW> extends State<RowWidget<ROW>> {
         (widget.rowCallbacks.hasCallback ||
             theme.row.hoverBackground != null ||
             theme.row.hoverForeground != null ||
-            widget.onHover != null)) {
+            widget.onHover != null ||
+            !theme.row.cursorOnTapGesturesOnly)) {
       if (_rowData.hovered && theme.row.hoverBackground != null) {
         // replace row color
         color = theme.row.hoverBackground!(widget.index);
@@ -119,9 +122,7 @@ class RowWidgetState<ROW> extends State<RowWidget<ROW>> {
           child: layout);
       layout = MouseRegion(
           onEnter: _onEnter,
-          cursor: widget.rowCallbacks.hasCallback
-              ? SystemMouseCursors.click
-              : MouseCursor.defer,
+          cursor: _cursor(theme),
           onExit: _onExit,
           child: layout);
     } else if (color != null) {
@@ -129,6 +130,17 @@ class RowWidgetState<ROW> extends State<RowWidget<ROW>> {
     }
 
     return layout;
+  }
+
+  MouseCursor _cursor(EasyTableThemeData theme) {
+    if (!theme.row.cursorOnTapGesturesOnly || widget.rowCallbacks.hasCallback) {
+      MouseCursor? cursor;
+      if (widget.cursor != null) {
+        cursor = widget.cursor!(_rowData);
+      }
+      return cursor ?? theme.row.cursor;
+    }
+    return MouseCursor.defer;
   }
 
   GestureTapCallback? _buildOnTap() {

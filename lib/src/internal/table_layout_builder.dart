@@ -11,6 +11,7 @@ import 'package:easy_table/src/last_row_widget_listener.dart';
 import 'package:easy_table/src/last_visible_row_listener.dart';
 import 'package:easy_table/src/model.dart';
 import 'package:easy_table/src/row_color.dart';
+import 'package:easy_table/src/row_cursor.dart';
 import 'package:easy_table/src/row_hover_listener.dart';
 import 'package:easy_table/src/theme/theme.dart';
 import 'package:easy_table/src/theme/theme_data.dart';
@@ -34,7 +35,8 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
       required this.scrolling,
       required this.lastRowWidget,
       required this.onLastRowWidget,
-      required this.rowColor})
+      required this.rowColor,
+      required this.rowCursor})
       : super(key: key);
 
   final OnLastVisibleRowListener onLastVisibleRow;
@@ -51,6 +53,7 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
   final Widget? lastRowWidget;
   final OnLastRowWidgetListener onLastRowWidget;
   final EasyTableRowColor<ROW>? rowColor;
+  final EasyTableRowCursor<ROW>? rowCursor;
 
   @override
   Widget build(BuildContext context) {
@@ -128,6 +131,7 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
         onHover: onHover,
         rowCallbacks: rowCallbacks,
         rowColor: rowColor,
+        rowCursor: rowCursor,
         lastRowWidget: lastRowWidget,
         onLastVisibleRow: onLastVisibleRow,
         onLastRowWidget: onLastRowWidget));
