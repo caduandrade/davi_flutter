@@ -1,3 +1,9 @@
+## 2.4.0
+
+* Allow customizing hover cursor.
+  * Function `EasyTableRowCursor` to overrides a row cursor. 
+  * Theme attribute `RowThemeData.cursorOnTapGesturesOnly` to allow cursor without tap gestures.  
+
 ## 2.3.0
 
 * Stretchable column

@@ -47,6 +47,7 @@ class RowThemeData {
 
   final MouseCursor cursor;
 
+  /// Allow cursor without tap gestures.
   final bool cursorOnTapGesturesOnly;
 
   @override
