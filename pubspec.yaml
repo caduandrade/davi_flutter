@@ -1,6 +1,6 @@
 name: easy_table
 description: A full customized data table that builds the cells on demand. Focused on Web/Desktop Applications. Bidirectional scroll bars.
-version: 2.3.0
+version: 2.4.0
 repository: https://github.com/caduandrade/easy_table_flutter
 
 environment:
@@ -10,14 +10,14 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  meta: ^1.7.0
+  meta: ^1.8.0
   axis_layout: ^1.0.0
   collection: ^1.16.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.0
+  flutter_lints: ^2.0.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
