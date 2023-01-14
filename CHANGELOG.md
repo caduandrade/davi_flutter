@@ -1,3 +1,12 @@
+## 2.6.0
+
+* Migration of package `easy_table` to `davi`
+  * Replace import 'package:easy_table/easy_table.dart' with 'package:davi/davi.dart'
+
+## 2.5.0
+
+* Deactivation of package easy_table
+
 ## 2.4.0
 
 * Allow customizing hover cursor.
