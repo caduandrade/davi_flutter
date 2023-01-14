@@ -25,7 +25,7 @@ class CellWidget<ROW> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    EasyTableThemeData theme = EasyTableTheme.of(context);
+    DaviThemeData theme = DaviTheme.of(context);
 
     // Theme
     EdgeInsets? padding = theme.cell.padding;

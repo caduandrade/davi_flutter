@@ -57,11 +57,11 @@ class DaviColumn<ROW> extends ChangeNotifier with ColumnSortMixin {
       Widget? leading,
       DaviCellBuilder<ROW>? cellBuilder,
       DaviColumnSort<ROW>? sort,
-      EasyTableIntValueMapper<ROW>? intValue,
-      EasyTableDoubleValueMapper<ROW>? doubleValue,
-      EasyTableStringValueMapper<ROW>? stringValue,
-      EasyTableIconValueMapper<ROW>? iconValue,
-      EasyTableObjectValueMapper<ROW>? objectValue,
+      DaviIntValueMapper<ROW>? intValue,
+      DaviDoubleValueMapper<ROW>? doubleValue,
+      DaviStringValueMapper<ROW>? stringValue,
+      DaviIconValueMapper<ROW>? iconValue,
+      DaviObjectValueMapper<ROW>? objectValue,
       CellStyleBuilder<ROW>? cellStyleBuilder}) {
     if (sort == null) {
       if (intValue != null) {
@@ -205,11 +205,11 @@ class DaviColumn<ROW> extends ChangeNotifier with ColumnSortMixin {
   final PinStatus pinStatus;
   final DaviCellBuilder<ROW>? cellBuilder;
   final DaviColumnSort<ROW>? sort;
-  final EasyTableIntValueMapper<ROW>? intValueMapper;
-  final EasyTableDoubleValueMapper<ROW>? doubleValueMapper;
-  final EasyTableStringValueMapper<ROW>? stringValueMapper;
-  final EasyTableObjectValueMapper<ROW>? objectValueMapper;
-  final EasyTableIconValueMapper<ROW>? iconValueMapper;
+  final DaviIntValueMapper<ROW>? intValueMapper;
+  final DaviDoubleValueMapper<ROW>? doubleValueMapper;
+  final DaviStringValueMapper<ROW>? stringValueMapper;
+  final DaviObjectValueMapper<ROW>? objectValueMapper;
+  final DaviIconValueMapper<ROW>? iconValueMapper;
   final CellStyleBuilder<ROW>? cellStyleBuilder;
   final bool cellClip;
   final bool _sortable;
@@ -248,6 +248,6 @@ class DaviColumn<ROW> extends ChangeNotifier with ColumnSortMixin {
 
   @override
   String toString() {
-    return 'EasyTableColumn{name: $name}';
+    return 'DaviColumn{name: $name}';
   }
 }

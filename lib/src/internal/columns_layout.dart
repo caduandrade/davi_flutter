@@ -24,7 +24,7 @@ class ColumnsLayout<ROW> extends MultiChildRenderObjectWidget {
 
   @override
   RenderObject createRenderObject(BuildContext context) {
-    EasyTableThemeData theme = EasyTableTheme.of(context);
+    DaviThemeData theme = DaviTheme.of(context);
     return ColumnsLayoutRenderBox<ROW>(
         layoutSettings: layoutSettings,
         horizontalScrollOffsets: horizontalScrollOffsets,
@@ -41,7 +41,7 @@ class ColumnsLayout<ROW> extends MultiChildRenderObjectWidget {
   void updateRenderObject(
       BuildContext context, covariant ColumnsLayoutRenderBox renderObject) {
     super.updateRenderObject(context, renderObject);
-    EasyTableThemeData theme = EasyTableTheme.of(context);
+    DaviThemeData theme = DaviTheme.of(context);
     renderObject
       ..layoutSettings = layoutSettings
       ..horizontalScrollOffsets = horizontalScrollOffsets

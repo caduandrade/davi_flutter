@@ -16,7 +16,7 @@ class TableLayoutRenderBox<ROW> extends RenderBox
         RenderBoxContainerDefaultsMixin<RenderBox, TableLayoutParentData> {
   TableLayoutRenderBox(
       {required TableLayoutSettings layoutSettings,
-      required EasyTableThemeData theme,
+      required DaviThemeData theme,
       required HorizontalScrollOffsets horizontalScrollOffsets})
       : _layoutSettings = layoutSettings,
         _theme = theme,
@@ -39,9 +39,9 @@ class TableLayoutRenderBox<ROW> extends RenderBox
     }
   }
 
-  EasyTableThemeData _theme;
+  DaviThemeData _theme;
 
-  set theme(EasyTableThemeData value) {
+  set theme(DaviThemeData value) {
     _theme = value;
   }
 

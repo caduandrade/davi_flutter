@@ -29,7 +29,7 @@ class HeaderWidget<ROW> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    EasyTableThemeData theme = EasyTableTheme.of(context);
+    DaviThemeData theme = DaviTheme.of(context);
 
     List<ColumnsLayoutChild<ROW>> children = [];
 

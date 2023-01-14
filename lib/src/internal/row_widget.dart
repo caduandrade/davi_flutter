@@ -33,8 +33,8 @@ class RowWidget<ROW> extends StatefulWidget {
   final DaviModel<ROW> model;
   final TableLayoutSettings layoutSettings;
   final RowCallbacks<ROW> rowCallbacks;
-  final EasyTableRowColor<ROW>? color;
-  final EasyTableRowCursor<ROW>? cursor;
+  final DaviRowColor<ROW>? color;
+  final DaviRowCursor<ROW>? cursor;
   final HorizontalScrollOffsets horizontalScrollOffsets;
 
   @override
@@ -59,7 +59,7 @@ class RowWidgetState<ROW> extends State<RowWidget<ROW>> {
 
   @override
   Widget build(BuildContext context) {
-    EasyTableThemeData theme = EasyTableTheme.of(context);
+    DaviThemeData theme = DaviTheme.of(context);
 
     List<ColumnsLayoutChild<ROW>> children = [];
 
@@ -132,7 +132,7 @@ class RowWidgetState<ROW> extends State<RowWidget<ROW>> {
     return layout;
   }
 
-  MouseCursor _cursor(EasyTableThemeData theme) {
+  MouseCursor _cursor(DaviThemeData theme) {
     if (!theme.row.cursorOnTapGesturesOnly || widget.rowCallbacks.hasCallback) {
       MouseCursor? cursor;
       if (widget.cursor != null) {

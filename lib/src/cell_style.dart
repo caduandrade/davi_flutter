@@ -3,7 +3,7 @@ import 'package:flutter/widgets.dart';
 
 /// Signature for a function that builds a [CellStyle] for a row.
 ///
-/// Used by [EasyTableColumn].
+/// Used by [DaviColumn].
 typedef CellStyleBuilder<ROW> = CellStyle? Function(RowData<ROW> data);
 
 /// Overrides the theme and column style.

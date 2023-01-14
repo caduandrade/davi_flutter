@@ -11,7 +11,7 @@ class TableCorner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    EasyTableThemeData theme = EasyTableTheme.of(context);
+    DaviThemeData theme = DaviTheme.of(context);
 
     BoxBorder? border;
     if (theme.scrollbar.borderThickness > 0) {

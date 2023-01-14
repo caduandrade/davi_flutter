@@ -40,7 +40,7 @@ class _HomePageState extends State<HomePage> {
   bool _lastRowWidget = false;
   bool _lastRowDividerVisible = RowThemeDataDefaults.lastDividerVisible;
   bool _columnDividerFillHeight =
-      EasyTableThemeDataDefaults.columnDividerFillHeight;
+      DaviThemeDataDefaults.columnDividerFillHeight;
   RowThemeColor _demoBackground = RowThemeColor.none;
   bool _columnsWithIcon = true;
 
@@ -118,7 +118,7 @@ class _HomePageState extends State<HomePage> {
       return const Center(child: CircularProgressIndicator());
     }
 
-    Widget table = EasyTableTheme(
+    Widget table = DaviTheme(
         child: Davi<Character>(_model,
             rowColor: _rowColor
                 ? (data) => data.row.life < 1000 ? Colors.red[200] : null
@@ -126,7 +126,7 @@ class _HomePageState extends State<HomePage> {
             lastRowWidget: _lastRowWidget
                 ? const Center(child: Text('LAST ROW WIDGET'))
                 : null),
-        data: EasyTableThemeData(
+        data: DaviThemeData(
             columnDividerFillHeight: _columnDividerFillHeight,
             header: HeaderThemeData(visible: _headerVisible),
             cell: CellThemeData(

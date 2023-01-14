@@ -52,8 +52,8 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
   final TableThemeMetrics themeMetrics;
   final Widget? lastRowWidget;
   final OnLastRowWidgetListener onLastRowWidget;
-  final EasyTableRowColor<ROW>? rowColor;
-  final EasyTableRowCursor<ROW>? rowCursor;
+  final DaviRowColor<ROW>? rowColor;
+  final DaviRowCursor<ROW>? rowCursor;
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +61,7 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
   }
 
   Widget _builder(BuildContext context, BoxConstraints constraints) {
-    final EasyTableThemeData theme = EasyTableTheme.of(context);
+    final DaviThemeData theme = DaviTheme.of(context);
 
     final HorizontalScrollOffsets horizontalScrollOffsets =
         HorizontalScrollOffsets(scrollControllers);

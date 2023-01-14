@@ -26,7 +26,7 @@ class TableScrollbar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    EasyTableThemeData theme = EasyTableTheme.of(context);
+    DaviThemeData theme = DaviTheme.of(context);
     TableScrollbarThemeData scrollTheme = theme.scrollbar;
     BoxBorder? border;
     if (theme.scrollbar.borderThickness > 0) {

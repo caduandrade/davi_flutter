@@ -46,8 +46,8 @@ class TableLayoutChild<ROW> extends ParentDataWidget<TableLayoutParentData> {
       required ScrollController verticalScrollController,
       required OnRowHoverListener? onHover,
       required RowCallbacks<ROW> rowCallbacks,
-      required EasyTableRowColor<ROW>? rowColor,
-      required EasyTableRowCursor<ROW>? rowCursor,
+      required DaviRowColor<ROW>? rowColor,
+      required DaviRowCursor<ROW>? rowCursor,
       required Widget? lastRowWidget,
       required OnLastRowWidgetListener onLastRowWidget,
       required OnLastVisibleRowListener onLastVisibleRow}) {

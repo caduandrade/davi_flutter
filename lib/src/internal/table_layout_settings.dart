@@ -19,7 +19,7 @@ class TableLayoutSettings {
       required TableThemeMetrics themeMetrics,
       required int? visibleRowsLength,
       required bool hasLastRowWidget,
-      required EasyTableThemeData theme}) {
+      required DaviThemeData theme}) {
     if (!constraints.hasBoundedWidth) {
       throw FlutterError('EasyTable was given unbounded width.');
     }

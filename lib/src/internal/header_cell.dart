@@ -30,7 +30,7 @@ class _EasyTableHeaderCellState extends State<EasyTableHeaderCell> {
 
   @override
   Widget build(BuildContext context) {
-    HeaderCellThemeData theme = EasyTableTheme.of(context).headerCell;
+    HeaderCellThemeData theme = DaviTheme.of(context).headerCell;
 
     bool resizing = widget.model.columnInResizing == widget.column;
     bool enabled = resizing == false && widget.model.columnInResizing == null;
@@ -105,7 +105,7 @@ class _EasyTableHeaderCellState extends State<EasyTableHeaderCell> {
   }
 
   Widget _textWidget(BuildContext context) {
-    EasyTableThemeData theme = EasyTableTheme.of(context);
+    DaviThemeData theme = DaviTheme.of(context);
     Widget? text;
     if (widget.column.name != null) {
       text = Text(widget.column.name!,
@@ -118,7 +118,7 @@ class _EasyTableHeaderCellState extends State<EasyTableHeaderCell> {
   }
 
   Widget _resizeWidget({required BuildContext context, required resizing}) {
-    EasyTableThemeData theme = EasyTableTheme.of(context);
+    DaviThemeData theme = DaviTheme.of(context);
     return MouseRegion(
         onEnter: (e) => setState(() {
               _hovered = true;

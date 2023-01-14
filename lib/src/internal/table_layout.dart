@@ -20,7 +20,7 @@ class TableLayout<ROW> extends MultiChildRenderObjectWidget {
       : super(key: key, children: children);
 
   final TableLayoutSettings layoutSettings;
-  final EasyTableThemeData theme;
+  final DaviThemeData theme;
   final HorizontalScrollOffsets horizontalScrollOffsets;
 
   @override

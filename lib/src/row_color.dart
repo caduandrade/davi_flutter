@@ -3,4 +3,4 @@ import 'package:flutter/material.dart';
 
 /// Signature for a function that defines a row color.
 /// The theme value will be used if it returns [NULL].
-typedef EasyTableRowColor<ROW> = Color? Function(RowData<ROW> data);
+typedef DaviRowColor<ROW> = Color? Function(RowData<ROW> data);

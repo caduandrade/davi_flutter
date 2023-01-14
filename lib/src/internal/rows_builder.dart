@@ -45,14 +45,14 @@ class RowsBuilder<ROW> extends StatelessWidget {
   final OnRowHoverListener? onHover;
   final RowCallbacks<ROW> rowCallbacks;
   final Widget? lastRowWidget;
-  final EasyTableRowColor<ROW>? rowColor;
-  final EasyTableRowCursor<ROW>? rowCursor;
+  final DaviRowColor<ROW>? rowColor;
+  final DaviRowCursor<ROW>? rowCursor;
   final OnLastRowWidgetListener onLastRowWidget;
   final OnLastVisibleRowListener onLastVisibleRow;
 
   @override
   Widget build(BuildContext context) {
-    EasyTableThemeData theme = EasyTableTheme.of(context);
+    DaviThemeData theme = DaviTheme.of(context);
 
     List<RowsLayoutChild> children = [];
 

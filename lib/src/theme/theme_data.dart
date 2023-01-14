@@ -7,22 +7,22 @@ import 'package:flutter/material.dart';
 
 //TODO handle negative values
 /// The [EasyTable] theme.
-/// Defines the configuration of the overall visual [EasyTableThemeData] for a widget subtree within the app.
-class EasyTableThemeData {
+/// Defines the configuration of the overall visual [DaviThemeData] for a widget subtree within the app.
+class DaviThemeData {
   /// Builds a theme data.
-  const EasyTableThemeData(
+  const DaviThemeData(
       {this.columnDividerFillHeight =
-          EasyTableThemeDataDefaults.columnDividerFillHeight,
+          DaviThemeDataDefaults.columnDividerFillHeight,
       this.columnDividerThickness =
-          EasyTableThemeDataDefaults.columnDividerThickness,
-      this.columnDividerColor = EasyTableThemeDataDefaults.columnDividerColor,
-      this.decoration = EasyTableThemeDataDefaults.tableDecoration,
+          DaviThemeDataDefaults.columnDividerThickness,
+      this.columnDividerColor = DaviThemeDataDefaults.columnDividerColor,
+      this.decoration = DaviThemeDataDefaults.tableDecoration,
       this.topCornerBorderColor =
-          EasyTableThemeDataDefaults.topCornerBorderColor,
-      this.topCornerColor = EasyTableThemeDataDefaults.topCornerColor,
+          DaviThemeDataDefaults.topCornerBorderColor,
+      this.topCornerColor = DaviThemeDataDefaults.topCornerColor,
       this.bottomCornerBorderColor =
-          EasyTableThemeDataDefaults.bottomCornerBorderColor,
-      this.bottomCornerColor = EasyTableThemeDataDefaults.bottomCornerColor,
+          DaviThemeDataDefaults.bottomCornerBorderColor,
+      this.bottomCornerColor = DaviThemeDataDefaults.bottomCornerColor,
       this.row = const RowThemeData(),
       this.cell = const CellThemeData(),
       this.header = const HeaderThemeData(),
@@ -46,7 +46,7 @@ class EasyTableThemeData {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is EasyTableThemeData &&
+      other is DaviThemeData &&
           runtimeType == other.runtimeType &&
           columnDividerFillHeight == other.columnDividerFillHeight &&
           columnDividerThickness == other.columnDividerThickness &&
@@ -79,7 +79,7 @@ class EasyTableThemeData {
       bottomCornerColor.hashCode;
 }
 
-class EasyTableThemeDataDefaults {
+class DaviThemeDataDefaults {
   static const bool columnDividerFillHeight = true;
   static const double columnDividerThickness = 1;
   static const BoxDecoration tableDecoration = BoxDecoration(

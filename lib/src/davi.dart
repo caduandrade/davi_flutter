@@ -55,8 +55,8 @@ class Davi<ROW> extends StatefulWidget {
   final ScrollController? pinnedHorizontalScrollController;
   final ScrollController? verticalScrollController;
   final OnRowHoverListener? onHover;
-  final EasyTableRowColor<ROW>? rowColor;
-  final EasyTableRowCursor<ROW>? rowCursor;
+  final DaviRowColor<ROW>? rowColor;
+  final DaviRowCursor<ROW>? rowCursor;
   final RowDoubleTapCallback<ROW>? onRowDoubleTap;
   final RowTapCallback<ROW>? onRowTap;
   final RowTapCallback<ROW>? onRowSecondaryTap;
@@ -173,7 +173,7 @@ class _DaviState<ROW> extends State<Davi<ROW>> {
 
   @override
   Widget build(BuildContext context) {
-    final EasyTableThemeData theme = EasyTableTheme.of(context);
+    final DaviThemeData theme = DaviTheme.of(context);
 
     final TableThemeMetrics themeMetrics = TableThemeMetrics(theme);
 
