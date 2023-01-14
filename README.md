@@ -1,8 +1,8 @@
-[![](https://img.shields.io/pub/v/easy_table.svg)](https://pub.dev/packages/easy_table) ![](https://github.com/caduandrade/easy_table_flutter/actions/workflows/test.yml/badge.svg) [![](https://img.shields.io/badge/demo-try%20it%20out-blue)](https://caduandrade.github.io/easy_table_flutter_demo/) [![](https://img.shields.io/badge/Flutter-%E2%9D%A4-red)](https://flutter.dev/) [![](https://img.shields.io/badge/donate-crypto-green)](#support-this-project) ![](https://img.shields.io/badge/%F0%9F%91%8D%20and%20%E2%AD%90-are%20free-yellow)
+[![](https://img.shields.io/pub/v/davi.svg)](https://pub.dev/packages/davi) ![](https://github.com/caduandrade/davi_flutter/actions/workflows/test.yml/badge.svg) [![](https://img.shields.io/badge/demo-try%20it%20out-blue)](https://caduandrade.github.io/davi_flutter_demo/) [![](https://img.shields.io/badge/Flutter-%E2%9D%A4-red)](https://flutter.dev/) [![](https://img.shields.io/badge/donate-crypto-green)](#support-this-project) ![](https://img.shields.io/badge/%F0%9F%91%8D%20and%20%E2%AD%90-are%20free-yellow)
 
 # Davi
 
-![](https://caduandrade.github.io/easy_table_flutter/easy_table_v5.png)
+![](https://caduandrade.github.io/davi_flutter/easy_table_v5.png)
 
 * Ready for a large number of data. Building cells on demand.
 * Focused on Web/Desktop Applications.
@@ -76,7 +76,7 @@ Widget build(BuildContext context) {
 }
 ```
 
-![](https://caduandrade.github.io/easy_table_flutter/get_started_v5.png)
+![](https://caduandrade.github.io/davi_flutter/get_started_v5.png)
 
 ## Column
 
@@ -96,7 +96,7 @@ All columns will fit in the available width.
         columnWidthBehavior: ColumnWidthBehavior.fit);
 ```
 
-![](https://caduandrade.github.io/easy_table_flutter/columns_fit_v4.png)
+![](https://caduandrade.github.io/davi_flutter/columns_fit_v4.png)
 
 ### Stretchable column
 
@@ -113,7 +113,7 @@ The remaining width will be distributed to the columns according to the value of
   EasyTable<Person>(_model);
 ```
 
-![](https://caduandrade.github.io/easy_table_flutter/stretchable_column_v1.png)
+![](https://caduandrade.github.io/davi_flutter/stretchable_column_v1.png)
 
 ### Multiple sort
 
@@ -121,7 +121,7 @@ The remaining width will be distributed to the columns according to the value of
   EasyTable(_model, multiSort: true);
 ```
 
-![](https://caduandrade.github.io/easy_table_flutter/multiple_sort_v1.png)
+![](https://caduandrade.github.io/davi_flutter/multiple_sort_v1.png)
 
 ### Column style
 
@@ -139,7 +139,7 @@ The remaining width will be distributed to the columns according to the value of
     ]);
 ```
 
-![](https://caduandrade.github.io/easy_table_flutter/column_style_v2.png)
+![](https://caduandrade.github.io/davi_flutter/column_style_v2.png)
 
 ### Pinned column
 
@@ -158,7 +158,7 @@ The remaining width will be distributed to the columns according to the value of
     ]);
 ```
 
-![](https://caduandrade.github.io/easy_table_flutter/pinned_column_v4.png)
+![](https://caduandrade.github.io/davi_flutter/pinned_column_v4.png)
 
 ## Row
 
@@ -187,7 +187,7 @@ The remaining width will be distributed to the columns according to the value of
   }
 ```
 
-![](https://caduandrade.github.io/easy_table_flutter/row_color_v1.png)
+![](https://caduandrade.github.io/davi_flutter/row_color_v1.png)
 
 ### Row cursor
 
@@ -275,7 +275,7 @@ void _onRowDoubleTap(BuildContext context, Person person) {
   }
 ```
 
-![](https://caduandrade.github.io/easy_table_flutter/infinite_scroll_v3.gif)
+![](https://caduandrade.github.io/davi_flutter/infinite_scroll_v3.gif)
 
 ## Cell
 
@@ -296,7 +296,7 @@ void _onRowDoubleTap(BuildContext context, Person person) {
     ]);
 ```
 
-![](https://caduandrade.github.io/easy_table_flutter/cell_style_v1.png)
+![](https://caduandrade.github.io/davi_flutter/cell_style_v1.png)
 
 ### Custom cell widget
 
@@ -310,7 +310,7 @@ void _onRowDoubleTap(BuildContext context, Person person) {
     ]);
 ```
 
-![](https://caduandrade.github.io/easy_table_flutter/custom_cell_widget_v2.png)
+![](https://caduandrade.github.io/davi_flutter/custom_cell_widget_v2.png)
 
 ### Cell edit
 
@@ -401,7 +401,7 @@ EasyTableTheme(
                 TableScrollbarThemeData(columnDividerColor: Colors.orange)));
 ```
 
-![](https://caduandrade.github.io/easy_table_flutter/theme_divider_v3.png)
+![](https://caduandrade.github.io/davi_flutter/theme_divider_v3.png)
 
 ### Header
 
@@ -426,7 +426,7 @@ EasyTableTheme(
                 expandableName: false)));
 ```
 
-![](https://caduandrade.github.io/easy_table_flutter/header_v1.png)
+![](https://caduandrade.github.io/davi_flutter/header_v1.png)
 
 #### Hidden header
 
@@ -437,7 +437,7 @@ EasyTableTheme(
             const EasyTableThemeData(header: HeaderThemeData(visible: false)));
 ```
 
-![](https://caduandrade.github.io/easy_table_flutter/hidden_header_v1.png)
+![](https://caduandrade.github.io/davi_flutter/hidden_header_v1.png)
 
 ### Row
 
@@ -450,7 +450,7 @@ EasyTableTheme(
         child: EasyTable<Person>(_model));
 ```
 
-![](https://caduandrade.github.io/easy_table_flutter/theme_row_color_v1.png)
+![](https://caduandrade.github.io/davi_flutter/theme_row_color_v1.png)
 
 #### Row zebra color
 
@@ -461,7 +461,7 @@ EasyTableTheme(
         child: EasyTable<Person>(_model));
 ```
 
-![](https://caduandrade.github.io/easy_table_flutter/theme_row_zebra_color_v1.png)
+![](https://caduandrade.github.io/davi_flutter/theme_row_zebra_color_v1.png)
 
 #### Row hover background
 
@@ -472,7 +472,7 @@ EasyTableTheme(
         child: EasyTable<Person>(_model));
 ```
 
-![](https://caduandrade.github.io/easy_table_flutter/theme_row_hover_background_v1.png)
+![](https://caduandrade.github.io/davi_flutter/theme_row_hover_background_v1.png)
 
 #### Row hover foreground
 
@@ -484,7 +484,7 @@ EasyTableTheme(
         child: EasyTable<Person>(_model));
 ```
 
-![](https://caduandrade.github.io/easy_table_flutter/theme_row_hover_foreground_v1.png)
+![](https://caduandrade.github.io/davi_flutter/theme_row_hover_foreground_v1.png)
 
 #### Row fill height
 
@@ -496,7 +496,7 @@ EasyTableTheme(
         child: EasyTable<Person>(_model));
 ```
 
-![](https://caduandrade.github.io/easy_table_flutter/theme_roll_fill_height_v1.png)
+![](https://caduandrade.github.io/davi_flutter/theme_roll_fill_height_v1.png)
 
 ### Scrollbar
 
@@ -516,7 +516,7 @@ EasyTableTheme(
                 verticalBorderColor: Colors.pink)));
 ```
 
-![](https://caduandrade.github.io/easy_table_flutter/theme_scrollbar_v1.png)
+![](https://caduandrade.github.io/davi_flutter/theme_scrollbar_v1.png)
 
 #### Scrollbar always visible
 
@@ -529,7 +529,7 @@ EasyTableTheme(
         child: EasyTable<Person>(_model));
 ```
 
-![](https://caduandrade.github.io/easy_table_flutter/scrollbar_always_visible_v1.png)
+![](https://caduandrade.github.io/davi_flutter/scrollbar_always_visible_v1.png)
 
 > A warning is being displayed in the console due to a bug in Flutter: https://github.com/flutter/flutter/issues/103939.
 > The error happens when the horizontal scrollbar is hidden after being visible.
@@ -562,7 +562,7 @@ EasyTableTheme(
                 nullValueColor: ((rowIndex, hovered) => Colors.grey[300]))));
 ```
 
-![](https://caduandrade.github.io/easy_table_flutter/null_cell_color_v3.png)
+![](https://caduandrade.github.io/davi_flutter/null_cell_color_v3.png)
 
 ## TODO
 
