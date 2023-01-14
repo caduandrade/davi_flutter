@@ -30,7 +30,7 @@ class RowWidget<ROW> extends StatefulWidget {
   final bool scrolling;
   final bool columnResizing;
   final OnRowHoverListener? onHover;
-  final EasyTableModel<ROW> model;
+  final DaviModel<ROW> model;
   final TableLayoutSettings layoutSettings;
   final RowCallbacks<ROW> rowCallbacks;
   final EasyTableRowColor<ROW>? color;
@@ -66,7 +66,7 @@ class RowWidgetState<ROW> extends State<RowWidget<ROW>> {
     for (int columnIndex = 0;
         columnIndex < widget.model.columnsLength;
         columnIndex++) {
-      final EasyTableColumn<ROW> column = widget.model.columnAt(columnIndex);
+      final DaviColumn<ROW> column = widget.model.columnAt(columnIndex);
       final CellWidget<ROW> cell = CellWidget(
           column: column, columnIndex: columnIndex, rowData: _rowData);
 

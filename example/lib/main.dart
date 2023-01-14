@@ -48,7 +48,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  EasyTableModel<Person>? _model;
+  DaviModel<Person>? _model;
 
   @override
   void initState() {
@@ -61,10 +61,10 @@ class _HomePageState extends State<HomePage> {
       rows.add(Person('User $i', random.nextInt(100)));
     }
 
-    _model = EasyTableModel<Person>(rows: rows, columns: [
-      EasyTableColumn(name: 'Name', stringValue: (row) => row.name),
-      EasyTableColumn(name: 'Value', intValue: (row) => row.value),
-      EasyTableColumn(
+    _model = DaviModel<Person>(rows: rows, columns: [
+      DaviColumn(name: 'Name', stringValue: (row) => row.name),
+      DaviColumn(name: 'Value', intValue: (row) => row.value),
+      DaviColumn(
           name: 'Editable',
           cellBuilder: _buildField,
           cellBackground: (rowData) =>

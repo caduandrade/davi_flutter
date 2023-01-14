@@ -19,14 +19,14 @@ void main() {
     });
     group('Fit', () {
       test('Empty', () {
-        EasyTableModel model = EasyTableModel(columns: []);
+        DaviModel model = DaviModel(columns: []);
         List<ColumnMetrics> list = ColumnMetrics.columnsFit(
             model: model, maxWidth: 100, dividerThickness: 10);
         expect(list.length, 0);
       });
       test('Single - Divider', () {
-        EasyTableModel model = EasyTableModel(
-            columns: [EasyTableColumn(pinStatus: PinStatus.left)]);
+        DaviModel model = DaviModel(
+            columns: [DaviColumn(pinStatus: PinStatus.left)]);
         List<ColumnMetrics> list = ColumnMetrics.columnsFit(
             model: model, maxWidth: 100, dividerThickness: 10);
         expect(list.length, 1);
@@ -35,8 +35,8 @@ void main() {
         expect(list[0].pinStatus, PinStatus.none);
       });
       test('Single - No divider', () {
-        EasyTableModel model = EasyTableModel(
-            columns: [EasyTableColumn(pinStatus: PinStatus.left)]);
+        DaviModel model = DaviModel(
+            columns: [DaviColumn(pinStatus: PinStatus.left)]);
         List<ColumnMetrics> list = ColumnMetrics.columnsFit(
             model: model, maxWidth: 100, dividerThickness: 0);
         expect(list.length, 1);
@@ -45,9 +45,9 @@ void main() {
         expect(list[0].pinStatus, PinStatus.none);
       });
       test('Multiple - Divider', () {
-        EasyTableModel model = EasyTableModel(columns: [
-          EasyTableColumn(pinStatus: PinStatus.left),
-          EasyTableColumn(pinStatus: PinStatus.none)
+        DaviModel model = DaviModel(columns: [
+          DaviColumn(pinStatus: PinStatus.left),
+          DaviColumn(pinStatus: PinStatus.none)
         ]);
         List<ColumnMetrics> list = ColumnMetrics.columnsFit(
             model: model, maxWidth: 100, dividerThickness: 10);
@@ -60,9 +60,9 @@ void main() {
         expect(list[1].pinStatus, PinStatus.none);
       });
       test('Multiple - No divider', () {
-        EasyTableModel model = EasyTableModel(columns: [
-          EasyTableColumn(pinStatus: PinStatus.left),
-          EasyTableColumn(pinStatus: PinStatus.none)
+        DaviModel model = DaviModel(columns: [
+          DaviColumn(pinStatus: PinStatus.left),
+          DaviColumn(pinStatus: PinStatus.none)
         ]);
         List<ColumnMetrics> list = ColumnMetrics.columnsFit(
             model: model, maxWidth: 100, dividerThickness: 0);
@@ -75,8 +75,8 @@ void main() {
         expect(list[1].pinStatus, PinStatus.none);
       });
       test('Single - Divider - Weight', () {
-        EasyTableModel model = EasyTableModel(
-            columns: [EasyTableColumn(pinStatus: PinStatus.left, grow: 2)]);
+        DaviModel model = DaviModel(
+            columns: [DaviColumn(pinStatus: PinStatus.left, grow: 2)]);
         List<ColumnMetrics> list = ColumnMetrics.columnsFit(
             model: model, maxWidth: 100, dividerThickness: 10);
         expect(list.length, 1);
@@ -85,8 +85,8 @@ void main() {
         expect(list[0].pinStatus, PinStatus.none);
       });
       test('Single - No divider - Weight', () {
-        EasyTableModel model = EasyTableModel(
-            columns: [EasyTableColumn(pinStatus: PinStatus.left, grow: 2)]);
+        DaviModel model = DaviModel(
+            columns: [DaviColumn(pinStatus: PinStatus.left, grow: 2)]);
         List<ColumnMetrics> list = ColumnMetrics.columnsFit(
             model: model, maxWidth: 100, dividerThickness: 0);
         expect(list.length, 1);
@@ -95,9 +95,9 @@ void main() {
         expect(list[0].pinStatus, PinStatus.none);
       });
       test('Multiple - Divider - Weight', () {
-        EasyTableModel model = EasyTableModel(columns: [
-          EasyTableColumn(pinStatus: PinStatus.left, grow: 2),
-          EasyTableColumn(pinStatus: PinStatus.none, grow: 6)
+        DaviModel model = DaviModel(columns: [
+          DaviColumn(pinStatus: PinStatus.left, grow: 2),
+          DaviColumn(pinStatus: PinStatus.none, grow: 6)
         ]);
         List<ColumnMetrics> list = ColumnMetrics.columnsFit(
             model: model, maxWidth: 100, dividerThickness: 20);
@@ -110,9 +110,9 @@ void main() {
         expect(list[1].pinStatus, PinStatus.none);
       });
       test('Multiple - No divider - Weight', () {
-        EasyTableModel model = EasyTableModel(columns: [
-          EasyTableColumn(pinStatus: PinStatus.left, grow: 2),
-          EasyTableColumn(pinStatus: PinStatus.none, grow: 8)
+        DaviModel model = DaviModel(columns: [
+          DaviColumn(pinStatus: PinStatus.left, grow: 2),
+          DaviColumn(pinStatus: PinStatus.none, grow: 8)
         ]);
         List<ColumnMetrics> list = ColumnMetrics.columnsFit(
             model: model, maxWidth: 100, dividerThickness: 0);
@@ -127,14 +127,14 @@ void main() {
     });
     group('Resizable', () {
       test('Empty', () {
-        EasyTableModel model = EasyTableModel(columns: []);
+        DaviModel model = DaviModel(columns: []);
         List<ColumnMetrics> list = ColumnMetrics.resizable(
             model: model, maxWidth: 500, dividerThickness: 10);
         expect(list.length, 0);
       });
       test('Single - Divider', () {
-        EasyTableModel model = EasyTableModel(
-            columns: [EasyTableColumn(pinStatus: PinStatus.left, width: 50)]);
+        DaviModel model = DaviModel(
+            columns: [DaviColumn(pinStatus: PinStatus.left, width: 50)]);
         List<ColumnMetrics> list = ColumnMetrics.resizable(
             model: model, maxWidth: 500, dividerThickness: 10);
         expect(list.length, 1);
@@ -143,8 +143,8 @@ void main() {
         expect(list[0].pinStatus, PinStatus.left);
       });
       test('Single - No divider', () {
-        EasyTableModel model = EasyTableModel(
-            columns: [EasyTableColumn(pinStatus: PinStatus.left, width: 50)]);
+        DaviModel model = DaviModel(
+            columns: [DaviColumn(pinStatus: PinStatus.left, width: 50)]);
         List<ColumnMetrics> list = ColumnMetrics.resizable(
             model: model, maxWidth: 500, dividerThickness: 10);
         expect(list.length, 1);
@@ -153,9 +153,9 @@ void main() {
         expect(list[0].pinStatus, PinStatus.left);
       });
       test('Multi - Divider', () {
-        EasyTableModel model = EasyTableModel(columns: [
-          EasyTableColumn(pinStatus: PinStatus.left, width: 50),
-          EasyTableColumn(pinStatus: PinStatus.none, width: 100)
+        DaviModel model = DaviModel(columns: [
+          DaviColumn(pinStatus: PinStatus.left, width: 50),
+          DaviColumn(pinStatus: PinStatus.none, width: 100)
         ]);
         List<ColumnMetrics> list = ColumnMetrics.resizable(
             model: model, maxWidth: 500, dividerThickness: 10);
@@ -168,9 +168,9 @@ void main() {
         expect(list[1].pinStatus, PinStatus.none);
       });
       test('Multi - No divider', () {
-        EasyTableModel model = EasyTableModel(columns: [
-          EasyTableColumn(pinStatus: PinStatus.left, width: 50),
-          EasyTableColumn(pinStatus: PinStatus.none, width: 100)
+        DaviModel model = DaviModel(columns: [
+          DaviColumn(pinStatus: PinStatus.left, width: 50),
+          DaviColumn(pinStatus: PinStatus.none, width: 100)
         ]);
         List<ColumnMetrics> list = ColumnMetrics.resizable(
             model: model, maxWidth: 500, dividerThickness: 0);

@@ -5,31 +5,31 @@ import 'package:davi/src/column_sort.dart';
 import 'package:davi/src/sort_order.dart';
 import 'package:flutter/widgets.dart';
 
-/// The [EasyTable] model.
+/// The [Davi] model.
 ///
 /// The type [ROW] represents the data of each row.
-class EasyTableModel<ROW> extends ChangeNotifier {
-  factory EasyTableModel(
+class DaviModel<ROW> extends ChangeNotifier {
+  factory DaviModel(
       {List<ROW> rows = const [],
-      List<EasyTableColumn<ROW>> columns = const []}) {
+      List<DaviColumn<ROW>> columns = const []}) {
     List<ROW> cloneList = List.from(rows);
-    EasyTableModel<ROW> model =
-        EasyTableModel._(cloneList, UnmodifiableListView(cloneList));
-    for (EasyTableColumn<ROW> column in columns) {
+    DaviModel<ROW> model =
+        DaviModel._(cloneList, UnmodifiableListView(cloneList));
+    for (DaviColumn<ROW> column in columns) {
       model.addColumn(column);
     }
     return model;
   }
 
-  EasyTableModel._(this._originalRows, this._rows);
+  DaviModel._(this._originalRows, this._rows);
 
-  final List<EasyTableColumn<ROW>> _columns = [];
+  final List<DaviColumn<ROW>> _columns = [];
   final List<ROW> _originalRows;
 
-  final List<EasyTableColumn<ROW>> _sortedColumns = [];
+  final List<DaviColumn<ROW>> _sortedColumns = [];
 
   /// Gets the sorted columns.
-  List<EasyTableColumn<ROW>> get sortedColumns =>
+  List<DaviColumn<ROW>> get sortedColumns =>
       UnmodifiableListView(_sortedColumns);
 
   List<ROW> _rows;
@@ -54,11 +54,11 @@ class EasyTableModel<ROW> extends ChangeNotifier {
 
   bool get isColumnsNotEmpty => _columns.isNotEmpty;
 
-  EasyTableColumn<ROW>? _columnInResizing;
+  DaviColumn<ROW>? _columnInResizing;
 
-  EasyTableColumn<ROW>? get columnInResizing => _columnInResizing;
+  DaviColumn<ROW>? get columnInResizing => _columnInResizing;
 
-  set columnInResizing(EasyTableColumn<ROW>? column) {
+  set columnInResizing(DaviColumn<ROW>? column) {
     _columnInResizing = column;
     notifyListeners();
   }
@@ -111,16 +111,16 @@ class EasyTableModel<ROW> extends ChangeNotifier {
     notifyListeners();
   }
 
-  EasyTableColumn<ROW> columnAt(int index) => _columns[index];
+  DaviColumn<ROW> columnAt(int index) => _columns[index];
 
-  void addColumn(EasyTableColumn<ROW> column) {
+  void addColumn(DaviColumn<ROW> column) {
     _columns.add(column);
     column.addListener(notifyListeners);
     notifyListeners();
   }
 
-  void addColumns(Iterable<EasyTableColumn<ROW>> columns) {
-    for (EasyTableColumn<ROW> column in columns) {
+  void addColumns(Iterable<DaviColumn<ROW>> columns) {
+    for (DaviColumn<ROW> column in columns) {
       _columns.add(column);
       column.addListener(notifyListeners);
     }
@@ -137,17 +137,17 @@ class EasyTableModel<ROW> extends ChangeNotifier {
 
   void _updateSortPriorities() {
     int priority = 1;
-    for (EasyTableColumn<ROW> column in _sortedColumns) {
+    for (DaviColumn<ROW> column in _sortedColumns) {
       column._priority = priority++;
     }
   }
 
   void removeColumnAt(int index) {
-    EasyTableColumn<ROW> column = _columns[index];
+    DaviColumn<ROW> column = _columns[index];
     removeColumn(column);
   }
 
-  void removeColumn(EasyTableColumn<ROW> column) {
+  void removeColumn(DaviColumn<ROW> column) {
     if (_columns.remove(column)) {
       column.removeListener(notifyListeners);
       if (_columnInResizing == column) {
@@ -170,7 +170,7 @@ class EasyTableModel<ROW> extends ChangeNotifier {
   }
 
   void _clearColumnsSortData() {
-    for (EasyTableColumn<ROW> column in _columns) {
+    for (DaviColumn<ROW> column in _columns) {
       column._clearSortData();
     }
   }
@@ -180,7 +180,7 @@ class EasyTableModel<ROW> extends ChangeNotifier {
     _sortedColumns.clear();
     _clearColumnsSortData();
     for (ColumnSort columnSort in columnSorts) {
-      EasyTableColumn<ROW> column = _columns[columnSort.columnIndex];
+      DaviColumn<ROW> column = _columns[columnSort.columnIndex];
       if (column.sort != null) {
         column._order = columnSort.order;
         _sortedColumns.add(column);
@@ -191,7 +191,7 @@ class EasyTableModel<ROW> extends ChangeNotifier {
   }
 
   /// Updates the multi sort given a column.
-  void multiSortByColumn(EasyTableColumn<ROW> column) {
+  void multiSortByColumn(DaviColumn<ROW> column) {
     if (_columns.contains(column) == false || column.sort == null) {
       return;
     }
@@ -221,7 +221,7 @@ class EasyTableModel<ROW> extends ChangeNotifier {
 
   /// Sort given a column.
   void sortByColumn(
-      {required EasyTableColumn<ROW> column,
+      {required DaviColumn<ROW> column,
       required TableSortOrder sortOrder}) {
     if (column.sort != null && _columns.contains(column)) {
       _sortedColumns.clear();
@@ -256,7 +256,7 @@ class EasyTableModel<ROW> extends ChangeNotifier {
   int _compoundSort(ROW a, ROW b) {
     int r = 0;
     for (int i = 0; i < _sortedColumns.length; i++) {
-      final EasyTableColumnSort<ROW> sort = _sortedColumns[i].sort!;
+      final DaviColumnSort<ROW> sort = _sortedColumns[i].sort!;
       final TableSortOrder order = _sortedColumns[i].order!;
 
       if (order == TableSortOrder.descending) {

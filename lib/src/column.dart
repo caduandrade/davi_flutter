@@ -9,7 +9,7 @@ import 'package:davi/src/value_mapper.dart';
 import 'package:flutter/widgets.dart';
 
 /// Signature for sort column function.
-typedef EasyTableColumnSort<ROW> = int Function(ROW a, ROW b);
+typedef DaviColumnSort<ROW> = int Function(ROW a, ROW b);
 
 /// The [EasyTable] column.
 ///
@@ -35,8 +35,8 @@ typedef EasyTableColumnSort<ROW> = int Function(ROW a, ROW b);
 ///
 /// The [fractionDigits] is the optional decimal-point string-representation
 /// used by the default cell width when the [doubleValue] is set.
-class EasyTableColumn<ROW> extends ChangeNotifier with ColumnSortMixin {
-  factory EasyTableColumn(
+class DaviColumn<ROW> extends ChangeNotifier with ColumnSortMixin {
+  factory DaviColumn(
       {dynamic id,
       double width = 100,
       double? grow,
@@ -55,8 +55,8 @@ class EasyTableColumn<ROW> extends ChangeNotifier with ColumnSortMixin {
       TextStyle? headerTextStyle,
       bool cellClip = false,
       Widget? leading,
-      EasyTableCellBuilder<ROW>? cellBuilder,
-      EasyTableColumnSort<ROW>? sort,
+      DaviCellBuilder<ROW>? cellBuilder,
+      DaviColumnSort<ROW>? sort,
       EasyTableIntValueMapper<ROW>? intValue,
       EasyTableDoubleValueMapper<ROW>? doubleValue,
       EasyTableStringValueMapper<ROW>? stringValue,
@@ -130,7 +130,7 @@ class EasyTableColumn<ROW> extends ChangeNotifier with ColumnSortMixin {
       }
     }
     //TODO check multiple value mappers
-    return EasyTableColumn._(
+    return DaviColumn._(
         id: id,
         width: width,
         grow: grow,
@@ -159,7 +159,7 @@ class EasyTableColumn<ROW> extends ChangeNotifier with ColumnSortMixin {
         cellClip: cellClip);
   }
 
-  EasyTableColumn._(
+  DaviColumn._(
       {required this.id,
       required double width,
       double? grow,
@@ -203,8 +203,8 @@ class EasyTableColumn<ROW> extends ChangeNotifier with ColumnSortMixin {
   final TextStyle? headerTextStyle;
   final int? fractionDigits;
   final PinStatus pinStatus;
-  final EasyTableCellBuilder<ROW>? cellBuilder;
-  final EasyTableColumnSort<ROW>? sort;
+  final DaviCellBuilder<ROW>? cellBuilder;
+  final DaviColumnSort<ROW>? sort;
   final EasyTableIntValueMapper<ROW>? intValueMapper;
   final EasyTableDoubleValueMapper<ROW>? doubleValueMapper;
   final EasyTableStringValueMapper<ROW>? stringValueMapper;

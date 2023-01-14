@@ -12,7 +12,7 @@ import 'package:meta/meta.dart';
 class CellWidget<ROW> extends StatelessWidget {
   final int columnIndex;
   final RowData<ROW> rowData;
-  final EasyTableColumn<ROW> column;
+  final DaviColumn<ROW> column;
 
   CellWidget(
       {required this.rowData, required this.column, required this.columnIndex})
@@ -87,7 +87,7 @@ class CellWidget<ROW> extends StatelessWidget {
   }
 
   String? _stringValue(
-      {required EasyTableColumn<ROW> column, required ROW row}) {
+      {required DaviColumn<ROW> column, required ROW row}) {
     if (column.stringValueMapper != null) {
       return column.stringValueMapper!(row);
     } else if (column.intValueMapper != null) {

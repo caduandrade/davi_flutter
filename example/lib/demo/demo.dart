@@ -28,7 +28,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  EasyTableModel<Character>? _model;
+  DaviModel<Character>? _model;
   bool _headerVisible = HeaderThemeDataDefaults.visible;
   bool _fewRows = false;
   bool _leftPinned = false;
@@ -54,24 +54,24 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  Future<EasyTableModel<Character>> _buildModel() async {
+  Future<DaviModel<Character>> _buildModel() async {
     List<Character> characters = await Character.loadCharacters();
     if (_fewRows) {
       characters = characters.sublist(0, 5);
     }
-    return EasyTableModel(rows: characters, columns: _buildColumns());
+    return DaviModel(rows: characters, columns: _buildColumns());
   }
 
-  List<EasyTableColumn<Character>> _buildColumns() {
-    List<EasyTableColumn<Character>> list = [];
-    list.add(EasyTableColumn(
+  List<DaviColumn<Character>> _buildColumns() {
+    List<DaviColumn<Character>> list = [];
+    list.add(DaviColumn(
         pinStatus: _leftPinned ? PinStatus.left : PinStatus.none,
         leading: const Icon(Icons.person, size: 16),
         name: 'Name',
         width: 100,
         stringValue: (row) => row.name));
     if (_columnsWithIcon) {
-      list.add(EasyTableColumn(
+      list.add(DaviColumn(
           pinStatus: _leftPinned ? PinStatus.left : PinStatus.none,
           name: 'Gender',
           width: 80,
@@ -80,31 +80,31 @@ class _HomePageState extends State<HomePage> {
               ? CellIcon(icon: Icons.male, color: Colors.blue[700]!)
               : CellIcon(icon: Icons.female, color: Colors.pink[600]!)));
     }
-    list.add(EasyTableColumn(
+    list.add(DaviColumn(
         name: 'Race', width: 100, stringValue: (row) => row.race));
-    list.add(EasyTableColumn(
+    list.add(DaviColumn(
         name: 'Class', width: 110, stringValue: (row) => row.cls));
-    list.add(EasyTableColumn(
+    list.add(DaviColumn(
         name: 'Level', width: 70, intValue: (row) => row.level));
     if (_columnsWithIcon) {
-      list.add(EasyTableColumn(
+      list.add(DaviColumn(
           name: 'Skills',
           width: 100,
           cellClip: true,
           cellBuilder: (context, data) =>
               SkillsWidget(skills: data.row.skills)));
     }
-    list.add(EasyTableColumn(
+    list.add(DaviColumn(
         name: 'Strength', width: 80, intValue: (row) => row.strength));
-    list.add(EasyTableColumn(
+    list.add(DaviColumn(
         name: 'Dexterity', width: 80, intValue: (row) => row.dexterity));
-    list.add(EasyTableColumn(
+    list.add(DaviColumn(
         name: 'Intelligence', width: 90, intValue: (row) => row.intelligence));
     list.add(
-        EasyTableColumn(name: 'Life', width: 70, intValue: (row) => row.life));
+        DaviColumn(name: 'Life', width: 70, intValue: (row) => row.life));
     list.add(
-        EasyTableColumn(name: 'Mana', width: 70, intValue: (row) => row.mana));
-    list.add(EasyTableColumn(
+        DaviColumn(name: 'Mana', width: 70, intValue: (row) => row.mana));
+    list.add(DaviColumn(
         name: 'Gold',
         width: 110,
         doubleValue: (row) => row.gold, //row.gold,

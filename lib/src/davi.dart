@@ -50,7 +50,7 @@ class Davi<ROW> extends StatefulWidget {
             : null,
         super(key: key);
 
-  final EasyTableModel<ROW>? model;
+  final DaviModel<ROW>? model;
   final ScrollController? unpinnedHorizontalScrollController;
   final ScrollController? pinnedHorizontalScrollController;
   final ScrollController? verticalScrollController;

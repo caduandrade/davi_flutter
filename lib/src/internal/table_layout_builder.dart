@@ -42,7 +42,7 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
   final OnLastVisibleRowListener onLastVisibleRow;
   final OnRowHoverListener? onHover;
   final ScrollControllers scrollControllers;
-  final EasyTableModel<ROW>? model;
+  final DaviModel<ROW>? model;
   final bool multiSort;
   final ColumnWidthBehavior columnWidthBehavior;
   final int? visibleRowsLength;

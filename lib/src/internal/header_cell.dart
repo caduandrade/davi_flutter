@@ -15,8 +15,8 @@ class EasyTableHeaderCell<ROW> extends StatefulWidget {
       required this.multiSort})
       : super(key: key);
 
-  final EasyTableModel<ROW> model;
-  final EasyTableColumn<ROW> column;
+  final DaviModel<ROW> model;
+  final DaviColumn<ROW> column;
   final bool resizable;
   final bool multiSort;
 
@@ -159,7 +159,7 @@ class _EasyTableHeaderCellState extends State<EasyTableHeaderCell> {
   }
 
   void _onHeaderPressed(
-      {required EasyTableModel model, required EasyTableColumn column}) {
+      {required DaviModel model, required DaviColumn column}) {
     if (model.isSorted == false) {
       model.sortByColumn(column: column, sortOrder: TableSortOrder.ascending);
     } else if (widget.multiSort) {

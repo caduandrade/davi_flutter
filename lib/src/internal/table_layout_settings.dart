@@ -13,7 +13,7 @@ import 'package:meta/meta.dart';
 @internal
 class TableLayoutSettings {
   factory TableLayoutSettings(
-      {required EasyTableModel? model,
+      {required DaviModel? model,
       required BoxConstraints constraints,
       required ColumnWidthBehavior columnWidthBehavior,
       required TableThemeMetrics themeMetrics,

@@ -37,7 +37,7 @@ class RowsBuilder<ROW> extends StatelessWidget {
       required this.onLastVisibleRow})
       : super(key: key);
 
-  final EasyTableModel<ROW>? model;
+  final DaviModel<ROW>? model;
   final TableLayoutSettings layoutSettings;
   final bool scrolling;
   final double verticalOffset;

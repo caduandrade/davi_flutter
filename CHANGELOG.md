@@ -2,6 +2,10 @@
 
 * Version to rename class names as per new package name.
   * `EasyTable` to `Davi`
+  * `EasyTableCellBuilder` to `DaviCellBuilder`
+  * `EasyTableColumnSort` to `DaviColumnSort`
+  * `EasyTableColumn` to `DaviColumn`
+  * `EasyTableModel` to `DaviModel`
 
 ## 2.6.0
 

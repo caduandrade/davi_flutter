@@ -22,7 +22,7 @@ class HeaderWidget<ROW> extends StatelessWidget {
       : super(key: key);
 
   final TableLayoutSettings layoutSettings;
-  final EasyTableModel<ROW> model;
+  final DaviModel<ROW> model;
   final bool resizable;
   final bool multiSort;
   final HorizontalScrollOffsets horizontalScrollOffsets;
@@ -36,7 +36,7 @@ class HeaderWidget<ROW> extends StatelessWidget {
     for (int columnIndex = 0;
         columnIndex < model.columnsLength;
         columnIndex++) {
-      final EasyTableColumn<ROW> column = model.columnAt(columnIndex);
+      final DaviColumn<ROW> column = model.columnAt(columnIndex);
 
       final Widget cell = EasyTableHeaderCell<ROW>(
           key: ValueKey<int>(columnIndex),
