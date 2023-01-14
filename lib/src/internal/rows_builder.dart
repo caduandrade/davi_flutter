@@ -1,21 +1,21 @@
 import 'dart:math' as math;
 
-import 'package:easy_table/src/internal/layout_utils.dart';
-import 'package:easy_table/src/internal/row_callbacks.dart';
-import 'package:easy_table/src/internal/row_widget.dart';
-import 'package:easy_table/src/internal/rows_layout.dart';
-import 'package:easy_table/src/internal/rows_layout_child.dart';
-import 'package:easy_table/src/internal/rows_painting_settings.dart';
-import 'package:easy_table/src/internal/scroll_offsets.dart';
-import 'package:easy_table/src/internal/table_layout_settings.dart';
-import 'package:easy_table/src/last_row_widget_listener.dart';
-import 'package:easy_table/src/last_visible_row_listener.dart';
-import 'package:easy_table/src/model.dart';
-import 'package:easy_table/src/row_color.dart';
-import 'package:easy_table/src/row_cursor.dart';
-import 'package:easy_table/src/row_hover_listener.dart';
-import 'package:easy_table/src/theme/theme.dart';
-import 'package:easy_table/src/theme/theme_data.dart';
+import 'package:davi/src/internal/layout_utils.dart';
+import 'package:davi/src/internal/row_callbacks.dart';
+import 'package:davi/src/internal/row_widget.dart';
+import 'package:davi/src/internal/rows_layout.dart';
+import 'package:davi/src/internal/rows_layout_child.dart';
+import 'package:davi/src/internal/rows_painting_settings.dart';
+import 'package:davi/src/internal/scroll_offsets.dart';
+import 'package:davi/src/internal/table_layout_settings.dart';
+import 'package:davi/src/last_row_widget_listener.dart';
+import 'package:davi/src/last_visible_row_listener.dart';
+import 'package:davi/src/model.dart';
+import 'package:davi/src/row_color.dart';
+import 'package:davi/src/row_cursor.dart';
+import 'package:davi/src/row_hover_listener.dart';
+import 'package:davi/src/theme/theme.dart';
+import 'package:davi/src/theme/theme_data.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 

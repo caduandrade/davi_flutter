@@ -1,4 +1,4 @@
-import 'package:easy_table/src/theme/header_cell_theme_data.dart';
+import 'package:davi/src/theme/header_cell_theme_data.dart';
 import 'package:meta/meta.dart';
 
 /// Stores header cell theme values that change the table layout.

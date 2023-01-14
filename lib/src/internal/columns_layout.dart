@@ -1,9 +1,9 @@
-import 'package:easy_table/easy_table.dart';
-import 'package:easy_table/src/internal/columns_layout_child.dart';
-import 'package:easy_table/src/internal/columns_layout_element.dart';
-import 'package:easy_table/src/internal/columns_layout_render_box.dart';
-import 'package:easy_table/src/internal/scroll_offsets.dart';
-import 'package:easy_table/src/internal/table_layout_settings.dart';
+import 'package:davi/davi.dart';
+import 'package:davi/src/internal/columns_layout_child.dart';
+import 'package:davi/src/internal/columns_layout_element.dart';
+import 'package:davi/src/internal/columns_layout_render_box.dart';
+import 'package:davi/src/internal/scroll_offsets.dart';
+import 'package:davi/src/internal/table_layout_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';

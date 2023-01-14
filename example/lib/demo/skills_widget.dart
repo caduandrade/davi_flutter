@@ -1,4 +1,4 @@
-import 'package:easy_table_example/demo/character.dart';
+import 'package:davi_example/demo/character.dart';
 import 'package:flutter/material.dart';
 
 class SkillsWidget extends StatelessWidget {

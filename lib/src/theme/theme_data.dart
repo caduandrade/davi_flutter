@@ -1,8 +1,8 @@
-import 'package:easy_table/src/theme/cell_theme_data.dart';
-import 'package:easy_table/src/theme/header_cell_theme_data.dart';
-import 'package:easy_table/src/theme/header_theme_data.dart';
-import 'package:easy_table/src/theme/row_theme_data.dart';
-import 'package:easy_table/src/theme/scrollbar_theme_data.dart';
+import 'package:davi/src/theme/cell_theme_data.dart';
+import 'package:davi/src/theme/header_cell_theme_data.dart';
+import 'package:davi/src/theme/header_theme_data.dart';
+import 'package:davi/src/theme/row_theme_data.dart';
+import 'package:davi/src/theme/scrollbar_theme_data.dart';
 import 'package:flutter/material.dart';
 
 //TODO handle negative values

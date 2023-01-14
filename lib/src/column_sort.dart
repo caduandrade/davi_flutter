@@ -1,4 +1,4 @@
-import 'package:easy_table/src/sort_order.dart';
+import 'package:davi/src/sort_order.dart';
 
 /// Describes the column sort.
 class ColumnSort {

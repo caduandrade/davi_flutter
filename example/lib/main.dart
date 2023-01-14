@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:easy_table/easy_table.dart';
+import 'package:davi/davi.dart';
 import 'package:flutter/material.dart';
 
 void main() {

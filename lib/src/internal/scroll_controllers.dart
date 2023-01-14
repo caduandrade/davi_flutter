@@ -1,4 +1,4 @@
-import 'package:easy_table/src/internal/scroll_controller.dart';
+import 'package:davi/src/internal/scroll_controller.dart';
 import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
 

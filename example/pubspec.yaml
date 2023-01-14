@@ -1,4 +1,4 @@
-name: easy_table_example
+name: davi_example
 description: Easy Table example
 
 # The following line prevents the package from being accidentally published to
@@ -30,7 +30,7 @@ dependencies:
   flutter:
     sdk: flutter
   provider: ^6.0.2
-  easy_table:
+  davi:
     path: ../
 
 

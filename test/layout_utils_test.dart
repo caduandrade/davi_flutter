@@ -1,4 +1,4 @@
-import 'package:easy_table/src/internal/layout_utils.dart';
+import 'package:davi/src/internal/layout_utils.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

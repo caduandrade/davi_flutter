@@ -1,4 +1,4 @@
-import 'package:easy_table/src/theme/cell_null_color.dart';
+import 'package:davi/src/theme/cell_null_color.dart';
 import 'package:flutter/material.dart';
 
 /// The [EasyTable] cell theme.

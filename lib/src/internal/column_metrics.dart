@@ -1,8 +1,8 @@
 import 'dart:math' as math;
 
-import 'package:easy_table/src/column.dart';
-import 'package:easy_table/src/model.dart';
-import 'package:easy_table/src/pin_status.dart';
+import 'package:davi/src/column.dart';
+import 'package:davi/src/model.dart';
+import 'package:davi/src/pin_status.dart';
 import 'package:meta/meta.dart';
 
 @internal

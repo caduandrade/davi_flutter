@@ -1,4 +1,4 @@
-import 'package:easy_table/src/theme/cell_theme_data.dart';
+import 'package:davi/src/theme/cell_theme_data.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 

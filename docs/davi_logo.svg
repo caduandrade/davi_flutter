@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="200"
+   height="100"
+   viewBox="0 0 52.91667 26.458335"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.1.2 (0a00cf5339, 2022-02-04)"
+   sodipodi:docname="davi_logo.svg"
+   inkscape:export-filename="/cadu/davi_logo.png"
+   inkscape:export-xdpi="88"
+   inkscape:export-ydpi="88"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="px"
+     showgrid="false"
+     units="px"
+     width="600px"
+     inkscape:zoom="0.98901497"
+     inkscape:cx="297.77102"
+     inkscape:cy="277.04333"
+     inkscape:window-width="1920"
+     inkscape:window-height="1015"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs2">
+    <rect
+       x="128.44537"
+       y="394.49762"
+       width="251.0741"
+       height="45.836086"
+       id="rect54195" />
+    <rect
+       x="740.08856"
+       y="382.04984"
+       width="1229.4558"
+       height="260.54727"
+       id="rect21087" />
+    <rect
+       x="204.65894"
+       y="376.19638"
+       width="326.68228"
+       height="151.25545"
+       id="rect4125" />
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <text
+       xml:space="preserve"
+       transform="matrix(0.26458333,0,0,0.26458333,-52.689425,-100.46865)"
+       id="text4123"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:80px;line-height:1.25;font-family:'DejaVu Sans Mono';-inkscape-font-specification:'DejaVu Sans Mono Bold';letter-spacing:0px;word-spacing:0px;white-space:pre;shape-inside:url(#rect4125);fill:#000000;fill-opacity:1;stroke:none"><tspan
+         x="204.6582"
+         y="446.97852"
+         id="tspan36"><tspan
+           style="fill:#008000"
+           id="tspan32">DA</tspan><tspan
+           style="fill:#ffcc00"
+           id="tspan34">VI</tspan></tspan></text>
+    <text
+       xml:space="preserve"
+       transform="scale(0.26458333)"
+       id="text21085"
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;white-space:pre;shape-inside:url(#rect21087);fill:#000000;fill-opacity:1;stroke:none" />
+    <text
+       xml:space="preserve"
+       transform="matrix(0.26458334,0,0,0.26458334,-30.563683,-85.867898)"
+       id="text54193"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:24px;line-height:1.25;font-family:'DejaVu Sans Mono';-inkscape-font-specification:'DejaVu Sans Mono Bold';letter-spacing:9px;word-spacing:0px;white-space:pre;shape-inside:url(#rect54195);fill:#000000;fill-opacity:1;stroke:none"><tspan
+         x="128.44531"
+         y="416.69805"
+         id="tspan40"><tspan
+           style="font-family:FreeMono;-inkscape-font-specification:'FreeMono Bold'"
+           id="tspan38">DataView</tspan></tspan></text>
+  </g>
+</svg>

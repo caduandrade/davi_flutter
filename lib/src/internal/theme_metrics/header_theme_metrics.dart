@@ -1,5 +1,5 @@
-import 'package:easy_table/src/internal/theme_metrics/header_cell_theme_metrics.dart';
-import 'package:easy_table/src/theme/header_theme_data.dart';
+import 'package:davi/src/internal/theme_metrics/header_cell_theme_metrics.dart';
+import 'package:davi/src/theme/header_theme_data.dart';
 import 'package:meta/meta.dart';
 
 /// Stores header theme values that change the table layout.

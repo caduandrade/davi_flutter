@@ -1,5 +1,5 @@
-import 'package:easy_table/src/internal/scroll_controllers.dart';
-import 'package:easy_table/src/pin_status.dart';
+import 'package:davi/src/internal/scroll_controllers.dart';
+import 'package:davi/src/pin_status.dart';
 import 'package:meta/meta.dart';
 
 @internal

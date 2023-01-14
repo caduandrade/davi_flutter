@@ -1,4 +1,4 @@
-import 'package:easy_table/src/theme/theme_row_color.dart';
+import 'package:davi/src/theme/theme_row_color.dart';
 import 'package:flutter/material.dart';
 
 /// The [EasyTable] row theme.

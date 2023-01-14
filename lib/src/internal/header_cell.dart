@@ -1,5 +1,5 @@
 import 'package:axis_layout/axis_layout.dart';
-import 'package:easy_table/easy_table.dart';
+import 'package:davi/davi.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
