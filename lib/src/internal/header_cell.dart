@@ -3,7 +3,7 @@ import 'package:davi/davi.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
-/// [EasyTable] header cell.
+/// [Davi] header cell.
 @internal
 class EasyTableHeaderCell<ROW> extends StatefulWidget {
   /// Builds a header cell.

@@ -1,3 +1,8 @@
+## 3.0.0
+
+* Version to rename class names as per new package name.
+  * `EasyTable` to `Davi`
+
 ## 2.6.0
 
 * Migration of package `easy_table` to `davi`

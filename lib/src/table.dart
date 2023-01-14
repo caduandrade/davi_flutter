@@ -24,10 +24,10 @@ import 'package:flutter/services.dart';
 /// The [cellContentHeight] is mandatory due to performance.
 /// The total height of the cell will be the sum of the [cellContentHeight]
 /// value, divider thickness, and cell margin.
-class EasyTable<ROW> extends StatefulWidget {
+class Davi<ROW> extends StatefulWidget {
 //TODO handle negative values
 //TODO allow null and use defaults?
-  const EasyTable(this.model,
+  const Davi(this.model,
       {Key? key,
       this.onHover,
       this.unpinnedHorizontalScrollController,
@@ -69,11 +69,11 @@ class EasyTable<ROW> extends StatefulWidget {
   final OnLastRowWidgetListener? onLastRowWidget;
 
   @override
-  State<StatefulWidget> createState() => _EasyTableState<ROW>();
+  State<StatefulWidget> createState() => _DaviState<ROW>();
 }
 
-/// The [EasyTable] state.
-class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
+/// The [Davi] state.
+class _DaviState<ROW> extends State<Davi<ROW>> {
   late ScrollControllers _scrollControllers;
   bool _scrolling = false;
   int? _hoveredRowIndex;
@@ -111,7 +111,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
   }
 
   @override
-  void didUpdateWidget(covariant EasyTable<ROW> oldWidget) {
+  void didUpdateWidget(covariant Davi<ROW> oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.verticalScrollController != null &&
         _scrollControllers.vertical != widget.verticalScrollController) {

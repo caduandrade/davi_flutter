@@ -92,6 +92,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: EasyTable<Person>(_model));
+    return Scaffold(body: Davi<Person>(_model));
   }
 }

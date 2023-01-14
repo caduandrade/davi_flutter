@@ -119,7 +119,7 @@ class _HomePageState extends State<HomePage> {
     }
 
     Widget table = EasyTableTheme(
-        child: EasyTable<Character>(_model,
+        child: Davi<Character>(_model,
             rowColor: _rowColor
                 ? (data) => data.row.life < 1000 ? Colors.red[200] : null
                 : null,
