@@ -23,7 +23,8 @@
   * [Column style](#column-style)
   * [Pinned column](#pinned-column)
 * Row
-  * [Row color](#row-color) 
+  * [Row color](#row-color)
+  * [Row cursor](#row-cursor)
   * [Row callbacks](#row-callbacks)
   * [Row hover listener](#row-hover-listener)
   * [Infinite scroll](#infinite-scroll)
@@ -186,6 +187,17 @@ The remaining width will be distributed to the columns according to the value of
 ```
 
 ![](https://caduandrade.github.io/easy_table_flutter/row_color_v1.png)
+
+### Row cursor
+
+```dart
+    EasyTableTheme(
+        child: EasyTable<Person>(_model,
+            rowCursor: (data) =>
+                data.row.age < 20 ? SystemMouseCursors.forbidden : null),
+        data: const EasyTableThemeData(
+            row: RowThemeData(cursorOnTapGesturesOnly: false)));
+```
 
 ### Row callbacks
 
