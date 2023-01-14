@@ -98,7 +98,8 @@ class RowWidgetState<ROW> extends State<RowWidget<ROW>> {
         (widget.rowCallbacks.hasCallback ||
             theme.row.hoverBackground != null ||
             theme.row.hoverForeground != null ||
-            widget.onHover != null)) {
+            widget.onHover != null ||
+            !theme.row.cursorOnTapGesturesOnly)) {
       if (_rowData.hovered && theme.row.hoverBackground != null) {
         // replace row color
         color = theme.row.hoverBackground!(widget.index);
@@ -132,7 +133,7 @@ class RowWidgetState<ROW> extends State<RowWidget<ROW>> {
   }
 
   MouseCursor _cursor(EasyTableThemeData theme) {
-    if (widget.rowCallbacks.hasCallback) {
+    if (!theme.row.cursorOnTapGesturesOnly || widget.rowCallbacks.hasCallback) {
       MouseCursor? cursor;
       if (widget.cursor != null) {
         cursor = widget.cursor!(_rowData);
