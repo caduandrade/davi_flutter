@@ -1,10 +1,10 @@
-import 'package:easy_table/src/cell_icon.dart';
-import 'package:easy_table/src/cell_style.dart';
-import 'package:easy_table/src/column.dart';
-import 'package:easy_table/src/internal/cell_key.dart';
-import 'package:easy_table/src/row_data.dart';
-import 'package:easy_table/src/theme/theme.dart';
-import 'package:easy_table/src/theme/theme_data.dart';
+import 'package:davi/src/cell_icon.dart';
+import 'package:davi/src/cell_style.dart';
+import 'package:davi/src/column.dart';
+import 'package:davi/src/internal/cell_key.dart';
+import 'package:davi/src/row_data.dart';
+import 'package:davi/src/theme/theme.dart';
+import 'package:davi/src/theme/theme_data.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 

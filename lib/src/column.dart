@@ -1,11 +1,11 @@
 import 'dart:math' as math;
 
-import 'package:easy_table/src/cell_background.dart';
-import 'package:easy_table/src/cell_builder.dart';
-import 'package:easy_table/src/cell_style.dart';
-import 'package:easy_table/src/model.dart';
-import 'package:easy_table/src/pin_status.dart';
-import 'package:easy_table/src/value_mapper.dart';
+import 'package:davi/src/cell_background.dart';
+import 'package:davi/src/cell_builder.dart';
+import 'package:davi/src/cell_style.dart';
+import 'package:davi/src/model.dart';
+import 'package:davi/src/pin_status.dart';
+import 'package:davi/src/value_mapper.dart';
 import 'package:flutter/widgets.dart';
 
 /// Signature for sort column function.

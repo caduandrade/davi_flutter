@@ -1,5 +1,5 @@
-import 'package:easy_table/src/internal/columns_layout.dart';
-import 'package:easy_table/src/internal/columns_layout_parent_data.dart';
+import 'package:davi/src/internal/columns_layout.dart';
+import 'package:davi/src/internal/columns_layout_parent_data.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';

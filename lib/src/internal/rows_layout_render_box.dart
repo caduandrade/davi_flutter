@@ -1,10 +1,10 @@
-import 'package:easy_table/src/internal/column_metrics.dart';
-import 'package:easy_table/src/internal/rows_layout_parent_data.dart';
-import 'package:easy_table/src/internal/rows_painting_settings.dart';
-import 'package:easy_table/src/internal/scroll_offsets.dart';
-import 'package:easy_table/src/internal/table_layout_settings.dart';
-import 'package:easy_table/src/pin_status.dart';
-import 'package:easy_table/src/theme/theme_data.dart';
+import 'package:davi/src/internal/column_metrics.dart';
+import 'package:davi/src/internal/rows_layout_parent_data.dart';
+import 'package:davi/src/internal/rows_painting_settings.dart';
+import 'package:davi/src/internal/scroll_offsets.dart';
+import 'package:davi/src/internal/table_layout_settings.dart';
+import 'package:davi/src/pin_status.dart';
+import 'package:davi/src/theme/theme_data.dart';
 import 'package:flutter/rendering.dart';
 import 'package:meta/meta.dart';
 

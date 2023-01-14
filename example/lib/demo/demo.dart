@@ -1,7 +1,7 @@
-import 'package:easy_table/easy_table.dart';
-import 'package:easy_table_example/demo/character.dart';
-import 'package:easy_table_example/demo/demo_checkbox.dart';
-import 'package:easy_table_example/demo/skills_widget.dart';
+import 'package:davi/davi.dart';
+import 'package:davi_example/demo/character.dart';
+import 'package:davi_example/demo/demo_checkbox.dart';
+import 'package:davi_example/demo/skills_widget.dart';
 import 'package:flutter/material.dart';
 
 void main() {

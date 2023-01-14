@@ -49,14 +49,14 @@ packages:
       name: cupertino_icons
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.4"
-  easy_table:
+    version: "1.0.5"
+  davi:
     dependency: "direct main"
     description:
       path: ".."
       relative: true
     source: path
-    version: "2.3.0"
+    version: "2.5.0-dev.1"
   fake_async:
     dependency: transitive
     description:
@@ -129,7 +129,7 @@ packages:
       name: provider
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "6.0.2"
+    version: "6.0.5"
   sky_engine:
     dependency: transitive
     description: flutter

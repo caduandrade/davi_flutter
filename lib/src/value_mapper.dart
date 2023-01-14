@@ -1,4 +1,4 @@
-import 'package:easy_table/src/cell_icon.dart';
+import 'package:davi/src/cell_icon.dart';
 
 /// Signature for a function that maps an [int] value of a row.
 ///

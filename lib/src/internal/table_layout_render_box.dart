@@ -1,11 +1,11 @@
 import 'dart:math' as math;
 
-import 'package:easy_table/src/internal/layout_child_id.dart';
-import 'package:easy_table/src/internal/layout_utils.dart';
-import 'package:easy_table/src/internal/scroll_offsets.dart';
-import 'package:easy_table/src/internal/table_layout_parent_data.dart';
-import 'package:easy_table/src/internal/table_layout_settings.dart';
-import 'package:easy_table/src/theme/theme_data.dart';
+import 'package:davi/src/internal/layout_child_id.dart';
+import 'package:davi/src/internal/layout_utils.dart';
+import 'package:davi/src/internal/scroll_offsets.dart';
+import 'package:davi/src/internal/table_layout_parent_data.dart';
+import 'package:davi/src/internal/table_layout_settings.dart';
+import 'package:davi/src/theme/theme_data.dart';
 import 'package:flutter/rendering.dart';
 import 'package:meta/meta.dart';
 

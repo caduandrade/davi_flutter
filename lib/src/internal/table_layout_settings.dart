@@ -1,12 +1,12 @@
 import 'dart:math' as math;
 
 import 'package:collection/collection.dart';
-import 'package:easy_table/src/column_width_behavior.dart';
-import 'package:easy_table/src/internal/column_metrics.dart';
-import 'package:easy_table/src/internal/theme_metrics/theme_metrics.dart';
-import 'package:easy_table/src/model.dart';
-import 'package:easy_table/src/pin_status.dart';
-import 'package:easy_table/src/theme/theme_data.dart';
+import 'package:davi/src/column_width_behavior.dart';
+import 'package:davi/src/internal/column_metrics.dart';
+import 'package:davi/src/internal/theme_metrics/theme_metrics.dart';
+import 'package:davi/src/model.dart';
+import 'package:davi/src/pin_status.dart';
+import 'package:davi/src/theme/theme_data.dart';
 import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
 

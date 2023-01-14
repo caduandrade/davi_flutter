@@ -1,4 +1,4 @@
-import 'package:easy_table/src/theme/scrollbar_theme_data.dart';
+import 'package:davi/src/theme/scrollbar_theme_data.dart';
 import 'package:meta/meta.dart';
 
 /// Stores scrollbar theme values that change the table layout.

@@ -1,5 +1,5 @@
-import 'package:easy_table/src/theme/theme.dart';
-import 'package:easy_table/src/theme/theme_data.dart';
+import 'package:davi/src/theme/theme.dart';
+import 'package:davi/src/theme/theme_data.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 

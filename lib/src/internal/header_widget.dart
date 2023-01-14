@@ -1,12 +1,12 @@
-import 'package:easy_table/src/column.dart';
-import 'package:easy_table/src/internal/columns_layout.dart';
-import 'package:easy_table/src/internal/columns_layout_child.dart';
-import 'package:easy_table/src/internal/header_cell.dart';
-import 'package:easy_table/src/internal/scroll_offsets.dart';
-import 'package:easy_table/src/internal/table_layout_settings.dart';
-import 'package:easy_table/src/model.dart';
-import 'package:easy_table/src/theme/theme.dart';
-import 'package:easy_table/src/theme/theme_data.dart';
+import 'package:davi/src/column.dart';
+import 'package:davi/src/internal/columns_layout.dart';
+import 'package:davi/src/internal/columns_layout_child.dart';
+import 'package:davi/src/internal/header_cell.dart';
+import 'package:davi/src/internal/scroll_offsets.dart';
+import 'package:davi/src/internal/table_layout_settings.dart';
+import 'package:davi/src/model.dart';
+import 'package:davi/src/theme/theme.dart';
+import 'package:davi/src/theme/theme_data.dart';
 import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
 

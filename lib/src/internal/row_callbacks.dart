@@ -1,4 +1,4 @@
-import 'package:easy_table/src/row_callback_typedefs.dart';
+import 'package:davi/src/row_callback_typedefs.dart';
 import 'package:meta/meta.dart';
 
 @internal

@@ -1,4 +1,4 @@
-import 'package:easy_table/src/internal/row_range.dart';
+import 'package:davi/src/internal/row_range.dart';
 import 'package:meta/meta.dart';
 
 @internal

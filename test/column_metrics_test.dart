@@ -1,5 +1,5 @@
-import 'package:easy_table/easy_table.dart';
-import 'package:easy_table/src/internal/column_metrics.dart';
+import 'package:davi/davi.dart';
+import 'package:davi/src/internal/column_metrics.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

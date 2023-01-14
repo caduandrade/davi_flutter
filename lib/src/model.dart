@@ -1,8 +1,8 @@
 import 'dart:collection';
 
-import 'package:easy_table/src/column.dart';
-import 'package:easy_table/src/column_sort.dart';
-import 'package:easy_table/src/sort_order.dart';
+import 'package:davi/src/column.dart';
+import 'package:davi/src/column_sort.dart';
+import 'package:davi/src/sort_order.dart';
 import 'package:flutter/widgets.dart';
 
 /// The [EasyTable] model.

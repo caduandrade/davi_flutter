@@ -1,4 +1,4 @@
-library easy_table;
+library davi;
 
 export 'src/cell_background.dart';
 export 'src/cell_builder.dart';

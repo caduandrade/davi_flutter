@@ -1,4 +1,4 @@
-import 'package:easy_table/src/internal/rows_layout.dart';
+import 'package:davi/src/internal/rows_layout.dart';
 import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
 
