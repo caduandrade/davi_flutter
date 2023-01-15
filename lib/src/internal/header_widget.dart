@@ -38,7 +38,7 @@ class HeaderWidget<ROW> extends StatelessWidget {
         columnIndex++) {
       final DaviColumn<ROW> column = model.columnAt(columnIndex);
 
-      final Widget cell = EasyTableHeaderCell<ROW>(
+      final Widget cell = DaviHeaderCell<ROW>(
           key: ValueKey<int>(columnIndex),
           model: model,
           column: column,

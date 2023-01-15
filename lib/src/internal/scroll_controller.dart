@@ -2,11 +2,11 @@ import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
 
 @internal
-class EasyTableScrollController extends ScrollController {
+class DaviScrollController extends ScrollController {
   @override
   ScrollPosition createScrollPosition(ScrollPhysics physics,
       ScrollContext context, ScrollPosition? oldPosition) {
-    return EasyTableScrollPosition(
+    return DaviScrollPosition(
       physics: physics,
       context: context,
       initialPixels: initialScrollOffset,
@@ -17,8 +17,8 @@ class EasyTableScrollController extends ScrollController {
   }
 }
 
-class EasyTableScrollPosition extends ScrollPositionWithSingleContext {
-  EasyTableScrollPosition({
+class DaviScrollPosition extends ScrollPositionWithSingleContext {
+  DaviScrollPosition({
     required ScrollPhysics physics,
     required ScrollContext context,
     double? initialPixels = 0.0,

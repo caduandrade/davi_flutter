@@ -1,7 +1,7 @@
 import 'package:davi/src/theme/theme_row_color.dart';
 import 'package:flutter/material.dart';
 
-/// The [EasyTable] row theme.
+/// The [Davi] row theme.
 /// Defines the configuration of the overall visual [RowThemeData] for a widget subtree within the app.
 class RowThemeData {
   /// Builds a row theme data.

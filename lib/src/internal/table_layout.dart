@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
 
-/// [EasyTable] table layout.
+/// [Davi] table layout.
 @internal
 class TableLayout<ROW> extends MultiChildRenderObjectWidget {
   TableLayout(

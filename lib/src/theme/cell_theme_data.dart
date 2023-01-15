@@ -1,7 +1,7 @@
 import 'package:davi/src/theme/cell_null_color.dart';
 import 'package:flutter/material.dart';
 
-/// The [EasyTable] cell theme.
+/// The [Davi] cell theme.
 /// Defines the configuration of the overall visual [CellThemeData] for a widget subtree within the app.
 class CellThemeData {
   /// Builds a theme data.

@@ -1,7 +1,7 @@
 import 'package:davi/src/theme/theme_data.dart';
 import 'package:flutter/widgets.dart';
 
-/// Applies a [EasyTable] theme to descendant widgets.
+/// Applies a [Davi] theme to descendant widgets.
 /// See also:
 ///
 ///  * [DaviThemeData], which describes the actual configuration of a theme.

@@ -34,7 +34,7 @@ class ExampleApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'EasyTable Example',
+      title: 'Davi Example',
       home: HomePage(),
     );
   }

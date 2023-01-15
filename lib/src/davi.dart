@@ -79,7 +79,7 @@ class _DaviState<ROW> extends State<Davi<ROW>> {
   int? _hoveredRowIndex;
   bool _lastRowWidgetVisible = false;
   int? _lastVisibleRow;
-  final FocusNode _focusNode = FocusNode(debugLabel: 'EasyTable');
+  final FocusNode _focusNode = FocusNode(debugLabel: 'Davi');
 
   void _setHoveredRowIndex(int? rowIndex) {
     if (widget.model != null && _hoveredRowIndex != rowIndex) {

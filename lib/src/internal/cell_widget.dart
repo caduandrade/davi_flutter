@@ -86,8 +86,7 @@ class CellWidget<ROW> extends StatelessWidget {
     return child;
   }
 
-  String? _stringValue(
-      {required DaviColumn<ROW> column, required ROW row}) {
+  String? _stringValue({required DaviColumn<ROW> column, required ROW row}) {
     if (column.stringValueMapper != null) {
       return column.stringValueMapper!(row);
     } else if (column.intValueMapper != null) {

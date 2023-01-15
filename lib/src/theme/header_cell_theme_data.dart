@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// The [EasyTable] cell header theme.
+/// The [Davi] cell header theme.
 /// Defines the configuration of the overall visual [HeaderCellThemeData] for a widget subtree within the app.
 class HeaderCellThemeData {
   //TODO avoid negative values

@@ -5,9 +5,9 @@ import 'package:meta/meta.dart';
 
 /// [Davi] header cell.
 @internal
-class EasyTableHeaderCell<ROW> extends StatefulWidget {
+class DaviHeaderCell<ROW> extends StatefulWidget {
   /// Builds a header cell.
-  const EasyTableHeaderCell(
+  const DaviHeaderCell(
       {Key? key,
       required this.model,
       required this.column,
@@ -21,10 +21,10 @@ class EasyTableHeaderCell<ROW> extends StatefulWidget {
   final bool multiSort;
 
   @override
-  State<StatefulWidget> createState() => _EasyTableHeaderCellState();
+  State<StatefulWidget> createState() => _DaviHeaderCellState();
 }
 
-class _EasyTableHeaderCellState extends State<EasyTableHeaderCell> {
+class _DaviHeaderCellState extends State<DaviHeaderCell> {
   bool _hovered = false;
   double _lastDragPos = 0;
 

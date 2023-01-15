@@ -11,7 +11,7 @@ import 'package:flutter/widgets.dart';
 /// Signature for sort column function.
 typedef DaviColumnSort<ROW> = int Function(ROW a, ROW b);
 
-/// The [EasyTable] column.
+/// The [Davi] column.
 ///
 /// The [name] argument is optional and is used by the default
 /// cell header widget.

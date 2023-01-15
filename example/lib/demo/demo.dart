@@ -15,7 +15,7 @@ class DemoApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'EasyTable Demo',
+        title: 'Davi Demo',
         home: Scaffold(body: HomePage()));
   }
 }
@@ -39,8 +39,7 @@ class _HomePageState extends State<HomePage> {
   bool _nullValueColor = true;
   bool _lastRowWidget = false;
   bool _lastRowDividerVisible = RowThemeDataDefaults.lastDividerVisible;
-  bool _columnDividerFillHeight =
-      DaviThemeDataDefaults.columnDividerFillHeight;
+  bool _columnDividerFillHeight = DaviThemeDataDefaults.columnDividerFillHeight;
   RowThemeColor _demoBackground = RowThemeColor.none;
   bool _columnsWithIcon = true;
 
@@ -80,12 +79,12 @@ class _HomePageState extends State<HomePage> {
               ? CellIcon(icon: Icons.male, color: Colors.blue[700]!)
               : CellIcon(icon: Icons.female, color: Colors.pink[600]!)));
     }
-    list.add(DaviColumn(
-        name: 'Race', width: 100, stringValue: (row) => row.race));
-    list.add(DaviColumn(
-        name: 'Class', width: 110, stringValue: (row) => row.cls));
-    list.add(DaviColumn(
-        name: 'Level', width: 70, intValue: (row) => row.level));
+    list.add(
+        DaviColumn(name: 'Race', width: 100, stringValue: (row) => row.race));
+    list.add(
+        DaviColumn(name: 'Class', width: 110, stringValue: (row) => row.cls));
+    list.add(
+        DaviColumn(name: 'Level', width: 70, intValue: (row) => row.level));
     if (_columnsWithIcon) {
       list.add(DaviColumn(
           name: 'Skills',
@@ -100,10 +99,8 @@ class _HomePageState extends State<HomePage> {
         name: 'Dexterity', width: 80, intValue: (row) => row.dexterity));
     list.add(DaviColumn(
         name: 'Intelligence', width: 90, intValue: (row) => row.intelligence));
-    list.add(
-        DaviColumn(name: 'Life', width: 70, intValue: (row) => row.life));
-    list.add(
-        DaviColumn(name: 'Mana', width: 70, intValue: (row) => row.mana));
+    list.add(DaviColumn(name: 'Life', width: 70, intValue: (row) => row.life));
+    list.add(DaviColumn(name: 'Mana', width: 70, intValue: (row) => row.mana));
     list.add(DaviColumn(
         name: 'Gold',
         width: 110,

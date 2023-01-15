@@ -10,8 +10,7 @@ import 'package:flutter/widgets.dart';
 /// The type [ROW] represents the data of each row.
 class DaviModel<ROW> extends ChangeNotifier {
   factory DaviModel(
-      {List<ROW> rows = const [],
-      List<DaviColumn<ROW>> columns = const []}) {
+      {List<ROW> rows = const [], List<DaviColumn<ROW>> columns = const []}) {
     List<ROW> cloneList = List.from(rows);
     DaviModel<ROW> model =
         DaviModel._(cloneList, UnmodifiableListView(cloneList));
@@ -221,8 +220,7 @@ class DaviModel<ROW> extends ChangeNotifier {
 
   /// Sort given a column.
   void sortByColumn(
-      {required DaviColumn<ROW> column,
-      required TableSortOrder sortOrder}) {
+      {required DaviColumn<ROW> column, required TableSortOrder sortOrder}) {
     if (column.sort != null && _columns.contains(column)) {
       _sortedColumns.clear();
       _clearColumnsSortData();

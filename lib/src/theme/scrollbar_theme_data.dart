@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// The [EasyTable] scroll theme.
+/// The [Davi] scroll theme.
 /// Defines the configuration of the overall visual [TableScrollbarThemeData] for a widget subtree within the app.
 class TableScrollbarThemeData {
   /// Builds a theme data.

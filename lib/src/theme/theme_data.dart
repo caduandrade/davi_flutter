@@ -6,7 +6,7 @@ import 'package:davi/src/theme/scrollbar_theme_data.dart';
 import 'package:flutter/material.dart';
 
 //TODO handle negative values
-/// The [EasyTable] theme.
+/// The [Davi] theme.
 /// Defines the configuration of the overall visual [DaviThemeData] for a widget subtree within the app.
 class DaviThemeData {
   /// Builds a theme data.
@@ -17,8 +17,7 @@ class DaviThemeData {
           DaviThemeDataDefaults.columnDividerThickness,
       this.columnDividerColor = DaviThemeDataDefaults.columnDividerColor,
       this.decoration = DaviThemeDataDefaults.tableDecoration,
-      this.topCornerBorderColor =
-          DaviThemeDataDefaults.topCornerBorderColor,
+      this.topCornerBorderColor = DaviThemeDataDefaults.topCornerBorderColor,
       this.topCornerColor = DaviThemeDataDefaults.topCornerColor,
       this.bottomCornerBorderColor =
           DaviThemeDataDefaults.bottomCornerBorderColor,

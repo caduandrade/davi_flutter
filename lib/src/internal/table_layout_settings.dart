@@ -21,13 +21,12 @@ class TableLayoutSettings {
       required bool hasLastRowWidget,
       required DaviThemeData theme}) {
     if (!constraints.hasBoundedWidth) {
-      throw FlutterError('EasyTable was given unbounded width.');
+      throw FlutterError('Davi was given unbounded width.');
     }
     if (!constraints.hasBoundedHeight && visibleRowsLength == null) {
       throw FlutterError.fromParts(<DiagnosticsNode>[
-        ErrorSummary('EasyTable was given unbounded height.'),
-        ErrorDescription(
-            'EasyTable already is scrollable in the vertical axis.'),
+        ErrorSummary('Davi was given unbounded height.'),
+        ErrorDescription('Davi already is scrollable in the vertical axis.'),
         ErrorHint(
           'Consider using the "visibleRowsCount" property to limit the height'
           ' or use it in another Widget like Expanded or SliverFillRemaining.',
