@@ -20,7 +20,7 @@ import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
 @internal
-class RowsBuilder<ROW> extends StatelessWidget {
+class RowsBuilder<DATA> extends StatelessWidget {
   const RowsBuilder(
       {Key? key,
       required this.layoutSettings,
@@ -37,16 +37,16 @@ class RowsBuilder<ROW> extends StatelessWidget {
       required this.onLastVisibleRow})
       : super(key: key);
 
-  final DaviModel<ROW>? model;
+  final DaviModel<DATA>? model;
   final TableLayoutSettings layoutSettings;
   final bool scrolling;
   final double verticalOffset;
   final HorizontalScrollOffsets horizontalScrollOffsets;
   final OnRowHoverListener? onHover;
-  final RowCallbacks<ROW> rowCallbacks;
+  final RowCallbacks<DATA> rowCallbacks;
   final Widget? lastRowWidget;
-  final DaviRowColor<ROW>? rowColor;
-  final DaviRowCursor<ROW>? rowCursor;
+  final DaviRowColor<DATA>? rowColor;
+  final DaviRowCursor<DATA>? rowCursor;
   final OnLastRowWidgetListener onLastRowWidget;
   final OnLastVisibleRowListener onLastVisibleRow;
 
@@ -71,9 +71,9 @@ class RowsBuilder<ROW> extends StatelessWidget {
         for (int rowIndex = firstRowIndex;
             rowIndex <= lastRowIndex;
             rowIndex++) {
-          RowWidget<ROW> row = RowWidget<ROW>(
+          RowWidget<DATA> row = RowWidget<DATA>(
               index: rowIndex,
-              row: model!.rowAt(rowIndex),
+              data: model!.rowAt(rowIndex),
               onHover: onHover,
               layoutSettings: layoutSettings,
               rowCallbacks: rowCallbacks,
@@ -109,7 +109,7 @@ class RowsBuilder<ROW> extends StatelessWidget {
           firstRowIndex: firstRowIndex);
 
       return ClipRect(
-          child: RowsLayout<ROW>(
+          child: RowsLayout<DATA>(
               layoutSettings: layoutSettings,
               paintSettings: paintSettings,
               verticalOffset: verticalOffset,

@@ -10,7 +10,7 @@ import 'package:flutter/rendering.dart';
 import 'package:meta/meta.dart';
 
 @internal
-class TableLayoutRenderBox<ROW> extends RenderBox
+class TableLayoutRenderBox<DATA> extends RenderBox
     with
         ContainerRenderObjectMixin<RenderBox, TableLayoutParentData>,
         RenderBoxContainerDefaultsMixin<RenderBox, TableLayoutParentData> {

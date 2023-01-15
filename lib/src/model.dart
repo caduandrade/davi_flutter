@@ -7,14 +7,14 @@ import 'package:flutter/widgets.dart';
 
 /// The [Davi] model.
 ///
-/// The type [ROW] represents the data of each row.
-class DaviModel<ROW> extends ChangeNotifier {
+/// The type [DATA] represents the data of each row.
+class DaviModel<DATA> extends ChangeNotifier {
   factory DaviModel(
-      {List<ROW> rows = const [], List<DaviColumn<ROW>> columns = const []}) {
-    List<ROW> cloneList = List.from(rows);
-    DaviModel<ROW> model =
+      {List<DATA> rows = const [], List<DaviColumn<DATA>> columns = const []}) {
+    List<DATA> cloneList = List.from(rows);
+    DaviModel<DATA> model =
         DaviModel._(cloneList, UnmodifiableListView(cloneList));
-    for (DaviColumn<ROW> column in columns) {
+    for (DaviColumn<DATA> column in columns) {
       model.addColumn(column);
     }
     return model;
@@ -22,16 +22,16 @@ class DaviModel<ROW> extends ChangeNotifier {
 
   DaviModel._(this._originalRows, this._rows);
 
-  final List<DaviColumn<ROW>> _columns = [];
-  final List<ROW> _originalRows;
+  final List<DaviColumn<DATA>> _columns = [];
+  final List<DATA> _originalRows;
 
-  final List<DaviColumn<ROW>> _sortedColumns = [];
+  final List<DaviColumn<DATA>> _sortedColumns = [];
 
   /// Gets the sorted columns.
-  List<DaviColumn<ROW>> get sortedColumns =>
+  List<DaviColumn<DATA>> get sortedColumns =>
       UnmodifiableListView(_sortedColumns);
 
-  List<ROW> _rows;
+  List<DATA> _rows;
 
   bool get _isRowsModifiable => _rows is! UnmodifiableListView;
 
@@ -53,11 +53,11 @@ class DaviModel<ROW> extends ChangeNotifier {
 
   bool get isColumnsNotEmpty => _columns.isNotEmpty;
 
-  DaviColumn<ROW>? _columnInResizing;
+  DaviColumn<DATA>? _columnInResizing;
 
-  DaviColumn<ROW>? get columnInResizing => _columnInResizing;
+  DaviColumn<DATA>? get columnInResizing => _columnInResizing;
 
-  set columnInResizing(DaviColumn<ROW>? column) {
+  set columnInResizing(DaviColumn<DATA>? column) {
     _columnInResizing = column;
     notifyListeners();
   }
@@ -68,14 +68,14 @@ class DaviModel<ROW> extends ChangeNotifier {
   /// Indicates whether the model is sorted by multiple columns.
   bool get isMultiSorted => _sortedColumns.length > 1;
 
-  ROW rowAt(int index) => _rows[index];
+  DATA rowAt(int index) => _rows[index];
 
-  void addRow(ROW row) {
+  void addRow(DATA row) {
     _originalRows.add(row);
     _updateRows(notify: true);
   }
 
-  void addRows(Iterable<ROW> rows) {
+  void addRows(Iterable<DATA> rows) {
     _originalRows.addAll(rows);
     _updateRows(notify: true);
   }
@@ -86,7 +86,7 @@ class DaviModel<ROW> extends ChangeNotifier {
     _updateRows(notify: true);
   }
 
-  void replaceRows(Iterable<ROW> rows) {
+  void replaceRows(Iterable<DATA> rows) {
     _originalRows.clear();
     _originalRows.addAll(rows);
     _updateRows(notify: true);
@@ -94,7 +94,7 @@ class DaviModel<ROW> extends ChangeNotifier {
 
   void removeRowAt(int index) {
     if (_isRowsModifiable) {
-      ROW row = _rows.removeAt(index);
+      DATA row = _rows.removeAt(index);
       _originalRows.remove(row);
     } else {
       _originalRows.removeAt(index);
@@ -102,7 +102,7 @@ class DaviModel<ROW> extends ChangeNotifier {
     notifyListeners();
   }
 
-  void removeRow(ROW row) {
+  void removeRow(DATA row) {
     _originalRows.remove(row);
     if (_isRowsModifiable) {
       _rows.remove(row);
@@ -110,16 +110,16 @@ class DaviModel<ROW> extends ChangeNotifier {
     notifyListeners();
   }
 
-  DaviColumn<ROW> columnAt(int index) => _columns[index];
+  DaviColumn<DATA> columnAt(int index) => _columns[index];
 
-  void addColumn(DaviColumn<ROW> column) {
+  void addColumn(DaviColumn<DATA> column) {
     _columns.add(column);
     column.addListener(notifyListeners);
     notifyListeners();
   }
 
-  void addColumns(Iterable<DaviColumn<ROW>> columns) {
-    for (DaviColumn<ROW> column in columns) {
+  void addColumns(Iterable<DaviColumn<DATA>> columns) {
+    for (DaviColumn<DATA> column in columns) {
       _columns.add(column);
       column.addListener(notifyListeners);
     }
@@ -136,17 +136,17 @@ class DaviModel<ROW> extends ChangeNotifier {
 
   void _updateSortPriorities() {
     int priority = 1;
-    for (DaviColumn<ROW> column in _sortedColumns) {
+    for (DaviColumn<DATA> column in _sortedColumns) {
       column._priority = priority++;
     }
   }
 
   void removeColumnAt(int index) {
-    DaviColumn<ROW> column = _columns[index];
+    DaviColumn<DATA> column = _columns[index];
     removeColumn(column);
   }
 
-  void removeColumn(DaviColumn<ROW> column) {
+  void removeColumn(DaviColumn<DATA> column) {
     if (_columns.remove(column)) {
       column.removeListener(notifyListeners);
       if (_columnInResizing == column) {
@@ -169,7 +169,7 @@ class DaviModel<ROW> extends ChangeNotifier {
   }
 
   void _clearColumnsSortData() {
-    for (DaviColumn<ROW> column in _columns) {
+    for (DaviColumn<DATA> column in _columns) {
       column._clearSortData();
     }
   }
@@ -179,7 +179,7 @@ class DaviModel<ROW> extends ChangeNotifier {
     _sortedColumns.clear();
     _clearColumnsSortData();
     for (ColumnSort columnSort in columnSorts) {
-      DaviColumn<ROW> column = _columns[columnSort.columnIndex];
+      DaviColumn<DATA> column = _columns[columnSort.columnIndex];
       if (column.sort != null) {
         column._order = columnSort.order;
         _sortedColumns.add(column);
@@ -190,7 +190,7 @@ class DaviModel<ROW> extends ChangeNotifier {
   }
 
   /// Updates the multi sort given a column.
-  void multiSortByColumn(DaviColumn<ROW> column) {
+  void multiSortByColumn(DaviColumn<DATA> column) {
     if (_columns.contains(column) == false || column.sort == null) {
       return;
     }
@@ -220,7 +220,7 @@ class DaviModel<ROW> extends ChangeNotifier {
 
   /// Sort given a column.
   void sortByColumn(
-      {required DaviColumn<ROW> column, required TableSortOrder sortOrder}) {
+      {required DaviColumn<DATA> column, required TableSortOrder sortOrder}) {
     if (column.sort != null && _columns.contains(column)) {
       _sortedColumns.clear();
       _clearColumnsSortData();
@@ -231,7 +231,7 @@ class DaviModel<ROW> extends ChangeNotifier {
     }
   }
 
-  /// Notifies any row data update by calling all the registered listeners.
+  /// Notifies any data update by calling all the registered listeners.
   void notifyUpdate() {
     notifyListeners();
   }
@@ -239,7 +239,7 @@ class DaviModel<ROW> extends ChangeNotifier {
   /// Updates the visible rows given the sorts and filters.
   void _updateRows({required bool notify}) {
     if (isSorted) {
-      List<ROW> list = List.from(_originalRows);
+      List<DATA> list = List.from(_originalRows);
       list.sort(_compoundSort);
       _rows = list;
     } else {
@@ -251,10 +251,10 @@ class DaviModel<ROW> extends ChangeNotifier {
   }
 
   /// Function to realize the multi sort.
-  int _compoundSort(ROW a, ROW b) {
+  int _compoundSort(DATA a, DATA b) {
     int r = 0;
     for (int i = 0; i < _sortedColumns.length; i++) {
-      final DaviColumnSort<ROW> sort = _sortedColumns[i].sort!;
+      final DaviColumnSort<DATA> sort = _sortedColumns[i].sort!;
       final TableSortOrder order = _sortedColumns[i].order!;
 
       if (order == TableSortOrder.descending) {

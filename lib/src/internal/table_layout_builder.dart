@@ -19,7 +19,7 @@ import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
 @internal
-class TableLayoutBuilder<ROW> extends StatelessWidget {
+class TableLayoutBuilder<DATA> extends StatelessWidget {
   const TableLayoutBuilder(
       {Key? key,
       required this.onHover,
@@ -42,18 +42,18 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
   final OnLastVisibleRowListener onLastVisibleRow;
   final OnRowHoverListener? onHover;
   final ScrollControllers scrollControllers;
-  final DaviModel<ROW>? model;
+  final DaviModel<DATA>? model;
   final bool multiSort;
   final ColumnWidthBehavior columnWidthBehavior;
   final int? visibleRowsLength;
   final OnDragScroll onDragScroll;
   final bool scrolling;
-  final RowCallbacks<ROW> rowCallbacks;
+  final RowCallbacks<DATA> rowCallbacks;
   final TableThemeMetrics themeMetrics;
   final Widget? lastRowWidget;
   final OnLastRowWidgetListener onLastRowWidget;
-  final DaviRowColor<ROW>? rowColor;
-  final DaviRowCursor<ROW>? rowCursor;
+  final DaviRowColor<DATA>? rowColor;
+  final DaviRowCursor<DATA>? rowCursor;
 
   @override
   Widget build(BuildContext context) {
@@ -122,7 +122,7 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
       }
     }
 
-    children.add(TableLayoutChild<ROW>.rows(
+    children.add(TableLayoutChild<DATA>.rows(
         model: model,
         layoutSettings: layoutSettings,
         scrolling: scrolling,
@@ -136,7 +136,7 @@ class TableLayoutBuilder<ROW> extends StatelessWidget {
         onLastVisibleRow: onLastVisibleRow,
         onLastRowWidget: onLastRowWidget));
 
-    return TableLayout<ROW>(
+    return TableLayout<DATA>(
         layoutSettings: layoutSettings,
         theme: theme,
         horizontalScrollOffsets: horizontalScrollOffsets,

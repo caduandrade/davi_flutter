@@ -5,7 +5,7 @@ import 'package:meta/meta.dart';
 
 /// [Davi] header cell.
 @internal
-class DaviHeaderCell<ROW> extends StatefulWidget {
+class DaviHeaderCell<DATA> extends StatefulWidget {
   /// Builds a header cell.
   const DaviHeaderCell(
       {Key? key,
@@ -15,8 +15,8 @@ class DaviHeaderCell<ROW> extends StatefulWidget {
       required this.multiSort})
       : super(key: key);
 
-  final DaviModel<ROW> model;
-  final DaviColumn<ROW> column;
+  final DaviModel<DATA> model;
+  final DaviColumn<DATA> column;
   final bool resizable;
   final bool multiSort;
 

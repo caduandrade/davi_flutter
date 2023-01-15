@@ -11,7 +11,7 @@ import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
 
 @internal
-class HeaderWidget<ROW> extends StatelessWidget {
+class HeaderWidget<DATA> extends StatelessWidget {
   const HeaderWidget(
       {Key? key,
       required this.layoutSettings,
@@ -22,7 +22,7 @@ class HeaderWidget<ROW> extends StatelessWidget {
       : super(key: key);
 
   final TableLayoutSettings layoutSettings;
-  final DaviModel<ROW> model;
+  final DaviModel<DATA> model;
   final bool resizable;
   final bool multiSort;
   final HorizontalScrollOffsets horizontalScrollOffsets;
@@ -31,20 +31,20 @@ class HeaderWidget<ROW> extends StatelessWidget {
   Widget build(BuildContext context) {
     DaviThemeData theme = DaviTheme.of(context);
 
-    List<ColumnsLayoutChild<ROW>> children = [];
+    List<ColumnsLayoutChild<DATA>> children = [];
 
     for (int columnIndex = 0;
         columnIndex < model.columnsLength;
         columnIndex++) {
-      final DaviColumn<ROW> column = model.columnAt(columnIndex);
+      final DaviColumn<DATA> column = model.columnAt(columnIndex);
 
-      final Widget cell = DaviHeaderCell<ROW>(
+      final Widget cell = DaviHeaderCell<DATA>(
           key: ValueKey<int>(columnIndex),
           model: model,
           column: column,
           resizable: resizable,
           multiSort: multiSort);
-      children.add(ColumnsLayoutChild<ROW>(index: columnIndex, child: cell));
+      children.add(ColumnsLayoutChild<DATA>(index: columnIndex, child: cell));
     }
 
     Widget header = ColumnsLayout(

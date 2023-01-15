@@ -2,23 +2,23 @@ import 'package:davi/src/cell_icon.dart';
 import 'package:davi/src/cell_style.dart';
 import 'package:davi/src/column.dart';
 import 'package:davi/src/internal/cell_key.dart';
-import 'package:davi/src/row_data.dart';
+import 'package:davi/src/row.dart';
 import 'package:davi/src/theme/theme.dart';
 import 'package:davi/src/theme/theme_data.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
 @internal
-class CellWidget<ROW> extends StatelessWidget {
+class CellWidget<DATA> extends StatelessWidget {
   final int columnIndex;
-  final RowData<ROW> rowData;
-  final DaviColumn<ROW> column;
+  final DaviRow<DATA> row;
+  final DaviColumn<DATA> column;
 
   CellWidget(
-      {required this.rowData, required this.column, required this.columnIndex})
+      {required this.row, required this.column, required this.columnIndex})
       : super(
             key: CellKey(
-                row: rowData.index,
+                row: row.index,
                 column: columnIndex,
                 rowSpan: 1,
                 columnSpan: 1));
@@ -36,12 +36,12 @@ class CellWidget<ROW> extends StatelessWidget {
     padding = column.cellPadding ?? padding;
     alignment = column.cellAlignment ?? alignment;
     Color? background =
-        column.cellBackground != null ? column.cellBackground!(rowData) : null;
+        column.cellBackground != null ? column.cellBackground!(row) : null;
     textStyle = column.cellTextStyle ?? textStyle;
     overflow = column.cellOverflow ?? overflow;
     // Single cell
     if (column.cellStyleBuilder != null) {
-      CellStyle? cellStyle = column.cellStyleBuilder!(rowData);
+      CellStyle? cellStyle = column.cellStyleBuilder!(row);
       if (cellStyle != null) {
         padding = cellStyle.padding ?? padding;
         alignment = cellStyle.alignment ?? alignment;
@@ -53,20 +53,20 @@ class CellWidget<ROW> extends StatelessWidget {
 
     Widget? child;
     if (column.cellBuilder != null) {
-      child = column.cellBuilder!(context, rowData);
+      child = column.cellBuilder!(context, row);
     } else if (column.iconValueMapper != null) {
-      CellIcon? cellIcon = column.iconValueMapper!(rowData.row);
+      CellIcon? cellIcon = column.iconValueMapper!(row.data);
       if (cellIcon != null) {
         child = Icon(cellIcon.icon, color: cellIcon.color, size: cellIcon.size);
       }
     } else {
-      String? value = _stringValue(column: column, row: rowData.row);
+      String? value = _stringValue(column: column, data: row.data);
       if (value != null) {
         child = Text(value,
             overflow: overflow ?? theme.cell.overflow,
             style: textStyle ?? theme.cell.textStyle);
       } else if (theme.cell.nullValueColor != null) {
-        background = theme.cell.nullValueColor!(rowData.index, rowData.hovered);
+        background = theme.cell.nullValueColor!(row.index, row.hovered);
       }
     }
     if (child != null) {
@@ -86,13 +86,13 @@ class CellWidget<ROW> extends StatelessWidget {
     return child;
   }
 
-  String? _stringValue({required DaviColumn<ROW> column, required ROW row}) {
+  String? _stringValue({required DaviColumn<DATA> column, required DATA data}) {
     if (column.stringValueMapper != null) {
-      return column.stringValueMapper!(row);
+      return column.stringValueMapper!(data);
     } else if (column.intValueMapper != null) {
-      return column.intValueMapper!(row)?.toString();
+      return column.intValueMapper!(data)?.toString();
     } else if (column.doubleValueMapper != null) {
-      final double? doubleValue = column.doubleValueMapper!(row);
+      final double? doubleValue = column.doubleValueMapper!(data);
       if (doubleValue != null) {
         if (column.fractionDigits != null) {
           return doubleValue.toStringAsFixed(column.fractionDigits!);
@@ -101,7 +101,7 @@ class CellWidget<ROW> extends StatelessWidget {
         }
       }
     } else if (column.objectValueMapper != null) {
-      return column.objectValueMapper!(row)?.toString();
+      return column.objectValueMapper!(data)?.toString();
     }
     return null;
   }

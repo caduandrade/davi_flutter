@@ -10,10 +10,10 @@ import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
 @internal
-class RowWidget<ROW> extends StatefulWidget {
+class RowWidget<DATA> extends StatefulWidget {
   RowWidget(
       {required this.index,
-      required this.row,
+      required this.data,
       required this.onHover,
       required this.layoutSettings,
       required this.scrolling,
@@ -25,52 +25,52 @@ class RowWidget<ROW> extends StatefulWidget {
       required this.horizontalScrollOffsets})
       : super(key: ValueKey<int>(index));
 
-  final ROW row;
+  final DATA data;
   final int index;
   final bool scrolling;
   final bool columnResizing;
   final OnRowHoverListener? onHover;
-  final DaviModel<ROW> model;
+  final DaviModel<DATA> model;
   final TableLayoutSettings layoutSettings;
-  final RowCallbacks<ROW> rowCallbacks;
-  final DaviRowColor<ROW>? color;
-  final DaviRowCursor<ROW>? cursor;
+  final RowCallbacks<DATA> rowCallbacks;
+  final DaviRowColor<DATA>? color;
+  final DaviRowCursor<DATA>? cursor;
   final HorizontalScrollOffsets horizontalScrollOffsets;
 
   @override
-  State<StatefulWidget> createState() => RowWidgetState<ROW>();
+  State<StatefulWidget> createState() => RowWidgetState<DATA>();
 }
 
-class RowWidgetState<ROW> extends State<RowWidget<ROW>> {
-  late RowData<ROW> _rowData;
+class RowWidgetState<DATA> extends State<RowWidget<DATA>> {
+  late DaviRow<DATA> _row;
 
   @override
   void initState() {
     super.initState();
-    _rowData = RowData(row: widget.row, index: widget.index, hovered: false);
+    _row = DaviRow(data: widget.data, index: widget.index, hovered: false);
   }
 
   @override
-  void didUpdateWidget(covariant RowWidget<ROW> oldWidget) {
+  void didUpdateWidget(covariant RowWidget<DATA> oldWidget) {
     super.didUpdateWidget(oldWidget);
-    _rowData = RowData(
-        row: widget.row, index: widget.index, hovered: _rowData.hovered);
+    _row =
+        DaviRow(data: widget.data, index: widget.index, hovered: _row.hovered);
   }
 
   @override
   Widget build(BuildContext context) {
     DaviThemeData theme = DaviTheme.of(context);
 
-    List<ColumnsLayoutChild<ROW>> children = [];
+    List<ColumnsLayoutChild<DATA>> children = [];
 
     for (int columnIndex = 0;
         columnIndex < widget.model.columnsLength;
         columnIndex++) {
-      final DaviColumn<ROW> column = widget.model.columnAt(columnIndex);
-      final CellWidget<ROW> cell = CellWidget(
-          column: column, columnIndex: columnIndex, rowData: _rowData);
+      final DaviColumn<DATA> column = widget.model.columnAt(columnIndex);
+      final CellWidget<DATA> cell =
+          CellWidget(column: column, columnIndex: columnIndex, row: _row);
 
-      children.add(ColumnsLayoutChild<ROW>(index: columnIndex, child: cell));
+      children.add(ColumnsLayoutChild<DATA>(index: columnIndex, child: cell));
     }
 
     Widget layout = ColumnsLayout(
@@ -90,7 +90,7 @@ class RowWidgetState<ROW> extends State<RowWidget<ROW>> {
 
     Color? color;
     if (widget.color != null) {
-      color = widget.color!(_rowData);
+      color = widget.color!(_row);
     }
 
     if (!widget.scrolling &&
@@ -100,7 +100,7 @@ class RowWidgetState<ROW> extends State<RowWidget<ROW>> {
             theme.row.hoverForeground != null ||
             widget.onHover != null ||
             !theme.row.cursorOnTapGesturesOnly)) {
-      if (_rowData.hovered && theme.row.hoverBackground != null) {
+      if (_row.hovered && theme.row.hoverBackground != null) {
         // replace row color
         color = theme.row.hoverBackground!(widget.index);
       }
@@ -110,7 +110,7 @@ class RowWidgetState<ROW> extends State<RowWidget<ROW>> {
         hoverBackground = _ColorPainter(color);
       }
       _ColorPainter? hoverForeground;
-      if (_rowData.hovered && theme.row.hoverForeground != null) {
+      if (_row.hovered && theme.row.hoverForeground != null) {
         Color? color = theme.row.hoverForeground!(widget.index);
         if (color != null) {
           hoverForeground = _ColorPainter(color);
@@ -136,7 +136,7 @@ class RowWidgetState<ROW> extends State<RowWidget<ROW>> {
     if (!theme.row.cursorOnTapGesturesOnly || widget.rowCallbacks.hasCallback) {
       MouseCursor? cursor;
       if (widget.cursor != null) {
-        cursor = widget.cursor!(_rowData);
+        cursor = widget.cursor!(_row);
       }
       return cursor ?? theme.row.cursor;
     }
@@ -145,28 +145,28 @@ class RowWidgetState<ROW> extends State<RowWidget<ROW>> {
 
   GestureTapCallback? _buildOnTap() {
     if (widget.rowCallbacks.onRowTap != null) {
-      return () => widget.rowCallbacks.onRowTap!(widget.row);
+      return () => widget.rowCallbacks.onRowTap!(widget.data);
     }
     return null;
   }
 
   GestureTapCallback? _buildOnDoubleTap() {
     if (widget.rowCallbacks.onRowDoubleTap != null) {
-      return () => widget.rowCallbacks.onRowDoubleTap!(widget.row);
+      return () => widget.rowCallbacks.onRowDoubleTap!(widget.data);
     }
     return null;
   }
 
   GestureTapCallback? _buildOnSecondaryTap() {
     if (widget.rowCallbacks.onRowSecondaryTap != null) {
-      return () => widget.rowCallbacks.onRowSecondaryTap!(widget.row);
+      return () => widget.rowCallbacks.onRowSecondaryTap!(widget.data);
     }
     return null;
   }
 
   void _onEnter(PointerEnterEvent event) {
     setState(() {
-      _rowData = RowData(row: widget.row, index: widget.index, hovered: true);
+      _row = DaviRow(data: widget.data, index: widget.index, hovered: true);
       if (widget.onHover != null) {
         widget.onHover!(widget.index);
       }
@@ -175,7 +175,7 @@ class RowWidgetState<ROW> extends State<RowWidget<ROW>> {
 
   void _onExit(PointerExitEvent event) {
     setState(() {
-      _rowData = RowData(row: widget.row, index: widget.index, hovered: false);
+      _row = DaviRow(data: widget.data, index: widget.index, hovered: false);
       if (widget.onHover != null) {
         widget.onHover!(null);
       }

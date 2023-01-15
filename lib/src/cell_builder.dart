@@ -1,8 +1,8 @@
-import 'package:davi/src/row_data.dart';
+import 'package:davi/src/row.dart';
 import 'package:flutter/widgets.dart';
 
 /// Signature for a function that builds a widget for a given row.
 ///
 /// Used by [DaviColumn].
-typedef DaviCellBuilder<ROW> = Widget Function(
-    BuildContext context, RowData<ROW> data);
+typedef DaviCellBuilder<DATA> = Widget Function(
+    BuildContext context, DaviRow<DATA> row);

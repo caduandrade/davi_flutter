@@ -10,7 +10,7 @@ import 'package:meta/meta.dart';
 
 /// [Davi] table layout.
 @internal
-class TableLayout<ROW> extends MultiChildRenderObjectWidget {
+class TableLayout<DATA> extends MultiChildRenderObjectWidget {
   TableLayout(
       {Key? key,
       required this.layoutSettings,
@@ -25,7 +25,7 @@ class TableLayout<ROW> extends MultiChildRenderObjectWidget {
 
   @override
   RenderObject createRenderObject(BuildContext context) {
-    return TableLayoutRenderBox<ROW>(
+    return TableLayoutRenderBox<DATA>(
         layoutSettings: layoutSettings,
         theme: theme,
         horizontalScrollOffsets: horizontalScrollOffsets);

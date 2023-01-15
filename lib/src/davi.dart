@@ -24,7 +24,7 @@ import 'package:flutter/services.dart';
 /// The [cellContentHeight] is mandatory due to performance.
 /// The total height of the cell will be the sum of the [cellContentHeight]
 /// value, divider thickness, and cell margin.
-class Davi<ROW> extends StatefulWidget {
+class Davi<DATA> extends StatefulWidget {
 //TODO handle negative values
 //TODO allow null and use defaults?
   const Davi(this.model,
@@ -50,16 +50,16 @@ class Davi<ROW> extends StatefulWidget {
             : null,
         super(key: key);
 
-  final DaviModel<ROW>? model;
+  final DaviModel<DATA>? model;
   final ScrollController? unpinnedHorizontalScrollController;
   final ScrollController? pinnedHorizontalScrollController;
   final ScrollController? verticalScrollController;
   final OnRowHoverListener? onHover;
-  final DaviRowColor<ROW>? rowColor;
-  final DaviRowCursor<ROW>? rowCursor;
-  final RowDoubleTapCallback<ROW>? onRowDoubleTap;
-  final RowTapCallback<ROW>? onRowTap;
-  final RowTapCallback<ROW>? onRowSecondaryTap;
+  final DaviRowColor<DATA>? rowColor;
+  final DaviRowCursor<DATA>? rowCursor;
+  final RowDoubleTapCallback<DATA>? onRowDoubleTap;
+  final RowTapCallback<DATA>? onRowTap;
+  final RowTapCallback<DATA>? onRowSecondaryTap;
   final ColumnWidthBehavior columnWidthBehavior;
   final int? visibleRowsCount;
   final OnLastVisibleRowListener? onLastVisibleRow;
@@ -69,11 +69,11 @@ class Davi<ROW> extends StatefulWidget {
   final OnLastRowWidgetListener? onLastRowWidget;
 
   @override
-  State<StatefulWidget> createState() => _DaviState<ROW>();
+  State<StatefulWidget> createState() => _DaviState<DATA>();
 }
 
 /// The [Davi] state.
-class _DaviState<ROW> extends State<Davi<ROW>> {
+class _DaviState<DATA> extends State<Davi<DATA>> {
   late ScrollControllers _scrollControllers;
   bool _scrolling = false;
   int? _hoveredRowIndex;
@@ -111,7 +111,7 @@ class _DaviState<ROW> extends State<Davi<ROW>> {
   }
 
   @override
-  void didUpdateWidget(covariant Davi<ROW> oldWidget) {
+  void didUpdateWidget(covariant Davi<DATA> oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.verticalScrollController != null &&
         _scrollControllers.vertical != widget.verticalScrollController) {

@@ -3,24 +3,24 @@ import 'package:davi/src/cell_icon.dart';
 /// Signature for a function that maps an [int] value of a row.
 ///
 /// Used by [DaviColumn].
-typedef DaviIntValueMapper<ROW> = int? Function(ROW row);
+typedef DaviIntValueMapper<DATA> = int? Function(DATA data);
 
 /// Signature for a function that maps a [double] value of a row.
 ///
 /// Used by [DaviColumn].
-typedef DaviDoubleValueMapper<ROW> = double? Function(ROW row);
+typedef DaviDoubleValueMapper<DATA> = double? Function(DATA data);
 
 /// Signature for a function that maps a [String] value of a row.
 ///
 /// Used by [DaviColumn].
-typedef DaviStringValueMapper<ROW> = String? Function(ROW row);
+typedef DaviStringValueMapper<DATA> = String? Function(DATA data);
 
 /// Signature for a function that maps an [Object] value of a row.
 ///
 /// Used by [DaviColumn].
-typedef DaviObjectValueMapper<ROW> = Object? Function(ROW row);
+typedef DaviObjectValueMapper<DATA> = Object? Function(DATA data);
 
 /// Signature for a function that maps a [CellIcon] value of a row.
 ///
 /// Used by [DaviColumn].
-typedef DaviIconValueMapper<ROW> = CellIcon? Function(ROW row);
+typedef DaviIconValueMapper<DATA> = CellIcon? Function(DATA data);

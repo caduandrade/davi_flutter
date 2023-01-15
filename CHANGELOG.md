@@ -1,20 +1,26 @@
 ## 3.0.0
 
-* Version to rename classes according to new package name.
-  * `EasyTable` to `Davi`
-  * `EasyTableCellBuilder` to `DaviCellBuilder`
-  * `EasyTableColumnSort` to `DaviColumnSort`
-  * `EasyTableColumn` to `DaviColumn`
-  * `EasyTableModel` to `DaviModel`
-  * `EasyTableRowColor` to `DaviRowColor`
-  * `EasyTableRowCursor` to `DaviRowCursor`
-  * `EasyTableIntValueMapper` to `DaviIntValueMapper`
-  * `EasyTableDoubleValueMapper` to `DaviDoubleValueMapper`
-  * `EasyTableStringValueMapper` to `DaviStringValueMapper`
-  * `EasyTableObjectValueMapper` to `DaviObjectValueMapper`
-  * `EasyTableIconValueMapper` to `DaviIconValueMapper`
+* Renaming classes and parameters
+  * `EasyTable<ROW>` to `Davi<DATA>`
+  * `EasyTableColumn<ROW>` to `DaviColumn<DATA>`
   * `EasyTableTheme` to `DaviTheme`
   * `EasyTableThemeData` to `DaviThemeData`
+  * `RowData<ROW>` to `DaviRow<DATA>`
+    * `̀ROW row` to `DATA data`
+  * `EasyTableModel<ROW>` to `DaviModel<DATA>`
+  * `EasyTableRowColor<ROW>(RowData<ROW> data)` to `DaviRowColor<DATA>(DaviRow<DATA> row)`
+  * `EasyTableRowCursor<DATA>(RowData<DATA> data)` to `DaviRowCursor<DATA>(DaviRow<DATA> row)`
+  * `EasyTableColumnSort<ROW>(ROW a, ROW b)` to `DaviColumnSort<DATA>(DATA a, DATA b)`
+  * `RowTapCallback<ROW>(ROW row)` to `RowTapCallback<DATA>(DATA data)`
+  * `RowDoubleTapCallback<ROW>(ROW row)` to `RowDoubleTapCallback<DATA>(DATA data)`
+  * `CellBackgroundBuilder<ROW>(RowData<ROW> data)` to `CellBackgroundBuilder<DATA>(DaviRow<DATA> row)`
+  * `EasyTableCellBuilder<ROW>(BuildContext context, RowData<ROW> data)` to `DaviCellBuilder<DATA>(BuildContext context, DaviRow<DATA> row)`
+  * `CellStyleBuilder<ROW>(RowData<ROW> data)` to `CellStyleBuilder<DATA>(DaviRow<DATA> row)`
+  * `EasyTableIntValueMapper<ROW>(ROW row)` to `DaviIntValueMapper<DATA>(DATA data)`
+  * `EasyTableDoubleValueMapper<ROW>(ROW row)` to `DaviDoubleValueMapper<DATA>(DATA data)`
+  * `EasyTableStringValueMapper<ROW>(ROW row)` to `DaviStringValueMapper<DATA>(DATA data)`
+  * `EasyTableObjectValueMapper<ROW>(ROW row)` to `DaviObjectValueMapper<DATA>(DATA data)`
+  * `EasyTableIconValueMapper<ROW>(ROW row)` to `DaviIconValueMapper<DATA>(DATA data)`
 
 ## 2.6.0
 

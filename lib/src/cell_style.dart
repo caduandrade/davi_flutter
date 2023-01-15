@@ -1,10 +1,10 @@
-import 'package:davi/src/row_data.dart';
+import 'package:davi/src/row.dart';
 import 'package:flutter/widgets.dart';
 
 /// Signature for a function that builds a [CellStyle] for a row.
 ///
 /// Used by [DaviColumn].
-typedef CellStyleBuilder<ROW> = CellStyle? Function(RowData<ROW> data);
+typedef CellStyleBuilder<DATA> = CellStyle? Function(DaviRow<DATA> row);
 
 /// Overrides the theme and column style.
 class CellStyle {

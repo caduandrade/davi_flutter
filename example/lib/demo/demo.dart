@@ -91,7 +91,7 @@ class _HomePageState extends State<HomePage> {
           width: 100,
           cellClip: true,
           cellBuilder: (context, data) =>
-              SkillsWidget(skills: data.row.skills)));
+              SkillsWidget(skills: data.data.skills)));
     }
     list.add(DaviColumn(
         name: 'Strength', width: 80, intValue: (row) => row.strength));
@@ -118,7 +118,7 @@ class _HomePageState extends State<HomePage> {
     Widget table = DaviTheme(
         child: Davi<Character>(_model,
             rowColor: _rowColor
-                ? (data) => data.row.life < 1000 ? Colors.red[200] : null
+                ? (data) => data.data.life < 1000 ? Colors.red[200] : null
                 : null,
             lastRowWidget: _lastRowWidget
                 ? const Center(child: Text('LAST ROW WIDGET'))

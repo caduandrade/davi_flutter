@@ -9,7 +9,7 @@ import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
 
 @internal
-class ColumnsLayout<ROW> extends MultiChildRenderObjectWidget {
+class ColumnsLayout<DATA> extends MultiChildRenderObjectWidget {
   ColumnsLayout(
       {Key? key,
       required this.layoutSettings,
@@ -25,7 +25,7 @@ class ColumnsLayout<ROW> extends MultiChildRenderObjectWidget {
   @override
   RenderObject createRenderObject(BuildContext context) {
     DaviThemeData theme = DaviTheme.of(context);
-    return ColumnsLayoutRenderBox<ROW>(
+    return ColumnsLayoutRenderBox<DATA>(
         layoutSettings: layoutSettings,
         horizontalScrollOffsets: horizontalScrollOffsets,
         theme: theme,

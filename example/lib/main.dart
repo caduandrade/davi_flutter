@@ -68,16 +68,16 @@ class _HomePageState extends State<HomePage> {
           name: 'Editable',
           cellBuilder: _buildField,
           cellBackground: (rowData) =>
-              rowData.row.valid ? null : Colors.red[800])
+              rowData.data.valid ? null : Colors.red[800])
     ]);
   }
 
-  Widget _buildField(BuildContext context, RowData<Person> rowData) {
+  Widget _buildField(BuildContext context, DaviRow<Person> rowData) {
     return TextFormField(
-        initialValue: rowData.row.editable,
+        initialValue: rowData.data.editable,
         style:
-            TextStyle(color: rowData.row.valid ? Colors.black : Colors.white),
-        onChanged: (value) => _onFieldChange(value, rowData.row));
+            TextStyle(color: rowData.data.valid ? Colors.black : Colors.white),
+        onChanged: (value) => _onFieldChange(value, rowData.data));
   }
 
   void _onFieldChange(String value, Person person) {

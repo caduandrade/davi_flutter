@@ -8,7 +8,7 @@ import 'package:flutter/rendering.dart';
 import 'package:meta/meta.dart';
 
 @internal
-class ColumnsLayoutRenderBox<ROW> extends RenderBox
+class ColumnsLayoutRenderBox<DATA> extends RenderBox
     with
         ContainerRenderObjectMixin<RenderBox, ColumnsLayoutParentData>,
         RenderBoxContainerDefaultsMixin<RenderBox, ColumnsLayoutParentData> {

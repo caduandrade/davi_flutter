@@ -9,7 +9,7 @@ import 'package:davi/src/value_mapper.dart';
 import 'package:flutter/widgets.dart';
 
 /// Signature for sort column function.
-typedef DaviColumnSort<ROW> = int Function(ROW a, ROW b);
+typedef DaviColumnSort<DATA> = int Function(DATA a, DATA b);
 
 /// The [Davi] column.
 ///
@@ -35,7 +35,7 @@ typedef DaviColumnSort<ROW> = int Function(ROW a, ROW b);
 ///
 /// The [fractionDigits] is the optional decimal-point string-representation
 /// used by the default cell width when the [doubleValue] is set.
-class DaviColumn<ROW> extends ChangeNotifier with ColumnSortMixin {
+class DaviColumn<DATA> extends ChangeNotifier with ColumnSortMixin {
   factory DaviColumn(
       {dynamic id,
       double width = 100,
@@ -51,18 +51,18 @@ class DaviColumn<ROW> extends ChangeNotifier with ColumnSortMixin {
       Alignment? cellAlignment,
       TextStyle? cellTextStyle,
       TextOverflow? cellOverflow,
-      CellBackgroundBuilder<ROW>? cellBackground,
+      CellBackgroundBuilder<DATA>? cellBackground,
       TextStyle? headerTextStyle,
       bool cellClip = false,
       Widget? leading,
-      DaviCellBuilder<ROW>? cellBuilder,
-      DaviColumnSort<ROW>? sort,
-      DaviIntValueMapper<ROW>? intValue,
-      DaviDoubleValueMapper<ROW>? doubleValue,
-      DaviStringValueMapper<ROW>? stringValue,
-      DaviIconValueMapper<ROW>? iconValue,
-      DaviObjectValueMapper<ROW>? objectValue,
-      CellStyleBuilder<ROW>? cellStyleBuilder}) {
+      DaviCellBuilder<DATA>? cellBuilder,
+      DaviColumnSort<DATA>? sort,
+      DaviIntValueMapper<DATA>? intValue,
+      DaviDoubleValueMapper<DATA>? doubleValue,
+      DaviStringValueMapper<DATA>? stringValue,
+      DaviIconValueMapper<DATA>? iconValue,
+      DaviObjectValueMapper<DATA>? objectValue,
+      CellStyleBuilder<DATA>? cellStyleBuilder}) {
     if (sort == null) {
       if (intValue != null) {
         sort = (a, b) {
@@ -198,19 +198,19 @@ class DaviColumn<ROW> extends ChangeNotifier with ColumnSortMixin {
   final Alignment? headerAlignment;
   final Alignment? cellAlignment;
   final TextOverflow? cellOverflow;
-  final CellBackgroundBuilder<ROW>? cellBackground;
+  final CellBackgroundBuilder<DATA>? cellBackground;
   final TextStyle? cellTextStyle;
   final TextStyle? headerTextStyle;
   final int? fractionDigits;
   final PinStatus pinStatus;
-  final DaviCellBuilder<ROW>? cellBuilder;
-  final DaviColumnSort<ROW>? sort;
-  final DaviIntValueMapper<ROW>? intValueMapper;
-  final DaviDoubleValueMapper<ROW>? doubleValueMapper;
-  final DaviStringValueMapper<ROW>? stringValueMapper;
-  final DaviObjectValueMapper<ROW>? objectValueMapper;
-  final DaviIconValueMapper<ROW>? iconValueMapper;
-  final CellStyleBuilder<ROW>? cellStyleBuilder;
+  final DaviCellBuilder<DATA>? cellBuilder;
+  final DaviColumnSort<DATA>? sort;
+  final DaviIntValueMapper<DATA>? intValueMapper;
+  final DaviDoubleValueMapper<DATA>? doubleValueMapper;
+  final DaviStringValueMapper<DATA>? stringValueMapper;
+  final DaviObjectValueMapper<DATA>? objectValueMapper;
+  final DaviIconValueMapper<DATA>? iconValueMapper;
+  final CellStyleBuilder<DATA>? cellStyleBuilder;
   final bool cellClip;
   final bool _sortable;
   double _width;
