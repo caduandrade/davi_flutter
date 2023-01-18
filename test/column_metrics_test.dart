@@ -25,8 +25,8 @@ void main() {
         expect(list.length, 0);
       });
       test('Single - Divider', () {
-        DaviModel model = DaviModel(
-            columns: [DaviColumn(pinStatus: PinStatus.left)]);
+        DaviModel model =
+            DaviModel(columns: [DaviColumn(pinStatus: PinStatus.left)]);
         List<ColumnMetrics> list = ColumnMetrics.columnsFit(
             model: model, maxWidth: 100, dividerThickness: 10);
         expect(list.length, 1);
@@ -35,8 +35,8 @@ void main() {
         expect(list[0].pinStatus, PinStatus.none);
       });
       test('Single - No divider', () {
-        DaviModel model = DaviModel(
-            columns: [DaviColumn(pinStatus: PinStatus.left)]);
+        DaviModel model =
+            DaviModel(columns: [DaviColumn(pinStatus: PinStatus.left)]);
         List<ColumnMetrics> list = ColumnMetrics.columnsFit(
             model: model, maxWidth: 100, dividerThickness: 0);
         expect(list.length, 1);
