@@ -24,5 +24,5 @@
 
 ## 2.6.0
 
-* Migration from package `easy_table` (https://pub.dev/packages/easy_table)
+* Migration from `easy_table` package (https://pub.dev/packages/easy_table)
   * Replace import `package:easy_table/easy_table.dart` with `package:davi/davi.dart`

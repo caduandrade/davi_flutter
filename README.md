@@ -2,7 +2,7 @@
 ![](https://github.com/caduandrade/davi_flutter/actions/workflows/test.yml/badge.svg)
 [![](https://img.shields.io/badge/demo-try%20it%20out-blue)](https://caduandrade.github.io/davi_flutter_demo/)
 [![](https://img.shields.io/badge/Flutter-%E2%9D%A4-red)](https://flutter.dev/)
-![](https://img.shields.io/badge/%F0%9F%91%8D%20and%20%E2%AD%90-are%20free-yellow)
+![](https://img.shields.io/badge/%F0%9F%91%8D%20and%20%E2%AD%90-are%20free%20and%20motivate%20me-yellow)
 
 ![](https://caduandrade.github.io/davi_flutter/davi_logo_v1.png)
 ---
@@ -169,22 +169,22 @@ The remaining width will be distributed to the columns according to the value of
 ### Row color
 
 ```dart
-    _model = EasyTableModel<Person>(rows: rows, columns: [
-      EasyTableColumn(name: 'Name', stringValue: (row) => row.name),
-      EasyTableColumn(name: 'Age', intValue: (row) => row.age)
+    _model = DaviModel<Person>(rows: rows, columns: [
+      DaviColumn(name: 'Name', stringValue: (row) => row.name),
+      DaviColumn(name: 'Age', intValue: (row) => row.age)
     ]);
 ```
 
 ```dart
   @override
   Widget build(BuildContext context) {
-    return EasyTable<Person>(_model, rowColor: _rowColor);
+    return Davi<Person>(_model, rowColor: _rowColor);
   }
 
-  Color? _rowColor(RowData<Person> data) {
-    if (data.row.age < 20) {
+  Color? _rowColor(DaviRow<Person> row) {
+    if (row.data.age < 20) {
       return Colors.green[50]!;
-    } else if (data.row.age > 30 && data.row.age < 50) {
+    } else if (row.data.age > 30 && row.data.age < 50) {
       return Colors.orange[50]!;
     }
     return null;
