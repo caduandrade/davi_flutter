@@ -55,29 +55,29 @@
 ## Get started
 
 ```dart
-EasyTableModel<Person>? _model;
+  DaviModel<Person>? _model;
 
-@override
-void initState() {
-  super.initState();
+  @override
+  void initState() {
+    super.initState();
 
-  _model = EasyTableModel<Person>(rows: [
-    Person('Landon', 19),
-    Person('Sari', 22),
-    Person('Julian', 37),
-    Person('Carey', 39),
-    Person('Cadu', 43),
-    Person('Delmar', 72)
-  ], columns: [
-    EasyTableColumn(name: 'Name', stringValue: (row) => row.name),
-    EasyTableColumn(name: 'Age', intValue: (row) => row.age)
-  ]);
-}
+    _model = DaviModel<Person>(rows: [
+      Person('Landon', 19),
+      Person('Sari', 22),
+      Person('Julian', 37),
+      Person('Carey', 39),
+      Person('Cadu', 43),
+      Person('Delmar', 72)
+    ], columns: [
+      DaviColumn(name: 'Name', stringValue: (row) => row.name),
+      DaviColumn(name: 'Age', intValue: (row) => row.age)
+    ]);
+  }
 
-@override
-Widget build(BuildContext context) {
-  return EasyTable<Person>(_model);
-}
+  @override
+  Widget build(BuildContext context) {
+    return Davi<Person>(_model);
+  }
 ```
 
 ![](https://caduandrade.github.io/davi_flutter/get_started_v5.png)
@@ -89,15 +89,14 @@ Widget build(BuildContext context) {
 All columns will fit in the available width.
 
 ```dart
-    _model = EasyTableModel<Person>(rows: rows, columns: [
-      EasyTableColumn(name: 'Name', grow: 2, stringValue: (row) => row.name),
-      EasyTableColumn(name: 'Age', grow: 1, intValue: (row) => row.age)
+    _model = DaviModel<Person>(rows: rows, columns: [
+      DaviColumn(name: 'Name', grow: 2, stringValue: (row) => row.name),
+      DaviColumn(name: 'Age', grow: 1, intValue: (row) => row.age)
     ]);
 ```
 
 ```dart
-  EasyTable<Person>(_model,
-        columnWidthBehavior: ColumnWidthBehavior.fit);
+    Davi<Person>(_model, columnWidthBehavior: ColumnWidthBehavior.fit);
 ```
 
 ![](https://caduandrade.github.io/davi_flutter/columns_fit_v4.png)
@@ -107,14 +106,14 @@ All columns will fit in the available width.
 The remaining width will be distributed to the columns according to the value of the `grow` attribute.
 
 ```dart
-    _model = EasyTableModel<Person>(rows: rows, columns: [
-      EasyTableColumn(name: 'Name', grow: 1, stringValue: (row) => row.name),
-      EasyTableColumn(name: 'Age', intValue: (row) => row.age)
+    _model = DaviModel<Person>(rows: rows, columns: [
+      DaviColumn(name: 'Name', grow: 1, stringValue: (row) => row.name),
+      DaviColumn(name: 'Age', intValue: (row) => row.age)
     ]);
 ```
 
 ```dart
-  EasyTable<Person>(_model);
+  Davi<Person>(_model);
 ```
 
 ![](https://caduandrade.github.io/davi_flutter/stretchable_column_v1.png)
@@ -122,7 +121,7 @@ The remaining width will be distributed to the columns according to the value of
 ### Multiple sort
 
 ```dart
-  EasyTable(_model, multiSort: true);
+  Davi(_model, multiSort: true);
 ```
 
 ![](https://caduandrade.github.io/davi_flutter/multiple_sort_v1.png)
@@ -130,9 +129,9 @@ The remaining width will be distributed to the columns according to the value of
 ### Column style
 
 ```dart
-    _model = EasyTableModel<Person>(rows: rows, columns: [
-      EasyTableColumn(name: 'Name', stringValue: (row) => row.name),
-      EasyTableColumn(
+    _model = DaviModel<Person>(rows: rows, columns: [
+      DaviColumn(name: 'Name', stringValue: (row) => row.name),
+      DaviColumn(
           name: 'Age',
           intValue: (row) => row.age,
           headerTextStyle: TextStyle(color: Colors.blue[900]!),
@@ -148,17 +147,17 @@ The remaining width will be distributed to the columns according to the value of
 ### Pinned column
 
 ```dart
-    _model = EasyTableModel(rows: persons, columns: [
-      EasyTableColumn(
+    _model = DaviModel(rows: persons, columns: [
+      DaviColumn(
           pinStatus: PinStatus.left,
           width: 30,
-          cellBuilder: (BuildContext context, RowData<Person> data) {
+          cellBuilder: (BuildContext context, DaviRow<Person> row) {
             return InkWell(
                 child: const Icon(Icons.edit, size: 16),
-                onTap: () => _onEdit(data.row));
+                onTap: () => _onEdit(row.data));
           }),
-      EasyTableColumn(name: 'Name', stringValue: (row) => row.name),
-      EasyTableColumn(name: 'Age', intValue: (row) => row.age)
+      DaviColumn(name: 'Name', stringValue: (row) => row.name),
+      DaviColumn(name: 'Age', intValue: (row) => row.age)
     ]);
 ```
 
@@ -196,11 +195,11 @@ The remaining width will be distributed to the columns according to the value of
 ### Row cursor
 
 ```dart
-    EasyTableTheme(
-        child: EasyTable<Person>(_model,
-            rowCursor: (data) =>
-                data.row.age < 20 ? SystemMouseCursors.forbidden : null),
-        data: const EasyTableThemeData(
+    DaviTheme(
+        child: Davi<Person>(_model,
+            rowCursor: (row) =>
+                row.data.age < 20 ? SystemMouseCursors.forbidden : null),
+        data: const DaviThemeData(
             row: RowThemeData(cursorOnTapGesturesOnly: false)));
 ```
 
@@ -209,7 +208,7 @@ The remaining width will be distributed to the columns according to the value of
 ```dart
 @override
 Widget build(BuildContext context) {
-  return EasyTable<Person>(_model,
+  return Davi<Person>(_model,
       onRowTap: (person) => _onRowTap(context, person),
       onRowSecondaryTap: (person) => _onRowSecondaryTap(context, person),
       onRowDoubleTap: (person) => _onRowDoubleTap(context, person));
@@ -231,7 +230,7 @@ void _onRowDoubleTap(BuildContext context, Person person) {
 ### Row hover listener
 
 ```dart
-  EasyTable<Person>(_model, onHover: _onHover);
+  Davi<Person>(_model, onHover: _onHover);
 
   void _onHover(int? rowIndex) {
     ...
@@ -241,23 +240,23 @@ void _onRowDoubleTap(BuildContext context, Person person) {
 ### Infinite scroll
 
 ```dart
-  EasyTableModel<Value>? _model;
+  DaviModel<Value>? _model;
   bool _loading = false;
 
   @override
   void initState() {
     super.initState();
     List<Value> rows = List.generate(30, (index) => Value(index));
-    _model = EasyTableModel<Value>(rows: rows, columns: [
-      EasyTableColumn(name: 'Index', intValue: (row) => row.index),
-      EasyTableColumn(name: 'Random 1', stringValue: (row) => row.random1),
-      EasyTableColumn(name: 'Random 2', stringValue: (row) => row.random2)
+    _model = DaviModel<Value>(rows: rows, columns: [
+      DaviColumn(name: 'Index', intValue: (row) => row.index),
+      DaviColumn(name: 'Random 1', stringValue: (row) => row.random1),
+      DaviColumn(name: 'Random 2', stringValue: (row) => row.random2)
     ]);
   }
 
   @override
   Widget build(BuildContext context) {
-    return EasyTable<Value>(_model,
+    return Davi<Value>(_model,
         lastRowWidget: const LoadingWidget(),
         onLastRowWidget: _onLastRowWidget);
   }
@@ -286,12 +285,12 @@ void _onRowDoubleTap(BuildContext context, Person person) {
 ### Cell style
 
 ```dart
-    _model = EasyTableModel<Person>(rows: rows, columns: [
-      EasyTableColumn(name: 'Name', stringValue: (row) => row.name),
-      EasyTableColumn(
+    _model = DaviModel<Person>(rows: rows, columns: [
+      DaviColumn(name: 'Name', stringValue: (row) => row.name),
+      DaviColumn(
           name: 'Age',
           intValue: (row) => row.age,
-          cellStyleBuilder: (data) => data.row.age >= 30 && data.row.age < 40
+          cellStyleBuilder: (row) => row.data.age >= 30 && row.data.age < 40
               ? CellStyle(
                   background: Colors.blue[800],
                   alignment: Alignment.center,
@@ -305,12 +304,12 @@ void _onRowDoubleTap(BuildContext context, Person person) {
 ### Custom cell widget
 
 ```dart
-    _model = EasyTableModel<Person>(rows: rows, columns: [
-      EasyTableColumn(name: 'Name', stringValue: (row) => row.name),
-      EasyTableColumn(
+    _model = DaviModel<Person>(rows: rows, columns: [
+      DaviColumn(name: 'Name', stringValue: (row) => row.name),
+      DaviColumn(
           name: 'Rate',
           width: 150,
-          cellBuilder: (context, data) => StarsWidget(stars: data.row.stars))
+          cellBuilder: (context, row) => StarsWidget(stars: row.data.stars))
     ]);
 ```
 
