@@ -4,6 +4,7 @@ import 'package:davi/src/column.dart';
 import 'package:davi/src/column_sort.dart';
 import 'package:davi/src/sort_order.dart';
 import 'package:flutter/widgets.dart';
+import 'package:meta/meta.dart';
 
 /// The [Davi] model.
 ///
@@ -57,6 +58,7 @@ class DaviModel<DATA> extends ChangeNotifier {
 
   DaviColumn<DATA>? get columnInResizing => _columnInResizing;
 
+  @internal
   set columnInResizing(DaviColumn<DATA>? column) {
     _columnInResizing = column;
     notifyListeners();
