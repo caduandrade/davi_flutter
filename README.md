@@ -339,7 +339,7 @@ class Person {
 }
 
 class MainWidgetState extends State<MainWidget> {
-  EasyTableModel<Person>? _model;
+  DaviModel<Person>? _model;
 
   @override
   void initState() {
@@ -352,23 +352,21 @@ class MainWidgetState extends State<MainWidget> {
       Person('Cadu', 5),
       Person('Delmar', 2)
     ];
-    _model = EasyTableModel<Person>(rows: rows, columns: [
-      EasyTableColumn(name: 'Name', stringValue: (row) => row.name),
-      EasyTableColumn(name: 'Value', intValue: (row) => row.value),
-      EasyTableColumn(
+    _model = DaviModel<Person>(rows: rows, columns: [
+      DaviColumn(name: 'Name', stringValue: (row) => row.name),
+      DaviColumn(name: 'Value', intValue: (row) => row.value),
+      DaviColumn(
           name: 'Editable',
           cellBuilder: _buildField,
-          cellBackground: (rowData) =>
-              rowData.row.valid ? null : Colors.red[800])
+          cellBackground: (row) => row.data.valid ? null : Colors.red[800])
     ]);
   }
 
-  Widget _buildField(BuildContext context, RowData<Person> rowData) {
+  Widget _buildField(BuildContext context, DaviRow<Person> row) {
     return TextFormField(
-        initialValue: rowData.row.editable,
-        style:
-            TextStyle(color: rowData.row.valid ? Colors.black : Colors.white),
-        onChanged: (value) => _onFieldChange(value, rowData.row));
+        initialValue: row.data.editable,
+        style: TextStyle(color: row.data.valid ? Colors.black : Colors.white),
+        onChanged: (value) => _onFieldChange(value, row.data));
   }
 
   void _onFieldChange(String value, Person person) {
@@ -383,7 +381,7 @@ class MainWidgetState extends State<MainWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return EasyTable<Person>(_model);
+    return Davi<Person>(_model);
   }
 }
 ```
@@ -393,9 +391,9 @@ class MainWidgetState extends State<MainWidget> {
 ### Dividers thickness and color
 
 ```dart
-EasyTableTheme(
-        child: EasyTable<Person>(_model),
-        data: const EasyTableThemeData(
+    DaviTheme(
+        child: Davi<Person>(_model),
+        data: const DaviThemeData(
             columnDividerThickness: 4,
             columnDividerColor: Colors.blue,
             header: HeaderThemeData(columnDividerColor: Colors.purple),
@@ -409,9 +407,9 @@ EasyTableTheme(
 ### Header
 
 ```dart
-    EasyTableTheme(
-        child: EasyTable<Person>(_model),
-        data: EasyTableThemeData(
+    DaviTheme(
+        child: Davi<Person>(_model),
+        data: DaviThemeData(
             header: HeaderThemeData(
                 color: Colors.green[50],
                 bottomBorderHeight: 4,
@@ -434,10 +432,9 @@ EasyTableTheme(
 #### Hidden header
 
 ```dart
-EasyTableTheme(
-        child: EasyTable<Person>(_model),
-        data:
-            const EasyTableThemeData(header: HeaderThemeData(visible: false)));
+    DaviTheme(
+        child: Davi<Person>(_model),
+        data: const DaviThemeData(header: HeaderThemeData(visible: false)));
 ```
 
 ![](https://caduandrade.github.io/davi_flutter/hidden_header_v1.png)
@@ -447,10 +444,10 @@ EasyTableTheme(
 #### Theme Row color
 
 ```dart
-EasyTableTheme(
-        data: EasyTableThemeData(
+    DaviTheme(
+        data: DaviThemeData(
             row: RowThemeData(color: (rowIndex) => Colors.green[50])),
-        child: EasyTable<Person>(_model));
+        child: Davi<Person>(_model));
 ```
 
 ![](https://caduandrade.github.io/davi_flutter/theme_row_color_v1.png)
@@ -458,10 +455,10 @@ EasyTableTheme(
 #### Row zebra color
 
 ```dart
-EasyTableTheme(
-        data: EasyTableThemeData(
-            row: RowThemeData(color: RowThemeData.zebraColor())),
-        child: EasyTable<Person>(_model));
+    DaviTheme(
+        data:
+            DaviThemeData(row: RowThemeData(color: RowThemeData.zebraColor())),
+        child: Davi<Person>(_model));
 ```
 
 ![](https://caduandrade.github.io/davi_flutter/theme_row_zebra_color_v1.png)
@@ -469,10 +466,10 @@ EasyTableTheme(
 #### Row hover background
 
 ```dart
-EasyTableTheme(
-        data: EasyTableThemeData(
+    DaviTheme(
+        data: DaviThemeData(
             row: RowThemeData(hoverBackground: (rowIndex) => Colors.blue[50])),
-        child: EasyTable<Person>(_model));
+        child: Davi<Person>(_model));
 ```
 
 ![](https://caduandrade.github.io/davi_flutter/theme_row_hover_background_v1.png)
@@ -480,11 +477,11 @@ EasyTableTheme(
 #### Row hover foreground
 
 ```dart
-EasyTableTheme(
-        data: EasyTableThemeData(
+    DaviTheme(
+        data: DaviThemeData(
             row: RowThemeData(
                 hoverForeground: (rowIndex) => Colors.blue.withOpacity(.2))),
-        child: EasyTable<Person>(_model));
+        child: Davi<Person>(_model));
 ```
 
 ![](https://caduandrade.github.io/davi_flutter/theme_row_hover_foreground_v1.png)
@@ -492,11 +489,11 @@ EasyTableTheme(
 #### Row fill height
 
 ```dart
-EasyTableTheme(
-        data: EasyTableThemeData(
+    DaviTheme(
+        data: DaviThemeData(
             row: RowThemeData(
                 fillHeight: true, color: RowThemeData.zebraColor())),
-        child: EasyTable<Person>(_model));
+        child: Davi<Person>(_model));
 ```
 
 ![](https://caduandrade.github.io/davi_flutter/theme_roll_fill_height_v1.png)
@@ -504,9 +501,9 @@ EasyTableTheme(
 ### Scrollbar
 
 ```dart
-    EasyTableTheme(
-        child: EasyTable<Person>(_model),
-        data: const EasyTableThemeData(
+    DaviTheme(
+        child: Davi<Person>(_model),
+        data: const DaviThemeData(
             scrollbar: TableScrollbarThemeData(
                 thickness: 16,
                 thumbColor: Colors.black,
@@ -524,12 +521,12 @@ EasyTableTheme(
 #### Scrollbar always visible
 
 ```dart
-    EasyTableTheme(
-        data: const EasyTableThemeData(
+    return DaviTheme(
+        data: const DaviThemeData(
             scrollbar: TableScrollbarThemeData(
                 horizontalOnlyWhenNeeded: false,
                 verticalOnlyWhenNeeded: false)),
-        child: EasyTable<Person>(_model));
+        child: Davi<Person>(_model));
 ```
 
 ![](https://caduandrade.github.io/davi_flutter/scrollbar_always_visible_v1.png)
@@ -543,24 +540,23 @@ EasyTableTheme(
 #### Null value color
 
 ```dart
-  _model = EasyTableModel<Person>(rows: [
-    Person('Landon', '+321 321-432-543'),
-    Person('Sari', '+123 456-789-012'),
-    Person('Julian', null),
-    Person('Carey', '+111 222-333-444'),
-    Person('Cadu', null),
-    Person('Delmar', '+22 222-222-222')
-  ], columns: [
-    EasyTableColumn(name: 'Name', stringValue: (row) => row.name),
-    EasyTableColumn(
-        name: 'Mobile', width: 150, stringValue: (row) => row.mobile)
-  ]);
+    _model = DaviModel<Person>(rows: [
+      Person('Landon', '+321 321-432-543'),
+      Person('Sari', '+123 456-789-012'),
+      Person('Julian', null),
+      Person('Carey', '+111 222-333-444'),
+      Person('Cadu', null),
+      Person('Delmar', '+22 222-222-222')
+    ], columns: [
+      DaviColumn(name: 'Name', stringValue: (row) => row.name),
+      DaviColumn(name: 'Mobile', width: 150, stringValue: (row) => row.mobile)
+    ]);
 ```
 
 ```dart
-  EasyTableTheme(
-        child: EasyTable<Person>(_model),
-        data: EasyTableThemeData(
+    DaviTheme(
+        child: Davi<Person>(_model),
+        data: DaviThemeData(
             cell: CellThemeData(
                 nullValueColor: ((rowIndex, hovered) => Colors.grey[300]))));
 ```
