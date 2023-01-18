@@ -12,10 +12,9 @@ class ScrollControllers {
       {required ScrollController? unpinnedHorizontal,
       required ScrollController? leftPinnedHorizontal,
       required ScrollController? vertical})
-      : unpinnedHorizontal = unpinnedHorizontal ?? EasyTableScrollController(),
-        leftPinnedHorizontal =
-            leftPinnedHorizontal ?? EasyTableScrollController(),
-        vertical = vertical ?? EasyTableScrollController();
+      : unpinnedHorizontal = unpinnedHorizontal ?? DaviScrollController(),
+        leftPinnedHorizontal = leftPinnedHorizontal ?? DaviScrollController(),
+        vertical = vertical ?? DaviScrollController();
 
   void dispose() {
     unpinnedHorizontal.dispose();

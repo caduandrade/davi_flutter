@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// The [EasyTable] header theme.
+/// The [Davi] header theme.
 /// Defines the configuration of the overall visual [HeaderThemeData] for a widget subtree within the app.
 class HeaderThemeData {
   /// Builds a theme data.

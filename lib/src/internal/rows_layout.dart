@@ -12,7 +12,7 @@ import 'package:meta/meta.dart';
 
 /// Rows layout.
 @internal
-class RowsLayout<ROW> extends MultiChildRenderObjectWidget {
+class RowsLayout<DATA> extends MultiChildRenderObjectWidget {
   RowsLayout(
       {Key? key,
       required this.layoutSettings,
@@ -29,7 +29,7 @@ class RowsLayout<ROW> extends MultiChildRenderObjectWidget {
 
   @override
   RenderObject createRenderObject(BuildContext context) {
-    EasyTableThemeData theme = EasyTableTheme.of(context);
+    DaviThemeData theme = DaviTheme.of(context);
     return RowsLayoutRenderBox(
         layoutSettings: layoutSettings,
         paintSettings: paintSettings,
@@ -46,7 +46,7 @@ class RowsLayout<ROW> extends MultiChildRenderObjectWidget {
   @override
   void updateRenderObject(
       BuildContext context, covariant RowsLayoutRenderBox renderObject) {
-    EasyTableThemeData theme = EasyTableTheme.of(context);
+    DaviThemeData theme = DaviTheme.of(context);
     super.updateRenderObject(context, renderObject);
     renderObject
       ..layoutSettings = layoutSettings

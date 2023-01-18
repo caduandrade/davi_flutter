@@ -3,11 +3,11 @@ import 'package:davi/davi.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
-/// [EasyTable] header cell.
+/// [Davi] header cell.
 @internal
-class EasyTableHeaderCell<ROW> extends StatefulWidget {
+class DaviHeaderCell<DATA> extends StatefulWidget {
   /// Builds a header cell.
-  const EasyTableHeaderCell(
+  const DaviHeaderCell(
       {Key? key,
       required this.model,
       required this.column,
@@ -15,22 +15,22 @@ class EasyTableHeaderCell<ROW> extends StatefulWidget {
       required this.multiSort})
       : super(key: key);
 
-  final EasyTableModel<ROW> model;
-  final EasyTableColumn<ROW> column;
+  final DaviModel<DATA> model;
+  final DaviColumn<DATA> column;
   final bool resizable;
   final bool multiSort;
 
   @override
-  State<StatefulWidget> createState() => _EasyTableHeaderCellState();
+  State<StatefulWidget> createState() => _DaviHeaderCellState();
 }
 
-class _EasyTableHeaderCellState extends State<EasyTableHeaderCell> {
+class _DaviHeaderCellState extends State<DaviHeaderCell> {
   bool _hovered = false;
   double _lastDragPos = 0;
 
   @override
   Widget build(BuildContext context) {
-    HeaderCellThemeData theme = EasyTableTheme.of(context).headerCell;
+    HeaderCellThemeData theme = DaviTheme.of(context).headerCell;
 
     bool resizing = widget.model.columnInResizing == widget.column;
     bool enabled = resizing == false && widget.model.columnInResizing == null;
@@ -105,7 +105,7 @@ class _EasyTableHeaderCellState extends State<EasyTableHeaderCell> {
   }
 
   Widget _textWidget(BuildContext context) {
-    EasyTableThemeData theme = EasyTableTheme.of(context);
+    DaviThemeData theme = DaviTheme.of(context);
     Widget? text;
     if (widget.column.name != null) {
       text = Text(widget.column.name!,
@@ -118,7 +118,7 @@ class _EasyTableHeaderCellState extends State<EasyTableHeaderCell> {
   }
 
   Widget _resizeWidget({required BuildContext context, required resizing}) {
-    EasyTableThemeData theme = EasyTableTheme.of(context);
+    DaviThemeData theme = DaviTheme.of(context);
     return MouseRegion(
         onEnter: (e) => setState(() {
               _hovered = true;
@@ -159,7 +159,7 @@ class _EasyTableHeaderCellState extends State<EasyTableHeaderCell> {
   }
 
   void _onHeaderPressed(
-      {required EasyTableModel model, required EasyTableColumn column}) {
+      {required DaviModel model, required DaviColumn column}) {
     if (model.isSorted == false) {
       model.sortByColumn(column: column, sortOrder: TableSortOrder.ascending);
     } else if (widget.multiSort) {

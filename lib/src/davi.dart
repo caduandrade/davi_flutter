@@ -24,10 +24,10 @@ import 'package:flutter/services.dart';
 /// The [cellContentHeight] is mandatory due to performance.
 /// The total height of the cell will be the sum of the [cellContentHeight]
 /// value, divider thickness, and cell margin.
-class EasyTable<ROW> extends StatefulWidget {
+class Davi<DATA> extends StatefulWidget {
 //TODO handle negative values
 //TODO allow null and use defaults?
-  const EasyTable(this.model,
+  const Davi(this.model,
       {Key? key,
       this.onHover,
       this.unpinnedHorizontalScrollController,
@@ -50,16 +50,16 @@ class EasyTable<ROW> extends StatefulWidget {
             : null,
         super(key: key);
 
-  final EasyTableModel<ROW>? model;
+  final DaviModel<DATA>? model;
   final ScrollController? unpinnedHorizontalScrollController;
   final ScrollController? pinnedHorizontalScrollController;
   final ScrollController? verticalScrollController;
   final OnRowHoverListener? onHover;
-  final EasyTableRowColor<ROW>? rowColor;
-  final EasyTableRowCursor<ROW>? rowCursor;
-  final RowDoubleTapCallback<ROW>? onRowDoubleTap;
-  final RowTapCallback<ROW>? onRowTap;
-  final RowTapCallback<ROW>? onRowSecondaryTap;
+  final DaviRowColor<DATA>? rowColor;
+  final DaviRowCursor<DATA>? rowCursor;
+  final RowDoubleTapCallback<DATA>? onRowDoubleTap;
+  final RowTapCallback<DATA>? onRowTap;
+  final RowTapCallback<DATA>? onRowSecondaryTap;
   final ColumnWidthBehavior columnWidthBehavior;
   final int? visibleRowsCount;
   final OnLastVisibleRowListener? onLastVisibleRow;
@@ -69,17 +69,17 @@ class EasyTable<ROW> extends StatefulWidget {
   final OnLastRowWidgetListener? onLastRowWidget;
 
   @override
-  State<StatefulWidget> createState() => _EasyTableState<ROW>();
+  State<StatefulWidget> createState() => _DaviState<DATA>();
 }
 
-/// The [EasyTable] state.
-class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
+/// The [Davi] state.
+class _DaviState<DATA> extends State<Davi<DATA>> {
   late ScrollControllers _scrollControllers;
   bool _scrolling = false;
   int? _hoveredRowIndex;
   bool _lastRowWidgetVisible = false;
   int? _lastVisibleRow;
-  final FocusNode _focusNode = FocusNode(debugLabel: 'EasyTable');
+  final FocusNode _focusNode = FocusNode(debugLabel: 'Davi');
 
   void _setHoveredRowIndex(int? rowIndex) {
     if (widget.model != null && _hoveredRowIndex != rowIndex) {
@@ -111,7 +111,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
   }
 
   @override
-  void didUpdateWidget(covariant EasyTable<ROW> oldWidget) {
+  void didUpdateWidget(covariant Davi<DATA> oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.verticalScrollController != null &&
         _scrollControllers.vertical != widget.verticalScrollController) {
@@ -173,7 +173,7 @@ class _EasyTableState<ROW> extends State<EasyTable<ROW>> {
 
   @override
   Widget build(BuildContext context) {
-    final EasyTableThemeData theme = EasyTableTheme.of(context);
+    final DaviThemeData theme = DaviTheme.of(context);
 
     final TableThemeMetrics themeMetrics = TableThemeMetrics(theme);
 

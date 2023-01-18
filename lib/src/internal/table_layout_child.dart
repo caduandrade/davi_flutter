@@ -19,10 +19,10 @@ import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
 @internal
-class TableLayoutChild<ROW> extends ParentDataWidget<TableLayoutParentData> {
+class TableLayoutChild<DATA> extends ParentDataWidget<TableLayoutParentData> {
   factory TableLayoutChild.header(
       {required TableLayoutSettings layoutSettings,
-      required EasyTableModel<ROW>? model,
+      required DaviModel<DATA>? model,
       required bool resizable,
       required HorizontalScrollOffsets horizontalScrollOffsets,
       required bool multiSort}) {
@@ -39,15 +39,15 @@ class TableLayoutChild<ROW> extends ParentDataWidget<TableLayoutParentData> {
   }
 
   factory TableLayoutChild.rows(
-      {required EasyTableModel<ROW>? model,
+      {required DaviModel<DATA>? model,
       required TableLayoutSettings layoutSettings,
       required bool scrolling,
       required HorizontalScrollOffsets horizontalScrollOffsets,
       required ScrollController verticalScrollController,
       required OnRowHoverListener? onHover,
-      required RowCallbacks<ROW> rowCallbacks,
-      required EasyTableRowColor<ROW>? rowColor,
-      required EasyTableRowCursor<ROW>? rowCursor,
+      required RowCallbacks<DATA> rowCallbacks,
+      required DaviRowColor<DATA>? rowColor,
+      required DaviRowCursor<DATA>? rowCursor,
       required Widget? lastRowWidget,
       required OnLastRowWidgetListener onLastRowWidget,
       required OnLastVisibleRowListener onLastVisibleRow}) {
@@ -56,7 +56,7 @@ class TableLayoutChild<ROW> extends ParentDataWidget<TableLayoutParentData> {
         child: AnimatedBuilder(
             animation: verticalScrollController,
             builder: (BuildContext context, Widget? child) {
-              return RowsBuilder<ROW>(
+              return RowsBuilder<DATA>(
                   model: model,
                   layoutSettings: layoutSettings,
                   onHover: onHover,

@@ -34,7 +34,7 @@ class ExampleApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'EasyTable Example',
+      title: 'Davi Example',
       home: HomePage(),
     );
   }
@@ -48,7 +48,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  EasyTableModel<Person>? _model;
+  DaviModel<Person>? _model;
 
   @override
   void initState() {
@@ -61,23 +61,23 @@ class _HomePageState extends State<HomePage> {
       rows.add(Person('User $i', random.nextInt(100)));
     }
 
-    _model = EasyTableModel<Person>(rows: rows, columns: [
-      EasyTableColumn(name: 'Name', stringValue: (row) => row.name),
-      EasyTableColumn(name: 'Value', intValue: (row) => row.value),
-      EasyTableColumn(
+    _model = DaviModel<Person>(rows: rows, columns: [
+      DaviColumn(name: 'Name', stringValue: (row) => row.name),
+      DaviColumn(name: 'Value', intValue: (row) => row.value),
+      DaviColumn(
           name: 'Editable',
           cellBuilder: _buildField,
           cellBackground: (rowData) =>
-              rowData.row.valid ? null : Colors.red[800])
+              rowData.data.valid ? null : Colors.red[800])
     ]);
   }
 
-  Widget _buildField(BuildContext context, RowData<Person> rowData) {
+  Widget _buildField(BuildContext context, DaviRow<Person> rowData) {
     return TextFormField(
-        initialValue: rowData.row.editable,
+        initialValue: rowData.data.editable,
         style:
-            TextStyle(color: rowData.row.valid ? Colors.black : Colors.white),
-        onChanged: (value) => _onFieldChange(value, rowData.row));
+            TextStyle(color: rowData.data.valid ? Colors.black : Colors.white),
+        onChanged: (value) => _onFieldChange(value, rowData.data));
   }
 
   void _onFieldChange(String value, Person person) {
@@ -92,6 +92,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: EasyTable<Person>(_model));
+    return Scaffold(body: Davi<Person>(_model));
   }
 }

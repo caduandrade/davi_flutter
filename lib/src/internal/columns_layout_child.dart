@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
 @internal
-class ColumnsLayoutChild<ROW>
+class ColumnsLayoutChild<DATA>
     extends ParentDataWidget<ColumnsLayoutParentData> {
   ColumnsLayoutChild({
     required this.index,

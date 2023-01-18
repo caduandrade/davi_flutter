@@ -16,7 +16,7 @@ class RowsLayoutRenderBox extends RenderBox
   RowsLayoutRenderBox(
       {required TableLayoutSettings layoutSettings,
       required RowsPaintingSettings paintSettings,
-      required EasyTableThemeData theme,
+      required DaviThemeData theme,
       required double verticalOffset,
       required HorizontalScrollOffsets horizontalScrollOffsets})
       : _layoutSettings = layoutSettings,
@@ -52,9 +52,9 @@ class RowsLayoutRenderBox extends RenderBox
     }
   }
 
-  EasyTableThemeData _theme;
+  DaviThemeData _theme;
 
-  set theme(EasyTableThemeData value) {
+  set theme(DaviThemeData value) {
     if (_theme != value) {
       _theme = value;
       markNeedsPaint();

@@ -27,7 +27,7 @@ class ColumnMetrics {
   int get hashCode => width.hashCode ^ offset.hashCode ^ pinStatus.hashCode;
 
   static List<ColumnMetrics> columnsFit(
-      {required EasyTableModel model,
+      {required DaviModel model,
       required double maxWidth,
       required double dividerThickness}) {
     List<ColumnMetrics> list = [];
@@ -38,14 +38,14 @@ class ColumnMetrics {
 
     double totalGrow = 0;
     for (int i = 0; i < model.columnsLength; i++) {
-      final EasyTableColumn column = model.columnAt(i);
+      final DaviColumn column = model.columnAt(i);
       totalGrow += column.grow ?? 1;
     }
 
     final double columnWidthRatio = availableWidth / totalGrow;
 
     for (int i = 0; i < model.columnsLength; i++) {
-      final EasyTableColumn column = model.columnAt(i);
+      final DaviColumn column = model.columnAt(i);
       final double width = columnWidthRatio * (column.grow ?? 1);
       list.add(ColumnMetrics(
           width: width, offset: offset, pinStatus: PinStatus.none));
@@ -55,14 +55,14 @@ class ColumnMetrics {
   }
 
   static List<ColumnMetrics> resizable(
-      {required EasyTableModel model,
+      {required DaviModel model,
       required double maxWidth,
       required double dividerThickness}) {
     double offset = 0;
     double totalGrow = 0;
     for (PinStatus pinStatus in PinStatus.values) {
       for (int i = 0; i < model.columnsLength; i++) {
-        final EasyTableColumn column = model.columnAt(i);
+        final DaviColumn column = model.columnAt(i);
         if (pinStatus == column.pinStatus) {
           offset += column.width + dividerThickness;
           if (column.grow != null) {
@@ -82,7 +82,7 @@ class ColumnMetrics {
     List<ColumnMetrics> list = [];
     for (PinStatus pinStatus in PinStatus.values) {
       for (int i = 0; i < model.columnsLength; i++) {
-        final EasyTableColumn column = model.columnAt(i);
+        final DaviColumn column = model.columnAt(i);
         if (pinStatus == column.pinStatus) {
           double width = column.width;
           if (column.grow != null && growFactor != null) {

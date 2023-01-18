@@ -9,7 +9,7 @@ import 'package:meta/meta.dart';
 /// Stores theme values that change the table layout.
 @internal
 class TableThemeMetrics {
-  factory TableThemeMetrics(EasyTableThemeData themeData) {
+  factory TableThemeMetrics(DaviThemeData themeData) {
     CellThemeMetrics cell = CellThemeMetrics(themeData: themeData.cell);
     HeaderCellThemeMetrics headerCell =
         HeaderCellThemeMetrics(themeData: themeData.headerCell);

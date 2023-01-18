@@ -9,7 +9,7 @@ import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
 
 @internal
-class ColumnsLayout<ROW> extends MultiChildRenderObjectWidget {
+class ColumnsLayout<DATA> extends MultiChildRenderObjectWidget {
   ColumnsLayout(
       {Key? key,
       required this.layoutSettings,
@@ -24,8 +24,8 @@ class ColumnsLayout<ROW> extends MultiChildRenderObjectWidget {
 
   @override
   RenderObject createRenderObject(BuildContext context) {
-    EasyTableThemeData theme = EasyTableTheme.of(context);
-    return ColumnsLayoutRenderBox<ROW>(
+    DaviThemeData theme = DaviTheme.of(context);
+    return ColumnsLayoutRenderBox<DATA>(
         layoutSettings: layoutSettings,
         horizontalScrollOffsets: horizontalScrollOffsets,
         theme: theme,
@@ -41,7 +41,7 @@ class ColumnsLayout<ROW> extends MultiChildRenderObjectWidget {
   void updateRenderObject(
       BuildContext context, covariant ColumnsLayoutRenderBox renderObject) {
     super.updateRenderObject(context, renderObject);
-    EasyTableThemeData theme = EasyTableTheme.of(context);
+    DaviThemeData theme = DaviTheme.of(context);
     renderObject
       ..layoutSettings = layoutSettings
       ..horizontalScrollOffsets = horizontalScrollOffsets

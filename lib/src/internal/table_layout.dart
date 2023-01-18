@@ -8,9 +8,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
 
-/// [EasyTable] table layout.
+/// [Davi] table layout.
 @internal
-class TableLayout<ROW> extends MultiChildRenderObjectWidget {
+class TableLayout<DATA> extends MultiChildRenderObjectWidget {
   TableLayout(
       {Key? key,
       required this.layoutSettings,
@@ -20,12 +20,12 @@ class TableLayout<ROW> extends MultiChildRenderObjectWidget {
       : super(key: key, children: children);
 
   final TableLayoutSettings layoutSettings;
-  final EasyTableThemeData theme;
+  final DaviThemeData theme;
   final HorizontalScrollOffsets horizontalScrollOffsets;
 
   @override
   RenderObject createRenderObject(BuildContext context) {
-    return TableLayoutRenderBox<ROW>(
+    return TableLayoutRenderBox<DATA>(
         layoutSettings: layoutSettings,
         theme: theme,
         horizontalScrollOffsets: horizontalScrollOffsets);

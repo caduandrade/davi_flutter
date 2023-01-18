@@ -9,9 +9,9 @@ import 'package:davi/src/value_mapper.dart';
 import 'package:flutter/widgets.dart';
 
 /// Signature for sort column function.
-typedef EasyTableColumnSort<ROW> = int Function(ROW a, ROW b);
+typedef DaviColumnSort<DATA> = int Function(DATA a, DATA b);
 
-/// The [EasyTable] column.
+/// The [Davi] column.
 ///
 /// The [name] argument is optional and is used by the default
 /// cell header widget.
@@ -35,8 +35,8 @@ typedef EasyTableColumnSort<ROW> = int Function(ROW a, ROW b);
 ///
 /// The [fractionDigits] is the optional decimal-point string-representation
 /// used by the default cell width when the [doubleValue] is set.
-class EasyTableColumn<ROW> extends ChangeNotifier with ColumnSortMixin {
-  factory EasyTableColumn(
+class DaviColumn<DATA> extends ChangeNotifier with ColumnSortMixin {
+  factory DaviColumn(
       {dynamic id,
       double width = 100,
       double? grow,
@@ -51,18 +51,18 @@ class EasyTableColumn<ROW> extends ChangeNotifier with ColumnSortMixin {
       Alignment? cellAlignment,
       TextStyle? cellTextStyle,
       TextOverflow? cellOverflow,
-      CellBackgroundBuilder<ROW>? cellBackground,
+      CellBackgroundBuilder<DATA>? cellBackground,
       TextStyle? headerTextStyle,
       bool cellClip = false,
       Widget? leading,
-      EasyTableCellBuilder<ROW>? cellBuilder,
-      EasyTableColumnSort<ROW>? sort,
-      EasyTableIntValueMapper<ROW>? intValue,
-      EasyTableDoubleValueMapper<ROW>? doubleValue,
-      EasyTableStringValueMapper<ROW>? stringValue,
-      EasyTableIconValueMapper<ROW>? iconValue,
-      EasyTableObjectValueMapper<ROW>? objectValue,
-      CellStyleBuilder<ROW>? cellStyleBuilder}) {
+      DaviCellBuilder<DATA>? cellBuilder,
+      DaviColumnSort<DATA>? sort,
+      DaviIntValueMapper<DATA>? intValue,
+      DaviDoubleValueMapper<DATA>? doubleValue,
+      DaviStringValueMapper<DATA>? stringValue,
+      DaviIconValueMapper<DATA>? iconValue,
+      DaviObjectValueMapper<DATA>? objectValue,
+      CellStyleBuilder<DATA>? cellStyleBuilder}) {
     if (sort == null) {
       if (intValue != null) {
         sort = (a, b) {
@@ -130,7 +130,7 @@ class EasyTableColumn<ROW> extends ChangeNotifier with ColumnSortMixin {
       }
     }
     //TODO check multiple value mappers
-    return EasyTableColumn._(
+    return DaviColumn._(
         id: id,
         width: width,
         grow: grow,
@@ -159,7 +159,7 @@ class EasyTableColumn<ROW> extends ChangeNotifier with ColumnSortMixin {
         cellClip: cellClip);
   }
 
-  EasyTableColumn._(
+  DaviColumn._(
       {required this.id,
       required double width,
       double? grow,
@@ -198,19 +198,19 @@ class EasyTableColumn<ROW> extends ChangeNotifier with ColumnSortMixin {
   final Alignment? headerAlignment;
   final Alignment? cellAlignment;
   final TextOverflow? cellOverflow;
-  final CellBackgroundBuilder<ROW>? cellBackground;
+  final CellBackgroundBuilder<DATA>? cellBackground;
   final TextStyle? cellTextStyle;
   final TextStyle? headerTextStyle;
   final int? fractionDigits;
   final PinStatus pinStatus;
-  final EasyTableCellBuilder<ROW>? cellBuilder;
-  final EasyTableColumnSort<ROW>? sort;
-  final EasyTableIntValueMapper<ROW>? intValueMapper;
-  final EasyTableDoubleValueMapper<ROW>? doubleValueMapper;
-  final EasyTableStringValueMapper<ROW>? stringValueMapper;
-  final EasyTableObjectValueMapper<ROW>? objectValueMapper;
-  final EasyTableIconValueMapper<ROW>? iconValueMapper;
-  final CellStyleBuilder<ROW>? cellStyleBuilder;
+  final DaviCellBuilder<DATA>? cellBuilder;
+  final DaviColumnSort<DATA>? sort;
+  final DaviIntValueMapper<DATA>? intValueMapper;
+  final DaviDoubleValueMapper<DATA>? doubleValueMapper;
+  final DaviStringValueMapper<DATA>? stringValueMapper;
+  final DaviObjectValueMapper<DATA>? objectValueMapper;
+  final DaviIconValueMapper<DATA>? iconValueMapper;
+  final CellStyleBuilder<DATA>? cellStyleBuilder;
   final bool cellClip;
   final bool _sortable;
   double _width;
@@ -248,6 +248,6 @@ class EasyTableColumn<ROW> extends ChangeNotifier with ColumnSortMixin {
 
   @override
   String toString() {
-    return 'EasyTableColumn{name: $name}';
+    return 'DaviColumn{name: $name}';
   }
 }

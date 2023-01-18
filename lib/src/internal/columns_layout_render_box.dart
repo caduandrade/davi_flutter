@@ -8,14 +8,14 @@ import 'package:flutter/rendering.dart';
 import 'package:meta/meta.dart';
 
 @internal
-class ColumnsLayoutRenderBox<ROW> extends RenderBox
+class ColumnsLayoutRenderBox<DATA> extends RenderBox
     with
         ContainerRenderObjectMixin<RenderBox, ColumnsLayoutParentData>,
         RenderBoxContainerDefaultsMixin<RenderBox, ColumnsLayoutParentData> {
   ColumnsLayoutRenderBox(
       {required TableLayoutSettings layoutSettings,
       required HorizontalScrollOffsets horizontalScrollOffsets,
-      required EasyTableThemeData theme,
+      required DaviThemeData theme,
       required bool paintDividerColumns})
       : _layoutSettings = layoutSettings,
         _horizontalScrollOffsets = horizontalScrollOffsets,
@@ -31,9 +31,9 @@ class ColumnsLayoutRenderBox<ROW> extends RenderBox
     }
   }
 
-  EasyTableThemeData _theme;
+  DaviThemeData _theme;
 
-  set theme(EasyTableThemeData value) {
+  set theme(DaviThemeData value) {
     if (_theme != value) {
       _theme = value;
       if (_paintDividerColumns) {
