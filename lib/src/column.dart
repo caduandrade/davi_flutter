@@ -9,7 +9,8 @@ import 'package:davi/src/value_mapper.dart';
 import 'package:flutter/widgets.dart';
 
 /// Signature for sort column function.
-typedef DaviColumnSort<DATA> = int Function(DATA a, DATA b);
+typedef DaviColumnSort<DATA> = int Function(
+    DATA a, DATA b, DaviColumn<DATA> column);
 
 /// The [Davi] column.
 ///
@@ -143,7 +144,7 @@ class DaviColumn<DATA> extends ChangeNotifier with ColumnSortMixin {
       DaviIconValueMapper<DATA>? iconValue,
       DaviObjectValueMapper<DATA>? objectValue) {
     if (intValue != null) {
-      return (a, b) {
+      return (a, b, column) {
         int? v1 = intValue(a);
         int? v2 = intValue(b);
         if (v1 == null && v2 == null) {
@@ -158,7 +159,7 @@ class DaviColumn<DATA> extends ChangeNotifier with ColumnSortMixin {
         return v1.compareTo(v2);
       };
     } else if (doubleValue != null) {
-      return (a, b) {
+      return (a, b, column) {
         double? v1 = doubleValue(a);
         double? v2 = doubleValue(b);
         if (v1 == null && v2 == null) {
@@ -173,7 +174,7 @@ class DaviColumn<DATA> extends ChangeNotifier with ColumnSortMixin {
         return v1.compareTo(v2);
       };
     } else if (stringValue != null) {
-      return (a, b) {
+      return (a, b, column) {
         String? v1 = stringValue(a);
         String? v2 = stringValue(b);
         if (v1 == null && v2 == null) {
@@ -188,7 +189,7 @@ class DaviColumn<DATA> extends ChangeNotifier with ColumnSortMixin {
         return v1.compareTo(v2);
       };
     } else if (objectValue != null) {
-      return (a, b) {
+      return (a, b, column) {
         Object? v1 = objectValue(a);
         Object? v2 = objectValue(b);
         if (v1 == null && v2 == null) {

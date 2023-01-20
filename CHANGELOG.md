@@ -3,6 +3,8 @@
 * Refactor
   * The `sortable` attribute of the `DaviColumnSort` can be `TRUE` even without a `sort` method.
     * When the `sortable` attribute is `TRUE` and the `sort` function is  `NULL`, the ordering click on the header will only be enabled if the `externalSort` attribute of the `DaviModel` is `TRUE`. In this case, the data will continue in its natural order but the `onSort` event will be triggered.
+  * Typedef `DaviColumnSort`
+    * Attribute addition: `DaviColumn<DATA> column`
 
 ## 3.0.0
 

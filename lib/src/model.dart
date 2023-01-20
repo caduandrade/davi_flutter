@@ -262,16 +262,19 @@ class DaviModel<DATA> extends ChangeNotifier {
   int _compoundSort(DATA a, DATA b) {
     int r = 0;
     for (int i = 0; i < _sortedColumns.length; i++) {
-      final DaviColumnSort<DATA> sort = _sortedColumns[i].sort!;
-      final TableSortOrder order = _sortedColumns[i].order!;
+      final DaviColumn<DATA> column = _sortedColumns[i];
+      if (column.sort != null && column.order != null) {
+        final DaviColumnSort<DATA> sort = column.sort!;
+        final TableSortOrder order = column.order!;
 
-      if (order == TableSortOrder.descending) {
-        r = sort(b, a);
-      } else {
-        r = sort(a, b);
-      }
-      if (r != 0) {
-        break;
+        if (order == TableSortOrder.descending) {
+          r = sort(b, a, column);
+        } else {
+          r = sort(a, b, column);
+        }
+        if (r != 0) {
+          break;
+        }
       }
     }
     return r;
