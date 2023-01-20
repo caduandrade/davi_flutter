@@ -2,6 +2,7 @@ import 'dart:collection';
 
 import 'package:davi/src/column.dart';
 import 'package:davi/src/column_sort.dart';
+import 'package:davi/src/sort_callback_typedef.dart';
 import 'package:davi/src/sort_order.dart';
 import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
@@ -13,15 +14,18 @@ class DaviModel<DATA> extends ChangeNotifier {
   factory DaviModel(
       {List<DATA> rows = const [],
       List<DaviColumn<DATA>> columns = const [],
-      bool externalSort = false}) {
+      bool externalSort = false,
+      OnSortCallback<DATA>? onSort}) {
     List<DATA> cloneList = List.from(rows);
-    DaviModel<DATA> model =
-        DaviModel._(cloneList, UnmodifiableListView(cloneList), externalSort);
+    DaviModel<DATA> model = DaviModel._(
+        cloneList, UnmodifiableListView(cloneList), externalSort, onSort);
     model.addColumns(columns);
     return model;
   }
 
-  DaviModel._(this._originalRows, this._rows, this.externalSort);
+  DaviModel._(this._originalRows, this._rows, this.externalSort, this.onSort);
+
+  OnSortCallback<DATA>? onSort;
 
   final List<DaviColumn<DATA>> _columns = [];
   final List<DATA> _originalRows;
@@ -165,11 +169,18 @@ class DaviModel<DATA> extends ChangeNotifier {
     }
   }
 
+  void _notifyOnSort() {
+    if (onSort != null) {
+      onSort!(sortedColumns);
+    }
+  }
+
   /// Revert to original sort order
   void clearSort() {
     _sortedColumns.clear();
     _clearColumnsSortData();
     _updateRows(notify: true);
+    _notifyOnSort();
   }
 
   void _clearColumnsSortData() {
@@ -191,6 +202,7 @@ class DaviModel<DATA> extends ChangeNotifier {
     }
     _updateSortPriorities();
     _updateRows(notify: true);
+    _notifyOnSort();
   }
 
   /// Updates the multi sort given a column.
@@ -216,6 +228,7 @@ class DaviModel<DATA> extends ChangeNotifier {
     }
     _updateSortPriorities();
     _updateRows(notify: true);
+    _notifyOnSort();
   }
 
   /// Sort given a column index.
@@ -236,6 +249,7 @@ class DaviModel<DATA> extends ChangeNotifier {
       column._order = sortOrder;
       _sortedColumns.add(column);
       _updateRows(notify: true);
+      _notifyOnSort();
     }
   }
 

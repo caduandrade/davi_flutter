@@ -1,8 +1,11 @@
 ## 3.1.0
 
+* Allow the column to have sorting enabled but the data not to be sorted by the model.
+* `DaviModel`
+  * `onSort` callback. 
 * Refactor
   * The `sortable` attribute of the `DaviColumnSort` can be `TRUE` even without a `sort` method.
-    * When the `sortable` attribute is `TRUE` and the `sort` function is  `NULL`, the ordering click on the header will only be enabled if the `externalSort` attribute of the `DaviModel` is `TRUE`. In this case, the data will continue in its natural order but the `onSort` event will be triggered.
+    * When the `sortable` attribute is `TRUE` and the `sort` function is `NULL`, the ordering click on the header will only be enabled if the `externalSort` attribute of the `DaviModel` is `TRUE`. In this case, the data will continue in its natural order but the `onSort` event will be triggered.
   * Typedef `DaviColumnSort`
     * Attribute addition: `DaviColumn<DATA> column`
 
