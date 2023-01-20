@@ -11,17 +11,17 @@ import 'package:meta/meta.dart';
 /// The type [DATA] represents the data of each row.
 class DaviModel<DATA> extends ChangeNotifier {
   factory DaviModel(
-      {List<DATA> rows = const [], List<DaviColumn<DATA>> columns = const []}) {
+      {List<DATA> rows = const [],
+      List<DaviColumn<DATA>> columns = const [],
+      bool externalSort = false}) {
     List<DATA> cloneList = List.from(rows);
     DaviModel<DATA> model =
-        DaviModel._(cloneList, UnmodifiableListView(cloneList));
-    for (DaviColumn<DATA> column in columns) {
-      model.addColumn(column);
-    }
+        DaviModel._(cloneList, UnmodifiableListView(cloneList), externalSort);
+    model.addColumns(columns);
     return model;
   }
 
-  DaviModel._(this._originalRows, this._rows);
+  DaviModel._(this._originalRows, this._rows, this.externalSort);
 
   final List<DaviColumn<DATA>> _columns = [];
   final List<DATA> _originalRows;
@@ -33,6 +33,8 @@ class DaviModel<DATA> extends ChangeNotifier {
       UnmodifiableListView(_sortedColumns);
 
   List<DATA> _rows;
+
+  final bool externalSort;
 
   bool get _isRowsModifiable => _rows is! UnmodifiableListView;
 
@@ -182,7 +184,7 @@ class DaviModel<DATA> extends ChangeNotifier {
     _clearColumnsSortData();
     for (ColumnSort columnSort in columnSorts) {
       DaviColumn<DATA> column = _columns[columnSort.columnIndex];
-      if (column.sort != null) {
+      if (column.sortable && (column.sort != null || externalSort)) {
         column._order = columnSort.order;
         _sortedColumns.add(column);
       }
@@ -193,7 +195,9 @@ class DaviModel<DATA> extends ChangeNotifier {
 
   /// Updates the multi sort given a column.
   void multiSortByColumn(DaviColumn<DATA> column) {
-    if (_columns.contains(column) == false || column.sort == null) {
+    if (_columns.contains(column) == false ||
+        !column.sortable ||
+        (column.sort == null && !externalSort)) {
       return;
     }
     int columnSortIndex = _sortedColumns.indexOf(column);
@@ -223,7 +227,9 @@ class DaviModel<DATA> extends ChangeNotifier {
   /// Sort given a column.
   void sortByColumn(
       {required DaviColumn<DATA> column, required TableSortOrder sortOrder}) {
-    if (column.sort != null && _columns.contains(column)) {
+    if (column.sortable &&
+        (column.sort != null || externalSort) &&
+        _columns.contains(column)) {
       _sortedColumns.clear();
       _clearColumnsSortData();
       column._priority = 1;
@@ -240,7 +246,7 @@ class DaviModel<DATA> extends ChangeNotifier {
 
   /// Updates the visible rows given the sorts and filters.
   void _updateRows({required bool notify}) {
-    if (isSorted) {
+    if (isSorted && !externalSort) {
       List<DATA> list = List.from(_originalRows);
       list.sort(_compoundSort);
       _rows = list;

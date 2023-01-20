@@ -25,6 +25,7 @@ class Person {
     _editable = value;
     _valid = _editable.length < 6;
   }
+
 }
 
 class ExampleApp extends StatelessWidget {
@@ -61,15 +62,43 @@ class _HomePageState extends State<HomePage> {
       rows.add(Person('User $i', random.nextInt(100)));
     }
 
-    _model = DaviModel<Person>(rows: rows, columns: [
-      DaviColumn(name: 'Name', stringValue: (row) => row.name),
-      DaviColumn(name: 'Value', intValue: (row) => row.value),
-      DaviColumn(
-          name: 'Editable',
-          cellBuilder: _buildField,
-          cellBackground: (rowData) =>
-              rowData.data.valid ? null : Colors.red[800])
-    ]);
+    _model = DaviModel<Person>(
+        rows: rows,
+        columns: [
+          DaviColumn(name: 'Name', stringValue: (row) => row.name),
+          DaviColumn(
+              name: 'Value',
+              intValue: (row) => row.value)
+        ],
+       // customSort: _myCustomCompoundSort
+    );
+  }
+
+  int _myCustomColumnSort(Person a, Person b) {
+    // Now I realize that here I could receive the column.
+    //TableSortOrder order = _model!.columnAt(1).order!;
+    // ...
+    return 0;
+  }
+
+  /// same default behavior (compound sort)
+  int _myCustomCompoundSort(
+      Person a, Person b, List<DaviColumn<Person>> sortedColumns) {
+    int r = 0;
+    for (int i = 0; i < sortedColumns.length; i++) {
+      final DaviColumnSort<Person> sort = sortedColumns[i].sort!;
+      final TableSortOrder order = sortedColumns[i].order!;
+
+      if (order == TableSortOrder.descending) {
+        r = sort(b, a);
+      } else {
+        r = sort(a, b);
+      }
+      if (r != 0) {
+        break;
+      }
+    }
+    return r;
   }
 
   Widget _buildField(BuildContext context, DaviRow<Person> rowData) {
