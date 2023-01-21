@@ -436,11 +436,11 @@ class MainWidgetState extends State<MainWidget> {
           id: ColumnId.name, name: 'Name', stringValue: (row) => row.name),
       DaviColumn(id: ColumnId.age, name: 'Age', intValue: (row) => row.age)
     ], onSort: _onSort, ignoreSort: true);
-    loadData(null);
+    loadData();
   }
 
-  void loadData(DaviColumn<Person>? column) {
-    Future<List<Person>>.delayed(const Duration(seconds: 2), () {
+  void loadData([DaviColumn<Person>? column]) {
+    Future<List<Person>>.delayed(const Duration(seconds: 1), () {
       List<Person> rows = [
         Person('Linda', 33),
         Person('Pamela', 22),
