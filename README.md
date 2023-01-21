@@ -38,7 +38,7 @@
     * [Custom cell widget](#custom-cell-widget)
     * [Cell edit](#cell-edit)
   * [Sort callback](#sort-callback)
-  * [Sorting while loading data.](#sorting-while-loading-data)
+  * [Server-side sorting](#server-side-sorting)
 * Theme
   * [Dividers thickness and color](#dividers-thickness-and-color) 
   * [Header](#header)
@@ -409,7 +409,7 @@ class MainWidgetState extends State<MainWidget> {
   }
 ```
 
-### Sorting while loading data.
+### Server-side sorting
 
 Ignoring sorting functions from the model.
 Simulating the server-side sorting when loading data.
