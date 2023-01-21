@@ -18,7 +18,8 @@ class HeaderWidget<DATA> extends StatelessWidget {
       required this.model,
       required this.resizable,
       required this.multiSort,
-      required this.horizontalScrollOffsets})
+      required this.horizontalScrollOffsets,
+      required this.tapToSortEnabled})
       : super(key: key);
 
   final TableLayoutSettings layoutSettings;
@@ -26,6 +27,7 @@ class HeaderWidget<DATA> extends StatelessWidget {
   final bool resizable;
   final bool multiSort;
   final HorizontalScrollOffsets horizontalScrollOffsets;
+  final bool tapToSortEnabled;
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +45,8 @@ class HeaderWidget<DATA> extends StatelessWidget {
           model: model,
           column: column,
           resizable: resizable,
-          multiSort: multiSort);
+          multiSort: multiSort,
+          tapToSortEnabled: tapToSortEnabled);
       children.add(ColumnsLayoutChild<DATA>(index: columnIndex, child: cell));
     }
 

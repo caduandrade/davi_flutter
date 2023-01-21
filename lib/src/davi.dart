@@ -38,6 +38,7 @@ class Davi<DATA> extends StatefulWidget {
       int? visibleRowsCount,
       this.focusable = true,
       this.multiSort = false,
+      this.tapToSortEnabled = true,
       this.lastRowWidget,
       this.rowColor,
       this.rowCursor,
@@ -64,6 +65,9 @@ class Davi<DATA> extends StatefulWidget {
   final bool multiSort;
   final Widget? lastRowWidget;
   final OnLastRowWidgetListener? onLastRowWidget;
+
+  /// Indicates whether sorting events are enabled on the header.
+  final bool tapToSortEnabled;
 
   @override
   State<StatefulWidget> createState() => _DaviState<DATA>();
@@ -178,6 +182,7 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
         child: TableLayoutBuilder(
             onHover: widget.onHover != null ? _setHoveredRowIndex : null,
             multiSort: widget.multiSort,
+            tapToSortEnabled: widget.tapToSortEnabled,
             scrollControllers: _scrollControllers,
             columnWidthBehavior: widget.columnWidthBehavior,
             themeMetrics: themeMetrics,
