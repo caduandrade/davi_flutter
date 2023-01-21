@@ -14,30 +14,9 @@ typedef DaviColumnSort<DATA> = int Function(
 
 /// The [Davi] column.
 ///
-/// The [name] argument is optional and is used by the default
-/// cell header widget.
-///
 /// The optional value mappings [intValue], [doubleValue], [stringValue],
 /// [iconValue] and [objectValue] allows automatic cell configuration
 /// by identifying and displaying data types in the row object.
-///
-/// The [cellBuilder] builds a cell widget for each row in that column.
-/// A default [cellBuilder] will be used if the column has any value
-/// mapping defined.
-///
-/// The default value of [sortable] is [TRUE].
-///
-/// The column can be [sortable] even without a [sort] function.
-/// When the [sortable] attribute is [TRUE] and the [sort] function is [NULL],
-/// the ordering click on the header will only be enabled if the [externalSort]
-/// attribute of the [DaviModel] is [TRUE]. In this case, the data will
-/// continue in its natural order but the [onSort] event will be triggered.
-///
-/// If the [sort] is not set, it will be created automatically
-/// for the value mappings.
-///
-/// The [fractionDigits] is the optional decimal-point string-representation
-/// used by the default cell width when the [doubleValue] is set.
 class DaviColumn<DATA> extends ChangeNotifier with ColumnSortMixin {
   DaviColumn(
       {this.id,
@@ -77,29 +56,51 @@ class DaviColumn<DATA> extends ChangeNotifier with ColumnSortMixin {
             _buildSort(
                 intValue, doubleValue, stringValue, iconValue, objectValue);
 
+  /// Identifier that can be assigned to this column.
   final dynamic id;
+
+  /// Optional column name. Displayed by default in the cell header widget.
   final String? name;
+
   final Widget? leading;
   final EdgeInsets? cellPadding;
+
+  /// Padding for the header widget.
   final EdgeInsets? headerPadding;
+
   final Alignment? headerAlignment;
   final Alignment? cellAlignment;
   final TextOverflow? cellOverflow;
   final CellBackgroundBuilder<DATA>? cellBackground;
   final TextStyle? cellTextStyle;
   final TextStyle? headerTextStyle;
+
+  /// The optional decimal-point string-representation used by the
+  /// default cell width when the [doubleValue] is set.
   final int? fractionDigits;
+
   final PinStatus pinStatus;
+
+  /// Cell widget builder for each row in that column.
   final DaviCellBuilder<DATA>? cellBuilder;
+
+  /// Function used to sort the column. If not defined, it can be created
+  /// according to value mappings.
   final DaviColumnSort<DATA>? sort;
+
   final DaviIntValueMapper<DATA>? intValueMapper;
   final DaviDoubleValueMapper<DATA>? doubleValueMapper;
   final DaviStringValueMapper<DATA>? stringValueMapper;
   final DaviObjectValueMapper<DATA>? objectValueMapper;
   final DaviIconValueMapper<DATA>? iconValueMapper;
   final CellStyleBuilder<DATA>? cellStyleBuilder;
+
+  /// Indicates whether the cell widget should be clipped.
   final bool cellClip;
+
+  /// Indicates whether this column allows sorting events.
   final bool sortable;
+
   double _width;
   double? _grow;
 

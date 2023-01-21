@@ -21,9 +21,6 @@ import 'package:flutter/services.dart';
 /// Table view designed for a large number of data.
 ///
 /// The type [DATA] represents the data of each row.
-/// The [cellContentHeight] is mandatory due to performance.
-/// The total height of the cell will be the sum of the [cellContentHeight]
-/// value, divider thickness, and cell margin.
 class Davi<DATA> extends StatefulWidget {
 //TODO handle negative values
 //TODO allow null and use defaults?

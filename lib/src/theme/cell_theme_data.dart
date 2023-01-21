@@ -22,6 +22,7 @@ class CellThemeData {
   /// The default value is defined by [CellThemeDataDefaults.padding].
   final EdgeInsets? padding;
 
+  /// Height of cell content. Mandatory due to performance.
   final double contentHeight;
 
   final Alignment alignment;
