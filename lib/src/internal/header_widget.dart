@@ -46,7 +46,8 @@ class HeaderWidget<DATA> extends StatelessWidget {
           column: column,
           resizable: resizable,
           multiSort: multiSort,
-          tapToSortEnabled: tapToSortEnabled);
+          tapToSortEnabled: tapToSortEnabled,
+          columnIndex: columnIndex);
       children.add(ColumnsLayoutChild<DATA>(index: columnIndex, child: cell));
     }
 

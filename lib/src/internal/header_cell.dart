@@ -13,7 +13,8 @@ class DaviHeaderCell<DATA> extends StatefulWidget {
       required this.column,
       required this.resizable,
       required this.multiSort,
-      required this.tapToSortEnabled})
+      required this.tapToSortEnabled,
+      required this.columnIndex})
       : super(key: key);
 
   final DaviModel<DATA> model;
@@ -21,6 +22,7 @@ class DaviHeaderCell<DATA> extends StatefulWidget {
   final bool resizable;
   final bool multiSort;
   final bool tapToSortEnabled;
+  final int columnIndex;
 
   @override
   State<StatefulWidget> createState() => _DaviHeaderCellState();
@@ -106,7 +108,11 @@ class _DaviHeaderCellState extends State<DaviHeaderCell> {
             child: _resizeWidget(context: context, resizing: resizing))
       ]);
     }
-    return ClipRect(child: header);
+    return Semantics(
+        readOnly: true,
+        enabled: true,
+        label: 'header ${widget.columnIndex}',
+        child: ClipRect(child: header));
   }
 
   Widget _textWidget(BuildContext context) {

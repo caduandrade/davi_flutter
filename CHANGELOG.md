@@ -1,5 +1,6 @@
 ## 3.1.0
 
+* Adding semantics on header and cells.
 * Allow to ignore sorting functions. Useful for server-side sorting when loading data.
 * `DaviModel`
   * New callback: `onSort`.
