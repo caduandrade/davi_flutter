@@ -9,210 +9,98 @@ import 'package:davi/src/value_mapper.dart';
 import 'package:flutter/widgets.dart';
 
 /// Signature for sort column function.
-typedef DaviColumnSort<DATA> = int Function(DATA a, DATA b);
+typedef DaviColumnSort<DATA> = int Function(
+    DATA a, DATA b, DaviColumn<DATA> column);
 
 /// The [Davi] column.
-///
-/// The [name] argument is optional and is used by the default
-/// cell header widget.
 ///
 /// The optional value mappings [intValue], [doubleValue], [stringValue],
 /// [iconValue] and [objectValue] allows automatic cell configuration
 /// by identifying and displaying data types in the row object.
-///
-/// The [cellBuilder] builds a cell widget for each row in that column.
-/// A default [cellBuilder] will be used if the column has any value
-/// mapping defined.
-///
-/// This column is sortable if the argument [sortable] is [TRUE] and
-/// a [sort] has been defined for ascending sort. Descending sort
-/// is applied by inverting the arguments in [sort].
-///
-/// The default value of [sortable] is [TRUE].
-///
-/// If the [sort] is not set, it will be created automatically
-/// for the value mappings.
-///
-/// The [fractionDigits] is the optional decimal-point string-representation
-/// used by the default cell width when the [doubleValue] is set.
 class DaviColumn<DATA> extends ChangeNotifier with ColumnSortMixin {
-  factory DaviColumn(
-      {dynamic id,
+  DaviColumn(
+      {this.id,
       double width = 100,
       double? grow,
-      String? name,
-      int? fractionDigits,
-      bool sortable = true,
-      bool resizable = true,
-      PinStatus pinStatus = PinStatus.none,
-      EdgeInsets? headerPadding,
-      EdgeInsets? cellPadding,
-      Alignment? headerAlignment,
-      Alignment? cellAlignment,
-      TextStyle? cellTextStyle,
-      TextOverflow? cellOverflow,
-      CellBackgroundBuilder<DATA>? cellBackground,
-      TextStyle? headerTextStyle,
-      bool cellClip = false,
-      Widget? leading,
-      DaviCellBuilder<DATA>? cellBuilder,
+      this.name,
+      this.headerPadding,
+      this.cellPadding,
+      this.headerAlignment,
+      this.cellAlignment,
+      this.cellBackground,
+      this.headerTextStyle,
+      this.cellTextStyle,
+      this.cellOverflow,
+      this.fractionDigits,
+      this.cellBuilder,
+      this.leading,
       DaviColumnSort<DATA>? sort,
+      this.pinStatus = PinStatus.none,
       DaviIntValueMapper<DATA>? intValue,
       DaviDoubleValueMapper<DATA>? doubleValue,
       DaviStringValueMapper<DATA>? stringValue,
       DaviIconValueMapper<DATA>? iconValue,
       DaviObjectValueMapper<DATA>? objectValue,
-      CellStyleBuilder<DATA>? cellStyleBuilder}) {
-    if (sort == null) {
-      if (intValue != null) {
-        sort = (a, b) {
-          int? v1 = intValue(a);
-          int? v2 = intValue(b);
-          if (v1 == null && v2 == null) {
-            return 0;
-          }
-          if (v1 == null) {
-            return -1;
-          }
-          if (v2 == null) {
-            return 1;
-          }
-          return v1.compareTo(v2);
-        };
-      } else if (doubleValue != null) {
-        sort = (a, b) {
-          double? v1 = doubleValue(a);
-          double? v2 = doubleValue(b);
-          if (v1 == null && v2 == null) {
-            return 0;
-          }
-          if (v1 == null) {
-            return -1;
-          }
-          if (v2 == null) {
-            return 1;
-          }
-          return v1.compareTo(v2);
-        };
-      } else if (stringValue != null) {
-        sort = (a, b) {
-          String? v1 = stringValue(a);
-          String? v2 = stringValue(b);
-          if (v1 == null && v2 == null) {
-            return 0;
-          }
-          if (v1 == null) {
-            return -1;
-          }
-          if (v2 == null) {
-            return 1;
-          }
-          return v1.compareTo(v2);
-        };
-      } else if (objectValue != null) {
-        sort = (a, b) {
-          Object? v1 = objectValue(a);
-          Object? v2 = objectValue(b);
-          if (v1 == null && v2 == null) {
-            return 0;
-          }
-          if (v1 == null) {
-            return -1;
-          }
-          if (v2 == null) {
-            return 1;
-          }
-          if (a is Comparable && b is Comparable) {
-            return a.compareTo(b);
-          }
-          return 0;
-        };
-      }
-    }
-    //TODO check multiple value mappers
-    return DaviColumn._(
-        id: id,
-        width: width,
-        grow: grow,
-        name: name,
-        fractionDigits: fractionDigits,
-        cellBuilder: cellBuilder,
-        leading: leading,
-        sort: sort,
-        pinStatus: pinStatus,
-        stringValueMapper: stringValue,
-        intValueMapper: intValue,
-        doubleValueMapper: doubleValue,
-        objectValueMapper: objectValue,
-        iconValueMapper: iconValue,
-        sortable: sortable,
-        resizable: resizable,
-        headerPadding: headerPadding,
-        cellPadding: cellPadding,
-        cellBackground: cellBackground,
-        cellOverflow: cellOverflow,
-        headerAlignment: headerAlignment,
-        cellAlignment: cellAlignment,
-        headerTextStyle: headerTextStyle,
-        cellTextStyle: cellTextStyle,
-        cellStyleBuilder: cellStyleBuilder,
-        cellClip: cellClip);
-  }
-
-  DaviColumn._(
-      {required this.id,
-      required double width,
-      double? grow,
-      required this.name,
-      required this.headerPadding,
-      required this.cellPadding,
-      required this.headerAlignment,
-      required this.cellAlignment,
-      required this.cellBackground,
-      required this.headerTextStyle,
-      required this.cellTextStyle,
-      required this.cellOverflow,
-      required this.fractionDigits,
-      required this.cellBuilder,
-      required this.leading,
-      required this.sort,
-      required this.pinStatus,
-      required this.stringValueMapper,
-      required this.intValueMapper,
-      required this.iconValueMapper,
-      required this.doubleValueMapper,
-      required this.objectValueMapper,
-      required this.resizable,
-      required this.cellClip,
-      required bool sortable,
-      required this.cellStyleBuilder})
+      this.resizable = true,
+      this.cellClip = false,
+      this.sortable = true,
+      this.cellStyleBuilder})
       : _width = width,
         _grow = grow != null ? math.max(1, grow) : null,
-        _sortable = sortable;
+        stringValueMapper = stringValue,
+        intValueMapper = intValue,
+        iconValueMapper = iconValue,
+        doubleValueMapper = doubleValue,
+        objectValueMapper = objectValue,
+        sort = sort ??
+            _buildSort(
+                intValue, doubleValue, stringValue, iconValue, objectValue);
 
+  /// Identifier that can be assigned to this column.
   final dynamic id;
+
+  /// Optional column name. Displayed by default in the cell header widget.
   final String? name;
+
   final Widget? leading;
   final EdgeInsets? cellPadding;
+
+  /// Padding for the header widget.
   final EdgeInsets? headerPadding;
+
   final Alignment? headerAlignment;
   final Alignment? cellAlignment;
   final TextOverflow? cellOverflow;
   final CellBackgroundBuilder<DATA>? cellBackground;
   final TextStyle? cellTextStyle;
   final TextStyle? headerTextStyle;
+
+  /// The optional decimal-point string-representation used by the
+  /// default cell width when the [doubleValue] is set.
   final int? fractionDigits;
+
   final PinStatus pinStatus;
+
+  /// Cell widget builder for each row in that column.
   final DaviCellBuilder<DATA>? cellBuilder;
+
+  /// Function used to sort the column. If not defined, it can be created
+  /// according to value mappings.
   final DaviColumnSort<DATA>? sort;
+
   final DaviIntValueMapper<DATA>? intValueMapper;
   final DaviDoubleValueMapper<DATA>? doubleValueMapper;
   final DaviStringValueMapper<DATA>? stringValueMapper;
   final DaviObjectValueMapper<DATA>? objectValueMapper;
   final DaviIconValueMapper<DATA>? iconValueMapper;
   final CellStyleBuilder<DATA>? cellStyleBuilder;
+
+  /// Indicates whether the cell widget should be clipped.
   final bool cellClip;
-  final bool _sortable;
+
+  /// Indicates whether this column allows sorting events.
+  final bool sortable;
+
   double _width;
   double? _grow;
 
@@ -242,12 +130,84 @@ class DaviColumn<DATA> extends ChangeNotifier with ColumnSortMixin {
     }
   }
 
-  bool get sortable => _sortable && sort != null;
-
   bool resizable;
 
   @override
   String toString() {
     return 'DaviColumn{name: $name}';
+  }
+
+  /// Builds a default sort
+  static DaviColumnSort? _buildSort<DATA>(
+      DaviIntValueMapper<DATA>? intValue,
+      DaviDoubleValueMapper<DATA>? doubleValue,
+      DaviStringValueMapper<DATA>? stringValue,
+      DaviIconValueMapper<DATA>? iconValue,
+      DaviObjectValueMapper<DATA>? objectValue) {
+    if (intValue != null) {
+      return (a, b, column) {
+        int? v1 = intValue(a);
+        int? v2 = intValue(b);
+        if (v1 == null && v2 == null) {
+          return 0;
+        }
+        if (v1 == null) {
+          return -1;
+        }
+        if (v2 == null) {
+          return 1;
+        }
+        return v1.compareTo(v2);
+      };
+    } else if (doubleValue != null) {
+      return (a, b, column) {
+        double? v1 = doubleValue(a);
+        double? v2 = doubleValue(b);
+        if (v1 == null && v2 == null) {
+          return 0;
+        }
+        if (v1 == null) {
+          return -1;
+        }
+        if (v2 == null) {
+          return 1;
+        }
+        return v1.compareTo(v2);
+      };
+    } else if (stringValue != null) {
+      return (a, b, column) {
+        String? v1 = stringValue(a);
+        String? v2 = stringValue(b);
+        if (v1 == null && v2 == null) {
+          return 0;
+        }
+        if (v1 == null) {
+          return -1;
+        }
+        if (v2 == null) {
+          return 1;
+        }
+        return v1.compareTo(v2);
+      };
+    } else if (objectValue != null) {
+      return (a, b, column) {
+        Object? v1 = objectValue(a);
+        Object? v2 = objectValue(b);
+        if (v1 == null && v2 == null) {
+          return 0;
+        }
+        if (v1 == null) {
+          return -1;
+        }
+        if (v2 == null) {
+          return 1;
+        }
+        if (a is Comparable && b is Comparable) {
+          return a.compareTo(b);
+        }
+        return 0;
+      };
+    }
+    return null;
   }
 }

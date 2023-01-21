@@ -36,7 +36,8 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
       required this.lastRowWidget,
       required this.onLastRowWidget,
       required this.rowColor,
-      required this.rowCursor})
+      required this.rowCursor,
+      required this.tapToSortEnabled})
       : super(key: key);
 
   final OnLastVisibleRowListener onLastVisibleRow;
@@ -54,6 +55,7 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
   final OnLastRowWidgetListener onLastRowWidget;
   final DaviRowColor<DATA>? rowColor;
   final DaviRowCursor<DATA>? rowCursor;
+  final bool tapToSortEnabled;
 
   @override
   Widget build(BuildContext context) {
@@ -94,6 +96,7 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
           model: model,
           resizable: columnWidthBehavior == ColumnWidthBehavior.scrollable,
           multiSort: multiSort,
+          tapToSortEnabled: tapToSortEnabled,
           horizontalScrollOffsets: horizontalScrollOffsets));
       if (layoutSettings.hasVerticalScrollbar) {
         children.add(TableLayoutChild.topCorner());

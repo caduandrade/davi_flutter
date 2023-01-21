@@ -12,13 +12,15 @@ class DaviHeaderCell<DATA> extends StatefulWidget {
       required this.model,
       required this.column,
       required this.resizable,
-      required this.multiSort})
+      required this.multiSort,
+      required this.tapToSortEnabled})
       : super(key: key);
 
   final DaviModel<DATA> model;
   final DaviColumn<DATA> column;
   final bool resizable;
   final bool multiSort;
+  final bool tapToSortEnabled;
 
   @override
   State<StatefulWidget> createState() => _DaviHeaderCellState();
@@ -32,13 +34,16 @@ class _DaviHeaderCellState extends State<DaviHeaderCell> {
   Widget build(BuildContext context) {
     HeaderCellThemeData theme = DaviTheme.of(context).headerCell;
 
-    bool resizing = widget.model.columnInResizing == widget.column;
-    bool enabled = resizing == false && widget.model.columnInResizing == null;
-    bool sortable = widget.column.sortable;
-    bool resizable = widget.resizable &&
+    final bool resizing = widget.model.columnInResizing == widget.column;
+    final bool sortEnabled = widget.tapToSortEnabled &&
+        !resizing &&
+        widget.model.columnInResizing == null;
+    final bool sortable = widget.column.sortable &&
+        (widget.column.sort != null || widget.model.ignoreSort);
+    final bool resizable = widget.resizable &&
         widget.column.resizable &&
         widget.column.grow == null &&
-        (enabled || resizing);
+        (sortEnabled || resizing);
 
     List<Widget> children = [];
 
@@ -81,10 +86,10 @@ class _DaviHeaderCellState extends State<DaviHeaderCell> {
 
     if (sortable) {
       header = MouseRegion(
-          cursor: enabled ? SystemMouseCursors.click : MouseCursor.defer,
+          cursor: sortEnabled ? SystemMouseCursors.click : MouseCursor.defer,
           child: GestureDetector(
               behavior: HitTestBehavior.opaque,
-              onTap: enabled
+              onTap: sortEnabled
                   ? () => _onHeaderPressed(
                       model: widget.model, column: widget.column)
                   : null,

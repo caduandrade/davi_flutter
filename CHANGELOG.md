@@ -1,3 +1,19 @@
+## 3.1.0
+
+* Allow to ignore sorting functions. Useful for server-side sorting when loading data.
+* `DaviModel`
+  * New callback: `onSort`.
+  * New attribute: `ignoreSort`.
+    * Ignore column sorting functions to maintain the natural order of the data. Allows the header to be sortable if the column is also sortable.
+* `Davi`
+  * New attribute: `tapToSortEnabled`.
+    * Indicates whether sorting events are enabled on the header.
+final bool sortable;
+* Refactor
+  * The `sortable` attribute of the `DaviColumn` can be `TRUE` even without a `sort` function.
+  * Typedef `DaviColumnSort`
+    * New parameter: `DaviColumn<DATA> column`
+
 ## 3.0.0
 
 * Renaming classes and parameters
