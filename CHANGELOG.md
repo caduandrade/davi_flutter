@@ -1,6 +1,6 @@
 ## 3.1.0
 
-* Allow to ignore sorting functions. Useful for sorting the data when loading it.
+* Allow to ignore sorting functions. Useful for server-side sorting when loading data.
 * `DaviModel`
   * New callback: `onSort`.
   * New attribute: `ignoreSort`.

@@ -411,6 +411,9 @@ class MainWidgetState extends State<MainWidget> {
 
 ### Sorting while loading data.
 
+Ignoring sorting functions from the model.
+Simulating the server-side sorting when loading data.
+
 ```dart
 class Person {
   Person(this.name, this.age);
