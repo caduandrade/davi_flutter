@@ -20,22 +20,23 @@
 ## Usage
 
 * [Get started](#get-started)
-* Column
-  * [Columns fit](#columns-fit)
-  * [Stretchable column](#stretchable-column)
-  * [Multiple sort](#multiple-sort)
-  * [Column style](#column-style)
-  * [Pinned column](#pinned-column)
-* Row
-  * [Row color](#row-color)
-  * [Row cursor](#row-cursor)
-  * [Row callbacks](#row-callbacks)
-  * [Row hover listener](#row-hover-listener)
-  * [Infinite scroll](#infinite-scroll)
-* Cell
-  * [Cell style](#cell-style)
-  * [Custom cell widget](#custom-cell-widget)
-  * [Cell edit](#cell-edit)
+* Model
+  * Column
+    * [Columns fit](#columns-fit)
+    * [Stretchable column](#stretchable-column)
+    * [Multiple sort](#multiple-sort)
+    * [Column style](#column-style)
+    * [Pinned column](#pinned-column)
+  * Row
+    * [Row color](#row-color)
+    * [Row cursor](#row-cursor)
+    * [Row callbacks](#row-callbacks)
+    * [Row hover listener](#row-hover-listener)
+    * [Infinite scroll](#infinite-scroll)
+  * Cell
+    * [Cell style](#cell-style)
+    * [Custom cell widget](#custom-cell-widget)
+    * [Cell edit](#cell-edit)
 * Theme
   * [Dividers thickness and color](#dividers-thickness-and-color) 
   * [Header](#header)
@@ -82,9 +83,11 @@
 
 ![](https://caduandrade.github.io/davi_flutter/get_started_v5.png)
 
-## Column
+## Model
 
-### Columns fit
+### Column
+
+#### Columns fit
 
 All columns will fit in the available width.
 
@@ -101,7 +104,7 @@ All columns will fit in the available width.
 
 ![](https://caduandrade.github.io/davi_flutter/columns_fit_v4.png)
 
-### Stretchable column
+#### Stretchable column
 
 The remaining width will be distributed to the columns according to the value of the `grow` attribute.
 
@@ -118,7 +121,7 @@ The remaining width will be distributed to the columns according to the value of
 
 ![](https://caduandrade.github.io/davi_flutter/stretchable_column_v1.png)
 
-### Multiple sort
+#### Multiple sort
 
 ```dart
   Davi(_model, multiSort: true);
@@ -126,7 +129,7 @@ The remaining width will be distributed to the columns according to the value of
 
 ![](https://caduandrade.github.io/davi_flutter/multiple_sort_v1.png)
 
-### Column style
+#### Column style
 
 ```dart
     _model = DaviModel<Person>(rows: rows, columns: [
@@ -144,7 +147,7 @@ The remaining width will be distributed to the columns according to the value of
 
 ![](https://caduandrade.github.io/davi_flutter/column_style_v2.png)
 
-### Pinned column
+#### Pinned column
 
 ```dart
     _model = DaviModel(rows: persons, columns: [
@@ -163,9 +166,9 @@ The remaining width will be distributed to the columns according to the value of
 
 ![](https://caduandrade.github.io/davi_flutter/pinned_column_v4.png)
 
-## Row
+### Row
 
-### Row color
+#### Row color
 
 ```dart
     _model = DaviModel<Person>(rows: rows, columns: [
@@ -192,7 +195,7 @@ The remaining width will be distributed to the columns according to the value of
 
 ![](https://caduandrade.github.io/davi_flutter/row_color_v1.png)
 
-### Row cursor
+#### Row cursor
 
 ```dart
     DaviTheme(
@@ -203,7 +206,7 @@ The remaining width will be distributed to the columns according to the value of
             row: RowThemeData(cursorOnTapGesturesOnly: false)));
 ```
 
-### Row callbacks
+#### Row callbacks
 
 ```dart
 @override
@@ -227,7 +230,7 @@ void _onRowDoubleTap(BuildContext context, Person person) {
 }
 ```
 
-### Row hover listener
+#### Row hover listener
 
 ```dart
   Davi<Person>(_model, onHover: _onHover);
@@ -237,7 +240,7 @@ void _onRowDoubleTap(BuildContext context, Person person) {
   }
 ```
 
-### Infinite scroll
+#### Infinite scroll
 
 ```dart
   DaviModel<Value>? _model;
@@ -280,9 +283,9 @@ void _onRowDoubleTap(BuildContext context, Person person) {
 
 ![](https://caduandrade.github.io/davi_flutter/infinite_scroll_v3.gif)
 
-## Cell
+### Cell
 
-### Cell style
+#### Cell style
 
 ```dart
     _model = DaviModel<Person>(rows: rows, columns: [
@@ -301,7 +304,7 @@ void _onRowDoubleTap(BuildContext context, Person person) {
 
 ![](https://caduandrade.github.io/davi_flutter/cell_style_v1.png)
 
-### Custom cell widget
+#### Custom cell widget
 
 ```dart
     _model = DaviModel<Person>(rows: rows, columns: [
@@ -315,7 +318,7 @@ void _onRowDoubleTap(BuildContext context, Person person) {
 
 ![](https://caduandrade.github.io/davi_flutter/custom_cell_widget_v2.png)
 
-### Cell edit
+#### Cell edit
 
 ```dart
 class Person {
