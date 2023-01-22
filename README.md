@@ -1,14 +1,10 @@
-<p align="center">
-<img src="https://caduandrade.github.io/davi_flutter/davi_logo_v1.png" alt="davi logo" />
-</p>
+![](https://caduandrade.github.io/davi_flutter/davi_logo_v1.png)
 
-<p align="center">
-<a href="https://pub.dev/packages/davi"><img src="https://img.shields.io/pub/v/davi.svg" alt="Pub"></a>
-<img src="https://github.com/caduandrade/davi_flutter/actions/workflows/test.yml/badge.svg">
-<a href="https://caduandrade.github.io/davi_flutter_demo/"><img src="https://img.shields.io/badge/demo-try%20it%20out-blue"></a>
-<a href="https://flutter.dev/"><img src="https://img.shields.io/badge/Flutter-%E2%9D%A4-red" alt="Flutter"></a>
-<img src="https://img.shields.io/badge/%F0%9F%91%8D%20and%20%E2%AD%90-are%20free%20and%20motivate%20me-yellow" alt="Motivate me">
-</p>
+[![](https://img.shields.io/pub/v/davi.svg)](https://pub.dev/packages/davi)
+![](https://github.com/caduandrade/davi_flutter/actions/workflows/test.yml/badge.svg)
+[![](https://img.shields.io/badge/demo-try%20it%20out-blue)](https://caduandrade.github.io/davi_flutter_demo/)
+[![](https://img.shields.io/badge/Flutter-%E2%9D%A4-red)](https://flutter.dev/)
+![](https://img.shields.io/badge/%F0%9F%91%8D%20and%20%E2%AD%90-are%20free%20and%20motivate%20me-yellow)
 
 ---
 
