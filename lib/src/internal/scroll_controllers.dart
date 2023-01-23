@@ -15,10 +15,4 @@ class ScrollControllers {
       : unpinnedHorizontal = unpinnedHorizontal ?? DaviScrollController(),
         leftPinnedHorizontal = leftPinnedHorizontal ?? DaviScrollController(),
         vertical = vertical ?? DaviScrollController();
-
-  void dispose() {
-    unpinnedHorizontal.dispose();
-    leftPinnedHorizontal.dispose();
-    vertical.dispose();
-  }
 }

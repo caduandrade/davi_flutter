@@ -105,9 +105,10 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
 
   @override
   void dispose() {
-    widget.model?.dispose();
+    _scrollControllers.unpinnedHorizontal.removeListener(_rebuild);
+    _scrollControllers.leftPinnedHorizontal.removeListener(_rebuild);
+    widget.model?.removeListener(_rebuild);
     _focusNode.dispose();
-    _scrollControllers.dispose();
     super.dispose();
   }
 
@@ -116,13 +117,12 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
     super.didUpdateWidget(oldWidget);
     if (widget.verticalScrollController != null &&
         _scrollControllers.vertical != widget.verticalScrollController) {
-      _scrollControllers.vertical.dispose();
       _scrollControllers.vertical = widget.verticalScrollController!;
     }
     if (widget.unpinnedHorizontalScrollController != null &&
         _scrollControllers.unpinnedHorizontal !=
             widget.unpinnedHorizontalScrollController) {
-      _scrollControllers.unpinnedHorizontal.dispose();
+      _scrollControllers.unpinnedHorizontal.removeListener(_rebuild);
       _scrollControllers.unpinnedHorizontal =
           widget.unpinnedHorizontalScrollController!;
       _scrollControllers.unpinnedHorizontal.addListener(_rebuild);
@@ -130,7 +130,7 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
     if (widget.pinnedHorizontalScrollController != null &&
         _scrollControllers.leftPinnedHorizontal !=
             widget.pinnedHorizontalScrollController) {
-      _scrollControllers.leftPinnedHorizontal.dispose();
+      _scrollControllers.leftPinnedHorizontal.removeListener(_rebuild);
       _scrollControllers.leftPinnedHorizontal =
           widget.pinnedHorizontalScrollController!;
       _scrollControllers.leftPinnedHorizontal.addListener(_rebuild);
