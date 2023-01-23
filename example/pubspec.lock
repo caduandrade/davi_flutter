@@ -43,20 +43,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.16.0"
-  cupertino_icons:
-    dependency: "direct main"
-    description:
-      name: cupertino_icons
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.5"
   davi:
     dependency: "direct main"
     description:
       path: ".."
       relative: true
     source: path
-    version: "3.0.0"
+    version: "3.1.0"
   fake_async:
     dependency: transitive
     description:
@@ -185,5 +178,5 @@ packages:
     source: hosted
     version: "2.1.2"
 sdks:
-  dart: ">=2.17.0-0 <3.0.0"
+  dart: ">=2.17.0 <3.0.0"
   flutter: ">=3.0.0"
