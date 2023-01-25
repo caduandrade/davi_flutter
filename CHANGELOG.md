@@ -1,7 +1,7 @@
 ## 3.1.1
 
 * Bugfix
-  * `DaviModel` and scroll controllers being disposed by `Davi` generating an error that was used after being disposed.
+  * `DaviModel` and scroll controllers being disposed by `Davi`.
 
 ## 3.1.0
 

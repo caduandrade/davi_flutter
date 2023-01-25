@@ -641,10 +641,6 @@ class MainWidgetState extends State<MainWidget> {
 
 ![](https://caduandrade.github.io/davi_flutter/scrollbar_always_visible_v1.png)
 
-> A warning is being displayed in the console due to a bug in Flutter: https://github.com/flutter/flutter/issues/103939.
-> The error happens when the horizontal scrollbar is hidden after being visible.
-> The PR (https://github.com/flutter/flutter/pull/103948) fix it. 
-
 ### Cell
 
 #### Null value color
