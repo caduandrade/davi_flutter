@@ -13,7 +13,7 @@
   * The `sortOrderSize` attribute has been renamed to `sortPrioritySize`
 * The `DaviColumnSort` typedef has been renamed to `DaviDataComparator`
 * The `TableSortOrder` enum has been renamed to `DaviSortDirection`
-* `ColumnSort`
+* The `ColumnSort` class has been renamed to `DaviSort`
   * The `order` attribute has been renamed to `direction`.
 
 ## 3.1.1

@@ -1,7 +1,7 @@
 import 'dart:collection';
 
 import 'package:davi/src/column.dart';
-import 'package:davi/src/column_sort.dart';
+import 'package:davi/src/sort.dart';
 import 'package:davi/src/sort_callback_typedef.dart';
 import 'package:davi/src/sort_direction.dart';
 import 'package:flutter/widgets.dart';
@@ -199,13 +199,13 @@ class DaviModel<DATA> extends ChangeNotifier {
   }
 
   /// Defines the columns that will be used in sorting.
-  void sort(List<ColumnSort> columnSorts) {
+  void sort(List<DaviSort> sorts) {
     _sortedColumns.clear();
     _clearColumnsSortData();
-    for (ColumnSort columnSort in columnSorts) {
-      DaviColumn<DATA> column = _columns[columnSort.columnIndex];
+    for (DaviSort sort in sorts) {
+      DaviColumn<DATA> column = _columns[sort.columnIndex];
       if (column.sortable && (column.sort != null || ignoreSortFunctions)) {
-        column._direction = columnSort.direction;
+        column._direction = sort.direction;
         _sortedColumns.add(column);
       }
     }

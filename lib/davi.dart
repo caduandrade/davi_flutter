@@ -5,7 +5,7 @@ export 'src/cell_builder.dart';
 export 'src/cell_icon.dart';
 export 'src/cell_style.dart';
 export 'src/column.dart';
-export 'src/column_sort.dart';
+export 'src/sort.dart';
 export 'src/column_width_behavior.dart';
 export 'src/davi.dart';
 export 'src/last_visible_row_listener.dart';
