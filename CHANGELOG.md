@@ -4,6 +4,8 @@
   * New attribute: `alwaysSorted`.
     * Defines if there will always be some sorted column.
   * The attribute `ignoreSort` has been renamed to `ignoreSortFunctions`.
+* `DaviColumn`
+  * The attribute `priority` has been renamed to `sortPriority`.
 
 ## 3.1.1
 

@@ -70,7 +70,7 @@ class _DaviHeaderCellState extends State<DaviHeaderCell> {
       if (widget.model.isMultiSorted) {
         children.add(Align(
             alignment: Alignment.center,
-            child: Text(widget.column.priority.toString(),
+            child: Text(widget.column.sortPriority.toString(),
                 style: TextStyle(
                     color: theme.sortIconColor,
                     fontSize: theme.sortOrderSize))));

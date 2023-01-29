@@ -154,7 +154,7 @@ class DaviModel<DATA> extends ChangeNotifier {
   void _updateSortPriorities() {
     int priority = 1;
     for (DaviColumn<DATA> column in _sortedColumns) {
-      column._priority = priority++;
+      column._sortPriority = priority++;
     }
   }
 
@@ -254,7 +254,7 @@ class DaviModel<DATA> extends ChangeNotifier {
         _columns.contains(column)) {
       _sortedColumns.clear();
       _clearColumnsSortData();
-      column._priority = 1;
+      column._sortPriority = 1;
       column._order = sortOrder;
       _sortedColumns.add(column);
       _updateRows(notify: true);
@@ -305,15 +305,15 @@ class DaviModel<DATA> extends ChangeNotifier {
 }
 
 mixin ColumnSortMixin {
-  int? _priority;
+  int? _sortPriority;
 
-  int? get priority => _priority;
+  int? get sortPriority => _sortPriority;
   TableSortOrder? _order;
 
   TableSortOrder? get order => _order;
 
   void _clearSortData() {
-    _priority = null;
+    _sortPriority = null;
     _order = null;
   }
 
