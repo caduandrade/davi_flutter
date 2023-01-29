@@ -1,9 +1,9 @@
 import 'package:davi/src/sort_direction.dart';
 
-/// Describes the column sort.
+/// Describes the [Davi] sort.
 class DaviSort {
-  DaviSort({required this.columnIndex, required this.direction});
+  DaviSort(this.id, this.direction);
 
-  final int columnIndex;
+  final dynamic id;
   final DaviSortDirection direction;
 }

@@ -14,12 +14,16 @@ class DaviModel<DATA> extends ChangeNotifier {
   factory DaviModel(
       {List<DATA> rows = const [],
       List<DaviColumn<DATA>> columns = const [],
-      bool ignoreSort = false,
+      bool ignoreSortFunctions = false,
       bool alwaysSorted = false,
       OnSortCallback<DATA>? onSort}) {
     List<DATA> cloneList = List.from(rows);
-    DaviModel<DATA> model = DaviModel._(cloneList,
-        UnmodifiableListView(cloneList), ignoreSort, onSort, alwaysSorted);
+    DaviModel<DATA> model = DaviModel._(
+        cloneList,
+        UnmodifiableListView(cloneList),
+        ignoreSortFunctions,
+        onSort,
+        alwaysSorted);
     model.addColumns(columns);
     return model;
   }
@@ -129,6 +133,18 @@ class DaviModel<DATA> extends ChangeNotifier {
 
   DaviColumn<DATA> columnAt(int index) => _columns[index];
 
+  /// Searches a column given an [id]. If [id] is [NULL], no columns are returned.
+  DaviColumn<DATA>? findColumn(dynamic id) {
+    if (id != null) {
+      for (DaviColumn<DATA> column in _columns) {
+        if (column.id == id) {
+          return column;
+        }
+      }
+    }
+    return null;
+  }
+
   void addColumn(DaviColumn<DATA> column) {
     _columns.add(column);
     column.addListener(notifyListeners);
@@ -203,8 +219,10 @@ class DaviModel<DATA> extends ChangeNotifier {
     _sortedColumns.clear();
     _clearColumnsSortData();
     for (DaviSort sort in sorts) {
-      DaviColumn<DATA> column = _columns[sort.columnIndex];
-      if (column.sortable && (column.sort != null || ignoreSortFunctions)) {
+      DaviColumn<DATA>? column = findColumn(sort.id);
+      if (column != null &&
+          column.sortable &&
+          (column.sort != null || ignoreSortFunctions)) {
         column._direction = sort.direction;
         _sortedColumns.add(column);
       }

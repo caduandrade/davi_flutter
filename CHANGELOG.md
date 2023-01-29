@@ -6,6 +6,7 @@
   * The `ignoreSort` attribute has been renamed to `ignoreSortFunctions`.
   * `sortByColumn` and `sortByColumnIndex` methods
     * The `sortOrder` parameter has been renamed to `direction`.
+  * New method: `findColumn`
 * `DaviColumn`
   * The `priority` attribute has been renamed to `sortPriority`.
   * The `order` attribute has been renamed to `direction`. 
@@ -15,6 +16,7 @@
 * The `TableSortOrder` enum has been renamed to `DaviSortDirection`
 * The `ColumnSort` class has been renamed to `DaviSort`
   * The `order` attribute has been renamed to `direction`.
+  * The `columnIndex` has been replaced by `id`.
 
 ## 3.1.1
 
