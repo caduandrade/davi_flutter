@@ -15,15 +15,17 @@ class DaviModel<DATA> extends ChangeNotifier {
       {List<DATA> rows = const [],
       List<DaviColumn<DATA>> columns = const [],
       bool ignoreSort = false,
+      bool alwaysSorted = false,
       OnSortCallback<DATA>? onSort}) {
     List<DATA> cloneList = List.from(rows);
-    DaviModel<DATA> model = DaviModel._(
-        cloneList, UnmodifiableListView(cloneList), ignoreSort, onSort);
+    DaviModel<DATA> model = DaviModel._(cloneList,
+        UnmodifiableListView(cloneList), ignoreSort, onSort, alwaysSorted);
     model.addColumns(columns);
     return model;
   }
 
-  DaviModel._(this._originalRows, this._rows, this.ignoreSort, this.onSort);
+  DaviModel._(this._originalRows, this._rows, this.ignoreSort, this.onSort,
+      this.alwaysSorted);
 
   /// The event that will be triggered at each sorting.
   OnSortCallback<DATA>? onSort;
@@ -43,6 +45,9 @@ class DaviModel<DATA> extends ChangeNotifier {
   ///
   /// Allows the header to be sortable if the column is also sortable.
   final bool ignoreSort;
+
+  /// Defines if there will always be some sorted column.
+  final bool alwaysSorted;
 
   bool get _isRowsModifiable => _rows is! UnmodifiableListView;
 

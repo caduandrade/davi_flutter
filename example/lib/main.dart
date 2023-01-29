@@ -61,7 +61,7 @@ class _HomePageState extends State<HomePage> {
       rows.add(Person('User $i', random.nextInt(100)));
     }
 
-    _model = DaviModel<Person>(rows: rows, columns: [
+    _model = DaviModel<Person>(rows: rows, alwaysSorted: true, columns: [
       DaviColumn(name: 'Name', stringValue: (row) => row.name),
       DaviColumn(name: 'Value', intValue: (row) => row.value),
       DaviColumn(

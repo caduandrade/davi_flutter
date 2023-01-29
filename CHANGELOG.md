@@ -1,3 +1,9 @@
+## 3.2.0
+
+* `DaviModel`
+  * New attribute: `alwaysSorted`.
+    * Defines if there will always be some sorted column.
+
 ## 3.1.1
 
 * Bugfix
