@@ -214,10 +214,10 @@ class DaviModel<DATA> extends ChangeNotifier {
   /// Defines the columns that will be used in sorting.
   ///
   /// If multi sorting is disabled, only the first one in the list will be used.
-  void sort(List<DaviSort> sorts) {
+  void sort(List<DaviSort> sortList) {
     _sortedColumns.clear();
     _clearColumnsSortData();
-    for (DaviSort sort in sorts) {
+    for (DaviSort sort in sortList) {
       DaviColumn<DATA>? column = getColumn(sort.id);
       if (column != null &&
           column.sortable &&
