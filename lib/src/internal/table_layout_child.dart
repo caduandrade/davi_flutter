@@ -25,7 +25,6 @@ class TableLayoutChild<DATA> extends ParentDataWidget<TableLayoutParentData> {
       required DaviModel<DATA>? model,
       required bool resizable,
       required HorizontalScrollOffsets horizontalScrollOffsets,
-      required bool multiSort,
       required bool tapToSortEnabled}) {
     return TableLayoutChild._(
         id: LayoutChildId.header,
@@ -35,7 +34,6 @@ class TableLayoutChild<DATA> extends ParentDataWidget<TableLayoutParentData> {
                 model: model,
                 horizontalScrollOffsets: horizontalScrollOffsets,
                 resizable: resizable,
-                multiSort: multiSort,
                 tapToSortEnabled: tapToSortEnabled)
             : Container());
   }

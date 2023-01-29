@@ -19,7 +19,7 @@ typedef DaviDataComparator<DATA> = int Function(
 /// by identifying and displaying data types in the row object.
 class DaviColumn<DATA> extends ChangeNotifier with ColumnSortMixin {
   DaviColumn(
-      {this.id,
+      {dynamic id,
       double width = 100,
       double? grow,
       this.name,
@@ -45,7 +45,8 @@ class DaviColumn<DATA> extends ChangeNotifier with ColumnSortMixin {
       this.cellClip = false,
       this.sortable = true,
       this.cellStyleBuilder})
-      : _width = width,
+      : id = id ?? DaviColumnRandomId(),
+        _width = width,
         _grow = grow != null ? math.max(1, grow) : null,
         stringValueMapper = stringValue,
         intValueMapper = intValue,
@@ -57,6 +58,8 @@ class DaviColumn<DATA> extends ChangeNotifier with ColumnSortMixin {
                 intValue, doubleValue, stringValue, iconValue, objectValue);
 
   /// Identifier that can be assigned to this column.
+  ///
+  /// If none is defined, a [DaviColumnRandomId] will be created;
   final dynamic id;
 
   /// Optional column name. Displayed by default in the cell header widget.
@@ -137,6 +140,14 @@ class DaviColumn<DATA> extends ChangeNotifier with ColumnSortMixin {
     return 'DaviColumn{name: $name}';
   }
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is DaviColumn && runtimeType == other.runtimeType && id == other.id;
+
+  @override
+  int get hashCode => id.hashCode;
+
   /// Builds a default sort
   static DaviDataComparator? _buildSort<DATA>(
       DaviIntValueMapper<DATA>? intValue,
@@ -209,5 +220,13 @@ class DaviColumn<DATA> extends ChangeNotifier with ColumnSortMixin {
       };
     }
     return null;
+  }
+}
+
+/// Random id for the column if none is defined.
+class DaviColumnRandomId {
+  @override
+  String toString() {
+    return hashCode.toString();
   }
 }

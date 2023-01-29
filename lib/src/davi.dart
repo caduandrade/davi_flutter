@@ -37,7 +37,6 @@ class Davi<DATA> extends StatefulWidget {
       this.columnWidthBehavior = ColumnWidthBehavior.scrollable,
       int? visibleRowsCount,
       this.focusable = true,
-      this.multiSort = false,
       this.tapToSortEnabled = true,
       this.lastRowWidget,
       this.rowColor,
@@ -62,7 +61,6 @@ class Davi<DATA> extends StatefulWidget {
   final int? visibleRowsCount;
   final OnLastVisibleRowListener? onLastVisibleRow;
   final bool focusable;
-  final bool multiSort;
   final Widget? lastRowWidget;
   final OnLastRowWidgetListener? onLastRowWidget;
 
@@ -181,7 +179,6 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
     Widget table = ClipRect(
         child: TableLayoutBuilder(
             onHover: widget.onHover != null ? _setHoveredRowIndex : null,
-            multiSort: widget.multiSort,
             tapToSortEnabled: widget.tapToSortEnabled,
             scrollControllers: _scrollControllers,
             columnWidthBehavior: widget.columnWidthBehavior,

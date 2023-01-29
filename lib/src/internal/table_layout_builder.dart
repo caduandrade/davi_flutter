@@ -24,7 +24,6 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
       {Key? key,
       required this.onHover,
       required this.scrollControllers,
-      required this.multiSort,
       required this.onLastVisibleRow,
       required this.model,
       required this.themeMetrics,
@@ -44,7 +43,6 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
   final OnRowHoverListener? onHover;
   final ScrollControllers scrollControllers;
   final DaviModel<DATA>? model;
-  final bool multiSort;
   final ColumnWidthBehavior columnWidthBehavior;
   final int? visibleRowsLength;
   final OnDragScroll onDragScroll;
@@ -95,7 +93,6 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
           layoutSettings: layoutSettings,
           model: model,
           resizable: columnWidthBehavior == ColumnWidthBehavior.scrollable,
-          multiSort: multiSort,
           tapToSortEnabled: tapToSortEnabled,
           horizontalScrollOffsets: horizontalScrollOffsets));
       if (layoutSettings.hasVerticalScrollbar) {

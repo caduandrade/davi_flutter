@@ -61,15 +61,19 @@ class _HomePageState extends State<HomePage> {
       rows.add(Person('User $i', random.nextInt(100)));
     }
 
-    _model = DaviModel<Person>(rows: rows, alwaysSorted: true, columns: [
-      DaviColumn(name: 'Name', stringValue: (row) => row.name),
-      DaviColumn(name: 'Value', intValue: (row) => row.value),
-      DaviColumn(
-          name: 'Editable',
-          cellBuilder: _buildField,
-          cellBackground: (rowData) =>
-              rowData.data.valid ? null : Colors.red[800])
-    ]);
+    _model = DaviModel<Person>(
+        rows: rows,
+        alwaysSorted: true,
+        columns: [
+          DaviColumn(name: 'Name', stringValue: (row) => row.name),
+          DaviColumn(name: 'Value', intValue: (row) => row.value),
+          DaviColumn(
+              name: 'Editable',
+              cellBuilder: _buildField,
+              cellBackground: (rowData) =>
+                  rowData.data.valid ? null : Colors.red[800])
+        ],
+        multiSort: true);
   }
 
   Widget _buildField(BuildContext context, DaviRow<Person> rowData) {

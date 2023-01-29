@@ -12,7 +12,6 @@ class DaviHeaderCell<DATA> extends StatefulWidget {
       required this.model,
       required this.column,
       required this.resizable,
-      required this.multiSort,
       required this.tapToSortEnabled,
       required this.columnIndex})
       : super(key: key);
@@ -20,7 +19,6 @@ class DaviHeaderCell<DATA> extends StatefulWidget {
   final DaviModel<DATA> model;
   final DaviColumn<DATA> column;
   final bool resizable;
-  final bool multiSort;
   final bool tapToSortEnabled;
   final int columnIndex;
 
@@ -92,7 +90,7 @@ class _DaviHeaderCellState extends State<DaviHeaderCell> {
           child: GestureDetector(
               behavior: HitTestBehavior.opaque,
               onTap: sortEnabled
-                  ? () => _onHeaderPressed(
+                  ? () => _onHeaderSortPressed(
                       model: widget.model, column: widget.column)
                   : null,
               child: header));
@@ -169,24 +167,37 @@ class _DaviHeaderCellState extends State<DaviHeaderCell> {
     widget.model.columnInResizing = null;
   }
 
-  void _onHeaderPressed(
+  void _onHeaderSortPressed(
       {required DaviModel model, required DaviColumn column}) {
-    if (model.isSorted == false) {
-      model.sortByColumn(
-          column: column, direction: DaviSortDirection.ascending);
-    } else if (widget.multiSort) {
-      widget.model.multiSortByColumn(widget.column);
-    } else {
-      final DaviSortDirection? direction = widget.column.direction;
-      if (direction == null) {
-        model.sortByColumn(
-            column: column, direction: DaviSortDirection.ascending);
-      } else if (direction == DaviSortDirection.ascending) {
-        model.sortByColumn(
-            column: column, direction: DaviSortDirection.descending);
-      } else {
-        model.clearSort();
+    List<DaviSort> sortList = HeaderCellUtil.newSortList(model, column);
+    model.sort(sortList);
+  }
+}
+
+class HeaderCellUtil {
+  /// Creates a new sort list given the current and new column.
+  static List<DaviSort> newSortList(DaviModel model, DaviColumn column) {
+    List<DaviSort> newSort = [];
+    bool addColumn = true;
+    List<DaviColumn> sortedColumns = model.sortedColumns;
+    for (int index = 0; index < sortedColumns.length; index++) {
+      DaviColumn sortedColumn = sortedColumns[index];
+      if (sortedColumn == column) {
+        addColumn = false;
+        if (index == sortedColumns.length - 1) {
+          if (sortedColumn.direction == DaviSortDirection.ascending) {
+            newSort.add(DaviSort(column.id, DaviSortDirection.descending));
+          }
+        }
+        continue;
+      }
+      if (model.multiSort && sortedColumn.direction != null) {
+        newSort.add(DaviSort(sortedColumn.id, sortedColumn.direction!));
       }
     }
+    if (addColumn) {
+      newSort.add(DaviSort(column.id, DaviSortDirection.ascending));
+    }
+    return newSort;
   }
 }

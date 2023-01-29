@@ -1,12 +1,12 @@
 ## 3.2.0
 
 * `DaviModel`
+  * The `multiSort` attribute has been moved to `DaviModel`. 
   * New attribute: `alwaysSorted`.
     * Defines if there will always be some sorted column.
   * The `ignoreSort` attribute has been renamed to `ignoreSortFunctions`.
-  * `sortByColumn` and `sortByColumnIndex` methods
-    * The `sortOrder` parameter has been renamed to `direction`.
   * New method: `getColumn(dynamic id)`
+  * Removed methods: `multiSortByColumn`, `sortByColumnIndex` and `sortByColumn`.
 * `DaviColumn`
   * The `priority` attribute has been renamed to `sortPriority`.
   * The `order` attribute has been renamed to `direction`. 
