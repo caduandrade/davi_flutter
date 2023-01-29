@@ -18,10 +18,9 @@ class DaviModel<DATA> extends ChangeNotifier {
       this.alwaysSorted = false,
       this.multiSort = false,
       this.onSort}) {
-    List<DATA> cloneList = List.from(rows);
-    _originalRows = cloneList;
-    _rows = UnmodifiableListView(cloneList);
+    _originalRows = List.from(rows);
     addColumns(columns);
+    _updateRows(notify: false);
   }
 
   /// The event that will be triggered at each sorting.
@@ -143,6 +142,7 @@ class DaviModel<DATA> extends ChangeNotifier {
   void addColumn(DaviColumn<DATA> column) {
     _columns.add(column);
     column.addListener(notifyListeners);
+    _ensureSortIfNeeded();
     notifyListeners();
   }
 
@@ -151,6 +151,7 @@ class DaviModel<DATA> extends ChangeNotifier {
       _columns.add(column);
       column.addListener(notifyListeners);
     }
+    _ensureSortIfNeeded();
     notifyListeners();
   }
 
@@ -199,6 +200,7 @@ class DaviModel<DATA> extends ChangeNotifier {
   void clearSort() {
     _sortedColumns.clear();
     _clearColumnsSortData();
+    _ensureSortIfNeeded();
     _updateRows(notify: true);
     _notifyOnSort();
   }
@@ -228,9 +230,18 @@ class DaviModel<DATA> extends ChangeNotifier {
         }
       }
     }
+    _ensureSortIfNeeded();
     _updateSortPriorities();
     _updateRows(notify: true);
     _notifyOnSort();
+  }
+
+  void _ensureSortIfNeeded() {
+    if (alwaysSorted && _sortedColumns.isEmpty && _columns.isNotEmpty) {
+      DaviColumn<DATA> column = _columns.first;
+      column._direction = DaviSortDirection.ascending;
+      _sortedColumns.add(column);
+    }
   }
 
   /// Notifies any data update by calling all the registered listeners.

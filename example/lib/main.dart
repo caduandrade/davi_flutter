@@ -63,7 +63,6 @@ class _HomePageState extends State<HomePage> {
 
     _model = DaviModel<Person>(
         rows: rows,
-        alwaysSorted: true,
         columns: [
           DaviColumn(name: 'Name', stringValue: (row) => row.name),
           DaviColumn(name: 'Value', intValue: (row) => row.value),

@@ -178,12 +178,12 @@ class HeaderCellUtil {
   /// Creates a new sort list given the current and new column.
   static List<DaviSort> newSortList(DaviModel model, DaviColumn column) {
     List<DaviSort> newSort = [];
-    bool addColumn = true;
+    bool needAddColumn = true;
     List<DaviColumn> sortedColumns = model.sortedColumns;
     for (int index = 0; index < sortedColumns.length; index++) {
       DaviColumn sortedColumn = sortedColumns[index];
       if (sortedColumn == column) {
-        addColumn = false;
+        needAddColumn = false;
         if (index == sortedColumns.length - 1) {
           if (sortedColumn.direction == DaviSortDirection.ascending) {
             newSort.add(DaviSort(column.id, DaviSortDirection.descending));
@@ -195,7 +195,7 @@ class HeaderCellUtil {
         newSort.add(DaviSort(sortedColumn.id, sortedColumn.direction!));
       }
     }
-    if (addColumn) {
+    if (needAddColumn || (model.alwaysSorted && newSort.isEmpty)) {
       newSort.add(DaviSort(column.id, DaviSortDirection.ascending));
     }
     return newSort;
