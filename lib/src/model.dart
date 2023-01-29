@@ -287,7 +287,7 @@ class DaviModel<DATA> extends ChangeNotifier {
     for (int i = 0; i < _sortedColumns.length; i++) {
       final DaviColumn<DATA> column = _sortedColumns[i];
       if (column.sort != null && column.order != null) {
-        final DaviColumnSort<DATA> sort = column.sort!;
+        final DaviDataComparator<DATA> sort = column.sort!;
         final TableSortOrder order = column.order!;
 
         if (order == TableSortOrder.descending) {

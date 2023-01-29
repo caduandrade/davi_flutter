@@ -6,6 +6,7 @@
   * The attribute `ignoreSort` has been renamed to `ignoreSortFunctions`.
 * `DaviColumn`
   * The attribute `priority` has been renamed to `sortPriority`.
+* typedef `DaviColumnSort` has been renamed to `DaviDataComparator`
 
 ## 3.1.1
 

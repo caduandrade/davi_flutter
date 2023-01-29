@@ -9,7 +9,7 @@ import 'package:davi/src/value_mapper.dart';
 import 'package:flutter/widgets.dart';
 
 /// Signature for sort column function.
-typedef DaviColumnSort<DATA> = int Function(
+typedef DaviDataComparator<DATA> = int Function(
     DATA a, DATA b, DaviColumn<DATA> column);
 
 /// The [Davi] column.
@@ -34,7 +34,7 @@ class DaviColumn<DATA> extends ChangeNotifier with ColumnSortMixin {
       this.fractionDigits,
       this.cellBuilder,
       this.leading,
-      DaviColumnSort<DATA>? sort,
+      DaviDataComparator<DATA>? sort,
       this.pinStatus = PinStatus.none,
       DaviIntValueMapper<DATA>? intValue,
       DaviDoubleValueMapper<DATA>? doubleValue,
@@ -86,7 +86,7 @@ class DaviColumn<DATA> extends ChangeNotifier with ColumnSortMixin {
 
   /// Function used to sort the column. If not defined, it can be created
   /// according to value mappings.
-  final DaviColumnSort<DATA>? sort;
+  final DaviDataComparator<DATA>? sort;
 
   final DaviIntValueMapper<DATA>? intValueMapper;
   final DaviDoubleValueMapper<DATA>? doubleValueMapper;
@@ -138,7 +138,7 @@ class DaviColumn<DATA> extends ChangeNotifier with ColumnSortMixin {
   }
 
   /// Builds a default sort
-  static DaviColumnSort? _buildSort<DATA>(
+  static DaviDataComparator? _buildSort<DATA>(
       DaviIntValueMapper<DATA>? intValue,
       DaviDoubleValueMapper<DATA>? doubleValue,
       DaviStringValueMapper<DATA>? stringValue,
