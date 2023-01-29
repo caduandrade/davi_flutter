@@ -11,27 +11,18 @@ import 'package:meta/meta.dart';
 ///
 /// The type [DATA] represents the data of each row.
 class DaviModel<DATA> extends ChangeNotifier {
-  factory DaviModel(
+  DaviModel(
       {List<DATA> rows = const [],
       List<DaviColumn<DATA>> columns = const [],
-      bool ignoreSortFunctions = false,
-      bool alwaysSorted = false,
-      bool multiSort = false,
-      OnSortCallback<DATA>? onSort}) {
+      this.ignoreSortFunctions = false,
+      this.alwaysSorted = false,
+      this.multiSort = false,
+      this.onSort}) {
     List<DATA> cloneList = List.from(rows);
-    DaviModel<DATA> model = DaviModel._(
-        cloneList,
-        UnmodifiableListView(cloneList),
-        ignoreSortFunctions,
-        onSort,
-        alwaysSorted,
-        multiSort);
-    model.addColumns(columns);
-    return model;
+    _originalRows = cloneList;
+    _rows = UnmodifiableListView(cloneList);
+    addColumns(columns);
   }
-
-  DaviModel._(this._originalRows, this._rows, this.ignoreSortFunctions,
-      this.onSort, this.alwaysSorted, this.multiSort);
 
   /// The event that will be triggered at each sorting.
   OnSortCallback<DATA>? onSort;
@@ -39,7 +30,7 @@ class DaviModel<DATA> extends ChangeNotifier {
   final bool multiSort;
 
   final List<DaviColumn<DATA>> _columns = [];
-  final List<DATA> _originalRows;
+  late final List<DATA> _originalRows;
 
   final List<DaviColumn<DATA>> _sortedColumns = [];
 
@@ -47,7 +38,7 @@ class DaviModel<DATA> extends ChangeNotifier {
   List<DaviColumn<DATA>> get sortedColumns =>
       UnmodifiableListView(_sortedColumns);
 
-  List<DATA> _rows;
+  late List<DATA> _rows;
 
   /// Ignore column sorting functions to maintain the natural order of the data.
   ///
