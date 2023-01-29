@@ -57,12 +57,12 @@ class _DaviHeaderCellState extends State<DaviHeaderCell> {
         expand: theme.expandableName ? 1 : 0,
         child: _textWidget(context)));
 
-    final TableSortOrder? order = widget.column.order;
-    if (order != null) {
+    final DaviSortDirection? direction = widget.column.direction;
+    if (direction != null) {
       IconData? icon;
-      if (order == TableSortOrder.ascending) {
+      if (direction == DaviSortDirection.ascending) {
         icon = theme.ascendingIcon;
-      } else if (order == TableSortOrder.descending) {
+      } else if (direction == DaviSortDirection.descending) {
         icon = theme.descendingIcon;
       }
       children.add(
@@ -73,7 +73,7 @@ class _DaviHeaderCellState extends State<DaviHeaderCell> {
             child: Text(widget.column.sortPriority.toString(),
                 style: TextStyle(
                     color: theme.sortIconColor,
-                    fontSize: theme.sortOrderSize))));
+                    fontSize: theme.sortPrioritySize))));
       }
     }
 
@@ -172,16 +172,18 @@ class _DaviHeaderCellState extends State<DaviHeaderCell> {
   void _onHeaderPressed(
       {required DaviModel model, required DaviColumn column}) {
     if (model.isSorted == false) {
-      model.sortByColumn(column: column, sortOrder: TableSortOrder.ascending);
+      model.sortByColumn(
+          column: column, direction: DaviSortDirection.ascending);
     } else if (widget.multiSort) {
       widget.model.multiSortByColumn(widget.column);
     } else {
-      final TableSortOrder? order = widget.column.order;
-      if (order == null) {
-        model.sortByColumn(column: column, sortOrder: TableSortOrder.ascending);
-      } else if (order == TableSortOrder.ascending) {
+      final DaviSortDirection? direction = widget.column.direction;
+      if (direction == null) {
         model.sortByColumn(
-            column: column, sortOrder: TableSortOrder.descending);
+            column: column, direction: DaviSortDirection.ascending);
+      } else if (direction == DaviSortDirection.ascending) {
+        model.sortByColumn(
+            column: column, direction: DaviSortDirection.descending);
       } else {
         model.clearSort();
       }

@@ -14,7 +14,7 @@ class HeaderCellThemeData {
       this.descendingIcon = HeaderCellThemeDataDefaults.descendingIcon,
       this.sortIconColor = HeaderCellThemeDataDefaults.sortIconColor,
       this.sortIconSize = HeaderCellThemeDataDefaults.sortIconSize,
-      this.sortOrderSize = HeaderCellThemeDataDefaults.sortOrderSize,
+      this.sortPrioritySize = HeaderCellThemeDataDefaults.sortOrderSize,
       this.resizeAreaWidth = HeaderCellThemeDataDefaults.resizeAreaWidth,
       this.resizeAreaHoverColor =
           HeaderCellThemeDataDefaults.resizeAreaHoverColor,
@@ -28,7 +28,7 @@ class HeaderCellThemeData {
   final IconData descendingIcon;
   final Color sortIconColor;
   final double sortIconSize;
-  final double sortOrderSize;
+  final double sortPrioritySize;
   final double height;
   final double resizeAreaWidth;
   final Color? resizeAreaHoverColor;
@@ -47,7 +47,7 @@ class HeaderCellThemeData {
           descendingIcon == other.descendingIcon &&
           sortIconColor == other.sortIconColor &&
           sortIconSize == other.sortIconSize &&
-          sortOrderSize == other.sortOrderSize &&
+          sortPrioritySize == other.sortPrioritySize &&
           resizeAreaWidth == other.resizeAreaWidth &&
           resizeAreaHoverColor == other.resizeAreaHoverColor &&
           expandableName == other.expandableName;
@@ -61,7 +61,7 @@ class HeaderCellThemeData {
       descendingIcon.hashCode ^
       sortIconColor.hashCode ^
       sortIconSize.hashCode ^
-      sortOrderSize.hashCode ^
+      sortPrioritySize.hashCode ^
       height.hashCode ^
       resizeAreaWidth.hashCode ^
       resizeAreaHoverColor.hashCode ^

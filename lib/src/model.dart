@@ -3,7 +3,7 @@ import 'dart:collection';
 import 'package:davi/src/column.dart';
 import 'package:davi/src/column_sort.dart';
 import 'package:davi/src/sort_callback_typedef.dart';
-import 'package:davi/src/sort_order.dart';
+import 'package:davi/src/sort_direction.dart';
 import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
 
@@ -205,7 +205,7 @@ class DaviModel<DATA> extends ChangeNotifier {
     for (ColumnSort columnSort in columnSorts) {
       DaviColumn<DATA> column = _columns[columnSort.columnIndex];
       if (column.sortable && (column.sort != null || ignoreSortFunctions)) {
-        column._order = columnSort.order;
+        column._direction = columnSort.direction;
         _sortedColumns.add(column);
       }
     }
@@ -223,12 +223,12 @@ class DaviModel<DATA> extends ChangeNotifier {
     }
     int columnSortIndex = _sortedColumns.indexOf(column);
     if (columnSortIndex == -1) {
-      column._order = TableSortOrder.ascending;
+      column._direction = DaviSortDirection.ascending;
       _sortedColumns.add(column);
     } else if (columnSortIndex == _sortedColumns.length - 1) {
       // last
-      if (_sortedColumns.last.order == TableSortOrder.ascending) {
-        _sortedColumns.last._order = TableSortOrder.descending;
+      if (_sortedColumns.last.direction == DaviSortDirection.ascending) {
+        _sortedColumns.last._direction = DaviSortDirection.descending;
       } else {
         _sortedColumns.removeAt(columnSortIndex)._clearSortData();
       }
@@ -242,20 +242,21 @@ class DaviModel<DATA> extends ChangeNotifier {
 
   /// Sort given a column index.
   void sortByColumnIndex(
-      {required int columnIndex, required TableSortOrder sortOrder}) {
-    sortByColumn(column: _columns[columnIndex], sortOrder: sortOrder);
+      {required int columnIndex, required DaviSortDirection direction}) {
+    sortByColumn(column: _columns[columnIndex], direction: direction);
   }
 
   /// Sort given a column.
   void sortByColumn(
-      {required DaviColumn<DATA> column, required TableSortOrder sortOrder}) {
+      {required DaviColumn<DATA> column,
+      required DaviSortDirection direction}) {
     if (column.sortable &&
         (column.sort != null || ignoreSortFunctions) &&
         _columns.contains(column)) {
       _sortedColumns.clear();
       _clearColumnsSortData();
       column._sortPriority = 1;
-      column._order = sortOrder;
+      column._direction = direction;
       _sortedColumns.add(column);
       _updateRows(notify: true);
       _notifyOnSort();
@@ -286,11 +287,11 @@ class DaviModel<DATA> extends ChangeNotifier {
     int r = 0;
     for (int i = 0; i < _sortedColumns.length; i++) {
       final DaviColumn<DATA> column = _sortedColumns[i];
-      if (column.sort != null && column.order != null) {
+      if (column.sort != null && column.direction != null) {
         final DaviDataComparator<DATA> sort = column.sort!;
-        final TableSortOrder order = column.order!;
+        final DaviSortDirection direction = column.direction!;
 
-        if (order == TableSortOrder.descending) {
+        if (direction == DaviSortDirection.descending) {
           r = sort(b, a, column);
         } else {
           r = sort(a, b, column);
@@ -308,14 +309,14 @@ mixin ColumnSortMixin {
   int? _sortPriority;
 
   int? get sortPriority => _sortPriority;
-  TableSortOrder? _order;
+  DaviSortDirection? _direction;
 
-  TableSortOrder? get order => _order;
+  DaviSortDirection? get direction => _direction;
 
   void _clearSortData() {
     _sortPriority = null;
-    _order = null;
+    _direction = null;
   }
 
-  bool get isSorted => _order != null;
+  bool get isSorted => _direction != null;
 }

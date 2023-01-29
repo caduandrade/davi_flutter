@@ -17,7 +17,7 @@ export 'src/row_callback_typedefs.dart';
 export 'src/row_color.dart';
 export 'src/row_cursor.dart';
 export 'src/row_hover_listener.dart';
-export 'src/sort_order.dart';
+export 'src/sort_direction.dart';
 export 'src/theme/cell_null_color.dart';
 export 'src/theme/cell_theme_data.dart';
 export 'src/theme/header_cell_theme_data.dart';
