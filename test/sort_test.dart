@@ -13,6 +13,10 @@ class LastSort {
 
 void main() {
   group('Model', () {
+    test('DaviSort', () {
+      DaviSort sort = DaviSort(null);
+      expect(sort.id, null);
+    });
     test('Sort', () {
       LastSort lastSort = LastSort();
 
@@ -44,12 +48,11 @@ void main() {
         DaviSort('id2', DaviSortDirection.descending),
         DaviSort('id1', DaviSortDirection.ascending)
       ]);
+      // multi sort disabled, using the first sort
       expect(lastSort.triggeredCount, 3);
-      expect(lastSort.columns.length, 2);
+      expect(lastSort.columns.length, 1);
       expect(lastSort.columns[0].name, 'name2');
       expect(lastSort.columns[0].direction, DaviSortDirection.descending);
-      expect(lastSort.columns[1].name, 'name1');
-      expect(lastSort.columns[1].direction, DaviSortDirection.ascending);
 
       model.sort([
         DaviSort(null, DaviSortDirection.descending),
@@ -59,6 +62,31 @@ void main() {
       expect(lastSort.columns.length, 1);
       expect(lastSort.columns[0].name, 'name1');
       expect(lastSort.columns[0].direction, DaviSortDirection.ascending);
+
+      // multi sort
+
+      model = DaviModel(rows: [
+        1,
+        2,
+        3,
+        4,
+        5
+      ], columns: [
+        DaviColumn<int>(id: 'id1', name: 'name1'),
+        DaviColumn<int>(id: 'id2', name: 'name2'),
+        DaviColumn<int>(name: 'name3')
+      ], onSort: lastSort.onSort, ignoreSortFunctions: true, multiSort: true);
+
+      model.sort([
+        DaviSort('id2', DaviSortDirection.descending),
+        DaviSort('id1', DaviSortDirection.ascending)
+      ]);
+      expect(lastSort.triggeredCount, 5);
+      expect(lastSort.columns.length, 2);
+      expect(lastSort.columns[0].name, 'name2');
+      expect(lastSort.columns[0].direction, DaviSortDirection.descending);
+      expect(lastSort.columns[1].name, 'name1');
+      expect(lastSort.columns[1].direction, DaviSortDirection.ascending);
     });
   });
 }
