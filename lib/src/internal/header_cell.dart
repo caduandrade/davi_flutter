@@ -41,7 +41,7 @@ class _DaviHeaderCellState extends State<DaviHeaderCell> {
         !resizing &&
         widget.model.columnInResizing == null;
     final bool sortable = widget.column.sortable &&
-        (widget.column.sort != null || widget.model.ignoreSort);
+        (widget.column.sort != null || widget.model.ignoreSortFunctions);
     final bool resizable = widget.resizable &&
         widget.column.resizable &&
         widget.column.grow == null &&

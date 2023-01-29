@@ -24,8 +24,8 @@ class DaviModel<DATA> extends ChangeNotifier {
     return model;
   }
 
-  DaviModel._(this._originalRows, this._rows, this.ignoreSort, this.onSort,
-      this.alwaysSorted);
+  DaviModel._(this._originalRows, this._rows, this.ignoreSortFunctions,
+      this.onSort, this.alwaysSorted);
 
   /// The event that will be triggered at each sorting.
   OnSortCallback<DATA>? onSort;
@@ -44,7 +44,7 @@ class DaviModel<DATA> extends ChangeNotifier {
   /// Ignore column sorting functions to maintain the natural order of the data.
   ///
   /// Allows the header to be sortable if the column is also sortable.
-  final bool ignoreSort;
+  final bool ignoreSortFunctions;
 
   /// Defines if there will always be some sorted column.
   final bool alwaysSorted;
@@ -204,7 +204,7 @@ class DaviModel<DATA> extends ChangeNotifier {
     _clearColumnsSortData();
     for (ColumnSort columnSort in columnSorts) {
       DaviColumn<DATA> column = _columns[columnSort.columnIndex];
-      if (column.sortable && (column.sort != null || ignoreSort)) {
+      if (column.sortable && (column.sort != null || ignoreSortFunctions)) {
         column._order = columnSort.order;
         _sortedColumns.add(column);
       }
@@ -218,7 +218,7 @@ class DaviModel<DATA> extends ChangeNotifier {
   void multiSortByColumn(DaviColumn<DATA> column) {
     if (_columns.contains(column) == false ||
         !column.sortable ||
-        (column.sort == null && !ignoreSort)) {
+        (column.sort == null && !ignoreSortFunctions)) {
       return;
     }
     int columnSortIndex = _sortedColumns.indexOf(column);
@@ -250,7 +250,7 @@ class DaviModel<DATA> extends ChangeNotifier {
   void sortByColumn(
       {required DaviColumn<DATA> column, required TableSortOrder sortOrder}) {
     if (column.sortable &&
-        (column.sort != null || ignoreSort) &&
+        (column.sort != null || ignoreSortFunctions) &&
         _columns.contains(column)) {
       _sortedColumns.clear();
       _clearColumnsSortData();
@@ -269,7 +269,7 @@ class DaviModel<DATA> extends ChangeNotifier {
 
   /// Updates the visible rows given the sorts and filters.
   void _updateRows({required bool notify}) {
-    if (isSorted && !ignoreSort) {
+    if (isSorted && !ignoreSortFunctions) {
       List<DATA> list = List.from(_originalRows);
       list.sort(_compoundSort);
       _rows = list;

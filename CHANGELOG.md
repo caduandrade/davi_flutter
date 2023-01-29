@@ -3,6 +3,7 @@
 * `DaviModel`
   * New attribute: `alwaysSorted`.
     * Defines if there will always be some sorted column.
+  * The attribute `ignoreSort` has been renamed to `ignoreSortFunctions`.
 
 ## 3.1.1
 
