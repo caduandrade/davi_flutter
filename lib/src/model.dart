@@ -16,7 +16,7 @@ class DaviModel<DATA> extends ChangeNotifier {
       List<DaviColumn<DATA>> columns = const [],
       this.ignoreSortFunctions = false,
       this.alwaysSorted = false,
-      this.multiSort = false,
+      this.multiSortEnabled = false,
       this.onSort}) {
     _originalRows = List.from(rows);
     addColumns(columns);
@@ -26,7 +26,7 @@ class DaviModel<DATA> extends ChangeNotifier {
   /// The event that will be triggered at each sorting.
   OnSortCallback<DATA>? onSort;
 
-  final bool multiSort;
+  final bool multiSortEnabled;
 
   final List<DaviColumn<DATA>> _columns = [];
   late final List<DATA> _originalRows;
@@ -224,7 +224,7 @@ class DaviModel<DATA> extends ChangeNotifier {
           (column.sort != null || ignoreSortFunctions)) {
         column._direction = sort.direction;
         _sortedColumns.add(column);
-        if (!multiSort) {
+        if (!multiSortEnabled) {
           // ignoring other columns
           break;
         }

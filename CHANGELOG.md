@@ -1,7 +1,7 @@
 ## 3.2.0
 
 * `Davi`
-  * The `multiSort` attribute has been moved to `DaviModel`.
+  * The `multiSort` attribute has been moved to `DaviModel` as `multiSortEnabled`.
 * `DaviModel`
   * New attribute: `alwaysSorted`.
     * Defines if there will always be some sorted column.

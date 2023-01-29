@@ -65,17 +65,22 @@ void main() {
 
       // multi sort
 
-      model = DaviModel(rows: [
-        1,
-        2,
-        3,
-        4,
-        5
-      ], columns: [
-        DaviColumn<int>(id: 'id1', name: 'name1'),
-        DaviColumn<int>(id: 'id2', name: 'name2'),
-        DaviColumn<int>(name: 'name3')
-      ], onSort: lastSort.onSort, ignoreSortFunctions: true, multiSort: true);
+      model = DaviModel(
+          rows: [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          columns: [
+            DaviColumn<int>(id: 'id1', name: 'name1'),
+            DaviColumn<int>(id: 'id2', name: 'name2'),
+            DaviColumn<int>(name: 'name3')
+          ],
+          onSort: lastSort.onSort,
+          ignoreSortFunctions: true,
+          multiSortEnabled: true);
 
       model.sort([
         DaviSort('id2', DaviSortDirection.descending),

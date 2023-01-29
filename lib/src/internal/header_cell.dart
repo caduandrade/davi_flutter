@@ -191,7 +191,7 @@ class HeaderCellUtil {
         }
         continue;
       }
-      if (model.multiSort && sortedColumn.direction != null) {
+      if (model.multiSortEnabled && sortedColumn.direction != null) {
         newSort.add(DaviSort(sortedColumn.id, sortedColumn.direction!));
       }
     }

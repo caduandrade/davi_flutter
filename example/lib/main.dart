@@ -72,7 +72,7 @@ class _HomePageState extends State<HomePage> {
               cellBackground: (rowData) =>
                   rowData.data.valid ? null : Colors.red[800])
         ],
-        multiSort: true);
+        multiSortEnabled: true);
   }
 
   Widget _buildField(BuildContext context, DaviRow<Person> rowData) {
