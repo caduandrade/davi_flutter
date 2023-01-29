@@ -13,13 +13,13 @@ void main() {
         DaviColumn<int>()
       ]);
 
-      DaviColumn<int>? column = model.findColumn(null);
+      DaviColumn<int>? column = model.getColumn(null);
       expect(column, null);
 
-      column = model.findColumn('cadu');
+      column = model.getColumn('cadu');
       expect(column, null);
 
-      column = model.findColumn('id');
+      column = model.getColumn('id');
       expect(column != null, true);
       expect(column!.name, 'name');
     });

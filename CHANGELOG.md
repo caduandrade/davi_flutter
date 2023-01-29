@@ -6,7 +6,7 @@
   * The `ignoreSort` attribute has been renamed to `ignoreSortFunctions`.
   * `sortByColumn` and `sortByColumnIndex` methods
     * The `sortOrder` parameter has been renamed to `direction`.
-  * New method: `findColumn`
+  * New method: `getColumn(dynamic id)`
 * `DaviColumn`
   * The `priority` attribute has been renamed to `sortPriority`.
   * The `order` attribute has been renamed to `direction`. 

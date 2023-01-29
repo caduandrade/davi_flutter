@@ -133,8 +133,8 @@ class DaviModel<DATA> extends ChangeNotifier {
 
   DaviColumn<DATA> columnAt(int index) => _columns[index];
 
-  /// Searches a column given an [id]. If [id] is [NULL], no columns are returned.
-  DaviColumn<DATA>? findColumn(dynamic id) {
+  /// Gets a column given an [id]. If [id] is [NULL], no columns are returned.
+  DaviColumn<DATA>? getColumn(dynamic id) {
     if (id != null) {
       for (DaviColumn<DATA> column in _columns) {
         if (column.id == id) {
@@ -219,7 +219,7 @@ class DaviModel<DATA> extends ChangeNotifier {
     _sortedColumns.clear();
     _clearColumnsSortData();
     for (DaviSort sort in sorts) {
-      DaviColumn<DATA>? column = findColumn(sort.id);
+      DaviColumn<DATA>? column = getColumn(sort.id);
       if (column != null &&
           column.sortable &&
           (column.sort != null || ignoreSortFunctions)) {
