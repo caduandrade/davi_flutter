@@ -3,26 +3,22 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'util/last_on_sort.dart';
 
+List<int> get _rows => List<int>.generate(5, (i) => i + 1);
+
 void main() {
-  group('Model', () {
-    test('DaviSort', () {
-      DaviSort sort = DaviSort(null);
-      expect(sort.id, null);
-    });
+  group('DaviModel', () {
     test('Sort', () {
       LastOnSort lastOnSort = LastOnSort();
 
-      DaviModel<int> model = DaviModel(rows: [
-        1,
-        2,
-        3,
-        4,
-        5
-      ], columns: [
-        DaviColumn<int>(id: 'id1', name: 'name1'),
-        DaviColumn<int>(id: 'id2', name: 'name2'),
-        DaviColumn<int>(name: 'name3')
-      ], onSort: lastOnSort.onSort, ignoreSortFunctions: true);
+      DaviModel<int> model = DaviModel(
+          rows: _rows,
+          columns: [
+            DaviColumn<int>(id: 'id1', name: 'name1'),
+            DaviColumn<int>(id: 'id2', name: 'name2'),
+            DaviColumn<int>(name: 'name3')
+          ],
+          onSort: lastOnSort.onSort,
+          ignoreSortFunctions: true);
 
       expect(model.sortedColumns.length, 0);
 
@@ -58,13 +54,7 @@ void main() {
       // multi sort
 
       model = DaviModel(
-          rows: [
-            1,
-            2,
-            3,
-            4,
-            5
-          ],
+          rows: _rows,
           columns: [
             DaviColumn<int>(id: 'id1', name: 'name1'),
             DaviColumn<int>(id: 'id2', name: 'name2'),

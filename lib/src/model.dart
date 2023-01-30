@@ -79,10 +79,14 @@ class DaviModel<DATA> extends ChangeNotifier {
   }
 
   /// Indicates whether the model is sorted.
-  bool get isSorted => alwaysSorted ||
-          _columns.firstWhereOrNull((column) => column.isSorted) != null
-      ? true
-      : false;
+  ///
+  /// The model will be sorted if it has a column and if at least one is sorted.
+  bool get isSorted =>
+      _columns.isNotEmpty &&
+      (alwaysSorted ||
+              _columns.firstWhereOrNull((column) => column.isSorted) != null
+          ? true
+          : false);
 
   /// Indicates whether the model is sorted by multiple columns.
   bool get isMultiSorted {

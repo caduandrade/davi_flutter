@@ -66,7 +66,7 @@ class _HomePageState extends State<HomePage> {
     _model = DaviModel<Person>(
         rows: rows,
         columns: [
-          DaviColumn(name: 'Name', stringValue: (row) => row.name),
+          DaviColumn(name: 'Name'),//, stringValue: (row) => row.name),
           DaviColumn(name: 'Age', intValue: (row) => row.age),
           DaviColumn(name: 'Value', intValue: (row) => row.value),
           DaviColumn(
