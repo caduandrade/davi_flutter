@@ -6,6 +6,25 @@ import 'util/last_on_sort.dart';
 List<int> get _rows => List<int>.generate(5, (i) => i + 1);
 
 void main() {
+  group('DaviSort', () {
+    test('equals', () {
+      expect(DaviSort(null) == DaviSort(null), true);
+      expect(
+          DaviSort(null) == DaviSort(null, DaviSortDirection.ascending), true);
+      expect(DaviSort(null) == DaviSort(null, DaviSortDirection.descending),
+          false);
+      expect(
+          DaviSort('id') == DaviSort('id', DaviSortDirection.ascending), true);
+      expect(
+          DaviSort('id', DaviSortDirection.ascending) ==
+              DaviSort('id', DaviSortDirection.ascending),
+          true);
+      expect(
+          DaviSort('id', DaviSortDirection.ascending) ==
+              DaviSort('id2', DaviSortDirection.ascending),
+          false);
+    });
+  });
   group('DaviModel', () {
     test('Sort', () {
       LastOnSort lastOnSort = LastOnSort();
