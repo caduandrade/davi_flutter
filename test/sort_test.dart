@@ -1,15 +1,7 @@
 import 'package:davi/davi.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-class LastSort {
-  int triggeredCount = 0;
-  List<DaviColumn<int>> columns = [];
-
-  void onSort(List<DaviColumn<int>> sortedColumns) {
-    columns = sortedColumns;
-    triggeredCount++;
-  }
-}
+import 'util/last_on_sort.dart';
 
 void main() {
   group('Model', () {
@@ -18,7 +10,7 @@ void main() {
       expect(sort.id, null);
     });
     test('Sort', () {
-      LastSort lastSort = LastSort();
+      LastOnSort lastOnSort = LastOnSort();
 
       DaviModel<int> model = DaviModel(rows: [
         1,
@@ -30,38 +22,38 @@ void main() {
         DaviColumn<int>(id: 'id1', name: 'name1'),
         DaviColumn<int>(id: 'id2', name: 'name2'),
         DaviColumn<int>(name: 'name3')
-      ], onSort: lastSort.onSort, ignoreSortFunctions: true);
+      ], onSort: lastOnSort.onSort, ignoreSortFunctions: true);
 
       expect(model.sortedColumns.length, 0);
 
       model.sort([DaviSort(null, DaviSortDirection.ascending)]);
-      expect(lastSort.triggeredCount, 1);
-      expect(lastSort.columns.length, 0);
+      expect(lastOnSort.triggeredCount, 1);
+      expect(lastOnSort.columns.length, 0);
 
       model.sort([DaviSort('id1', DaviSortDirection.ascending)]);
-      expect(lastSort.triggeredCount, 2);
-      expect(lastSort.columns.length, 1);
-      expect(lastSort.columns[0].name, 'name1');
-      expect(lastSort.columns[0].direction, DaviSortDirection.ascending);
+      expect(lastOnSort.triggeredCount, 2);
+      expect(lastOnSort.columns.length, 1);
+      expect(lastOnSort.columns[0].name, 'name1');
+      expect(lastOnSort.columns[0].sortDirection, DaviSortDirection.ascending);
 
       model.sort([
         DaviSort('id2', DaviSortDirection.descending),
         DaviSort('id1', DaviSortDirection.ascending)
       ]);
       // multi sort disabled, using the first sort
-      expect(lastSort.triggeredCount, 3);
-      expect(lastSort.columns.length, 1);
-      expect(lastSort.columns[0].name, 'name2');
-      expect(lastSort.columns[0].direction, DaviSortDirection.descending);
+      expect(lastOnSort.triggeredCount, 3);
+      expect(lastOnSort.columns.length, 1);
+      expect(lastOnSort.columns[0].name, 'name2');
+      expect(lastOnSort.columns[0].sortDirection, DaviSortDirection.descending);
 
       model.sort([
         DaviSort(null, DaviSortDirection.descending),
         DaviSort('id1', DaviSortDirection.ascending)
       ]);
-      expect(lastSort.triggeredCount, 4);
-      expect(lastSort.columns.length, 1);
-      expect(lastSort.columns[0].name, 'name1');
-      expect(lastSort.columns[0].direction, DaviSortDirection.ascending);
+      expect(lastOnSort.triggeredCount, 4);
+      expect(lastOnSort.columns.length, 1);
+      expect(lastOnSort.columns[0].name, 'name1');
+      expect(lastOnSort.columns[0].sortDirection, DaviSortDirection.ascending);
 
       // multi sort
 
@@ -78,7 +70,7 @@ void main() {
             DaviColumn<int>(id: 'id2', name: 'name2'),
             DaviColumn<int>(name: 'name3')
           ],
-          onSort: lastSort.onSort,
+          onSort: lastOnSort.onSort,
           ignoreSortFunctions: true,
           multiSortEnabled: true);
 
@@ -86,12 +78,12 @@ void main() {
         DaviSort('id2', DaviSortDirection.descending),
         DaviSort('id1', DaviSortDirection.ascending)
       ]);
-      expect(lastSort.triggeredCount, 5);
-      expect(lastSort.columns.length, 2);
-      expect(lastSort.columns[0].name, 'name2');
-      expect(lastSort.columns[0].direction, DaviSortDirection.descending);
-      expect(lastSort.columns[1].name, 'name1');
-      expect(lastSort.columns[1].direction, DaviSortDirection.ascending);
+      expect(lastOnSort.triggeredCount, 5);
+      expect(lastOnSort.columns.length, 2);
+      expect(lastOnSort.columns[0].name, 'name2');
+      expect(lastOnSort.columns[0].sortDirection, DaviSortDirection.descending);
+      expect(lastOnSort.columns[1].name, 'name1');
+      expect(lastOnSort.columns[1].sortDirection, DaviSortDirection.ascending);
     });
   });
 }

@@ -155,7 +155,7 @@ class DaviModel<DATA> extends ChangeNotifier {
   }
 
   void addColumn(DaviColumn<DATA> column) {
-    column._clearSortData();
+    column.clearSortData();
     _columns.add(column);
     column.addListener(notifyListeners);
     _ensureSortIfNeeded();
@@ -164,7 +164,7 @@ class DaviModel<DATA> extends ChangeNotifier {
 
   void addColumns(Iterable<DaviColumn<DATA>> columns) {
     for (DaviColumn<DATA> column in columns) {
-      column._clearSortData();
+      column.clearSortData();
       _columns.add(column);
       column.addListener(notifyListeners);
     }
@@ -183,7 +183,7 @@ class DaviModel<DATA> extends ChangeNotifier {
     int priority = 1;
     for (DaviColumn<DATA> column in _columns) {
       if (column.isSorted) {
-        column._sortPriority = priority++;
+        column.sortPriority = priority++;
       }
     }
   }
@@ -200,7 +200,7 @@ class DaviModel<DATA> extends ChangeNotifier {
         _columnInResizing = null;
       }
       if (column.isSorted) {
-        column._clearSortData();
+        column.clearSortData();
         _updateSortPriorities();
         _updateRows(notify: false);
       }
@@ -224,7 +224,7 @@ class DaviModel<DATA> extends ChangeNotifier {
 
   void _clearColumnsSortData() {
     for (DaviColumn<DATA> column in _columns) {
-      column._clearSortData();
+      column.clearSortData();
     }
   }
 
@@ -239,8 +239,8 @@ class DaviModel<DATA> extends ChangeNotifier {
       if (column != null &&
           column.sortable &&
           (column.sort != null || ignoreSortFunctions)) {
-        column._direction = sort.direction;
-        column._sortPriority = priority++;
+        column.sortDirection = sort.direction;
+        column.sortPriority = priority++;
         if (!multiSortEnabled) {
           // ignoring other columns
           break;
@@ -258,8 +258,8 @@ class DaviModel<DATA> extends ChangeNotifier {
           _columns.firstWhereOrNull((column) => column.isSorted);
       if (firstSortedColumn == null) {
         DaviColumn column = _columns.first;
-        column._direction = DaviSortDirection.ascending;
-        column._sortPriority = 1;
+        column.sortDirection = DaviSortDirection.ascending;
+        column.sortPriority = 1;
       }
     }
   }
@@ -287,9 +287,9 @@ class DaviModel<DATA> extends ChangeNotifier {
   int _compoundSort(DATA a, DATA b) {
     int r = 0;
     for (final DaviColumn<DATA> column in sortedColumns) {
-      if (column.sort != null && column.direction != null) {
+      if (column.sort != null && column.sortDirection != null) {
         final DaviDataComparator<DATA> sort = column.sort!;
-        final DaviSortDirection direction = column.direction!;
+        final DaviSortDirection direction = column.sortDirection!;
 
         if (direction == DaviSortDirection.descending) {
           r = sort(b, a, column);
@@ -306,17 +306,28 @@ class DaviModel<DATA> extends ChangeNotifier {
 }
 
 mixin ColumnSortMixin {
+
   int? _sortPriority;
-
+  @internal
+  set sortPriority(int? value) {
+    _sortPriority=value;
+  }
   int? get sortPriority => _sortPriority;
-  DaviSortDirection? _direction;
+  
+  DaviSortDirection? _sortDirection;
+  @internal
+  set sortDirection(DaviSortDirection? value){
+    _sortDirection=value;
+  }
+  DaviSortDirection? get sortDirection => _sortDirection;
 
-  DaviSortDirection? get direction => _direction;
+  bool get isSorted => _sortDirection != null && _sortPriority != null;
 
-  void _clearSortData() {
+  @internal
+  void clearSortData() {
     _sortPriority = null;
-    _direction = null;
+    _sortDirection = null;
   }
 
-  bool get isSorted => _direction != null && _sortPriority != null;
+  
 }

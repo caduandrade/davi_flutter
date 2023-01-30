@@ -3,14 +3,11 @@ import 'dart:math' as math;
 import 'package:davi/src/cell_background.dart';
 import 'package:davi/src/cell_builder.dart';
 import 'package:davi/src/cell_style.dart';
+import 'package:davi/src/column_random_id.dart';
 import 'package:davi/src/model.dart';
 import 'package:davi/src/pin_status.dart';
 import 'package:davi/src/value_mapper.dart';
 import 'package:flutter/widgets.dart';
-
-/// Signature for sort column function.
-typedef DaviDataComparator<DATA> = int Function(
-    DATA a, DATA b, DaviColumn<DATA> column);
 
 /// The [Davi] column.
 ///
@@ -223,10 +220,6 @@ class DaviColumn<DATA> extends ChangeNotifier with ColumnSortMixin {
   }
 }
 
-/// Random id for the column if none is defined.
-class DaviColumnRandomId {
-  @override
-  String toString() {
-    return hashCode.toString();
-  }
-}
+/// Signature for sort column function.
+typedef DaviDataComparator<DATA> = int Function(
+    DATA a, DATA b, DaviColumn<DATA> column);

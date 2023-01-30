@@ -10,7 +10,7 @@
   * Removed methods: `multiSortByColumn`, `sortByColumnIndex` and `sortByColumn`.
 * `DaviColumn`
   * The `priority` attribute has been renamed to `sortPriority`.
-  * The `order` attribute has been renamed to `direction`. 
+  * The `order` attribute has been renamed to `sortDirection`. 
 * `HeaderCellThemeData`
   * The `sortOrderSize` attribute has been renamed to `sortPrioritySize`
 * The `DaviColumnSort` typedef has been renamed to `DaviDataComparator`

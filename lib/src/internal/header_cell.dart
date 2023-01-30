@@ -57,7 +57,7 @@ class _DaviHeaderCellState extends State<DaviHeaderCell> {
         expand: theme.expandableName ? 1 : 0,
         child: _textWidget(context)));
 
-    final DaviSortDirection? direction = widget.column.direction;
+    final DaviSortDirection? direction = widget.column.sortDirection;
     if (direction != null) {
       IconData? icon;
       if (direction == DaviSortDirection.ascending) {
@@ -176,6 +176,7 @@ class _DaviHeaderCellState extends State<DaviHeaderCell> {
   }
 }
 
+@internal
 class HeaderCellUtil {
   /// Creates a new sort list given the current and new column.
   static List<DaviSort> newSortList(DaviModel model, DaviColumn column) {
@@ -187,14 +188,14 @@ class HeaderCellUtil {
       if (sortedColumn == column) {
         needAddColumn = false;
         if (index == sortedColumns.length - 1) {
-          if (sortedColumn.direction == DaviSortDirection.ascending) {
+          if (sortedColumn.sortDirection == DaviSortDirection.ascending) {
             newSort.add(DaviSort(column.id, DaviSortDirection.descending));
           }
         }
         continue;
       }
-      if (model.multiSortEnabled && sortedColumn.direction != null) {
-        newSort.add(DaviSort(sortedColumn.id, sortedColumn.direction!));
+      if (model.multiSortEnabled && sortedColumn.sortDirection != null) {
+        newSort.add(DaviSort(sortedColumn.id, sortedColumn.sortDirection!));
       }
     }
     if (needAddColumn || (model.alwaysSorted && newSort.isEmpty)) {
