@@ -22,12 +22,20 @@ void main() {
             alwaysSorted: false);
         expect(model.sortedColumns.length, 0);
 
-        List<DaviSort> sortList = HeaderCellUtil.newSortList(model, column2);
+        List<DaviSort> sortList = HeaderCellUtil.newSortList(
+            sortedColumns: model.sortedColumns,
+            alwaysSorted: model.alwaysSorted,
+            multiSortEnabled: model.multiSortEnabled,
+            newSortedColumn: column2);
         expect(sortList.length, 1);
         expect(sortList.first.id, 'id2');
         expect(sortList.first.direction, DaviSortDirection.ascending);
 
-        sortList = HeaderCellUtil.newSortList(model, column1);
+        sortList = HeaderCellUtil.newSortList(
+            sortedColumns: model.sortedColumns,
+            alwaysSorted: model.alwaysSorted,
+            multiSortEnabled: model.multiSortEnabled,
+            newSortedColumn: column1);
         expect(sortList.length, 1);
         expect(sortList.first.id, 'id1');
         expect(sortList.first.direction, DaviSortDirection.ascending);
@@ -35,12 +43,20 @@ void main() {
         model.sort(sortList);
         expect(model.sortedColumns.length, 1);
 
-        sortList = HeaderCellUtil.newSortList(model, column2);
+        sortList = HeaderCellUtil.newSortList(
+            sortedColumns: model.sortedColumns,
+            alwaysSorted: model.alwaysSorted,
+            multiSortEnabled: model.multiSortEnabled,
+            newSortedColumn: column2);
         expect(sortList.length, 1);
         expect(sortList.first.id, 'id2');
         expect(sortList.first.direction, DaviSortDirection.ascending);
 
-        sortList = HeaderCellUtil.newSortList(model, column1);
+        sortList = HeaderCellUtil.newSortList(
+            sortedColumns: model.sortedColumns,
+            alwaysSorted: model.alwaysSorted,
+            multiSortEnabled: model.multiSortEnabled,
+            newSortedColumn: column1);
         expect(sortList.length, 1);
         expect(sortList.first.id, 'id1');
         expect(sortList.first.direction, DaviSortDirection.descending);
@@ -48,12 +64,20 @@ void main() {
         model.sort(sortList);
         expect(model.sortedColumns.length, 1);
 
-        sortList = HeaderCellUtil.newSortList(model, column2);
+        sortList = HeaderCellUtil.newSortList(
+            sortedColumns: model.sortedColumns,
+            alwaysSorted: model.alwaysSorted,
+            multiSortEnabled: model.multiSortEnabled,
+            newSortedColumn: column2);
         expect(sortList.length, 1);
         expect(sortList.first.id, 'id2');
         expect(sortList.first.direction, DaviSortDirection.ascending);
 
-        sortList = HeaderCellUtil.newSortList(model, column1);
+        sortList = HeaderCellUtil.newSortList(
+            sortedColumns: model.sortedColumns,
+            alwaysSorted: model.alwaysSorted,
+            multiSortEnabled: model.multiSortEnabled,
+            newSortedColumn: column1);
         expect(sortList.length, 0);
       });
 
@@ -66,12 +90,20 @@ void main() {
             alwaysSorted: false);
         expect(model.sortedColumns.length, 0);
 
-        List<DaviSort> sortList = HeaderCellUtil.newSortList(model, column2);
+        List<DaviSort> sortList = HeaderCellUtil.newSortList(
+            sortedColumns: model.sortedColumns,
+            alwaysSorted: model.alwaysSorted,
+            multiSortEnabled: model.multiSortEnabled,
+            newSortedColumn: column2);
         expect(sortList.length, 1);
         expect(sortList.first.id, 'id2');
         expect(sortList.first.direction, DaviSortDirection.ascending);
 
-        sortList = HeaderCellUtil.newSortList(model, column1);
+        sortList = HeaderCellUtil.newSortList(
+            sortedColumns: model.sortedColumns,
+            alwaysSorted: model.alwaysSorted,
+            multiSortEnabled: model.multiSortEnabled,
+            newSortedColumn: column1);
         expect(sortList.length, 1);
         expect(sortList.first.id, 'id1');
         expect(sortList.first.direction, DaviSortDirection.ascending);
@@ -79,14 +111,22 @@ void main() {
         model.sort(sortList);
         expect(model.sortedColumns.length, 1);
 
-        sortList = HeaderCellUtil.newSortList(model, column2);
+        sortList = HeaderCellUtil.newSortList(
+            sortedColumns: model.sortedColumns,
+            alwaysSorted: model.alwaysSorted,
+            multiSortEnabled: model.multiSortEnabled,
+            newSortedColumn: column2);
         expect(sortList.length, 2);
         expect(sortList[0].id, 'id1');
         expect(sortList[0].direction, DaviSortDirection.ascending);
         expect(sortList[1].id, 'id2');
         expect(sortList[1].direction, DaviSortDirection.ascending);
 
-        sortList = HeaderCellUtil.newSortList(model, column1);
+        sortList = HeaderCellUtil.newSortList(
+            sortedColumns: model.sortedColumns,
+            alwaysSorted: model.alwaysSorted,
+            multiSortEnabled: model.multiSortEnabled,
+            newSortedColumn: column1);
         expect(sortList.length, 1);
         expect(sortList.first.id, 'id1');
         expect(sortList.first.direction, DaviSortDirection.descending);
@@ -94,14 +134,22 @@ void main() {
         model.sort(sortList);
         expect(model.sortedColumns.length, 1);
 
-        sortList = HeaderCellUtil.newSortList(model, column2);
+        sortList = HeaderCellUtil.newSortList(
+            sortedColumns: model.sortedColumns,
+            alwaysSorted: model.alwaysSorted,
+            multiSortEnabled: model.multiSortEnabled,
+            newSortedColumn: column2);
         expect(sortList.length, 2);
         expect(sortList[0].id, 'id1');
         expect(sortList[0].direction, DaviSortDirection.descending);
         expect(sortList[1].id, 'id2');
         expect(sortList[1].direction, DaviSortDirection.ascending);
 
-        sortList = HeaderCellUtil.newSortList(model, column1);
+        sortList = HeaderCellUtil.newSortList(
+            sortedColumns: model.sortedColumns,
+            alwaysSorted: model.alwaysSorted,
+            multiSortEnabled: model.multiSortEnabled,
+            newSortedColumn: column1);
         expect(sortList.length, 0);
       });
 
@@ -114,12 +162,20 @@ void main() {
             alwaysSorted: true);
         expect(model.sortedColumns.length, 1);
 
-        List<DaviSort> sortList = HeaderCellUtil.newSortList(model, column2);
+        List<DaviSort> sortList = HeaderCellUtil.newSortList(
+            sortedColumns: model.sortedColumns,
+            alwaysSorted: model.alwaysSorted,
+            multiSortEnabled: model.multiSortEnabled,
+            newSortedColumn: column2);
         expect(sortList.length, 1);
         expect(sortList.first.id, 'id2');
         expect(sortList.first.direction, DaviSortDirection.ascending);
 
-        sortList = HeaderCellUtil.newSortList(model, column1);
+        sortList = HeaderCellUtil.newSortList(
+            sortedColumns: model.sortedColumns,
+            alwaysSorted: model.alwaysSorted,
+            multiSortEnabled: model.multiSortEnabled,
+            newSortedColumn: column1);
         expect(sortList.length, 1);
         expect(sortList.first.id, 'id1');
         expect(sortList.first.direction, DaviSortDirection.descending);
@@ -127,12 +183,20 @@ void main() {
         model.sort(sortList);
         expect(model.sortedColumns.length, 1);
 
-        sortList = HeaderCellUtil.newSortList(model, column2);
+        sortList = HeaderCellUtil.newSortList(
+            sortedColumns: model.sortedColumns,
+            alwaysSorted: model.alwaysSorted,
+            multiSortEnabled: model.multiSortEnabled,
+            newSortedColumn: column2);
         expect(sortList.length, 1);
         expect(sortList.first.id, 'id2');
         expect(sortList.first.direction, DaviSortDirection.ascending);
 
-        sortList = HeaderCellUtil.newSortList(model, column1);
+        sortList = HeaderCellUtil.newSortList(
+            sortedColumns: model.sortedColumns,
+            alwaysSorted: model.alwaysSorted,
+            multiSortEnabled: model.multiSortEnabled,
+            newSortedColumn: column1);
         expect(sortList.length, 1);
         expect(sortList.first.id, 'id1');
         expect(sortList.first.direction, DaviSortDirection.ascending);
@@ -140,12 +204,20 @@ void main() {
         model.sort(sortList);
         expect(model.sortedColumns.length, 1);
 
-        sortList = HeaderCellUtil.newSortList(model, column2);
+        sortList = HeaderCellUtil.newSortList(
+            sortedColumns: model.sortedColumns,
+            alwaysSorted: model.alwaysSorted,
+            multiSortEnabled: model.multiSortEnabled,
+            newSortedColumn: column2);
         expect(sortList.length, 1);
         expect(sortList.first.id, 'id2');
         expect(sortList.first.direction, DaviSortDirection.ascending);
 
-        sortList = HeaderCellUtil.newSortList(model, column1);
+        sortList = HeaderCellUtil.newSortList(
+            sortedColumns: model.sortedColumns,
+            alwaysSorted: model.alwaysSorted,
+            multiSortEnabled: model.multiSortEnabled,
+            newSortedColumn: column1);
         expect(sortList.length, 1);
         expect(sortList.first.id, 'id1');
         expect(sortList.first.direction, DaviSortDirection.descending);
@@ -160,14 +232,22 @@ void main() {
             alwaysSorted: true);
         expect(model.sortedColumns.length, 1);
 
-        List<DaviSort> sortList = HeaderCellUtil.newSortList(model, column2);
+        List<DaviSort> sortList = HeaderCellUtil.newSortList(
+            sortedColumns: model.sortedColumns,
+            alwaysSorted: model.alwaysSorted,
+            multiSortEnabled: model.multiSortEnabled,
+            newSortedColumn: column2);
         expect(sortList.length, 2);
         expect(sortList[0].id, 'id1');
         expect(sortList[0].direction, DaviSortDirection.ascending);
         expect(sortList[1].id, 'id2');
         expect(sortList[1].direction, DaviSortDirection.ascending);
 
-        sortList = HeaderCellUtil.newSortList(model, column1);
+        sortList = HeaderCellUtil.newSortList(
+            sortedColumns: model.sortedColumns,
+            alwaysSorted: model.alwaysSorted,
+            multiSortEnabled: model.multiSortEnabled,
+            newSortedColumn: column1);
         expect(sortList.length, 1);
         expect(sortList.first.id, 'id1');
         expect(sortList.first.direction, DaviSortDirection.descending);
@@ -175,14 +255,22 @@ void main() {
         model.sort(sortList);
         expect(model.sortedColumns.length, 1);
 
-        sortList = HeaderCellUtil.newSortList(model, column2);
+        sortList = HeaderCellUtil.newSortList(
+            sortedColumns: model.sortedColumns,
+            alwaysSorted: model.alwaysSorted,
+            multiSortEnabled: model.multiSortEnabled,
+            newSortedColumn: column2);
         expect(sortList.length, 2);
         expect(sortList[0].id, 'id1');
         expect(sortList[0].direction, DaviSortDirection.descending);
         expect(sortList[1].id, 'id2');
         expect(sortList[1].direction, DaviSortDirection.ascending);
 
-        sortList = HeaderCellUtil.newSortList(model, column1);
+        sortList = HeaderCellUtil.newSortList(
+            sortedColumns: model.sortedColumns,
+            alwaysSorted: model.alwaysSorted,
+            multiSortEnabled: model.multiSortEnabled,
+            newSortedColumn: column1);
         expect(sortList.length, 1);
         expect(sortList.first.id, 'id1');
         expect(sortList.first.direction, DaviSortDirection.ascending);
@@ -190,14 +278,22 @@ void main() {
         model.sort(sortList);
         expect(model.sortedColumns.length, 1);
 
-        sortList = HeaderCellUtil.newSortList(model, column2);
+        sortList = HeaderCellUtil.newSortList(
+            sortedColumns: model.sortedColumns,
+            alwaysSorted: model.alwaysSorted,
+            multiSortEnabled: model.multiSortEnabled,
+            newSortedColumn: column2);
         expect(sortList.length, 2);
         expect(sortList[0].id, 'id1');
         expect(sortList[0].direction, DaviSortDirection.ascending);
         expect(sortList[1].id, 'id2');
         expect(sortList[1].direction, DaviSortDirection.ascending);
 
-        sortList = HeaderCellUtil.newSortList(model, column1);
+        sortList = HeaderCellUtil.newSortList(
+            sortedColumns: model.sortedColumns,
+            alwaysSorted: model.alwaysSorted,
+            multiSortEnabled: model.multiSortEnabled,
+            newSortedColumn: column1);
         expect(sortList.length, 1);
         expect(sortList.first.id, 'id1');
         expect(sortList.first.direction, DaviSortDirection.descending);

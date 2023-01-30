@@ -171,35 +171,44 @@ class _DaviHeaderCellState extends State<DaviHeaderCell> {
 
   void _onHeaderSortPressed(
       {required DaviModel model, required DaviColumn column}) {
-    List<DaviSort> sortList = HeaderCellUtil.newSortList(model, column);
+    List<DaviSort> sortList = HeaderCellUtil.newSortList(
+        sortedColumns: model.sortedColumns,
+        multiSortEnabled: model.multiSortEnabled,
+        alwaysSorted: model.alwaysSorted,
+        newSortedColumn: column);
     model.sort(sortList);
   }
 }
 
 @internal
 class HeaderCellUtil {
-  /// Creates a new sort list given the current and new column.
-  static List<DaviSort> newSortList(DaviModel model, DaviColumn column) {
+  /// Creates a new sort list given the current list of sorted columns,
+  /// model configuration and the new column..
+  static List<DaviSort> newSortList(
+      {required List<DaviColumn> sortedColumns,
+      required bool multiSortEnabled,
+      required bool alwaysSorted,
+      required DaviColumn newSortedColumn}) {
     List<DaviSort> newSort = [];
     bool needAddColumn = true;
-    List<DaviColumn> sortedColumns = model.sortedColumns;
     for (int index = 0; index < sortedColumns.length; index++) {
       DaviColumn sortedColumn = sortedColumns[index];
-      if (sortedColumn == column) {
+      if (sortedColumn == newSortedColumn) {
         needAddColumn = false;
         if (index == sortedColumns.length - 1) {
           if (sortedColumn.sortDirection == DaviSortDirection.ascending) {
-            newSort.add(DaviSort(column.id, DaviSortDirection.descending));
+            newSort.add(
+                DaviSort(newSortedColumn.id, DaviSortDirection.descending));
           }
         }
         continue;
       }
-      if (model.multiSortEnabled && sortedColumn.sortDirection != null) {
+      if (multiSortEnabled && sortedColumn.sortDirection != null) {
         newSort.add(DaviSort(sortedColumn.id, sortedColumn.sortDirection!));
       }
     }
-    if (needAddColumn || (model.alwaysSorted && newSort.isEmpty)) {
-      newSort.add(DaviSort(column.id, DaviSortDirection.ascending));
+    if (needAddColumn || (alwaysSorted && newSort.isEmpty)) {
+      newSort.add(DaviSort(newSortedColumn.id, DaviSortDirection.ascending));
     }
     return newSort;
   }
