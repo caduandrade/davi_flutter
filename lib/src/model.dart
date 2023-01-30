@@ -1,5 +1,4 @@
-import 'dart:collection';
-
+import 'package:collection/collection.dart';
 import 'package:davi/src/column.dart';
 import 'package:davi/src/sort.dart';
 import 'package:davi/src/sort_callback_typedef.dart';
@@ -31,11 +30,13 @@ class DaviModel<DATA> extends ChangeNotifier {
   final List<DaviColumn<DATA>> _columns = [];
   late final List<DATA> _originalRows;
 
-  final List<DaviColumn<DATA>> _sortedColumns = [];
-
   /// Gets the sorted columns.
-  List<DaviColumn<DATA>> get sortedColumns =>
-      UnmodifiableListView(_sortedColumns);
+  List<DaviColumn<DATA>> get sortedColumns {
+    List<DaviColumn<DATA>> list =
+        _columns.where((column) => column.isSorted).toList();
+    list.sort((a, b) => a.sortPriority!.compareTo(b.sortPriority!));
+    return UnmodifiableListView(list);
+  }
 
   late List<DATA> _rows;
 
@@ -78,10 +79,24 @@ class DaviModel<DATA> extends ChangeNotifier {
   }
 
   /// Indicates whether the model is sorted.
-  bool get isSorted => alwaysSorted || _sortedColumns.isNotEmpty;
+  bool get isSorted => alwaysSorted ||
+          _columns.firstWhereOrNull((column) => column.isSorted) != null
+      ? true
+      : false;
 
   /// Indicates whether the model is sorted by multiple columns.
-  bool get isMultiSorted => _sortedColumns.length > 1;
+  bool get isMultiSorted {
+    int count = 0;
+    for (DaviColumn column in _columns) {
+      if (column.isSorted) {
+        count++;
+      }
+      if (count > 1) {
+        return true;
+      }
+    }
+    return false;
+  }
 
   DATA rowAt(int index) => _rows[index];
 
@@ -140,6 +155,7 @@ class DaviModel<DATA> extends ChangeNotifier {
   }
 
   void addColumn(DaviColumn<DATA> column) {
+    column._clearSortData();
     _columns.add(column);
     column.addListener(notifyListeners);
     _ensureSortIfNeeded();
@@ -148,6 +164,7 @@ class DaviModel<DATA> extends ChangeNotifier {
 
   void addColumns(Iterable<DaviColumn<DATA>> columns) {
     for (DaviColumn<DATA> column in columns) {
+      column._clearSortData();
       _columns.add(column);
       column.addListener(notifyListeners);
     }
@@ -158,15 +175,16 @@ class DaviModel<DATA> extends ChangeNotifier {
   /// Remove all columns.
   void removeColumns() {
     _columns.clear();
-    _sortedColumns.clear();
     _columnInResizing = null;
     _updateRows(notify: true);
   }
 
   void _updateSortPriorities() {
     int priority = 1;
-    for (DaviColumn<DATA> column in _sortedColumns) {
-      column._sortPriority = priority++;
+    for (DaviColumn<DATA> column in _columns) {
+      if (column.isSorted) {
+        column._sortPriority = priority++;
+      }
     }
   }
 
@@ -181,7 +199,7 @@ class DaviModel<DATA> extends ChangeNotifier {
       if (_columnInResizing == column) {
         _columnInResizing = null;
       }
-      if (_sortedColumns.remove(column)) {
+      if (column.isSorted) {
         column._clearSortData();
         _updateSortPriorities();
         _updateRows(notify: false);
@@ -198,7 +216,6 @@ class DaviModel<DATA> extends ChangeNotifier {
 
   /// Revert to original sort order
   void clearSort() {
-    _sortedColumns.clear();
     _clearColumnsSortData();
     _ensureSortIfNeeded();
     _updateRows(notify: true);
@@ -215,15 +232,15 @@ class DaviModel<DATA> extends ChangeNotifier {
   ///
   /// If multi sorting is disabled, only the first one in the list will be used.
   void sort(List<DaviSort> sortList) {
-    _sortedColumns.clear();
     _clearColumnsSortData();
+    int priority = 1;
     for (DaviSort sort in sortList) {
       DaviColumn<DATA>? column = getColumn(sort.id);
       if (column != null &&
           column.sortable &&
           (column.sort != null || ignoreSortFunctions)) {
         column._direction = sort.direction;
-        _sortedColumns.add(column);
+        column._sortPriority = priority++;
         if (!multiSortEnabled) {
           // ignoring other columns
           break;
@@ -231,16 +248,19 @@ class DaviModel<DATA> extends ChangeNotifier {
       }
     }
     _ensureSortIfNeeded();
-    _updateSortPriorities();
     _updateRows(notify: true);
     _notifyOnSort();
   }
 
   void _ensureSortIfNeeded() {
-    if (alwaysSorted && _sortedColumns.isEmpty && _columns.isNotEmpty) {
-      DaviColumn<DATA> column = _columns.first;
-      column._direction = DaviSortDirection.ascending;
-      _sortedColumns.add(column);
+    if (alwaysSorted && _columns.isNotEmpty) {
+      DaviColumn? firstSortedColumn =
+          _columns.firstWhereOrNull((column) => column.isSorted);
+      if (firstSortedColumn == null) {
+        DaviColumn column = _columns.first;
+        column._direction = DaviSortDirection.ascending;
+        column._sortPriority = 1;
+      }
     }
   }
 
@@ -266,8 +286,7 @@ class DaviModel<DATA> extends ChangeNotifier {
   /// Function to realize the multi sort.
   int _compoundSort(DATA a, DATA b) {
     int r = 0;
-    for (int i = 0; i < _sortedColumns.length; i++) {
-      final DaviColumn<DATA> column = _sortedColumns[i];
+    for (final DaviColumn<DATA> column in sortedColumns) {
       if (column.sort != null && column.direction != null) {
         final DaviDataComparator<DATA> sort = column.sort!;
         final DaviSortDirection direction = column.direction!;
@@ -299,5 +318,5 @@ mixin ColumnSortMixin {
     _direction = null;
   }
 
-  bool get isSorted => _direction != null;
+  bool get isSorted => _direction != null && _sortPriority != null;
 }

@@ -13,7 +13,8 @@ class DaviHeaderCell<DATA> extends StatefulWidget {
       required this.column,
       required this.resizable,
       required this.tapToSortEnabled,
-      required this.columnIndex})
+      required this.columnIndex,
+      required this.isMultiSorted})
       : super(key: key);
 
   final DaviModel<DATA> model;
@@ -21,6 +22,7 @@ class DaviHeaderCell<DATA> extends StatefulWidget {
   final bool resizable;
   final bool tapToSortEnabled;
   final int columnIndex;
+  final bool isMultiSorted;
 
   @override
   State<StatefulWidget> createState() => _DaviHeaderCellState();
@@ -65,7 +67,7 @@ class _DaviHeaderCellState extends State<DaviHeaderCell> {
       }
       children.add(
           Icon(icon, color: theme.sortIconColor, size: theme.sortIconSize));
-      if (widget.model.isMultiSorted) {
+      if (widget.isMultiSorted) {
         children.add(Align(
             alignment: Alignment.center,
             child: Text(widget.column.sortPriority.toString(),

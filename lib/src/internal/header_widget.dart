@@ -33,6 +33,8 @@ class HeaderWidget<DATA> extends StatelessWidget {
 
     List<ColumnsLayoutChild<DATA>> children = [];
 
+    final isMultiSorted = model.isMultiSorted;
+
     for (int columnIndex = 0;
         columnIndex < model.columnsLength;
         columnIndex++) {
@@ -44,6 +46,7 @@ class HeaderWidget<DATA> extends StatelessWidget {
           column: column,
           resizable: resizable,
           tapToSortEnabled: tapToSortEnabled,
+          isMultiSorted:isMultiSorted,
           columnIndex: columnIndex);
       children.add(ColumnsLayoutChild<DATA>(index: columnIndex, child: cell));
     }
