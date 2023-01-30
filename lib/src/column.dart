@@ -4,17 +4,18 @@ import 'package:davi/src/cell_background.dart';
 import 'package:davi/src/cell_builder.dart';
 import 'package:davi/src/cell_style.dart';
 import 'package:davi/src/column_random_id.dart';
-import 'package:davi/src/model.dart';
 import 'package:davi/src/pin_status.dart';
+import 'package:davi/src/sort_direction.dart';
 import 'package:davi/src/value_mapper.dart';
 import 'package:flutter/widgets.dart';
+import 'package:meta/meta.dart';
 
 /// The [Davi] column.
 ///
 /// The optional value mappings [intValue], [doubleValue], [stringValue],
 /// [iconValue] and [objectValue] allows automatic cell configuration
 /// by identifying and displaying data types in the row object.
-class DaviColumn<DATA> extends ChangeNotifier with ColumnSortMixin {
+class DaviColumn<DATA> extends ChangeNotifier {
   DaviColumn(
       {dynamic id,
       double width = 100,
@@ -131,6 +132,32 @@ class DaviColumn<DATA> extends ChangeNotifier with ColumnSortMixin {
   }
 
   bool resizable;
+
+  int? _sortPriority;
+
+  @internal
+  set sortPriority(int? value) {
+    _sortPriority = value;
+  }
+
+  int? get sortPriority => _sortPriority;
+
+  DaviSortDirection? _sortDirection;
+
+  @internal
+  set sortDirection(DaviSortDirection? value) {
+    _sortDirection = value;
+  }
+
+  DaviSortDirection? get sortDirection => _sortDirection;
+
+  bool get isSorted => _sortDirection != null && _sortPriority != null;
+
+  @internal
+  void clearSortData() {
+    _sortPriority = null;
+    _sortDirection = null;
+  }
 
   @override
   String toString() {

@@ -304,30 +304,3 @@ class DaviModel<DATA> extends ChangeNotifier {
     return r;
   }
 }
-
-mixin ColumnSortMixin {
-
-  int? _sortPriority;
-  @internal
-  set sortPriority(int? value) {
-    _sortPriority=value;
-  }
-  int? get sortPriority => _sortPriority;
-  
-  DaviSortDirection? _sortDirection;
-  @internal
-  set sortDirection(DaviSortDirection? value){
-    _sortDirection=value;
-  }
-  DaviSortDirection? get sortDirection => _sortDirection;
-
-  bool get isSorted => _sortDirection != null && _sortPriority != null;
-
-  @internal
-  void clearSortData() {
-    _sortPriority = null;
-    _sortDirection = null;
-  }
-
-  
-}
