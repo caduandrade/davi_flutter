@@ -135,19 +135,38 @@ class DaviColumn<DATA> extends ChangeNotifier {
 
   DaviSort? _sort;
 
+  DaviSort? get sort => _sort;
+  int? _sortPriority;
+
+  int? get sortPriority => _sortPriority;
+
   @internal
-  set sort(DaviSort? value) {
-    if (value != null && value.columnId != id) {
-      throw ArgumentError.value(value.columnId, null,
+  void setSort(DaviSort sort, int priority) {
+    if (sort.columnId != id) {
+      throw ArgumentError.value(sort.columnId, null,
           'The columnId does not have the same value as the column identifier.');
     }
-    if (value != null && !sortable) {
+    if (!sortable) {
       throw ArgumentError('Column is not sortable.');
     }
-    _sort = value;
+    _sort = sort;
+    _sortPriority = priority;
   }
 
-  DaviSort? get sort => _sort;
+  @internal
+  bool setSortPriority(int value) {
+    if (_sort != null) {
+      _sortPriority = value;
+      return true;
+    }
+    return false;
+  }
+
+  @internal
+  void clearSort() {
+    _sort = null;
+    _sortPriority = null;
+  }
 
   @override
   String toString() {

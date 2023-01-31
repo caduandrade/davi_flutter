@@ -37,7 +37,7 @@ class DaviModel<DATA> extends ChangeNotifier {
   List<DaviColumn<DATA>> get sortedColumns {
     List<DaviColumn<DATA>> list =
         _columns.where((column) => column.sort != null).toList();
-    list.sort((a, b) => a.sort!.priority.compareTo(b.sort!.priority));
+    list.sort((a, b) => a.sortPriority!.compareTo(b.sortPriority!));
     return list;
   }
 
@@ -169,7 +169,7 @@ class DaviModel<DATA> extends ChangeNotifier {
   }
 
   void addColumn(DaviColumn<DATA> column) {
-    column.sort = null;
+    column.clearSort();
     _columns.add(column);
     _checkColumnIdCollision();
     column.addListener(notifyListeners);
@@ -179,7 +179,7 @@ class DaviModel<DATA> extends ChangeNotifier {
 
   void addColumns(Iterable<DaviColumn<DATA>> columns) {
     for (DaviColumn<DATA> column in columns) {
-      column.sort = null;
+      column.clearSort();
       _columns.add(column);
       column.addListener(notifyListeners);
     }
@@ -216,11 +216,11 @@ class DaviModel<DATA> extends ChangeNotifier {
         _columnInResizing = null;
       }
       if (column.sort != null) {
-        column.sort = null;
+        column.clearSort();
         int priority = 1;
         for (DaviColumn<DATA> otherColumn in _columns) {
-          if (otherColumn.sort != null) {
-            otherColumn.sort!.priority = priority++;
+          if (otherColumn.setSortPriority(priority)) {
+            priority++;
           }
         }
         _updateRows(notify: false);
@@ -245,7 +245,7 @@ class DaviModel<DATA> extends ChangeNotifier {
 
   void _clearColumnsSortData() {
     for (DaviColumn<DATA> column in _columns) {
-      column.sort = null;
+      column.clearSort();
     }
   }
 
@@ -269,8 +269,7 @@ class DaviModel<DATA> extends ChangeNotifier {
       }
       DaviColumn<DATA>? column = getColumn(sort.columnId);
       if (column != null && column.sortable) {
-        sort.priority = priority++;
-        column.sort = sort;
+        column.setSort(sort, priority++);
         if (!multiSortEnabled) {
           // only the first one
           break;
@@ -296,8 +295,8 @@ class DaviModel<DATA> extends ChangeNotifier {
       }
       // No sorted columns. Let's order the first one available.
       if (firstNonSortedColumn != null) {
-        firstNonSortedColumn.sort =
-            DaviSort(firstNonSortedColumn.id, DaviSortDirection.ascending);
+        firstNonSortedColumn.setSort(
+            DaviSort(firstNonSortedColumn.id, DaviSortDirection.ascending), 1);
       }
     }
   }

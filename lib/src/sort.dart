@@ -1,5 +1,4 @@
 import 'package:davi/src/sort_direction.dart';
-import 'package:meta/meta.dart';
 
 /// Describes the [Davi] sort.
 class DaviSort {
@@ -17,20 +16,6 @@ class DaviSort {
 
   final dynamic columnId;
   final DaviSortDirection direction;
-
-  int _priority = 1;
-
-  /// The priority used in multi sorting.
-  ///
-  /// When added to the model, this value will be automatically updated
-  /// to keep incremental across columns.
-  /// Must be ignored in [hashCode] and [==] operator.
-  int get priority => _priority;
-
-  @internal
-  set priority(int value) {
-    _priority = value;
-  }
 
   @override
   bool operator ==(Object other) =>

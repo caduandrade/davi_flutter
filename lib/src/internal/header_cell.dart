@@ -69,7 +69,7 @@ class _DaviHeaderCellState extends State<DaviHeaderCell> {
       if (widget.isMultiSorted) {
         children.add(Align(
             alignment: Alignment.center,
-            child: Text(sort.priority.toString(),
+            child: Text(widget.column.sortPriority!.toString(),
                 style: TextStyle(
                     color: theme.sortIconColor,
                     fontSize: theme.sortPrioritySize))));
@@ -90,9 +90,7 @@ class _DaviHeaderCellState extends State<DaviHeaderCell> {
           cursor: sortEnabled ? SystemMouseCursors.click : MouseCursor.defer,
           child: GestureDetector(
               behavior: HitTestBehavior.opaque,
-              onTap: sortEnabled
-                  ? _onHeaderSortPressed
-                  : null,
+              onTap: sortEnabled ? _onHeaderSortPressed : null,
               child: header));
     }
 

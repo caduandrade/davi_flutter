@@ -176,7 +176,7 @@ void oneColumn(
     expect(model.sortedColumns.first.name, 'name');
     expect(model.sortedColumns.first.sort, isNotNull);
     expect(model.sortedColumns.first.sort?.columnId, 'id');
-    expect(model.sortedColumns.first.sort?.priority, 1);
+    expect(model.sortedColumns.first.sortPriority, 1);
     expect(
         model.sortedColumns.first.sort?.direction, DaviSortDirection.ascending);
   } else {
@@ -207,7 +207,7 @@ void twoColumns(
     expect(model.isSorted, true);
     expect(model.sortedColumns.length, 1);
     expect(model.sortedColumns.first.sort, isNotNull);
-    expect(model.sortedColumns.first.sort?.priority, 1);
+    expect(model.sortedColumns.first.sortPriority, 1);
     expect(
         model.sortedColumns.first.sort?.direction, DaviSortDirection.ascending);
     if (expectSortedColumn == 1) {
