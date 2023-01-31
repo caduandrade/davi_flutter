@@ -5,29 +5,33 @@ import '../util/last_on_sort.dart';
 
 List<int> get _rows => List<int>.generate(5, (i) => i + 1);
 
+DaviColumn<int> _column(int id) => DaviColumn<int>(id: id, name: 'name$id');
+
+List<DaviColumn<int>> _columns(int length) =>
+    List.generate(length, (index) => _column(index + 1));
+
 void main() {
   group('DaviModel', () {
-    test('Sort', () {
+    test('onSort', () {
       LastOnSort lastOnSort = LastOnSort();
 
       DaviModel<int> model = DaviModel(
-          rows: _rows,
-          columns: [
-            DaviColumn<int>(id: 1, name: 'name1'),
-            DaviColumn<int>(id: 2, name: 'name2'),
-            DaviColumn<int>(id: 3, name: 'name3')
-          ],
-          onSort: lastOnSort.onSort,
-          ignoreDataComparators: true);
+          rows: _rows, columns: _columns(3), onSort: lastOnSort.onSort);
 
-      expect(model.sortedColumns.length, 0);
+      expect(model.isSorted, false);
 
-      model.sort([DaviSort(1, DaviSortDirection.ascending)]);
+      model.sort([DaviSort(1)]);
+
       expect(lastOnSort.triggeredCount, 1);
       expect(lastOnSort.columns.length, 1);
+      expect(lastOnSort.columns[0].id, 1);
       expect(lastOnSort.columns[0].name, 'name1');
       expect(
           lastOnSort.columns[0].sort?.direction, DaviSortDirection.ascending);
+
+      model.sort([DaviSort(1)]);
+
+      expect(lastOnSort.triggeredCount, 1);
     });
   });
 }

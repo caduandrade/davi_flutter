@@ -253,11 +253,16 @@ class DaviModel<DATA> extends ChangeNotifier {
   ///
   /// If multi sorting is disabled, only the first one in the list will be used.
   /// Not sortable columns will be ignored.
-  void sort(List<DaviSort> sortList) {
+  void sort(List<DaviSort> newSortList) {
+    if (const ListEquality().equals(sortList, newSortList)) {
+      // same sort
+      return;
+    }
+
     _clearColumnsSortData();
     HashSet<dynamic> uniqueColumnIds = HashSet<dynamic>();
     int priority = 1;
-    for (DaviSort sort in sortList) {
+    for (DaviSort sort in newSortList) {
       if (!uniqueColumnIds.add(sort.columnId)) {
         throw ArgumentError(
             'List has multiple configurations with the same columnId.');
