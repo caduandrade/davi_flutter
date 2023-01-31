@@ -5,19 +5,20 @@
 * `DaviModel`
   * New attribute: `alwaysSorted`.
     * Defines if there will always be some sorted column.
-  * The `ignoreSort` attribute has been renamed to `ignoreSortFunctions`.
-  * New method: `getColumn(dynamic id)`
+  * The `ignoreSort` attribute has been renamed to `ignoreDataComparators`.
+  * New methods: `getColumn(dynamic id)` and `sortList`.
   * Removed methods: `multiSortByColumn`, `sortByColumnIndex` and `sortByColumn`.
 * `DaviColumn`
-  * The `priority` attribute has been renamed to `sortPriority`.
-  * The `order` attribute has been renamed to `sortDirection`. 
+  * The `sort` attribute has been renamed to `dataComparator`.
+  * The `priority` and `order` attributes has been replaced by the new `sort` attribute. 
+  * The `isSorted` has been removed.
 * `HeaderCellThemeData`
   * The `sortOrderSize` attribute has been renamed to `sortPrioritySize`
 * The `DaviColumnSort` typedef has been renamed to `DaviDataComparator`
 * The `TableSortOrder` enum has been renamed to `DaviSortDirection`
 * The `ColumnSort` class has been renamed to `DaviSort`
   * The `order` attribute has been renamed to `direction`.
-  * The `columnIndex` has been replaced by `id`.
+  * The `columnIndex` has been replaced by `columnId`.
 
 ## 3.1.1
 

@@ -1,7 +1,7 @@
 /// Random id for the column if none is defined.
-class DaviColumnRandomId {
+class DaviColumnId {
   @override
   String toString() {
-    return hashCode.toString();
+    return 'DaviColumnId{$hashCode}';
   }
 }

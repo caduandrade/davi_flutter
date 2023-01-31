@@ -2,8 +2,8 @@ import 'package:davi/davi.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  group('Model', () {
-    test('column find', () {
+  group('DaviModel', () {
+    test('getColumn', () {
       DaviModel<int> model = DaviModel(rows: [
         1,
         2,

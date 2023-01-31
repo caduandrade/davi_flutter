@@ -3,9 +3,9 @@ import 'dart:math' as math;
 import 'package:davi/src/cell_background.dart';
 import 'package:davi/src/cell_builder.dart';
 import 'package:davi/src/cell_style.dart';
-import 'package:davi/src/column_random_id.dart';
+import 'package:davi/src/column_id.dart';
 import 'package:davi/src/pin_status.dart';
-import 'package:davi/src/sort_direction.dart';
+import 'package:davi/src/sort.dart';
 import 'package:davi/src/value_mapper.dart';
 import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
@@ -32,7 +32,7 @@ class DaviColumn<DATA> extends ChangeNotifier {
       this.fractionDigits,
       this.cellBuilder,
       this.leading,
-      DaviDataComparator<DATA>? sort,
+      DaviDataComparator<DATA>? dataComparator,
       this.pinStatus = PinStatus.none,
       DaviIntValueMapper<DATA>? intValue,
       DaviDoubleValueMapper<DATA>? doubleValue,
@@ -43,7 +43,7 @@ class DaviColumn<DATA> extends ChangeNotifier {
       this.cellClip = false,
       this.sortable = true,
       this.cellStyleBuilder})
-      : id = id ?? DaviColumnRandomId(),
+      : id = id ?? DaviColumnId(),
         _width = width,
         _grow = grow != null ? math.max(1, grow) : null,
         stringValueMapper = stringValue,
@@ -51,13 +51,13 @@ class DaviColumn<DATA> extends ChangeNotifier {
         iconValueMapper = iconValue,
         doubleValueMapper = doubleValue,
         objectValueMapper = objectValue,
-        sort = sort ??
-            _buildSort(
+        dataComparator = dataComparator ??
+            _buildDataComparator(
                 intValue, doubleValue, stringValue, iconValue, objectValue);
 
   /// Identifier that can be assigned to this column.
   ///
-  /// If none is defined, a [DaviColumnRandomId] will be created;
+  /// If none is defined, a [DaviColumnId] will be created;
   final dynamic id;
 
   /// Optional column name. Displayed by default in the cell header widget.
@@ -87,7 +87,7 @@ class DaviColumn<DATA> extends ChangeNotifier {
 
   /// Function used to sort the column. If not defined, it can be created
   /// according to value mappings.
-  final DaviDataComparator<DATA>? sort;
+  final DaviDataComparator<DATA> dataComparator;
 
   final DaviIntValueMapper<DATA>? intValueMapper;
   final DaviDoubleValueMapper<DATA>? doubleValueMapper;
@@ -133,31 +133,21 @@ class DaviColumn<DATA> extends ChangeNotifier {
 
   bool resizable;
 
-  int? _sortPriority;
+  DaviSort? _sort;
 
   @internal
-  set sortPriority(int? value) {
-    _sortPriority = value;
+  set sort(DaviSort? value) {
+    if (value != null && value.columnId != id) {
+      throw ArgumentError.value(value.columnId, null,
+          'The columnId does not have the same value as the column identifier.');
+    }
+    if (value != null && !sortable) {
+      throw ArgumentError('Column is not sortable.');
+    }
+    _sort = value;
   }
 
-  int? get sortPriority => _sortPriority;
-
-  DaviSortDirection? _sortDirection;
-
-  @internal
-  set sortDirection(DaviSortDirection? value) {
-    _sortDirection = value;
-  }
-
-  DaviSortDirection? get sortDirection => _sortDirection;
-
-  bool get isSorted => _sortDirection != null && _sortPriority != null;
-
-  @internal
-  void clearSortData() {
-    _sortPriority = null;
-    _sortDirection = null;
-  }
+  DaviSort? get sort => _sort;
 
   @override
   String toString() {
@@ -173,7 +163,7 @@ class DaviColumn<DATA> extends ChangeNotifier {
   int get hashCode => id.hashCode;
 
   /// Builds a default sort
-  static DaviDataComparator? _buildSort<DATA>(
+  static DaviDataComparator _buildDataComparator<DATA>(
       DaviIntValueMapper<DATA>? intValue,
       DaviDoubleValueMapper<DATA>? doubleValue,
       DaviStringValueMapper<DATA>? stringValue,
@@ -243,10 +233,12 @@ class DaviColumn<DATA> extends ChangeNotifier {
         return 0;
       };
     }
-    return null;
+    return _defaultDataComparator;
   }
 }
 
 /// Signature for sort column function.
 typedef DaviDataComparator<DATA> = int Function(
     DATA a, DATA b, DaviColumn<DATA> column);
+
+int _defaultDataComparator<DATA>(DATA a, DATA b, DaviColumn<DATA> column) => 0;
