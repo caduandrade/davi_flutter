@@ -49,7 +49,9 @@ class _DaviHeaderCellState extends State<DaviHeaderCell> {
     List<Widget> children = [];
 
     if (widget.column.leading != null) {
-      children.add(widget.column.leading!);
+      children.add(Align(
+          alignment: widget.column.headerAlignment ?? theme.alignment,
+          child: widget.column.leading!));
     }
     children.add(AxisLayoutChild(
         shrink: theme.expandableName ? 0 : 1,
@@ -58,20 +60,22 @@ class _DaviHeaderCellState extends State<DaviHeaderCell> {
 
     final DaviSort? sort = widget.column.sort;
     if (sort != null) {
-      IconData? icon;
-      if (sort.direction == DaviSortDirection.ascending) {
-        icon = theme.ascendingIcon;
-      } else if (sort.direction == DaviSortDirection.descending) {
-        icon = theme.descendingIcon;
-      }
-      children.add(
-          Icon(icon, color: theme.sortIconColor, size: theme.sortIconSize));
+      Widget sortIconWidget =
+          theme.sortIconBuilder(sort.direction, theme.sortIconColors);
+      children.add(Align(
+        alignment: widget.column.headerAlignment ?? theme.alignment,
+        child: sortIconWidget,
+      ));
+
       if (widget.isMultiSorted) {
+        if (theme.sortPriorityGap != null) {
+          children.add(SizedBox(width: theme.sortPriorityGap));
+        }
         children.add(Align(
-            alignment: Alignment.center,
+            alignment: widget.column.headerAlignment ?? theme.alignment,
             child: Text(widget.column.sortPriority!.toString(),
                 style: TextStyle(
-                    color: theme.sortIconColor,
+                    color: theme.sortPriorityColor,
                     fontSize: theme.sortPrioritySize))));
       }
     }

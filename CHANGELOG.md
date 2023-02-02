@@ -19,6 +19,11 @@
 * The `ColumnSort` class has been renamed to `DaviSort`
   * The `order` attribute has been renamed to `direction`.
   * The `columnIndex` has been replaced by `columnId`.
+* `HeaderCellThemeData`
+  * Default sorting icons have been changed.
+  * The `sortIconColor` attribute has been replaced by `sortIconColors` (ascending and descending). 
+  * The `ascendingIcon` and `descendingIcon` attributes has been replaced by `sortIconBuilder`.
+  * New attributes: `sortPriorityColor` and `sortPriorityGap`.
 
 ## 3.1.1
 
