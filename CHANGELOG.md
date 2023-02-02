@@ -18,12 +18,14 @@
 * The `TableSortOrder` enum has been renamed to `DaviSortDirection`
 * The `ColumnSort` class has been renamed to `DaviSort`
   * The `order` attribute has been renamed to `direction`.
-  * The `columnIndex` has been replaced by `columnId`.
+  * The `columnIndex`(int) has been replaced by `columnId`(dynamic).
 * `HeaderCellThemeData`
   * Default sorting icons have been changed.
   * The `sortIconColor` attribute has been replaced by `sortIconColors` (ascending and descending). 
   * The `ascendingIcon` and `descendingIcon` attributes has been replaced by `sortIconBuilder`.
   * New attributes: `sortPriorityColor` and `sortPriorityGap`.
+* `SortIconBuilders`
+  * Default sort icon builders.
 
 ## 3.1.1
 

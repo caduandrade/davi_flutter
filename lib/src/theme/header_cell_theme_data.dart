@@ -1,6 +1,5 @@
-import 'package:davi/src/sort_direction.dart';
-import 'package:davi/src/theme/sort_icon.dart';
 import 'package:davi/src/theme/sort_icon_builder.dart';
+import 'package:davi/src/theme/sort_icon_builders.dart';
 import 'package:davi/src/theme/sort_icon_colors.dart';
 import 'package:flutter/material.dart';
 
@@ -10,7 +9,7 @@ class HeaderCellThemeData {
   //TODO avoid negative values
   /// Builds a theme data.
   const HeaderCellThemeData(
-      {this.sortIconBuilder = sortIconSize16Short,
+      {this.sortIconBuilder = SortIconBuilders.size16Short,
       this.textStyle = HeaderCellThemeDataDefaults.textStyle,
       this.height = HeaderCellThemeDataDefaults.height,
       this.padding = HeaderCellThemeDataDefaults.padding,
@@ -41,41 +40,6 @@ class HeaderCellThemeData {
   final double resizeAreaWidth;
   final Color? resizeAreaHoverColor;
   final bool expandableName;
-
-  static Widget sortIconSize12(
-      DaviSortDirection direction, SortIconColors colors) {
-    return sortIcon(direction, colors, SortIconSize.size12);
-  }
-
-  static Widget sortIconSize14(
-      DaviSortDirection direction, SortIconColors colors) {
-    return sortIcon(direction, colors, SortIconSize.size14);
-  }
-
-  static Widget sortIconSize16Tall(
-      DaviSortDirection direction, SortIconColors colors) {
-    return sortIcon(direction, colors, SortIconSize.size16Tall);
-  }
-
-  static Widget sortIconSize16Short(
-      DaviSortDirection direction, SortIconColors colors) {
-    return sortIcon(direction, colors, SortIconSize.size16Short);
-  }
-
-  static Widget sortIconSize19(
-      DaviSortDirection direction, SortIconColors colors) {
-    return sortIcon(direction, colors, SortIconSize.size19);
-  }
-
-  static Widget sortIcon(DaviSortDirection direction, SortIconColors colors,
-      SortIconSize iconSize) {
-    return SortIcon(
-        direction: direction,
-        size: iconSize,
-        color: direction == DaviSortDirection.ascending
-            ? colors.ascending
-            : colors.descending);
-  }
 }
 
 class HeaderCellThemeDataDefaults {
@@ -86,14 +50,11 @@ class HeaderCellThemeDataDefaults {
 
   static const Color sortIconColor = Color(0xFF424242);
 
-  //static const Color sortIconColor = Color(0xFF616161);
   static const SortIconColors sortIconColors = SortIconColors(
       ascending: HeaderCellThemeDataDefaults.sortIconColor,
       descending: HeaderCellThemeDataDefaults.sortIconColor);
-  static const Color sortPriorityColor = Color(0xFF424242);
 
-//  static const Color sortPriorityColor = Color(0xFF616161);
-  Color a = Colors.grey;
+  static const Color sortPriorityColor = Color(0xFF424242);
   static const double sortPrioritySize = 12;
   static const double sortPriorityGap = 2;
 

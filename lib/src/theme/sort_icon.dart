@@ -11,27 +11,33 @@ class SortIcon extends LeafRenderObjectWidget {
       required this.color,
       required this.direction,
       required this.size,
+      this.inverted = false,
       this.debug = false})
       : super(key: key);
 
   final Color color;
   final DaviSortDirection direction;
+  final bool inverted;
   final SortIconSize size;
   final bool debug;
 
   @override
   RenderSortIcon createRenderObject(BuildContext context) {
     if (size == SortIconSize.size12) {
-      return RenderSize12(direction: direction, debug: debug, color: color);
+      return RenderSize12(
+          direction: direction, debug: debug, color: color, inverted: inverted);
     } else if (size == SortIconSize.size14) {
-      return RenderSize14(direction: direction, debug: debug, color: color);
+      return RenderSize14(
+          direction: direction, debug: debug, color: color, inverted: inverted);
     } else if (size == SortIconSize.size16Short) {
       return RenderSize16Short(
-          direction: direction, debug: debug, color: color);
+          direction: direction, debug: debug, color: color, inverted: inverted);
     } else if (size == SortIconSize.size16Tall) {
-      return RenderSize16Tall(direction: direction, debug: debug, color: color);
+      return RenderSize16Tall(
+          direction: direction, debug: debug, color: color, inverted: inverted);
     } else if (size == SortIconSize.size19) {
-      return RenderSize19(direction: direction, debug: debug, color: color);
+      return RenderSize19(
+          direction: direction, debug: debug, color: color, inverted: inverted);
     }
     throw StateError('Unrecognized size: $size');
   }
@@ -41,6 +47,7 @@ class SortIcon extends LeafRenderObjectWidget {
     renderObject
       ..color = color
       ..direction = direction
+      ..inverted = inverted
       ..debug = debug;
   }
 
@@ -50,6 +57,7 @@ class SortIcon extends LeafRenderObjectWidget {
     properties.add(ColorProperty('color', color));
     properties.add(EnumProperty('direction', direction));
     properties.add(EnumProperty('size', size));
+    properties.add(StringProperty('inverted', inverted.toString()));
     properties.add(StringProperty('debug', debug.toString()));
   }
 }
@@ -58,12 +66,23 @@ abstract class RenderSortIcon extends RenderBox {
   RenderSortIcon(
       {required Color color,
       required DaviSortDirection direction,
+      required bool inverted,
       required bool debug})
       : _color = color,
         _direction = direction,
+        _inverted = inverted,
         _debug = debug;
 
   double get iconSize;
+
+  bool _inverted;
+
+  set inverted(bool value) {
+    if (_inverted != value) {
+      _inverted = value;
+      markNeedsPaint();
+    }
+  }
 
   Color _color;
 
@@ -119,7 +138,9 @@ abstract class RenderSortIcon extends RenderBox {
     ..color = _color
     ..style = PaintingStyle.fill;
 
-  void paintIcon(Canvas canvas);
+  void paintSmallerTopBiggerBottom(Canvas canvas);
+
+  void paintBiggerTopSmallerBottom(Canvas canvas);
 
   @override
   void paint(PaintingContext context, Offset offset) {
@@ -136,7 +157,19 @@ abstract class RenderSortIcon extends RenderBox {
             ..style = PaintingStyle.fill);
     }
 
-    paintIcon(canvas);
+    if (_inverted) {
+      if (_direction == DaviSortDirection.ascending) {
+        paintBiggerTopSmallerBottom(canvas);
+      } else {
+        paintSmallerTopBiggerBottom(canvas);
+      }
+    } else {
+      if (_direction == DaviSortDirection.ascending) {
+        paintSmallerTopBiggerBottom(canvas);
+      } else {
+        paintBiggerTopSmallerBottom(canvas);
+      }
+    }
 
     canvas.restore();
   }
@@ -146,23 +179,29 @@ class RenderSize12 extends RenderSortIcon {
   RenderSize12(
       {required Color color,
       required DaviSortDirection direction,
+      required bool inverted,
       required bool debug})
-      : super(color: color, direction: direction, debug: debug);
+      : super(
+            color: color,
+            direction: direction,
+            inverted: inverted,
+            debug: debug);
 
   @override
   double get iconSize => 12;
 
   @override
-  void paintIcon(Canvas canvas) {
-    if (_direction == DaviSortDirection.ascending) {
-      canvas.drawRect(const Rect.fromLTWH(7, 1, 3, 2), _paint);
-      canvas.drawRect(const Rect.fromLTWH(4, 5, 6, 2), _paint);
-      canvas.drawRect(const Rect.fromLTWH(2, 9, 8, 2), _paint);
-    } else {
-      canvas.drawRect(const Rect.fromLTWH(2, 1, 8, 2), _paint);
-      canvas.drawRect(const Rect.fromLTWH(4, 5, 6, 2), _paint);
-      canvas.drawRect(const Rect.fromLTWH(7, 9, 3, 2), _paint);
-    }
+  void paintSmallerTopBiggerBottom(Canvas canvas) {
+    canvas.drawRect(const Rect.fromLTWH(7, 1, 3, 2), _paint);
+    canvas.drawRect(const Rect.fromLTWH(4, 5, 6, 2), _paint);
+    canvas.drawRect(const Rect.fromLTWH(2, 9, 8, 2), _paint);
+  }
+
+  @override
+  void paintBiggerTopSmallerBottom(Canvas canvas) {
+    canvas.drawRect(const Rect.fromLTWH(2, 1, 8, 2), _paint);
+    canvas.drawRect(const Rect.fromLTWH(4, 5, 6, 2), _paint);
+    canvas.drawRect(const Rect.fromLTWH(7, 9, 3, 2), _paint);
   }
 }
 
@@ -170,23 +209,29 @@ class RenderSize14 extends RenderSortIcon {
   RenderSize14(
       {required Color color,
       required DaviSortDirection direction,
+      required bool inverted,
       required bool debug})
-      : super(color: color, direction: direction, debug: debug);
+      : super(
+            color: color,
+            direction: direction,
+            inverted: inverted,
+            debug: debug);
 
   @override
   double get iconSize => 14;
 
   @override
-  void paintIcon(Canvas canvas) {
-    if (_direction == DaviSortDirection.ascending) {
-      canvas.drawRect(const Rect.fromLTWH(8, 2, 4, 2), _paint);
-      canvas.drawRect(const Rect.fromLTWH(5, 6, 7, 2), _paint);
-      canvas.drawRect(const Rect.fromLTWH(2, 10, 10, 2), _paint);
-    } else {
-      canvas.drawRect(const Rect.fromLTWH(2, 2, 10, 2), _paint);
-      canvas.drawRect(const Rect.fromLTWH(5, 6, 7, 2), _paint);
-      canvas.drawRect(const Rect.fromLTWH(8, 10, 4, 2), _paint);
-    }
+  void paintSmallerTopBiggerBottom(Canvas canvas) {
+    canvas.drawRect(const Rect.fromLTWH(8, 2, 4, 2), _paint);
+    canvas.drawRect(const Rect.fromLTWH(5, 6, 7, 2), _paint);
+    canvas.drawRect(const Rect.fromLTWH(2, 10, 10, 2), _paint);
+  }
+
+  @override
+  void paintBiggerTopSmallerBottom(Canvas canvas) {
+    canvas.drawRect(const Rect.fromLTWH(2, 2, 10, 2), _paint);
+    canvas.drawRect(const Rect.fromLTWH(5, 6, 7, 2), _paint);
+    canvas.drawRect(const Rect.fromLTWH(8, 10, 4, 2), _paint);
   }
 }
 
@@ -194,23 +239,29 @@ class RenderSize16Tall extends RenderSortIcon {
   RenderSize16Tall(
       {required Color color,
       required DaviSortDirection direction,
+      required bool inverted,
       required bool debug})
-      : super(color: color, direction: direction, debug: debug);
+      : super(
+            color: color,
+            direction: direction,
+            inverted: inverted,
+            debug: debug);
 
   @override
   double get iconSize => 16;
 
   @override
-  void paintIcon(Canvas canvas) {
-    if (_direction == DaviSortDirection.ascending) {
-      canvas.drawRect(const Rect.fromLTWH(10, 2, 4, 2), _paint);
-      canvas.drawRect(const Rect.fromLTWH(6, 7, 8, 2), _paint);
-      canvas.drawRect(const Rect.fromLTWH(2, 12, 12, 2), _paint);
-    } else {
-      canvas.drawRect(const Rect.fromLTWH(2, 2, 12, 2), _paint);
-      canvas.drawRect(const Rect.fromLTWH(6, 7, 8, 2), _paint);
-      canvas.drawRect(const Rect.fromLTWH(10, 12, 4, 2), _paint);
-    }
+  void paintSmallerTopBiggerBottom(Canvas canvas) {
+    canvas.drawRect(const Rect.fromLTWH(10, 2, 4, 2), _paint);
+    canvas.drawRect(const Rect.fromLTWH(6, 7, 8, 2), _paint);
+    canvas.drawRect(const Rect.fromLTWH(2, 12, 12, 2), _paint);
+  }
+
+  @override
+  void paintBiggerTopSmallerBottom(Canvas canvas) {
+    canvas.drawRect(const Rect.fromLTWH(2, 2, 12, 2), _paint);
+    canvas.drawRect(const Rect.fromLTWH(6, 7, 8, 2), _paint);
+    canvas.drawRect(const Rect.fromLTWH(10, 12, 4, 2), _paint);
   }
 }
 
@@ -218,23 +269,29 @@ class RenderSize16Short extends RenderSortIcon {
   RenderSize16Short(
       {required Color color,
       required DaviSortDirection direction,
+      required bool inverted,
       required bool debug})
-      : super(color: color, direction: direction, debug: debug);
+      : super(
+            color: color,
+            direction: direction,
+            inverted: inverted,
+            debug: debug);
 
   @override
   double get iconSize => 16;
 
   @override
-  void paintIcon(Canvas canvas) {
-    if (_direction == DaviSortDirection.ascending) {
-      canvas.drawRect(const Rect.fromLTWH(10, 3, 4, 2), _paint);
-      canvas.drawRect(const Rect.fromLTWH(6, 7, 8, 2), _paint);
-      canvas.drawRect(const Rect.fromLTWH(2, 11, 12, 2), _paint);
-    } else {
-      canvas.drawRect(const Rect.fromLTWH(2, 3, 12, 2), _paint);
-      canvas.drawRect(const Rect.fromLTWH(6, 7, 8, 2), _paint);
-      canvas.drawRect(const Rect.fromLTWH(10, 11, 4, 2), _paint);
-    }
+  void paintSmallerTopBiggerBottom(Canvas canvas) {
+    canvas.drawRect(const Rect.fromLTWH(10, 3, 4, 2), _paint);
+    canvas.drawRect(const Rect.fromLTWH(6, 7, 8, 2), _paint);
+    canvas.drawRect(const Rect.fromLTWH(2, 11, 12, 2), _paint);
+  }
+
+  @override
+  void paintBiggerTopSmallerBottom(Canvas canvas) {
+    canvas.drawRect(const Rect.fromLTWH(2, 3, 12, 2), _paint);
+    canvas.drawRect(const Rect.fromLTWH(6, 7, 8, 2), _paint);
+    canvas.drawRect(const Rect.fromLTWH(10, 11, 4, 2), _paint);
   }
 }
 
@@ -242,22 +299,28 @@ class RenderSize19 extends RenderSortIcon {
   RenderSize19(
       {required Color color,
       required DaviSortDirection direction,
+      required bool inverted,
       required bool debug})
-      : super(color: color, direction: direction, debug: debug);
+      : super(
+            color: color,
+            direction: direction,
+            inverted: inverted,
+            debug: debug);
 
   @override
   double get iconSize => 19;
 
   @override
-  void paintIcon(Canvas canvas) {
-    if (_direction == DaviSortDirection.ascending) {
-      canvas.drawRect(const Rect.fromLTWH(12, 2, 5, 3), _paint);
-      canvas.drawRect(const Rect.fromLTWH(7, 8, 10, 3), _paint);
-      canvas.drawRect(const Rect.fromLTWH(2, 14, 15, 3), _paint);
-    } else {
-      canvas.drawRect(const Rect.fromLTWH(2, 2, 15, 3), _paint);
-      canvas.drawRect(const Rect.fromLTWH(7, 8, 10, 3), _paint);
-      canvas.drawRect(const Rect.fromLTWH(12, 14, 5, 3), _paint);
-    }
+  void paintSmallerTopBiggerBottom(Canvas canvas) {
+    canvas.drawRect(const Rect.fromLTWH(12, 2, 5, 3), _paint);
+    canvas.drawRect(const Rect.fromLTWH(7, 8, 10, 3), _paint);
+    canvas.drawRect(const Rect.fromLTWH(2, 14, 15, 3), _paint);
+  }
+
+  @override
+  void paintBiggerTopSmallerBottom(Canvas canvas) {
+    canvas.drawRect(const Rect.fromLTWH(2, 2, 15, 3), _paint);
+    canvas.drawRect(const Rect.fromLTWH(7, 8, 10, 3), _paint);
+    canvas.drawRect(const Rect.fromLTWH(12, 14, 5, 3), _paint);
   }
 }
