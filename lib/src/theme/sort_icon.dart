@@ -3,7 +3,7 @@ import 'package:davi/src/sort_direction.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-enum SortIconSize { size12, size14, size16, size19 }
+enum SortIconSize { size12, size14, size16Tall, size16Short, size19 }
 
 class SortIcon extends LeafRenderObjectWidget {
   const SortIcon(
@@ -25,9 +25,12 @@ class SortIcon extends LeafRenderObjectWidget {
       return RenderSize12(direction: direction, debug: debug, color: color);
     } else if (size == SortIconSize.size14) {
       return RenderSize14(direction: direction, debug: debug, color: color);
-    } else if (size == SortIconSize.size16) {
-      return RenderSize16(direction: direction, debug: debug, color: color);
-    }else if (size == SortIconSize.size19) {
+    } else if (size == SortIconSize.size16Short) {
+      return RenderSize16Short(
+          direction: direction, debug: debug, color: color);
+    } else if (size == SortIconSize.size16Tall) {
+      return RenderSize16Tall(direction: direction, debug: debug, color: color);
+    } else if (size == SortIconSize.size19) {
       return RenderSize19(direction: direction, debug: debug, color: color);
     }
     throw StateError('Unrecognized size: $size');
@@ -187,11 +190,11 @@ class RenderSize14 extends RenderSortIcon {
   }
 }
 
-class RenderSize16 extends RenderSortIcon {
-  RenderSize16(
+class RenderSize16Tall extends RenderSortIcon {
+  RenderSize16Tall(
       {required Color color,
-        required DaviSortDirection direction,
-        required bool debug})
+      required DaviSortDirection direction,
+      required bool debug})
       : super(color: color, direction: direction, debug: debug);
 
   @override
@@ -207,6 +210,30 @@ class RenderSize16 extends RenderSortIcon {
       canvas.drawRect(const Rect.fromLTWH(2, 2, 12, 2), _paint);
       canvas.drawRect(const Rect.fromLTWH(6, 7, 8, 2), _paint);
       canvas.drawRect(const Rect.fromLTWH(10, 12, 4, 2), _paint);
+    }
+  }
+}
+
+class RenderSize16Short extends RenderSortIcon {
+  RenderSize16Short(
+      {required Color color,
+      required DaviSortDirection direction,
+      required bool debug})
+      : super(color: color, direction: direction, debug: debug);
+
+  @override
+  double get iconSize => 16;
+
+  @override
+  void paintIcon(Canvas canvas) {
+    if (_direction == DaviSortDirection.ascending) {
+      canvas.drawRect(const Rect.fromLTWH(10, 3, 4, 2), _paint);
+      canvas.drawRect(const Rect.fromLTWH(6, 7, 8, 2), _paint);
+      canvas.drawRect(const Rect.fromLTWH(2, 11, 12, 2), _paint);
+    } else {
+      canvas.drawRect(const Rect.fromLTWH(2, 3, 12, 2), _paint);
+      canvas.drawRect(const Rect.fromLTWH(6, 7, 8, 2), _paint);
+      canvas.drawRect(const Rect.fromLTWH(10, 11, 4, 2), _paint);
     }
   }
 }

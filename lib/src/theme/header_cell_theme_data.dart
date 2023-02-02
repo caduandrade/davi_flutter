@@ -10,7 +10,7 @@ class HeaderCellThemeData {
   //TODO avoid negative values
   /// Builds a theme data.
   const HeaderCellThemeData(
-      {this.sortIconBuilder = sortIconSize16,
+      {this.sortIconBuilder = sortIconSize16Short,
       this.textStyle = HeaderCellThemeDataDefaults.textStyle,
       this.height = HeaderCellThemeDataDefaults.height,
       this.padding = HeaderCellThemeDataDefaults.padding,
@@ -52,9 +52,14 @@ class HeaderCellThemeData {
     return sortIcon(direction, colors, SortIconSize.size14);
   }
 
-  static Widget sortIconSize16(
+  static Widget sortIconSize16Tall(
       DaviSortDirection direction, SortIconColors colors) {
-    return sortIcon(direction, colors, SortIconSize.size16);
+    return sortIcon(direction, colors, SortIconSize.size16Tall);
+  }
+
+  static Widget sortIconSize16Short(
+      DaviSortDirection direction, SortIconColors colors) {
+    return sortIcon(direction, colors, SortIconSize.size16Short);
   }
 
   static Widget sortIconSize19(
@@ -80,10 +85,15 @@ class HeaderCellThemeDataDefaults {
   static const Alignment alignment = Alignment.centerLeft;
 
   static const Color sortIconColor = Color(0xFF424242);
+
+  //static const Color sortIconColor = Color(0xFF616161);
   static const SortIconColors sortIconColors = SortIconColors(
       ascending: HeaderCellThemeDataDefaults.sortIconColor,
       descending: HeaderCellThemeDataDefaults.sortIconColor);
   static const Color sortPriorityColor = Color(0xFF424242);
+
+//  static const Color sortPriorityColor = Color(0xFF616161);
+  Color a = Colors.grey;
   static const double sortPrioritySize = 12;
   static const double sortPriorityGap = 2;
 
