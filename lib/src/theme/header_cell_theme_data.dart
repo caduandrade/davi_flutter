@@ -40,6 +40,39 @@ class HeaderCellThemeData {
   final double resizeAreaWidth;
   final Color? resizeAreaHoverColor;
   final bool expandableName;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is HeaderCellThemeData &&
+          runtimeType == other.runtimeType &&
+          textStyle == other.textStyle &&
+          padding == other.padding &&
+          alignment == other.alignment &&
+          sortIconColors == other.sortIconColors &&
+          sortIconBuilder == other.sortIconBuilder &&
+          sortPriorityColor == other.sortPriorityColor &&
+          sortPrioritySize == other.sortPrioritySize &&
+          sortPriorityGap == other.sortPriorityGap &&
+          height == other.height &&
+          resizeAreaWidth == other.resizeAreaWidth &&
+          resizeAreaHoverColor == other.resizeAreaHoverColor &&
+          expandableName == other.expandableName;
+
+  @override
+  int get hashCode =>
+      textStyle.hashCode ^
+      padding.hashCode ^
+      alignment.hashCode ^
+      sortIconColors.hashCode ^
+      sortIconBuilder.hashCode ^
+      sortPriorityColor.hashCode ^
+      sortPrioritySize.hashCode ^
+      sortPriorityGap.hashCode ^
+      height.hashCode ^
+      resizeAreaWidth.hashCode ^
+      resizeAreaHoverColor.hashCode ^
+      expandableName.hashCode;
 }
 
 class HeaderCellThemeDataDefaults {
