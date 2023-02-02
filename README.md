@@ -203,11 +203,11 @@ The remaining width will be distributed to the columns according to the value of
 
 ```dart
     DaviTheme(
+        data: const DaviThemeData(
+            row: RowThemeData(cursorOnTapGesturesOnly: false)),
         child: Davi<Person>(_model,
             rowCursor: (row) =>
-                row.data.age < 20 ? SystemMouseCursors.forbidden : null),
-        data: const DaviThemeData(
-            row: RowThemeData(cursorOnTapGesturesOnly: false)));
+                row.data.age < 20 ? SystemMouseCursors.forbidden : null));
 ```
 
 #### Row callbacks
@@ -502,14 +502,14 @@ class MainWidgetState extends State<MainWidget> {
 
 ```dart
     DaviTheme(
-        child: Davi<Person>(_model),
         data: const DaviThemeData(
             columnDividerThickness: 4,
             columnDividerColor: Colors.blue,
             header: HeaderThemeData(columnDividerColor: Colors.purple),
             row: RowThemeData(dividerThickness: 4, dividerColor: Colors.green),
             scrollbar:
-                TableScrollbarThemeData(columnDividerColor: Colors.orange)));
+                TableScrollbarThemeData(columnDividerColor: Colors.orange)),
+        child: Davi<Person>(_model));
 ```
 
 ![](https://caduandrade.github.io/davi_flutter/theme_divider_v3.png)
@@ -543,8 +543,8 @@ class MainWidgetState extends State<MainWidget> {
 
 ```dart
     DaviTheme(
-        child: Davi<Person>(_model),
-        data: const DaviThemeData(header: HeaderThemeData(visible: false)));
+        data: const DaviThemeData(header: HeaderThemeData(visible: false)),
+        child: Davi<Person>(_model));
 ```
 
 ![](https://caduandrade.github.io/davi_flutter/hidden_header_v1.png)
@@ -612,7 +612,6 @@ class MainWidgetState extends State<MainWidget> {
 
 ```dart
     DaviTheme(
-        child: Davi<Person>(_model),
         data: const DaviThemeData(
             scrollbar: TableScrollbarThemeData(
                 thickness: 16,
@@ -623,7 +622,8 @@ class MainWidgetState extends State<MainWidget> {
                 borderThickness: 8,
                 pinnedHorizontalBorderColor: Colors.orange,
                 unpinnedHorizontalBorderColor: Colors.purple,
-                verticalBorderColor: Colors.pink)));
+                verticalBorderColor: Colors.pink)),
+        child: Davi<Person>(_model));
 ```
 
 ![](https://caduandrade.github.io/davi_flutter/theme_scrollbar_v1.png)
@@ -631,7 +631,7 @@ class MainWidgetState extends State<MainWidget> {
 #### Scrollbar always visible
 
 ```dart
-    return DaviTheme(
+    DaviTheme(
         data: const DaviThemeData(
             scrollbar: TableScrollbarThemeData(
                 horizontalOnlyWhenNeeded: false,
@@ -661,10 +661,10 @@ class MainWidgetState extends State<MainWidget> {
 
 ```dart
     DaviTheme(
-        child: Davi<Person>(_model),
         data: DaviThemeData(
             cell: CellThemeData(
-                nullValueColor: ((rowIndex, hovered) => Colors.grey[300]))));
+                nullValueColor: ((rowIndex, hovered) => Colors.grey[300]))),
+        child: Davi<Person>(_model));
 ```
 
 ![](https://caduandrade.github.io/davi_flutter/null_cell_color_v3.png)

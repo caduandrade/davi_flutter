@@ -24,19 +24,19 @@ class SortIcon extends LeafRenderObjectWidget {
   @override
   RenderSortIcon createRenderObject(BuildContext context) {
     if (size == SortIconSize.size12) {
-      return RenderSize12(
+      return _RenderSize12(
           direction: direction, debug: debug, color: color, inverted: inverted);
     } else if (size == SortIconSize.size14) {
-      return RenderSize14(
+      return _RenderSize14(
           direction: direction, debug: debug, color: color, inverted: inverted);
     } else if (size == SortIconSize.size16Short) {
-      return RenderSize16Short(
+      return _RenderSize16Short(
           direction: direction, debug: debug, color: color, inverted: inverted);
     } else if (size == SortIconSize.size16Tall) {
-      return RenderSize16Tall(
+      return _RenderSize16Tall(
           direction: direction, debug: debug, color: color, inverted: inverted);
     } else if (size == SortIconSize.size19) {
-      return RenderSize19(
+      return _RenderSize19(
           direction: direction, debug: debug, color: color, inverted: inverted);
     }
     throw StateError('Unrecognized size: $size');
@@ -147,11 +147,11 @@ abstract class RenderSortIcon extends RenderBox {
     final canvas = context.canvas;
     canvas.save();
 
-    canvas.translate(offset.dx.roundToDouble(), offset.dy.roundToDouble());
+    canvas.translate(offset.dx, offset.dy);
 
     if (_debug) {
       canvas.drawRect(
-          Rect.fromLTRB(0, 0, size.width, size.height),
+          Rect.fromLTWH(0, 0, size.width, size.height),
           Paint()
             ..color = Colors.blue[200]!
             ..style = PaintingStyle.fill);
@@ -175,8 +175,8 @@ abstract class RenderSortIcon extends RenderBox {
   }
 }
 
-class RenderSize12 extends RenderSortIcon {
-  RenderSize12(
+class _RenderSize12 extends RenderSortIcon {
+  _RenderSize12(
       {required Color color,
       required DaviSortDirection direction,
       required bool inverted,
@@ -205,8 +205,8 @@ class RenderSize12 extends RenderSortIcon {
   }
 }
 
-class RenderSize14 extends RenderSortIcon {
-  RenderSize14(
+class _RenderSize14 extends RenderSortIcon {
+  _RenderSize14(
       {required Color color,
       required DaviSortDirection direction,
       required bool inverted,
@@ -235,8 +235,8 @@ class RenderSize14 extends RenderSortIcon {
   }
 }
 
-class RenderSize16Tall extends RenderSortIcon {
-  RenderSize16Tall(
+class _RenderSize16Tall extends RenderSortIcon {
+  _RenderSize16Tall(
       {required Color color,
       required DaviSortDirection direction,
       required bool inverted,
@@ -265,8 +265,8 @@ class RenderSize16Tall extends RenderSortIcon {
   }
 }
 
-class RenderSize16Short extends RenderSortIcon {
-  RenderSize16Short(
+class _RenderSize16Short extends RenderSortIcon {
+  _RenderSize16Short(
       {required Color color,
       required DaviSortDirection direction,
       required bool inverted,
@@ -295,8 +295,8 @@ class RenderSize16Short extends RenderSortIcon {
   }
 }
 
-class RenderSize19 extends RenderSortIcon {
-  RenderSize19(
+class _RenderSize19 extends RenderSortIcon {
+  _RenderSize19(
       {required Color color,
       required DaviSortDirection direction,
       required bool inverted,
