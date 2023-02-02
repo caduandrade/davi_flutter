@@ -21,6 +21,7 @@ export 'src/row_hover_listener.dart';
 export 'src/sort_direction.dart';
 export 'src/theme/cell_null_color.dart';
 export 'src/theme/sort_icon_builder.dart';
+export 'src/theme/sort_icon_builders.dart';
 export 'src/theme/sort_icon_colors.dart';
 export 'src/theme/sort_icon.dart';
 export 'src/theme/cell_theme_data.dart';
