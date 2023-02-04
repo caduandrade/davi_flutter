@@ -1,7 +1,6 @@
 [![](https://caduandrade.github.io/davi_flutter/davi_logo_v1.png)](#)
 
 [![](https://img.shields.io/pub/v/davi.svg)](https://pub.dev/packages/davi)
-[![](https://github.com/caduandrade/davi_flutter/actions/workflows/test.yml/badge.svg)](#)
 [![](https://img.shields.io/badge/demo-try%20it%20out-blue)](https://caduandrade.github.io/davi_flutter_demo/)
 [![](https://img.shields.io/badge/Flutter-%E2%9D%A4-red)](https://flutter.dev/)
 [![](https://img.shields.io/badge/%F0%9F%91%8D%20and%20%E2%AD%90-are%20free%20and%20motivate%20me-yellow)](#)
@@ -42,6 +41,7 @@
     * [Multiple sort](#multiple-sort)
     * [Sort callback](#sort-callback)
     * [Server-side sorting](#server-side-sorting)
+    * [Always sorted](#always-sorted)
 * Theme
   * [Dividers thickness and color](#dividers-thickness-and-color) 
   * [Header](#header)
@@ -505,6 +505,22 @@ class MainWidgetState extends State<MainWidget> {
             _loading ? const Center(child: Text('Loading...')) : null);
   }
 }
+```
+
+#### Always sorted
+
+Some sortable column will always be sorted.
+
+```dart
+    _model = DaviModel<Person>(
+        rows: rows,
+        columns: [
+          DaviColumn(name: 'Name', stringValue: (row) => row.name),
+          DaviColumn(name: 'Age', intValue: (row) => row.age),
+          DaviColumn(
+              name: 'Weight', width: 120, doubleValue: (row) => row.weight)
+        ],
+        alwaysSorted: true);
 ```
 
 ## Theme
