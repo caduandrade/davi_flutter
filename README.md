@@ -8,7 +8,7 @@
 
 ---
 
-![](https://caduandrade.github.io/davi_flutter/easy_table_v5.png)
+![](https://caduandrade.github.io/davi_flutter/davi_v1.png)
 
 * Ready for a large number of data. Building cells on demand.
 * Focused on Web/Desktop Applications.
@@ -402,7 +402,7 @@ class MainWidgetState extends State<MainWidget> {
         multiSortEnabled: true);
 ```
 
-![](https://caduandrade.github.io/davi_flutter/multiple_sort_v1.png)
+![](https://caduandrade.github.io/davi_flutter/multiple_sort_v2.png)
 
 #### Sort callback
 

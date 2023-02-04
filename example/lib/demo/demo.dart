@@ -34,6 +34,7 @@ class _HomePageState extends State<HomePage> {
   bool _leftPinned = false;
   bool _rowColor = false;
   bool _hoverBackground = false;
+  bool _multipleSort = false;
   bool _hoverForeground = true;
   bool _rowFillHeight = RowThemeDataDefaults.fillHeight;
   bool _nullValueColor = true;
@@ -58,7 +59,10 @@ class _HomePageState extends State<HomePage> {
     if (_fewRows) {
       characters = characters.sublist(0, 5);
     }
-    return DaviModel(rows: characters, columns: _buildColumns());
+    return DaviModel(
+        rows: characters,
+        columns: _buildColumns(),
+        multiSortEnabled: _multipleSort);
   }
 
   List<DaviColumn<Character>> _buildColumns() {
@@ -71,7 +75,7 @@ class _HomePageState extends State<HomePage> {
         stringValue: (row) => row.name));
     if (_columnsWithIcon) {
       list.add(DaviColumn(
-          pinStatus: _leftPinned ? PinStatus.left : PinStatus.none,
+          //pinStatus: _leftPinned ? PinStatus.left : PinStatus.none,
           name: 'Gender',
           width: 80,
           cellClip: true,
@@ -166,6 +170,10 @@ class _HomePageState extends State<HomePage> {
                   child: const Text('Remove first column')),
               CheckboxUtil.build(
                   value: _fewRows, onChanged: _onFewRows, text: 'Few rows'),
+              CheckboxUtil.build(
+                  value: _multipleSort,
+                  onChanged: _onMultipleSortSwitch,
+                  text: 'Multiple sort'),
               CheckboxUtil.build(
                   value: _columnsWithIcon,
                   onChanged: _onColumnsWithIcon,
@@ -310,6 +318,17 @@ class _HomePageState extends State<HomePage> {
   void _onLastRowWidgetSwitch() {
     setState(() {
       _lastRowWidget = !_lastRowWidget;
+    });
+  }
+
+  void _onMultipleSortSwitch() {
+    setState(() {
+      _multipleSort = !_multipleSort;
+      _buildModel().then((model) {
+        setState(() {
+          _model = model;
+        });
+      });
     });
   }
 
