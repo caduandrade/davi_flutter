@@ -1,6 +1,5 @@
 import 'package:davi/davi.dart';
 import 'package:davi/src/internal/sort_util.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

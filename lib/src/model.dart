@@ -12,12 +12,13 @@ import 'package:meta/meta.dart';
 ///
 /// The type [DATA] represents the data of each row.
 class DaviModel<DATA> extends ChangeNotifier {
-  DaviModel({List<DATA> rows = const [],
-    List<DaviColumn<DATA>> columns = const [],
-    this.ignoreDataComparators = false,
-    this.alwaysSorted = false,
-    this.multiSortEnabled = false,
-    this.onSort}) {
+  DaviModel(
+      {List<DATA> rows = const [],
+      List<DaviColumn<DATA>> columns = const [],
+      this.ignoreDataComparators = false,
+      this.alwaysSorted = false,
+      this.multiSortEnabled = false,
+      this.onSort}) {
     _originalRows = List.from(rows);
     addColumns(columns);
     _updateRows(notify: false);
@@ -35,7 +36,7 @@ class DaviModel<DATA> extends ChangeNotifier {
   /// Gets the sorted columns.
   List<DaviColumn<DATA>> get sortedColumns {
     List<DaviColumn<DATA>> list =
-    _columns.where((column) => column.sort != null).toList();
+        _columns.where((column) => column.sort != null).toList();
     list.sort((a, b) => a.sortPriority!.compareTo(b.sortPriority!));
     return list;
   }
