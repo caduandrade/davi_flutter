@@ -17,7 +17,6 @@ class HeaderWidget<DATA> extends StatelessWidget {
       required this.layoutSettings,
       required this.model,
       required this.resizable,
-      required this.multiSort,
       required this.horizontalScrollOffsets,
       required this.tapToSortEnabled})
       : super(key: key);
@@ -25,7 +24,6 @@ class HeaderWidget<DATA> extends StatelessWidget {
   final TableLayoutSettings layoutSettings;
   final DaviModel<DATA> model;
   final bool resizable;
-  final bool multiSort;
   final HorizontalScrollOffsets horizontalScrollOffsets;
   final bool tapToSortEnabled;
 
@@ -34,6 +32,8 @@ class HeaderWidget<DATA> extends StatelessWidget {
     DaviThemeData theme = DaviTheme.of(context);
 
     List<ColumnsLayoutChild<DATA>> children = [];
+
+    final isMultiSorted = model.isMultiSorted;
 
     for (int columnIndex = 0;
         columnIndex < model.columnsLength;
@@ -45,8 +45,8 @@ class HeaderWidget<DATA> extends StatelessWidget {
           model: model,
           column: column,
           resizable: resizable,
-          multiSort: multiSort,
           tapToSortEnabled: tapToSortEnabled,
+          isMultiSorted: isMultiSorted,
           columnIndex: columnIndex);
       children.add(ColumnsLayoutChild<DATA>(index: columnIndex, child: cell));
     }

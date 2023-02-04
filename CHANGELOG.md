@@ -1,3 +1,32 @@
+## 3.2.0
+
+* `Davi`
+  * The `multiSort` attribute has been moved to `DaviModel` as `multiSortEnabled`.
+* `DaviModel`
+  * New attribute: `alwaysSorted`.
+    * Defines if there will always be some sorted column.
+  * The `ignoreSort` attribute has been renamed to `ignoreDataComparators`.
+  * New methods: `getColumn(dynamic id)` and `sortList`.
+  * Removed methods: `multiSortByColumn`, `sortByColumnIndex` and `sortByColumn`.
+* `DaviColumn`
+  * The `sort` attribute has been renamed to `dataComparator`.
+  * The `priority` and `order` attributes has been replaced by the new `sort` attribute. 
+  * The `isSorted` has been removed.
+* `HeaderCellThemeData`
+  * The `sortOrderSize` attribute has been renamed to `sortPrioritySize`
+* The `DaviColumnSort` typedef has been renamed to `DaviDataComparator`
+* The `TableSortOrder` enum has been renamed to `DaviSortDirection`
+* The `ColumnSort` class has been renamed to `DaviSort`
+  * The `order` attribute has been renamed to `direction`.
+  * The `columnIndex`(int) has been replaced by `columnId`(dynamic).
+* `HeaderCellThemeData`
+  * Default sorting icons have been changed.
+  * The `sortIconColor` attribute has been replaced by `sortIconColors` (ascending and descending). 
+  * The `ascendingIcon` and `descendingIcon` attributes has been replaced by `sortIconBuilder`.
+  * New attributes: `sortPriorityColor` and `sortPriorityGap`.
+* `SortIconBuilders`
+  * Default sort icon builders.
+
 ## 3.1.1
 
 * Bugfix

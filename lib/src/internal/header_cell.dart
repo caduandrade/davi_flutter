@@ -1,5 +1,6 @@
 import 'package:axis_layout/axis_layout.dart';
 import 'package:davi/davi.dart';
+import 'package:davi/src/internal/sort_util.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
@@ -12,17 +13,17 @@ class DaviHeaderCell<DATA> extends StatefulWidget {
       required this.model,
       required this.column,
       required this.resizable,
-      required this.multiSort,
       required this.tapToSortEnabled,
-      required this.columnIndex})
+      required this.columnIndex,
+      required this.isMultiSorted})
       : super(key: key);
 
   final DaviModel<DATA> model;
   final DaviColumn<DATA> column;
   final bool resizable;
-  final bool multiSort;
   final bool tapToSortEnabled;
   final int columnIndex;
+  final bool isMultiSorted;
 
   @override
   State<StatefulWidget> createState() => _DaviHeaderCellState();
@@ -40,8 +41,6 @@ class _DaviHeaderCellState extends State<DaviHeaderCell> {
     final bool sortEnabled = widget.tapToSortEnabled &&
         !resizing &&
         widget.model.columnInResizing == null;
-    final bool sortable = widget.column.sortable &&
-        (widget.column.sort != null || widget.model.ignoreSort);
     final bool resizable = widget.resizable &&
         widget.column.resizable &&
         widget.column.grow == null &&
@@ -50,30 +49,34 @@ class _DaviHeaderCellState extends State<DaviHeaderCell> {
     List<Widget> children = [];
 
     if (widget.column.leading != null) {
-      children.add(widget.column.leading!);
+      children.add(Align(
+          alignment: widget.column.headerAlignment ?? theme.alignment,
+          child: widget.column.leading!));
     }
     children.add(AxisLayoutChild(
         shrink: theme.expandableName ? 0 : 1,
         expand: theme.expandableName ? 1 : 0,
         child: _textWidget(context)));
 
-    final TableSortOrder? order = widget.column.order;
-    if (order != null) {
-      IconData? icon;
-      if (order == TableSortOrder.ascending) {
-        icon = theme.ascendingIcon;
-      } else if (order == TableSortOrder.descending) {
-        icon = theme.descendingIcon;
-      }
-      children.add(
-          Icon(icon, color: theme.sortIconColor, size: theme.sortIconSize));
-      if (widget.model.isMultiSorted) {
+    final DaviSort? sort = widget.column.sort;
+    if (sort != null) {
+      Widget sortIconWidget =
+          theme.sortIconBuilder(sort.direction, theme.sortIconColors);
+      children.add(Align(
+        alignment: widget.column.headerAlignment ?? theme.alignment,
+        child: sortIconWidget,
+      ));
+
+      if (widget.isMultiSorted) {
+        if (theme.sortPriorityGap != null) {
+          children.add(SizedBox(width: theme.sortPriorityGap));
+        }
         children.add(Align(
-            alignment: Alignment.center,
-            child: Text(widget.column.priority.toString(),
+            alignment: widget.column.headerAlignment ?? theme.alignment,
+            child: Text(widget.column.sortPriority!.toString(),
                 style: TextStyle(
-                    color: theme.sortIconColor,
-                    fontSize: theme.sortOrderSize))));
+                    color: theme.sortPriorityColor,
+                    fontSize: theme.sortPrioritySize))));
       }
     }
 
@@ -86,15 +89,12 @@ class _DaviHeaderCellState extends State<DaviHeaderCell> {
       header = Padding(padding: padding, child: header);
     }
 
-    if (sortable) {
+    if (widget.column.sortable) {
       header = MouseRegion(
           cursor: sortEnabled ? SystemMouseCursors.click : MouseCursor.defer,
           child: GestureDetector(
               behavior: HitTestBehavior.opaque,
-              onTap: sortEnabled
-                  ? () => _onHeaderPressed(
-                      model: widget.model, column: widget.column)
-                  : null,
+              onTap: sortEnabled ? _onHeaderSortPressed : null,
               child: header));
     }
 
@@ -169,22 +169,12 @@ class _DaviHeaderCellState extends State<DaviHeaderCell> {
     widget.model.columnInResizing = null;
   }
 
-  void _onHeaderPressed(
-      {required DaviModel model, required DaviColumn column}) {
-    if (model.isSorted == false) {
-      model.sortByColumn(column: column, sortOrder: TableSortOrder.ascending);
-    } else if (widget.multiSort) {
-      widget.model.multiSortByColumn(widget.column);
-    } else {
-      final TableSortOrder? order = widget.column.order;
-      if (order == null) {
-        model.sortByColumn(column: column, sortOrder: TableSortOrder.ascending);
-      } else if (order == TableSortOrder.ascending) {
-        model.sortByColumn(
-            column: column, sortOrder: TableSortOrder.descending);
-      } else {
-        model.clearSort();
-      }
-    }
+  void _onHeaderSortPressed() {
+    List<DaviSort> sortList = SortUtil.newSortList(
+        sortList: widget.model.sortList,
+        multiSortEnabled: widget.model.multiSortEnabled,
+        alwaysSorted: widget.model.alwaysSorted,
+        columnIdToSort: widget.column.id);
+    widget.model.sort(sortList);
   }
 }

@@ -1,14 +1,13 @@
 [![](https://caduandrade.github.io/davi_flutter/davi_logo_v1.png)](#)
 
 [![](https://img.shields.io/pub/v/davi.svg)](https://pub.dev/packages/davi)
-[![](https://github.com/caduandrade/davi_flutter/actions/workflows/test.yml/badge.svg)](#)
 [![](https://img.shields.io/badge/demo-try%20it%20out-blue)](https://caduandrade.github.io/davi_flutter_demo/)
 [![](https://img.shields.io/badge/Flutter-%E2%9D%A4-red)](https://flutter.dev/)
 [![](https://img.shields.io/badge/%F0%9F%91%8D%20and%20%E2%AD%90-are%20free%20and%20motivate%20me-yellow)](#)
 
 ---
 
-![](https://caduandrade.github.io/davi_flutter/easy_table_v5.png)
+![](https://caduandrade.github.io/davi_flutter/davi_v1.png)
 
 * Ready for a large number of data. Building cells on demand.
 * Focused on Web/Desktop Applications.
@@ -16,7 +15,7 @@
 * Resizable.
 * Highly customized.
 * Pinned columns.
-* Multiple sortable.
+* Multiple sort.
 * Infinite scroll.
 
 ## Usage
@@ -26,7 +25,6 @@
   * Column
     * [Columns fit](#columns-fit)
     * [Stretchable column](#stretchable-column)
-    * [Multiple sort](#multiple-sort)
     * [Column style](#column-style)
     * [Pinned column](#pinned-column)
   * Row
@@ -39,8 +37,11 @@
     * [Cell style](#cell-style)
     * [Custom cell widget](#custom-cell-widget)
     * [Cell edit](#cell-edit)
-  * [Sort callback](#sort-callback)
-  * [Server-side sorting](#server-side-sorting)
+  * Sort
+    * [Multiple sort](#multiple-sort)
+    * [Sort callback](#sort-callback)
+    * [Server-side sorting](#server-side-sorting)
+    * [Always sorted](#always-sorted)
 * Theme
   * [Dividers thickness and color](#dividers-thickness-and-color) 
   * [Header](#header)
@@ -125,14 +126,6 @@ The remaining width will be distributed to the columns according to the value of
 
 ![](https://caduandrade.github.io/davi_flutter/stretchable_column_v1.png)
 
-#### Multiple sort
-
-```dart
-  Davi(_model, multiSort: true);
-```
-
-![](https://caduandrade.github.io/davi_flutter/multiple_sort_v1.png)
-
 #### Column style
 
 ```dart
@@ -203,11 +196,11 @@ The remaining width will be distributed to the columns according to the value of
 
 ```dart
     DaviTheme(
+        data: const DaviThemeData(
+            row: RowThemeData(cursorOnTapGesturesOnly: false)),
         child: Davi<Person>(_model,
             rowCursor: (row) =>
-                row.data.age < 20 ? SystemMouseCursors.forbidden : null),
-        data: const DaviThemeData(
-            row: RowThemeData(cursorOnTapGesturesOnly: false)));
+                row.data.age < 20 ? SystemMouseCursors.forbidden : null));
 ```
 
 #### Row callbacks
@@ -393,7 +386,25 @@ class MainWidgetState extends State<MainWidget> {
 }
 ```
 
-### Sort callback
+### Sort
+
+#### Multiple sort
+
+```dart
+    DaviModel<Person>(
+        rows: rows,
+        columns: [
+          DaviColumn(name: 'Name', stringValue: (row) => row.name),
+          DaviColumn(name: 'Age', intValue: (row) => row.age),
+          DaviColumn(
+              name: 'Weight', width: 120, doubleValue: (row) => row.weight)
+        ],
+        multiSortEnabled: true);
+```
+
+![](https://caduandrade.github.io/davi_flutter/multiple_sort_v2.png)
+
+#### Sort callback
 
 ```dart
     _model = DaviModel<Person>(
@@ -411,7 +422,7 @@ class MainWidgetState extends State<MainWidget> {
   }
 ```
 
-### Server-side sorting
+#### Server-side sorting
 
 Ignoring sorting functions from the model.
 Simulating the server-side sorting when loading data.
@@ -437,11 +448,11 @@ class MainWidgetState extends State<MainWidget> {
       DaviColumn(
           id: ColumnId.name, name: 'Name', stringValue: (row) => row.name),
       DaviColumn(id: ColumnId.age, name: 'Age', intValue: (row) => row.age)
-    ], onSort: _onSort, ignoreSort: true);
+    ], onSort: _onSort, ignoreDataComparators: true);
     loadData();
   }
 
-  void loadData([DaviColumn<Person>? column]) {
+  void loadData([DaviSort? sort]) {
     Future<List<Person>>.delayed(const Duration(seconds: 1), () {
       List<Person> rows = [
         Person('Linda', 33),
@@ -451,16 +462,16 @@ class MainWidgetState extends State<MainWidget> {
         Person('Amanda', 43),
         Person('Cadu', 35)
       ];
-      if (column != null) {
-        final TableSortOrder order = column.order!;
+      if (sort != null) {
+        final DaviSortDirection direction = sort.direction;
         rows.sort((a, b) {
-          switch (column.id) {
+          switch (sort.columnId) {
             case ColumnId.name:
-              return order == TableSortOrder.ascending
+              return direction == DaviSortDirection.ascending
                   ? a.name.compareTo(b.name)
                   : b.name.compareTo(a.name);
             case ColumnId.age:
-              return order == TableSortOrder.ascending
+              return direction == DaviSortDirection.ascending
                   ? a.age.compareTo(b.age)
                   : b.age.compareTo(a.age);
           }
@@ -469,10 +480,12 @@ class MainWidgetState extends State<MainWidget> {
       }
       return rows;
     }).then((list) {
-      setState(() {
-        _loading = false;
-        _model.replaceRows(list);
-      });
+      if (mounted) {
+        setState(() {
+          _loading = false;
+          _model.replaceRows(list);
+        });
+      }
     });
   }
 
@@ -481,9 +494,7 @@ class MainWidgetState extends State<MainWidget> {
       _loading = true;
       _model.removeRows();
     });
-    final DaviColumn<Person>? column =
-        sortedColumns.isNotEmpty ? sortedColumns.first : null;
-    loadData(column);
+    loadData(sortedColumns.isNotEmpty ? sortedColumns.first.sort : null);
   }
 
   @override
@@ -496,20 +507,36 @@ class MainWidgetState extends State<MainWidget> {
 }
 ```
 
+#### Always sorted
+
+Some sortable column will always be sorted.
+
+```dart
+    _model = DaviModel<Person>(
+        rows: rows,
+        columns: [
+          DaviColumn(name: 'Name', stringValue: (row) => row.name),
+          DaviColumn(name: 'Age', intValue: (row) => row.age),
+          DaviColumn(
+              name: 'Weight', width: 120, doubleValue: (row) => row.weight)
+        ],
+        alwaysSorted: true);
+```
+
 ## Theme
 
 ### Dividers thickness and color
 
 ```dart
     DaviTheme(
-        child: Davi<Person>(_model),
         data: const DaviThemeData(
             columnDividerThickness: 4,
             columnDividerColor: Colors.blue,
             header: HeaderThemeData(columnDividerColor: Colors.purple),
             row: RowThemeData(dividerThickness: 4, dividerColor: Colors.green),
             scrollbar:
-                TableScrollbarThemeData(columnDividerColor: Colors.orange)));
+                TableScrollbarThemeData(columnDividerColor: Colors.orange)),
+        child: Davi<Person>(_model));
 ```
 
 ![](https://caduandrade.github.io/davi_flutter/theme_divider_v3.png)
@@ -518,7 +545,6 @@ class MainWidgetState extends State<MainWidget> {
 
 ```dart
     DaviTheme(
-        child: Davi<Person>(_model),
         data: DaviThemeData(
             header: HeaderThemeData(
                 color: Colors.green[50],
@@ -533,8 +559,9 @@ class MainWidgetState extends State<MainWidget> {
                     color: Colors.blue),
                 resizeAreaWidth: 10,
                 resizeAreaHoverColor: Colors.blue.withOpacity(.5),
-                sortIconColor: Colors.green,
-                expandableName: false)));
+                sortIconColors: SortIconColors.all(Colors.green),
+                expandableName: false)),
+        child: Davi<Person>(_model));
 ```
 
 ![](https://caduandrade.github.io/davi_flutter/header_v1.png)
@@ -543,8 +570,8 @@ class MainWidgetState extends State<MainWidget> {
 
 ```dart
     DaviTheme(
-        child: Davi<Person>(_model),
-        data: const DaviThemeData(header: HeaderThemeData(visible: false)));
+        data: const DaviThemeData(header: HeaderThemeData(visible: false)),
+        child: Davi<Person>(_model));
 ```
 
 ![](https://caduandrade.github.io/davi_flutter/hidden_header_v1.png)
@@ -612,7 +639,6 @@ class MainWidgetState extends State<MainWidget> {
 
 ```dart
     DaviTheme(
-        child: Davi<Person>(_model),
         data: const DaviThemeData(
             scrollbar: TableScrollbarThemeData(
                 thickness: 16,
@@ -623,7 +649,8 @@ class MainWidgetState extends State<MainWidget> {
                 borderThickness: 8,
                 pinnedHorizontalBorderColor: Colors.orange,
                 unpinnedHorizontalBorderColor: Colors.purple,
-                verticalBorderColor: Colors.pink)));
+                verticalBorderColor: Colors.pink)),
+        child: Davi<Person>(_model));
 ```
 
 ![](https://caduandrade.github.io/davi_flutter/theme_scrollbar_v1.png)
@@ -631,7 +658,7 @@ class MainWidgetState extends State<MainWidget> {
 #### Scrollbar always visible
 
 ```dart
-    return DaviTheme(
+    DaviTheme(
         data: const DaviThemeData(
             scrollbar: TableScrollbarThemeData(
                 horizontalOnlyWhenNeeded: false,
@@ -661,10 +688,10 @@ class MainWidgetState extends State<MainWidget> {
 
 ```dart
     DaviTheme(
-        child: Davi<Person>(_model),
         data: DaviThemeData(
             cell: CellThemeData(
-                nullValueColor: ((rowIndex, hovered) => Colors.grey[300]))));
+                nullValueColor: ((rowIndex, hovered) => Colors.grey[300]))),
+        child: Davi<Person>(_model));
 ```
 
 ![](https://caduandrade.github.io/davi_flutter/null_cell_color_v3.png)

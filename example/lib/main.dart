@@ -8,9 +8,10 @@ void main() {
 }
 
 class Person {
-  Person(this.name, this.value);
+  Person(this.name, this.age, this.value);
 
   final String name;
+  final int age;
   final int value;
 
   bool _valid = true;
@@ -58,18 +59,25 @@ class _HomePageState extends State<HomePage> {
 
     Random random = Random();
     for (int i = 1; i < 500; i++) {
-      rows.add(Person('User $i', random.nextInt(100)));
+      rows.add(Person('User $i', 20 + random.nextInt(50), random.nextInt(999)));
     }
+    rows.shuffle();
 
-    _model = DaviModel<Person>(rows: rows, columns: [
-      DaviColumn(name: 'Name', stringValue: (row) => row.name),
-      DaviColumn(name: 'Value', intValue: (row) => row.value),
-      DaviColumn(
-          name: 'Editable',
-          cellBuilder: _buildField,
-          cellBackground: (rowData) =>
-              rowData.data.valid ? null : Colors.red[800])
-    ]);
+    _model = DaviModel<Person>(
+        rows: rows,
+        columns: [
+          DaviColumn(name: 'Name', stringValue: (row) => row.name),
+          DaviColumn(name: 'Age', intValue: (row) => row.age),
+          DaviColumn(name: 'Value', intValue: (row) => row.value),
+          DaviColumn(
+              name: 'Editable',
+              sortable: false,
+              cellBuilder: _buildField,
+              cellBackground: (rowData) =>
+                  rowData.data.valid ? null : Colors.red[800])
+        ],
+        alwaysSorted: true,
+        multiSortEnabled: true);
   }
 
   Widget _buildField(BuildContext context, DaviRow<Person> rowData) {

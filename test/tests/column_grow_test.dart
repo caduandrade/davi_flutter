@@ -2,7 +2,7 @@ import 'package:davi/davi.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  group('Column', () {
+  group('DaviColumn', () {
     test('grow', () {
       DaviColumn column = DaviColumn();
       expect(column.grow, null);

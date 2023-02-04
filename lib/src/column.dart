@@ -3,23 +3,21 @@ import 'dart:math' as math;
 import 'package:davi/src/cell_background.dart';
 import 'package:davi/src/cell_builder.dart';
 import 'package:davi/src/cell_style.dart';
-import 'package:davi/src/model.dart';
+import 'package:davi/src/column_id.dart';
 import 'package:davi/src/pin_status.dart';
+import 'package:davi/src/sort.dart';
 import 'package:davi/src/value_mapper.dart';
 import 'package:flutter/widgets.dart';
-
-/// Signature for sort column function.
-typedef DaviColumnSort<DATA> = int Function(
-    DATA a, DATA b, DaviColumn<DATA> column);
+import 'package:meta/meta.dart';
 
 /// The [Davi] column.
 ///
 /// The optional value mappings [intValue], [doubleValue], [stringValue],
 /// [iconValue] and [objectValue] allows automatic cell configuration
 /// by identifying and displaying data types in the row object.
-class DaviColumn<DATA> extends ChangeNotifier with ColumnSortMixin {
+class DaviColumn<DATA> extends ChangeNotifier {
   DaviColumn(
-      {this.id,
+      {dynamic id,
       double width = 100,
       double? grow,
       this.name,
@@ -34,7 +32,7 @@ class DaviColumn<DATA> extends ChangeNotifier with ColumnSortMixin {
       this.fractionDigits,
       this.cellBuilder,
       this.leading,
-      DaviColumnSort<DATA>? sort,
+      DaviDataComparator<DATA>? dataComparator,
       this.pinStatus = PinStatus.none,
       DaviIntValueMapper<DATA>? intValue,
       DaviDoubleValueMapper<DATA>? doubleValue,
@@ -45,18 +43,21 @@ class DaviColumn<DATA> extends ChangeNotifier with ColumnSortMixin {
       this.cellClip = false,
       this.sortable = true,
       this.cellStyleBuilder})
-      : _width = width,
+      : id = id ?? DaviColumnId(),
+        _width = width,
         _grow = grow != null ? math.max(1, grow) : null,
         stringValueMapper = stringValue,
         intValueMapper = intValue,
         iconValueMapper = iconValue,
         doubleValueMapper = doubleValue,
         objectValueMapper = objectValue,
-        sort = sort ??
-            _buildSort(
+        dataComparator = dataComparator ??
+            _buildDataComparator(
                 intValue, doubleValue, stringValue, iconValue, objectValue);
 
   /// Identifier that can be assigned to this column.
+  ///
+  /// If none is defined, a [DaviColumnId] will be created;
   final dynamic id;
 
   /// Optional column name. Displayed by default in the cell header widget.
@@ -86,7 +87,7 @@ class DaviColumn<DATA> extends ChangeNotifier with ColumnSortMixin {
 
   /// Function used to sort the column. If not defined, it can be created
   /// according to value mappings.
-  final DaviColumnSort<DATA>? sort;
+  final DaviDataComparator<DATA> dataComparator;
 
   final DaviIntValueMapper<DATA>? intValueMapper;
   final DaviDoubleValueMapper<DATA>? doubleValueMapper;
@@ -132,13 +133,56 @@ class DaviColumn<DATA> extends ChangeNotifier with ColumnSortMixin {
 
   bool resizable;
 
+  DaviSort? _sort;
+
+  DaviSort? get sort => _sort;
+  int? _sortPriority;
+
+  int? get sortPriority => _sortPriority;
+
+  @internal
+  void setSort(DaviSort sort, int priority) {
+    if (sort.columnId != id) {
+      throw ArgumentError.value(sort.columnId, null,
+          'The columnId does not have the same value as the column identifier.');
+    }
+    if (!sortable) {
+      throw ArgumentError('Column is not sortable.');
+    }
+    _sort = sort;
+    _sortPriority = priority;
+  }
+
+  @internal
+  bool setSortPriority(int value) {
+    if (_sort != null) {
+      _sortPriority = value;
+      return true;
+    }
+    return false;
+  }
+
+  @internal
+  void clearSort() {
+    _sort = null;
+    _sortPriority = null;
+  }
+
   @override
   String toString() {
     return 'DaviColumn{name: $name}';
   }
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is DaviColumn && runtimeType == other.runtimeType && id == other.id;
+
+  @override
+  int get hashCode => id.hashCode;
+
   /// Builds a default sort
-  static DaviColumnSort? _buildSort<DATA>(
+  static DaviDataComparator _buildDataComparator<DATA>(
       DaviIntValueMapper<DATA>? intValue,
       DaviDoubleValueMapper<DATA>? doubleValue,
       DaviStringValueMapper<DATA>? stringValue,
@@ -208,6 +252,12 @@ class DaviColumn<DATA> extends ChangeNotifier with ColumnSortMixin {
         return 0;
       };
     }
-    return null;
+    return _defaultDataComparator;
   }
 }
+
+/// Signature for sort column function.
+typedef DaviDataComparator<DATA> = int Function(
+    DATA a, DATA b, DaviColumn<DATA> column);
+
+int _defaultDataComparator<DATA>(DATA a, DATA b, DaviColumn<DATA> column) => 0;

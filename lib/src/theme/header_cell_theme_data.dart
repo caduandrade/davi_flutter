@@ -1,3 +1,6 @@
+import 'package:davi/src/theme/sort_icon_builder.dart';
+import 'package:davi/src/theme/sort_icon_builders.dart';
+import 'package:davi/src/theme/sort_icon_colors.dart';
 import 'package:flutter/material.dart';
 
 /// The [Davi] cell header theme.
@@ -6,15 +9,15 @@ class HeaderCellThemeData {
   //TODO avoid negative values
   /// Builds a theme data.
   const HeaderCellThemeData(
-      {this.textStyle = HeaderCellThemeDataDefaults.textStyle,
+      {this.sortIconBuilder = SortIconBuilders.size16Short,
+      this.textStyle = HeaderCellThemeDataDefaults.textStyle,
       this.height = HeaderCellThemeDataDefaults.height,
       this.padding = HeaderCellThemeDataDefaults.padding,
       this.alignment = HeaderCellThemeDataDefaults.alignment,
-      this.ascendingIcon = HeaderCellThemeDataDefaults.ascendingIcon,
-      this.descendingIcon = HeaderCellThemeDataDefaults.descendingIcon,
-      this.sortIconColor = HeaderCellThemeDataDefaults.sortIconColor,
-      this.sortIconSize = HeaderCellThemeDataDefaults.sortIconSize,
-      this.sortOrderSize = HeaderCellThemeDataDefaults.sortOrderSize,
+      this.sortIconColors = HeaderCellThemeDataDefaults.sortIconColors,
+      this.sortPriorityColor = HeaderCellThemeDataDefaults.sortPriorityColor,
+      this.sortPrioritySize = HeaderCellThemeDataDefaults.sortPrioritySize,
+      this.sortPriorityGap = HeaderCellThemeDataDefaults.sortPriorityGap,
       this.resizeAreaWidth = HeaderCellThemeDataDefaults.resizeAreaWidth,
       this.resizeAreaHoverColor =
           HeaderCellThemeDataDefaults.resizeAreaHoverColor,
@@ -24,11 +27,15 @@ class HeaderCellThemeData {
   final TextStyle? textStyle;
   final EdgeInsets? padding;
   final Alignment alignment;
-  final IconData ascendingIcon;
-  final IconData descendingIcon;
-  final Color sortIconColor;
-  final double sortIconSize;
-  final double sortOrderSize;
+
+  final SortIconColors sortIconColors;
+  final SortIconBuilder sortIconBuilder;
+
+  final Color sortPriorityColor;
+  final double sortPrioritySize;
+
+  /// The gap between the sort icon and priority text.
+  final double? sortPriorityGap;
   final double height;
   final double resizeAreaWidth;
   final Color? resizeAreaHoverColor;
@@ -41,13 +48,13 @@ class HeaderCellThemeData {
           runtimeType == other.runtimeType &&
           textStyle == other.textStyle &&
           padding == other.padding &&
-          height == other.height &&
           alignment == other.alignment &&
-          ascendingIcon == other.ascendingIcon &&
-          descendingIcon == other.descendingIcon &&
-          sortIconColor == other.sortIconColor &&
-          sortIconSize == other.sortIconSize &&
-          sortOrderSize == other.sortOrderSize &&
+          sortIconColors == other.sortIconColors &&
+          sortIconBuilder == other.sortIconBuilder &&
+          sortPriorityColor == other.sortPriorityColor &&
+          sortPrioritySize == other.sortPrioritySize &&
+          sortPriorityGap == other.sortPriorityGap &&
+          height == other.height &&
           resizeAreaWidth == other.resizeAreaWidth &&
           resizeAreaHoverColor == other.resizeAreaHoverColor &&
           expandableName == other.expandableName;
@@ -57,11 +64,11 @@ class HeaderCellThemeData {
       textStyle.hashCode ^
       padding.hashCode ^
       alignment.hashCode ^
-      ascendingIcon.hashCode ^
-      descendingIcon.hashCode ^
-      sortIconColor.hashCode ^
-      sortIconSize.hashCode ^
-      sortOrderSize.hashCode ^
+      sortIconColors.hashCode ^
+      sortIconBuilder.hashCode ^
+      sortPriorityColor.hashCode ^
+      sortPrioritySize.hashCode ^
+      sortPriorityGap.hashCode ^
       height.hashCode ^
       resizeAreaWidth.hashCode ^
       resizeAreaHoverColor.hashCode ^
@@ -74,11 +81,15 @@ class HeaderCellThemeDataDefaults {
   static const EdgeInsets padding = EdgeInsets.fromLTRB(8, 4, 8, 4);
   static const Alignment alignment = Alignment.centerLeft;
 
-  static const IconData ascendingIcon = Icons.arrow_downward;
-  static const IconData descendingIcon = Icons.arrow_upward;
-  static const Color sortIconColor = Colors.black;
-  static const double sortIconSize = 16;
-  static const double sortOrderSize = 12;
+  static const Color sortIconColor = Color(0xFF424242);
+
+  static const SortIconColors sortIconColors = SortIconColors(
+      ascending: HeaderCellThemeDataDefaults.sortIconColor,
+      descending: HeaderCellThemeDataDefaults.sortIconColor);
+
+  static const Color sortPriorityColor = Color(0xFF424242);
+  static const double sortPrioritySize = 12;
+  static const double sortPriorityGap = 2;
 
   static const double resizeAreaWidth = 8;
   static const Color resizeAreaHoverColor = Color.fromRGBO(200, 200, 200, 0.5);
