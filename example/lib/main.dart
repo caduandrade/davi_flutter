@@ -66,15 +66,14 @@ class _HomePageState extends State<HomePage> {
     _model = DaviModel<Person>(
         rows: rows,
         columns: [
-          DaviColumn(name: 'Name', stringValue: (row) => row.name),
-          DaviColumn(name: 'Age', intValue: (row) => row.age),
-          DaviColumn(name: 'Value', intValue: (row) => row.value),
+          DaviColumn(name: 'Name', stringValue: (data) => data.name),
+          DaviColumn(name: 'Age', intValue: (data) => data.age),
+          DaviColumn(name: 'Value', intValue: (data) => data.value),
           DaviColumn(
               name: 'Editable',
               sortable: false,
               cellBuilder: _buildField,
-              cellBackground: (rowData) =>
-                  rowData.data.valid ? null : Colors.red[800])
+              cellBackground: (row) => row.data.valid ? null : Colors.red[800])
         ],
         alwaysSorted: true,
         multiSortEnabled: true);
