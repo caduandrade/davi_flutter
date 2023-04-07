@@ -1,3 +1,7 @@
+## 3.3.0
+
+* Adding `copyWith` method to theme classes: `DaviThemeData`, `HeaderCellThemeData`, `HeaderThemeData`, `RowThemeData`, `CellThemeData` and `TableScrollbarThemeData`.
+
 ## 3.2.0
 
 * `Davi`

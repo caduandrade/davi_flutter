@@ -50,6 +50,32 @@ class RowThemeData {
   /// Allow cursor without tap gestures.
   final bool cursorOnTapGesturesOnly;
 
+  /// Creates a copy of this theme but with the given fields replaced with
+  /// the new values.
+  RowThemeData copyWith({
+    ThemeRowColor? color,
+    ThemeRowColor? hoverBackground,
+    ThemeRowColor? hoverForeground,
+    double? dividerThickness,
+    Color? dividerColor,
+    bool? lastDividerVisible,
+    bool? fillHeight,
+    MouseCursor? cursor,
+    bool? cursorOnTapGesturesOnly,
+  }) {
+    return RowThemeData(
+        color: color ?? this.color,
+        hoverBackground: hoverBackground ?? this.hoverBackground,
+        hoverForeground: hoverForeground ?? this.hoverForeground,
+        dividerThickness: dividerThickness ?? this.dividerThickness,
+        dividerColor: dividerColor ?? this.dividerColor,
+        lastDividerVisible: lastDividerVisible ?? this.lastDividerVisible,
+        fillHeight: fillHeight ?? this.fillHeight,
+        cursor: cursor ?? this.cursor,
+        cursorOnTapGesturesOnly:
+            cursorOnTapGesturesOnly ?? this.cursorOnTapGesturesOnly);
+  }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||

@@ -36,6 +36,27 @@ class CellThemeData {
   /// and removing the border.
   final bool overrideInputDecoration;
 
+  /// Creates a copy of this theme but with the given fields replaced with
+  /// the new values.
+  CellThemeData copyWith(
+      {TextStyle? textStyle,
+      EdgeInsets? padding,
+      double? contentHeight,
+      Alignment? alignment,
+      TextOverflow? overflow,
+      CellNullColor? nullValueColor,
+      bool? overrideInputDecoration}) {
+    return CellThemeData(
+        textStyle: textStyle ?? this.textStyle,
+        padding: padding ?? this.padding,
+        contentHeight: contentHeight ?? this.contentHeight,
+        alignment: alignment ?? this.alignment,
+        overflow: overflow ?? this.overflow,
+        nullValueColor: nullValueColor ?? this.nullValueColor,
+        overrideInputDecoration:
+            overrideInputDecoration ?? this.overrideInputDecoration);
+  }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||

@@ -18,6 +18,22 @@ class HeaderThemeData {
   final Color? bottomBorderColor;
   final Color? columnDividerColor;
 
+  /// Creates a copy of this theme but with the given fields replaced with
+  /// the new values.
+  HeaderThemeData copyWith(
+      {bool? visible,
+      Color? color,
+      double? bottomBorderHeight,
+      Color? bottomBorderColor,
+      Color? columnDividerColor}) {
+    return HeaderThemeData(
+        visible: visible ?? this.visible,
+        color: color ?? this.color,
+        bottomBorderHeight: bottomBorderHeight ?? this.bottomBorderHeight,
+        bottomBorderColor: bottomBorderColor ?? this.bottomBorderColor,
+        columnDividerColor: columnDividerColor ?? this.columnDividerColor);
+  }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||

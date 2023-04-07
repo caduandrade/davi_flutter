@@ -49,6 +49,47 @@ class TableScrollbarThemeData {
   /// The pinned column divider color.
   final Color? columnDividerColor;
 
+  /// Creates a copy of this theme but with the given fields replaced with
+  /// the new values.
+  TableScrollbarThemeData copyWith({
+    Radius? radius,
+    double? margin,
+    double? thickness,
+    double? borderThickness,
+    Color? verticalBorderColor,
+    Color? verticalColor,
+    Color? pinnedHorizontalBorderColor,
+    Color? pinnedHorizontalColor,
+    Color? unpinnedHorizontalBorderColor,
+    Color? unpinnedHorizontalColor,
+    Color? thumbColor,
+    bool? horizontalOnlyWhenNeeded,
+    bool? verticalOnlyWhenNeeded,
+    Color? columnDividerColor,
+  }) {
+    return TableScrollbarThemeData(
+        radius: radius ?? this.radius,
+        margin: margin ?? this.margin,
+        thickness: thickness ?? this.thickness,
+        borderThickness: borderThickness ?? this.borderThickness,
+        verticalBorderColor: verticalBorderColor ?? this.verticalBorderColor,
+        verticalColor: verticalColor ?? this.verticalColor,
+        pinnedHorizontalBorderColor:
+            pinnedHorizontalBorderColor ?? this.pinnedHorizontalBorderColor,
+        pinnedHorizontalColor:
+            pinnedHorizontalColor ?? this.pinnedHorizontalColor,
+        unpinnedHorizontalBorderColor:
+            unpinnedHorizontalBorderColor ?? this.unpinnedHorizontalBorderColor,
+        unpinnedHorizontalColor:
+            unpinnedHorizontalColor ?? this.unpinnedHorizontalColor,
+        thumbColor: thumbColor ?? this.thumbColor,
+        horizontalOnlyWhenNeeded:
+            horizontalOnlyWhenNeeded ?? this.horizontalOnlyWhenNeeded,
+        verticalOnlyWhenNeeded:
+            verticalOnlyWhenNeeded ?? this.verticalOnlyWhenNeeded,
+        columnDividerColor: columnDividerColor ?? this.columnDividerColor);
+  }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
