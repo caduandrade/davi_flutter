@@ -13,7 +13,7 @@ import 'package:meta/meta.dart';
 /// Rows layout.
 @internal
 class RowsLayout<DATA> extends MultiChildRenderObjectWidget {
-  RowsLayout(
+  const RowsLayout(
       {Key? key,
       required this.layoutSettings,
       required this.paintSettings,

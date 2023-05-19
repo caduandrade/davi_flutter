@@ -10,7 +10,7 @@ import 'package:meta/meta.dart';
 
 @internal
 class ColumnsLayout<DATA> extends MultiChildRenderObjectWidget {
-  ColumnsLayout(
+  const ColumnsLayout(
       {Key? key,
       required this.layoutSettings,
       required this.horizontalScrollOffsets,

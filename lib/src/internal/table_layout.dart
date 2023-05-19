@@ -11,7 +11,7 @@ import 'package:meta/meta.dart';
 /// [Davi] table layout.
 @internal
 class TableLayout<DATA> extends MultiChildRenderObjectWidget {
-  TableLayout(
+  const TableLayout(
       {Key? key,
       required this.layoutSettings,
       required this.theme,
