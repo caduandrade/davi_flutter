@@ -1,3 +1,12 @@
+## 3.4.0
+
+* BugFix
+  * On-screen keyboard not showing up in Windows.
+* Semantics configuration individually for each cell.
+  * New typedef: `DaviCellSemanticsBuilder`.
+  * `DaviColumn`
+    * New attribute: `semanticsBuilder`
+
 ## 3.3.0
 
 * Adding `copyWith` method to theme classes: `DaviThemeData`, `HeaderCellThemeData`, `HeaderThemeData`, `RowThemeData`, `CellThemeData` and `TableScrollbarThemeData`.

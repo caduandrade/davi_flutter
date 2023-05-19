@@ -2,11 +2,14 @@ import 'dart:math' as math;
 
 import 'package:davi/src/cell_background.dart';
 import 'package:davi/src/cell_builder.dart';
+import 'package:davi/src/cell_semantics_builder.dart';
 import 'package:davi/src/cell_style.dart';
 import 'package:davi/src/column_id.dart';
 import 'package:davi/src/pin_status.dart';
+import 'package:davi/src/row.dart';
 import 'package:davi/src/sort.dart';
 import 'package:davi/src/value_mapper.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
 
@@ -42,7 +45,8 @@ class DaviColumn<DATA> extends ChangeNotifier {
       this.resizable = true,
       this.cellClip = false,
       this.sortable = true,
-      this.cellStyleBuilder})
+      this.cellStyleBuilder,
+      this.semanticsBuilder = defaultSemanticsBuilder})
       : id = id ?? DaviColumnId(),
         _width = width,
         _grow = grow != null ? math.max(1, grow) : null,
@@ -139,6 +143,8 @@ class DaviColumn<DATA> extends ChangeNotifier {
   int? _sortPriority;
 
   int? get sortPriority => _sortPriority;
+
+  final DaviCellSemanticsBuilder<DATA>? semanticsBuilder;
 
   @internal
   void setSort(DaviSort sort, int priority) {
@@ -254,6 +260,10 @@ class DaviColumn<DATA> extends ChangeNotifier {
     }
     return _defaultDataComparator;
   }
+}
+
+SemanticsProperties defaultSemanticsBuilder(BuildContext context, DaviRow row) {
+  return const SemanticsProperties(enabled: true, label: 'cell');
 }
 
 /// Signature for sort column function.

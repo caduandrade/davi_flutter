@@ -83,11 +83,11 @@ class CellWidget<DATA> extends StatelessWidget {
     if (column.cellClip) {
       child = ClipRect(child: child);
     }
-    return Semantics(
-        enabled: true,
-        readOnly: true,
-        label: 'cell $columnIndex/${row.index}',
-        child: child);
+    if (column.semanticsBuilder != null) {
+      return Semantics.fromProperties(
+          properties: column.semanticsBuilder!(context, row), child: child);
+    }
+    return child;
   }
 
   String? _stringValue({required DaviColumn<DATA> column, required DATA data}) {
