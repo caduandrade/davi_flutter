@@ -1,3 +1,7 @@
+## 3.4.1
+
+* Upgraded `renderObject.parent` object to use `RenderObject` instead of the deprecated `AbstractNode`. This ensures compatibility and resolves deprecation Flutter v3.12.0-4.0.pre warnings.
+
 ## 3.4.0
 
 * BugFix
