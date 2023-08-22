@@ -19,14 +19,11 @@ class RowsLayoutChild extends ParentDataWidget<RowsLayoutParentData> {
   void applyParentData(RenderObject renderObject) {
     assert(renderObject.parentData is RowsLayoutParentData);
     final RowsLayoutParentData parentData =
-    renderObject.parentData! as RowsLayoutParentData;
+        renderObject.parentData! as RowsLayoutParentData;
     if (index != parentData.index || last != parentData.last) {
       parentData.index = index;
       parentData.last = last;
-      final RenderObject? targetParent = renderObject.parent;
-      if (targetParent is RenderObject) {
-        targetParent.markNeedsLayout();
-      }
+      renderObject.parent?.markNeedsLayout();
     }
   }
 

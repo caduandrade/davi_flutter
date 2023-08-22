@@ -18,13 +18,10 @@ class ColumnsLayoutChild<DATA>
   void applyParentData(RenderObject renderObject) {
     assert(renderObject.parentData is ColumnsLayoutParentData);
     final ColumnsLayoutParentData parentData =
-    renderObject.parentData! as ColumnsLayoutParentData;
+        renderObject.parentData! as ColumnsLayoutParentData;
     if (index != parentData.index) {
       parentData.index = index;
-      final RenderObject? targetParent = renderObject.parent;
-      if (targetParent is RenderObject) {
-        targetParent.markNeedsLayout();
-      }
+      renderObject.parent?.markNeedsLayout();
     }
   }
 
