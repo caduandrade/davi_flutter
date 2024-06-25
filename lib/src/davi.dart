@@ -33,6 +33,7 @@ class Davi<DATA> extends StatefulWidget {
       this.onLastVisibleRow,
       this.onRowTap,
       this.onRowSecondaryTap,
+      this.onRowSecondaryTapUp,
       this.onRowDoubleTap,
       this.columnWidthBehavior = ColumnWidthBehavior.scrollable,
       int? visibleRowsCount,
@@ -57,6 +58,7 @@ class Davi<DATA> extends StatefulWidget {
   final RowDoubleTapCallback<DATA>? onRowDoubleTap;
   final RowTapCallback<DATA>? onRowTap;
   final RowTapCallback<DATA>? onRowSecondaryTap;
+  final RowTapUpCallback<DATA>? onRowSecondaryTapUp;
   final ColumnWidthBehavior columnWidthBehavior;
   final int? visibleRowsCount;
   final OnLastVisibleRowListener? onLastVisibleRow;
@@ -194,6 +196,7 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
             rowCallbacks: RowCallbacks(
                 onRowTap: widget.onRowTap,
                 onRowSecondaryTap: widget.onRowSecondaryTap,
+                onRowSecondaryTapUp: widget.onRowSecondaryTapUp,
                 onRowDoubleTap: widget.onRowDoubleTap),
             onDragScroll: _onDragScroll));
 

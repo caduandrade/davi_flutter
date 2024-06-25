@@ -85,6 +85,7 @@ class RowWidgetState<DATA> extends State<RowWidget<DATA>> {
           onTap: _buildOnTap(),
           onDoubleTap: _buildOnDoubleTap(),
           onSecondaryTap: _buildOnSecondaryTap(),
+          onSecondaryTapUp: _buildOnSecondaryTapUp(),
           child: layout);
     }
 
@@ -160,6 +161,13 @@ class RowWidgetState<DATA> extends State<RowWidget<DATA>> {
   GestureTapCallback? _buildOnSecondaryTap() {
     if (widget.rowCallbacks.onRowSecondaryTap != null) {
       return () => widget.rowCallbacks.onRowSecondaryTap!(widget.data);
+    }
+    return null;
+  }
+  GestureTapUpCallback? _buildOnSecondaryTapUp() {
+    if (widget.rowCallbacks.onRowSecondaryTapUp != null) {
+      return (detail) =>
+          widget.rowCallbacks.onRowSecondaryTapUp!(widget.data, detail);
     }
     return null;
   }
