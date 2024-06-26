@@ -211,6 +211,7 @@ Widget build(BuildContext context) {
   return Davi<Person>(_model,
       onRowTap: (person) => _onRowTap(context, person),
       onRowSecondaryTap: (person) => _onRowSecondaryTap(context, person),
+      onRowSecondaryTapUp: (person, detail) => _onRowSecondaryTapUp(context, person, detail),
       onRowDoubleTap: (person) => _onRowDoubleTap(context, person));
 }
 
@@ -219,6 +220,10 @@ void _onRowTap(BuildContext context, Person person) {
 }
 
 void _onRowSecondaryTap(BuildContext context, Person person) {
+  ...
+}
+
+void _onRowSecondaryTapUp(BuildContext context, Person person, TapUpDetail detail) {
   ...
 }
 
