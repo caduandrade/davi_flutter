@@ -236,7 +236,7 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
       if (widget.focusable) {
         table = Focus(
             focusNode: _focusNode,
-            onKey: (node, event) =>
+            onKeyEvent: (node, event) =>
                 _handleKeyPress(node, event, themeMetrics.row.height),
             child: table);
       }
@@ -258,8 +258,8 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
   }
 
   KeyEventResult _handleKeyPress(
-      FocusNode node, RawKeyEvent event, double rowHeight) {
-    if (event is RawKeyUpEvent) {
+      FocusNode node, KeyEvent event, double rowHeight) {
+    if (event is KeyUpEvent) {
       if (_scrollControllers.vertical.hasClients) {
         if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
           double target = math.min(
