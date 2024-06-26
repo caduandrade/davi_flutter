@@ -10,8 +10,8 @@ screenshots:
 topics:
   - ui
   - data
-  - data view
-  - data table
+  - dataview
+  - datatable
 
 environment:
   sdk: ">=2.12.0 <4.0.0"
