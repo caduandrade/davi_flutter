@@ -1,3 +1,8 @@
+## 3.5.0
+
+* `Davi`
+  * Added onRowSecondaryTapUp to get TapUpDetail
+
 ## 3.4.1
 
 * Upgraded `renderObject.parent` object to use `RenderObject` instead of the deprecated `AbstractNode`. This ensures compatibility and resolves deprecation Flutter v3.13.0.

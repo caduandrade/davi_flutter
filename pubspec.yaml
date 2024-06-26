@@ -1,7 +1,17 @@
 name: davi
 description: A full customized dataview that builds the cells on demand. Focused on Web/Desktop Applications. Bidirectional scroll bars. (DataTable, Data Table, Data View)
-version: 3.4.1
+version: 3.5.0
 repository: https://github.com/caduandrade/davi_flutter
+
+screenshots:
+  - description: Davi example
+    path: screenshots/screenshot1.png
+
+topics:
+  - ui
+  - data
+  - data view
+  - data table
 
 environment:
   sdk: ">=2.12.0 <4.0.0"
