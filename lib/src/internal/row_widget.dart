@@ -164,6 +164,7 @@ class RowWidgetState<DATA> extends State<RowWidget<DATA>> {
     }
     return null;
   }
+
   GestureTapUpCallback? _buildOnSecondaryTapUp() {
     if (widget.rowCallbacks.onRowSecondaryTapUp != null) {
       return (detail) =>
