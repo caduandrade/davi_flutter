@@ -8,7 +8,6 @@ screenshots:
     path: screenshots/screenshot1.png
 
 topics:
-  - ui
   - data
   - dataview
   - view
