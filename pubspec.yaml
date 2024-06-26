@@ -11,7 +11,9 @@ topics:
   - ui
   - data
   - dataview
+  - view
   - datatable
+  - table
 
 environment:
   sdk: ">=2.12.0 <4.0.0"
