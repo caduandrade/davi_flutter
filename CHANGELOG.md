@@ -12,6 +12,10 @@ HeaderCellThemeData.copyWith removed
 HeaderThemeData.copyWith removed
 DaviThemeData.copyWith removed
 
+bug
+- resizing column outside
+  - lost icon? 
+
 ## 3.5.0
 
 * `Davi`

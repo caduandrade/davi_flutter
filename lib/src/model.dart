@@ -6,7 +6,6 @@ import 'package:davi/src/sort.dart';
 import 'package:davi/src/sort_callback_typedef.dart';
 import 'package:davi/src/sort_direction.dart';
 import 'package:flutter/widgets.dart';
-import 'package:meta/meta.dart';
 
 /// The [Davi] model.
 ///
@@ -82,15 +81,6 @@ class DaviModel<DATA> extends ChangeNotifier {
 
   bool get isColumnsNotEmpty => _columns.isNotEmpty;
 
-  DaviColumn<DATA>? _columnInResizing;
-
-  DaviColumn<DATA>? get columnInResizing => _columnInResizing;
-
-  @internal
-  set columnInResizing(DaviColumn<DATA>? column) {
-    _columnInResizing = column;
-    notifyListeners();
-  }
 
   /// Indicates whether the model is sorted.
   ///
@@ -202,7 +192,6 @@ class DaviModel<DATA> extends ChangeNotifier {
   /// Remove all columns.
   void removeColumns() {
     _columns.clear();
-    _columnInResizing = null;
     _updateRows(notify: true);
   }
 
@@ -214,9 +203,6 @@ class DaviModel<DATA> extends ChangeNotifier {
   void removeColumn(DaviColumn<DATA> column) {
     if (_columns.remove(column)) {
       column.removeListener(notifyListeners);
-      if (_columnInResizing == column) {
-        _columnInResizing = null;
-      }
       if (column.sort != null) {
         column.clearSort();
         int priority = 1;

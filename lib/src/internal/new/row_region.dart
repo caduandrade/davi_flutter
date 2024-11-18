@@ -1,5 +1,5 @@
 import 'package:davi/davi.dart';
-import 'package:davi/src/internal/new/hover_index.dart';
+import 'package:davi/src/internal/new/hover_notifier.dart';
 import 'package:davi/src/internal/row_callbacks.dart';
 import 'package:davi/src/internal/scroll_offsets.dart';
 import 'package:flutter/gestures.dart';
@@ -25,12 +25,12 @@ class RowRegion<DATA> extends StatelessWidget {
   final RowCallbacks<DATA> rowCallbacks;
   final RowCursorBuilder<DATA>? cursor;
   final HorizontalScrollOffsets horizontalScrollOffsets;
-  final HoverIndex hoverIndexNotifier;
+  final HoverNotifier hoverIndexNotifier;
 
   @override
   Widget build(BuildContext context) {
     DaviRow<DATA> row = DaviRow(
-        data: data, index: index, hovered: hoverIndexNotifier.value == index);
+        data: data, index: index, hovered: hoverIndexNotifier.index == index);
 
     DaviThemeData theme = DaviTheme.of(context);
 

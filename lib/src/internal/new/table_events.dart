@@ -1,9 +1,8 @@
 import 'dart:math' as math;
 
 import 'package:davi/davi.dart';
-import 'package:davi/src/internal/new/hover_index.dart';
+import 'package:davi/src/internal/new/hover_notifier.dart';
 import 'package:davi/src/internal/new/row_bounds.dart';
-import 'package:davi/src/internal/new/row_cursor.dart';
 import 'package:davi/src/internal/row_callbacks.dart';
 import 'package:davi/src/internal/theme_metrics/theme_metrics.dart';
 import 'package:flutter/gestures.dart';
@@ -23,7 +22,6 @@ class TableEvents<DATA> extends StatelessWidget {
       required this.child,
       required this.verticalScrollController,
       required this.scrolling,
-        required this.rowCursor,
       required this.hoverIndex,
       required this.focusNode,
       required this.rowBoundsCache,
@@ -34,7 +32,6 @@ class TableEvents<DATA> extends StatelessWidget {
   final DaviModel<DATA>? model;
   final OnRowHoverListener? onHover;
   final RowCursorBuilder<DATA>? rowCursorBuilder;
-  final RowCursor rowCursor;
   final RowCallbacks<DATA> rowCallbacks;
 
   final bool focusable;
@@ -44,7 +41,7 @@ class TableEvents<DATA> extends StatelessWidget {
   //TODO remove? disable key?
   final bool scrolling;
 
-  final HoverIndex hoverIndex;
+  final HoverNotifier hoverIndex;
   final FocusNode focusNode;
   
   final RowThemeData rowTheme;
@@ -134,18 +131,17 @@ class TableEvents<DATA> extends StatelessWidget {
           data = model?.rowAt(rowIndex);
         }
       if (data != null) {
-        rowCursor.cursor = _buildCursor(
+        hoverIndex.cursor = _buildCursor(
             DaviRow(data: data,
                 index: rowIndex!,
-                hovered: hoverIndex.value == rowIndex));
+                hovered: hoverIndex.index == rowIndex));
       } else {
         // hover over visual row without value
         rowIndex=null;
-        rowCursor.cursor = MouseCursor.defer;
       }
-      hoverIndex.value = rowIndex;
+      hoverIndex.index = rowIndex;
       if (onHover != null) {
-        onHover!(hoverIndex.value);
+        onHover!(hoverIndex.index);
       }
     }
   }
@@ -164,9 +160,9 @@ class TableEvents<DATA> extends StatelessWidget {
 
   DATA? get _hoverData {
     DATA? data;
-    if(hoverIndex.value!=null) {
-      if(model!=null &&hoverIndex.value!< model!.rowsLength) {
-        data = model?.rowAt(hoverIndex.value!);
+    if(hoverIndex.index!=null) {
+      if(model!=null &&hoverIndex.index!< model!.rowsLength) {
+        data = model?.rowAt(hoverIndex.index!);
       }
     }
     return data;

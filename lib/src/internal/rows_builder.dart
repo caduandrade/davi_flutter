@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:davi/src/internal/layout_utils.dart';
+import 'package:davi/src/internal/new/column_notifier.dart';
 import 'package:davi/src/internal/row_callbacks.dart';
 import 'package:davi/src/internal/row_widget.dart';
 import 'package:davi/src/internal/rows_layout.dart';
@@ -26,6 +27,7 @@ class RowsBuilder<DATA> extends StatelessWidget {
   const RowsBuilder(
       {Key? key,
       required this.layoutSettings,
+        required this.columnNotifier,
       required this.model,
       required this.onHover,
       required this.scrolling,
@@ -40,6 +42,7 @@ class RowsBuilder<DATA> extends StatelessWidget {
       : super(key: key);
 
   final DaviModel<DATA>? model;
+  final ColumnNotifier columnNotifier;
   final TableLayoutSettings layoutSettings;
   final bool scrolling;
   final double verticalOffset;
@@ -85,7 +88,7 @@ class RowsBuilder<DATA> extends StatelessWidget {
               cursor: rowCursor,
               model: model!,
               columnResizing:
-                  model != null ? model!.columnInResizing != null : false);
+                  model != null && columnNotifier.resizing);
           children
               .add(RowsLayoutChild(index: rowIndex, last: false, child: row));
         }

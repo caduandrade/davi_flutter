@@ -1,8 +1,7 @@
 import 'dart:math' as math;
 import 'package:davi/src/internal/layout_utils.dart';
-import 'package:davi/src/internal/new/hover_index.dart';
+import 'package:davi/src/internal/new/hover_notifier.dart';
 import 'package:davi/src/internal/new/row_bounds.dart';
-import 'package:davi/src/internal/new/row_cursor.dart';
 import 'package:davi/src/theme/theme_row_color.dart';
 import 'package:flutter/foundation.dart';
 import 'package:davi/src/internal/column_metrics.dart';
@@ -28,8 +27,7 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
     required List<ColumnMetrics> columnsMetrics,
     required Rect leftPinnedAreaBounds,
     required Rect unpinnedAreaBounds,
-    required HoverIndex hoverIndex,
-    required RowCursor rowCursor,
+    required HoverNotifier hoverNotifier,
     required ThemeRowColor? rowColor,
     required int rowsLength,
     required bool fillHeight,
@@ -41,10 +39,9 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
         _rowHeight = rowHeight,
         _verticalOffset = verticalOffset,
         _horizontalScrollOffsets = horizontalScrollOffsets,
-        _hoverIndex = hoverIndex,
+        _hoverNotifier = hoverNotifier,
         _fillHeight = fillHeight,
         _rowColor = rowColor,
-  _rowCursor=rowCursor,
         _rowsLength = rowsLength,
   _rowBoundsCache=rowBoundsCache,
   _hoverBackground=hoverBackground,
@@ -52,8 +49,7 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
         _columnsMetrics = columnsMetrics {
     _areaBounds[PinStatus.left] = leftPinnedAreaBounds;
     _areaBounds[PinStatus.none] = unpinnedAreaBounds;
-    _hoverIndex.addListener(markNeedsPaint);
-    _rowCursor.addListener(markNeedsPaint);
+    _hoverNotifier.addListener(markNeedsPaint);
   }
 
   List<ColumnMetrics> _columnsMetrics;
@@ -138,23 +134,15 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
     }
   }
 
-  RowCursor _rowCursor;
 
-  set rowCursor(RowCursor value) {
-    if (_rowCursor != value) {
-      _rowCursor.removeListener(markNeedsPaint);
-      _rowCursor = value;
-      _rowCursor.addListener(markNeedsPaint);
-    }
-  }
 
-  HoverIndex _hoverIndex;
+  HoverNotifier _hoverNotifier;
 
-  set hoverIndex(HoverIndex value) {
-    if (_hoverIndex != value) {
-      _hoverIndex.removeListener(markNeedsPaint);
-      _hoverIndex = value;
-      _hoverIndex.addListener(markNeedsPaint);
+  set hoverNotifier(HoverNotifier value) {
+    if (_hoverNotifier != value) {
+      _hoverNotifier.removeListener(markNeedsPaint);
+      _hoverNotifier = value;
+      _hoverNotifier.addListener(markNeedsPaint);
     }
   }
 
@@ -276,7 +264,7 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
       for (int rowIndex = firstRowIndex; rowIndex <= lastRowIndex; rowIndex++) {
         Color? color = _rowColor!(rowIndex);
         if (color != null) {
-          if(_hoverIndex.value==rowIndex){
+          if(_hoverNotifier.index==rowIndex){
             //TODO use correct color
             color=Colors.blue;
           }
@@ -344,7 +332,7 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
 
   @override
   MouseCursor get cursor {
-    return _rowCursor.cursor;
+    return _hoverNotifier.cursor;
   }
 
   @override
@@ -419,14 +407,13 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
           }
       }
     }
-    return _hoverIndex.value!=null;
+    return _hoverNotifier.index!=null;
   }
 
 
   @override
   void dispose() {
-    _hoverIndex.removeListener(markNeedsPaint);
-    _rowCursor.removeListener(markNeedsPaint);
+    _hoverNotifier.removeListener(markNeedsPaint);
     super.dispose();
   }
 

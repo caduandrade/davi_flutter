@@ -1,6 +1,6 @@
 import 'package:davi/src/cell_icon.dart';
 import 'package:davi/src/column.dart';
-import 'package:davi/src/internal/new/hover_index.dart';
+import 'package:davi/src/internal/new/hover_notifier.dart';
 import 'package:davi/src/row.dart';
 import 'package:davi/src/theme/cell_null_color.dart';
 import 'package:davi/src/theme/theme.dart';
@@ -13,7 +13,7 @@ class CellWidget<DATA> extends StatelessWidget {
   final int columnIndex;
   final DaviRow<DATA> row;
   final DaviColumn<DATA> column;
-  final HoverIndex hoverIndexNotifier;
+  final HoverNotifier hoverIndexNotifier;
 
   const CellWidget(
       {Key? key, required this.row, required this.column, required this.columnIndex, required this.hoverIndexNotifier}) : super(key: key);
@@ -98,7 +98,7 @@ class CellWidget<DATA> extends StatelessWidget {
 class _CellBackgroundPainter<DATA> extends CustomPainter {
   final DaviRow<DATA> row;
   final DaviColumn<DATA> column;
-  final HoverIndex hoverIndex;
+  final HoverNotifier hoverIndex;
   final CellNullColor? nullValueColor;
 
   _CellBackgroundPainter({required this.row, required this.column, required this.hoverIndex,
@@ -108,7 +108,7 @@ class _CellBackgroundPainter<DATA> extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     Color? background;
     if( nullValueColor!=null) {
-      background = nullValueColor!(row.index, row.index==hoverIndex.value);
+      background = nullValueColor!(row.index, row.index==hoverIndex.index);
     } else if(column.cellBackground != null) {
         background=column.cellBackground!(row);
     }

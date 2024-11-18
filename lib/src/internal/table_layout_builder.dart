@@ -1,6 +1,6 @@
 import 'package:davi/src/column_width_behavior.dart';
-import 'package:davi/src/internal/new/hover_index.dart';
-import 'package:davi/src/internal/new/row_cursor.dart';
+import 'package:davi/src/internal/new/column_notifier.dart';
+import 'package:davi/src/internal/new/hover_notifier.dart';
 import 'package:davi/src/internal/row_callbacks.dart';
 import 'package:davi/src/internal/scroll_controllers.dart';
 import 'package:davi/src/internal/scroll_offsets.dart';
@@ -38,9 +38,9 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
       required this.onLastRowWidget,
       required this.rowColor,
       required this.rowCursorBuilder,
-        required this.rowCursor,
       required this.tapToSortEnabled,
-      required this.hoverIndex,
+      required this.hoverNotifier,
+        required this.columnNotifier,
         required this.focusable,
         required this.focusNode})
       : super(key: key);
@@ -59,9 +59,9 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
   final OnLastRowWidgetListener onLastRowWidget;
   final DaviRowColor<DATA>? rowColor;
   final RowCursorBuilder<DATA>? rowCursorBuilder;
-  final RowCursor rowCursor;
   final bool tapToSortEnabled;
-  final HoverIndex hoverIndex;
+  final HoverNotifier hoverNotifier;
+  final ColumnNotifier columnNotifier;
   final bool focusable;
   final FocusNode focusNode;
 
@@ -102,6 +102,8 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
       children.add(TableLayoutChild.header(
           layoutSettings: layoutSettings,
           model: model,
+          hoverNotifier: hoverNotifier,
+          columnNotifier: columnNotifier,
           resizable: columnWidthBehavior == ColumnWidthBehavior.scrollable,
           tapToSortEnabled: tapToSortEnabled,
           horizontalScrollOffsets: horizontalScrollOffsets));
@@ -142,11 +144,10 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
           rowCallbacks: rowCallbacks,
           rowColor: rowColor,
           rowCursorBuilder: rowCursorBuilder,
-          rowCursor: rowCursor,
           lastRowWidget: lastRowWidget,
           onLastVisibleRow: onLastVisibleRow,
           onLastRowWidget: onLastRowWidget,
-      hoverIndex: hoverIndex,
+      hoverIndex: hoverNotifier,
       focusable: focusable,
       focusNode: focusNode));
     } else {
@@ -154,6 +155,7 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
 
       children.add(TableLayoutChild<DATA>.rows(
           model: model,
+          columnNotifier: columnNotifier,
           layoutSettings: layoutSettings,
           scrolling: scrolling,
           horizontalScrollOffsets: horizontalScrollOffsets,

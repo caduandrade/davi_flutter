@@ -2,9 +2,8 @@ import 'package:davi/davi.dart';
 import 'package:davi/src/internal/new/cells_layout_child.dart';
 import 'package:davi/src/internal/new/cells_layout_element.dart';
 import 'package:davi/src/internal/new/cells_layout_render_box.dart';
-import 'package:davi/src/internal/new/hover_index.dart';
+import 'package:davi/src/internal/new/hover_notifier.dart';
 import 'package:davi/src/internal/new/row_bounds.dart';
-import 'package:davi/src/internal/new/row_cursor.dart';
 import 'package:davi/src/internal/scroll_offsets.dart';
 import 'package:davi/src/internal/table_layout_settings.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +21,6 @@ class CellsLayout<DATA> extends MultiChildRenderObjectWidget {
         required this.leftPinnedAreaBounds,
         required this.unpinnedAreaBounds,
         required this.hoverIndex,
-        required this.rowCursor,
            required this.rowsLength,
         required this.rowBoundsCache,
       required List<CellsLayoutChild> children})
@@ -33,8 +31,7 @@ class CellsLayout<DATA> extends MultiChildRenderObjectWidget {
   final HorizontalScrollOffsets horizontalScrollOffsets;
   final Rect leftPinnedAreaBounds;
   final Rect unpinnedAreaBounds;
-final   HoverIndex hoverIndex;
-final RowCursor rowCursor;
+final   HoverNotifier hoverIndex;
 final RowBoundsCache rowBoundsCache;
    final int rowsLength;
 
@@ -51,10 +48,9 @@ final RowBoundsCache rowBoundsCache;
         horizontalScrollOffsets:horizontalScrollOffsets,
       leftPinnedAreaBounds: leftPinnedAreaBounds,
       unpinnedAreaBounds: unpinnedAreaBounds,
-      hoverIndex: hoverIndex,
+      hoverNotifier: hoverIndex,
       rowColor: theme.row.color,
       rowsLength: rowsLength,
-      rowCursor: rowCursor,
         rowBoundsCache:rowBoundsCache,
       fillHeight: theme.row.fillHeight
     );
@@ -82,11 +78,10 @@ final RowBoundsCache rowBoundsCache;
     ..horizontalScrollOffsets=horizontalScrollOffsets
     ..leftPinnedAreaBounds=leftPinnedAreaBounds
     ..unpinnedAreaBounds=unpinnedAreaBounds
-    ..hoverIndex=hoverIndex
+    ..hoverNotifier=hoverIndex
     ..fillHeight=theme.row.fillHeight
     ..rowsLength=rowsLength
       ..rowBoundsCache=rowBoundsCache
-      ..rowCursor=rowCursor
     ..rowColor=theme.row.color;
   }
 }

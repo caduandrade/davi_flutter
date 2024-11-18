@@ -1,5 +1,7 @@
 import 'package:axis_layout/axis_layout.dart';
 import 'package:davi/davi.dart';
+import 'package:davi/src/internal/new/column_notifier.dart';
+import 'package:davi/src/internal/new/hover_notifier.dart';
 import 'package:davi/src/internal/sort_util.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
@@ -15,7 +17,9 @@ class DaviHeaderCell<DATA> extends StatefulWidget {
       required this.resizable,
       required this.tapToSortEnabled,
       required this.columnIndex,
-      required this.isMultiSorted})
+      required this.isMultiSorted,
+      required this.columnNotifier,
+      required this.hoverNotifier})
       : super(key: key);
 
   final DaviModel<DATA> model;
@@ -24,6 +28,8 @@ class DaviHeaderCell<DATA> extends StatefulWidget {
   final bool tapToSortEnabled;
   final int columnIndex;
   final bool isMultiSorted;
+  final ColumnNotifier columnNotifier;
+  final HoverNotifier hoverNotifier;
 
   @override
   State<StatefulWidget> createState() => _DaviHeaderCellState();
@@ -32,19 +38,19 @@ class DaviHeaderCell<DATA> extends StatefulWidget {
 class _DaviHeaderCellState extends State<DaviHeaderCell> {
   bool _hovered = false;
   double _lastDragPos = 0;
+  bool _resizing = false;
 
   @override
   Widget build(BuildContext context) {
     HeaderCellThemeData theme = DaviTheme.of(context).headerCell;
 
-    final bool resizing = widget.model.columnInResizing == widget.column;
     final bool sortEnabled = widget.tapToSortEnabled &&
-        !resizing &&
-        widget.model.columnInResizing == null;
+        !_resizing &&
+        !widget.columnNotifier.resizing;
     final bool resizable = widget.resizable &&
         widget.column.resizable &&
         widget.column.grow == null &&
-        (sortEnabled || resizing);
+        (sortEnabled || _resizing);
 
     List<Widget> children = [];
 
@@ -105,7 +111,7 @@ class _DaviHeaderCellState extends State<DaviHeaderCell> {
             top: 0,
             bottom: 0,
             right: 0,
-            child: _resizeWidget(context: context, resizing: resizing))
+            child: _resizeWidget(context: context, resizing: _resizing))
       ]);
     }
     return Semantics(
@@ -152,10 +158,12 @@ class _DaviHeaderCellState extends State<DaviHeaderCell> {
 
   void _onResizeDragStart(DragStartDetails details) {
     final Offset pos = details.globalPosition;
+    widget.hoverNotifier.enabled=false;
+    widget.columnNotifier.resizing=true;
     setState(() {
       _lastDragPos = pos.dx;
+      _resizing=true;
     });
-    widget.model.columnInResizing = widget.column;
   }
 
   void _onResizeDragUpdate(DragUpdateDetails details) {
@@ -166,7 +174,11 @@ class _DaviHeaderCellState extends State<DaviHeaderCell> {
   }
 
   void _onResizeDragEnd(DragEndDetails details) {
-    widget.model.columnInResizing = null;
+    widget.hoverNotifier.enabled=true;
+    widget.columnNotifier.resizing=false;
+    setState(() {
+      _resizing=false;
+    });
   }
 
   void _onHeaderSortPressed() {

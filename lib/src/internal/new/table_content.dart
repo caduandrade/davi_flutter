@@ -3,9 +3,8 @@ import 'package:davi/src/internal/cell_widget.dart';
 import 'package:davi/src/internal/layout_utils.dart';
 import 'package:davi/src/internal/new/cells_layout.dart';
 import 'package:davi/src/internal/new/cells_layout_child.dart';
-import 'package:davi/src/internal/new/hover_index.dart';
+import 'package:davi/src/internal/new/hover_notifier.dart';
 import 'package:davi/src/internal/new/row_bounds.dart';
-import 'package:davi/src/internal/new/row_cursor.dart';
 import 'package:davi/src/internal/new/row_region.dart';
 import 'package:davi/src/internal/new/table_events.dart';
 import 'package:davi/src/internal/row_callbacks.dart';
@@ -23,13 +22,12 @@ class TableContent<DATA> extends StatelessWidget {
     required this.onHover,
     required  this.rowCallbacks,
     required this.rowCursorBuilder,
-    required this.rowCursor,
     required this.model, required this.focusable, required this.scrolling, required this.focusNode}) : super(key: key);
 
   final TableLayoutSettings layoutSettings;
   final ScrollController verticalScrollController;
   final HorizontalScrollOffsets horizontalScrollOffsets;
-  final HoverIndex hoverIndex;
+  final HoverNotifier hoverIndex;
   final OnRowHoverListener? onHover;
   final RowCallbacks<DATA> rowCallbacks;
   final RowCursorBuilder<DATA>? rowCursorBuilder;
@@ -37,7 +35,6 @@ class TableContent<DATA> extends StatelessWidget {
   final bool scrolling;
   final FocusNode focusNode;
   final DaviModel<DATA>? model;
-  final RowCursor rowCursor;
 
   @override
   Widget build(BuildContext context) {
@@ -108,8 +105,7 @@ class TableContent<DATA> extends StatelessWidget {
     CellsLayout cellsLayout= CellsLayout(layoutSettings: layoutSettings, verticalOffset:verticalOffset,horizontalScrollOffsets:horizontalScrollOffsets,
         leftPinnedAreaBounds:layoutSettings.getAreaBounds(PinStatus.left), unpinnedAreaBounds:layoutSettings.getAreaBounds(PinStatus.none),
         rowsLength: layoutSettings.rowsLength,
-        rowCursor: rowCursor,
-        hoverIndex: hoverIndex,
+          hoverIndex: hoverIndex,
         rowBoundsCache:rowBoundsCache,
         children: children);
   
@@ -125,7 +121,6 @@ class TableContent<DATA> extends StatelessWidget {
         rowCursorBuilder: rowCursorBuilder,
         focusable: focusable,
         rowTheme: theme.row,
-        rowCursor: rowCursor,
         child: cellsLayout));
     
   }

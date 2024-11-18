@@ -1,10 +1,6 @@
-import 'dart:math' as math;
-
 import 'package:davi/src/column_width_behavior.dart';
-import 'package:davi/src/internal/new/cells_layout.dart';
-import 'package:davi/src/internal/new/cells_layout_child.dart';
-import 'package:davi/src/internal/new/hover_index.dart';
-import 'package:davi/src/internal/new/row_cursor.dart';
+import 'package:davi/src/internal/new/column_notifier.dart';
+import 'package:davi/src/internal/new/hover_notifier.dart';
 import 'package:davi/src/internal/row_callbacks.dart';
 import 'package:davi/src/internal/scroll_controllers.dart';
 import 'package:davi/src/internal/table_layout_builder.dart';
@@ -18,11 +14,7 @@ import 'package:davi/src/row_cursor_builder.dart';
 import 'package:davi/src/row_hover_listener.dart';
 import 'package:davi/src/theme/theme.dart';
 import 'package:davi/src/theme/theme_data.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-
-import 'internal/new/table_events.dart';
 
 /// Table view designed for a large number of data.
 ///
@@ -86,8 +78,9 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
   int? _hoveredRowIndex;
   bool _lastRowWidgetVisible = false;
   int? _lastVisibleRow;
-  final HoverIndex _hoverIndex = HoverIndex();
-  final RowCursor _rowCursor = RowCursor();
+  final HoverNotifier _hoverNotifier = HoverNotifier();
+  final ColumnNotifier _columnNotifier= ColumnNotifier();
+
   final FocusNode _focusNode = FocusNode(debugLabel: 'Davi');
 
   void _setHoveredRowIndex(int? rowIndex) {
@@ -189,7 +182,8 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
     //TODO need this cliprect?
     Widget table = ClipRect(
         child: TableLayoutBuilder(
-          hoverIndex: _hoverIndex,
+          hoverNotifier: _hoverNotifier,
+            columnNotifier: _columnNotifier,
             onHover: widget.onHover != null ? _setHoveredRowIndex : null,
             tapToSortEnabled: widget.tapToSortEnabled,
             scrollControllers: _scrollControllers,
@@ -202,7 +196,6 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
             scrolling: _scrolling,
             rowColor: widget.rowColor,
             rowCursorBuilder: widget.rowCursor,
-            rowCursor: _rowCursor,
             focusable: widget.focusable,
             focusNode: _focusNode,
             lastRowWidget: widget.lastRowWidget,
@@ -241,7 +234,7 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
   }
 
   void _onDragScroll(bool running) {
-    _hoverIndex.enabled = !running;
+    _hoverNotifier.enabled = !running;
     setState(() => _scrolling = running);
   }
 }

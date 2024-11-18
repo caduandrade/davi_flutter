@@ -2,6 +2,8 @@ import 'package:davi/src/column.dart';
 import 'package:davi/src/internal/columns_layout.dart';
 import 'package:davi/src/internal/columns_layout_child.dart';
 import 'package:davi/src/internal/header_cell.dart';
+import 'package:davi/src/internal/new/column_notifier.dart';
+import 'package:davi/src/internal/new/hover_notifier.dart';
 import 'package:davi/src/internal/scroll_offsets.dart';
 import 'package:davi/src/internal/table_layout_settings.dart';
 import 'package:davi/src/model.dart';
@@ -18,7 +20,9 @@ class HeaderWidget<DATA> extends StatelessWidget {
       required this.model,
       required this.resizable,
       required this.horizontalScrollOffsets,
-      required this.tapToSortEnabled})
+      required this.tapToSortEnabled,
+      required this.columnNotifier,
+      required this.hoverNotifier})
       : super(key: key);
 
   final TableLayoutSettings layoutSettings;
@@ -26,6 +30,8 @@ class HeaderWidget<DATA> extends StatelessWidget {
   final bool resizable;
   final HorizontalScrollOffsets horizontalScrollOffsets;
   final bool tapToSortEnabled;
+  final ColumnNotifier columnNotifier;
+  final HoverNotifier hoverNotifier;
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +53,9 @@ class HeaderWidget<DATA> extends StatelessWidget {
           resizable: resizable,
           tapToSortEnabled: tapToSortEnabled,
           isMultiSorted: isMultiSorted,
-          columnIndex: columnIndex);
+          columnIndex: columnIndex,
+      columnNotifier: columnNotifier,
+      hoverNotifier: hoverNotifier);
       children.add(ColumnsLayoutChild<DATA>(index: columnIndex, child: cell));
     }
 

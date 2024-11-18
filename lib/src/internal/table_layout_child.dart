@@ -1,7 +1,7 @@
 import 'package:davi/src/internal/header_widget.dart';
 import 'package:davi/src/internal/layout_child_id.dart';
-import 'package:davi/src/internal/new/hover_index.dart';
-import 'package:davi/src/internal/new/row_cursor.dart';
+import 'package:davi/src/internal/new/column_notifier.dart';
+import 'package:davi/src/internal/new/hover_notifier.dart';
 import 'package:davi/src/internal/new/table_content.dart';
 import 'package:davi/src/internal/row_callbacks.dart';
 import 'package:davi/src/internal/rows_builder.dart';
@@ -28,7 +28,9 @@ class TableLayoutChild<DATA> extends ParentDataWidget<TableLayoutParentData> {
       required DaviModel<DATA>? model,
       required bool resizable,
       required HorizontalScrollOffsets horizontalScrollOffsets,
-      required bool tapToSortEnabled}) {
+      required bool tapToSortEnabled,
+        required ColumnNotifier columnNotifier,
+        required HoverNotifier hoverNotifier}) {
     return TableLayoutChild._(
         id: LayoutChildId.header,
         child: model != null
@@ -37,7 +39,9 @@ class TableLayoutChild<DATA> extends ParentDataWidget<TableLayoutParentData> {
                 model: model,
                 horizontalScrollOffsets: horizontalScrollOffsets,
                 resizable: resizable,
-                tapToSortEnabled: tapToSortEnabled)
+                tapToSortEnabled: tapToSortEnabled,
+        hoverNotifier: hoverNotifier,
+        columnNotifier: columnNotifier)
             : Container());
   }
 
@@ -53,14 +57,13 @@ class TableLayoutChild<DATA> extends ParentDataWidget<TableLayoutParentData> {
     required Widget? lastRowWidget,
     required OnLastRowWidgetListener onLastRowWidget,
     required OnLastVisibleRowListener onLastVisibleRow,
-  required HoverIndex hoverIndex,
-    required RowCursor rowCursor,
+  required HoverNotifier hoverIndex,
     required bool focusable,
     required FocusNode focusNode}) {
     return TableLayoutChild._(
         id: LayoutChildId.cells,
         child: TableContent(focusNode: focusNode,focusable: focusable,rowCallbacks: rowCallbacks,
-        hoverIndex: hoverIndex,scrolling: scrolling,rowCursorBuilder: rowCursorBuilder,rowCursor: rowCursor,
+        hoverIndex: hoverIndex,scrolling: scrolling,rowCursorBuilder: rowCursorBuilder,
         model: model, layoutSettings: layoutSettings,horizontalScrollOffsets: horizontalScrollOffsets,
         verticalScrollController: verticalScrollController,
         onHover: onHover)
@@ -71,6 +74,7 @@ class TableLayoutChild<DATA> extends ParentDataWidget<TableLayoutParentData> {
   factory TableLayoutChild.rows(
       {required DaviModel<DATA>? model,
       required TableLayoutSettings layoutSettings,
+        required ColumnNotifier columnNotifier,
       required bool scrolling,
       required HorizontalScrollOffsets horizontalScrollOffsets,
       required ScrollController verticalScrollController,
@@ -98,6 +102,7 @@ class TableLayoutChild<DATA> extends ParentDataWidget<TableLayoutParentData> {
                   horizontalScrollOffsets: horizontalScrollOffsets,
                   rowColor: rowColor,
                   rowCursor: rowCursor,
+                  columnNotifier: columnNotifier,
                   lastRowWidget: lastRowWidget,
                   onLastRowWidget: onLastRowWidget,
                   onLastVisibleRow: onLastVisibleRow);
