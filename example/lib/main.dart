@@ -12,7 +12,7 @@ class Person {
 
   final String name;
   final int age;
-  final int value;
+  final int? value;
 
   bool _valid = true;
 
@@ -21,6 +21,8 @@ class Person {
   String _editable = '';
 
   String get editable => _editable;
+
+  TextEditingController c = TextEditingController();
 
   set editable(String value) {
     _editable = value;
@@ -58,17 +60,27 @@ class _HomePageState extends State<HomePage> {
     List<Person> rows = [];
 
     Random random = Random();
-    for (int i = 1; i < 500; i++) {
-      rows.add(Person('User $i', 20 + random.nextInt(50), random.nextInt(999)));
+    for (int i = 1; i < 25; i++) {
+      rows.add(Person('User $i', 20 + random.nextInt(50), i == 1 ? null : i));
     }
-    rows.shuffle();
+    // rows.shuffle();
 
     _model = DaviModel<Person>(
         rows: rows,
         columns: [
-          DaviColumn(name: 'Name', stringValue: (data) => data.name),
+          DaviColumn(
+              name: 'Name',
+              stringValue: (data) => data.name,
+              pinStatus: PinStatus.left),
           DaviColumn(name: 'Age', intValue: (data) => data.age),
           DaviColumn(name: 'Value', intValue: (data) => data.value),
+          DaviColumn(
+              name: 'Value 2',
+              intValue: (data) => data.value,
+              cellTextStyle: TextStyle(fontWeight: FontWeight.bold),
+              cellBackground: (data) =>
+                  data.data.value == 12 ? Colors.green : null),
+          DaviColumn(name: 'Value 3', intValue: (data) => data.value),
           DaviColumn(
               name: 'Editable',
               sortable: false,
@@ -80,6 +92,13 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildField(BuildContext context, DaviRow<Person> rowData) {
+    if (true) {
+      return TextFormField(
+          controller: rowData.data.c,
+          //key: ValueKey(rowData.index),
+          //initialValue: rowData.data.editable,
+          onChanged: (value) => _onFieldChange(value, rowData.data));
+    }
     return TextFormField(
         initialValue: rowData.data.editable,
         style:
@@ -99,6 +118,83 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: Davi<Person>(_model));
+    DaviTheme theme = DaviTheme(
+        data: DaviThemeData(
+            row: RowThemeData(
+              dividerThickness: 10,
+              color: RowThemeData.zebraColor(evenColor: Colors.pink[100], oddColor: Colors.yellow[100]),
+              hoverBackground: (index) => Colors.blue,
+            ),
+            cell: CellThemeData(
+                nullValueColor: (index, hover) =>
+                    hover ? Colors.yellow : Colors.orange)),
+        child: Davi<Person>(_model,
+            onRowTap: _onRowTap,
+            lastRowWidget: const Center(child: Text('last widget'))
+        ));
+
+    return Scaffold(
+        body: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+      TextButton(onPressed: _onclick, child: Text('ok')),
+      Expanded(child: theme)
+    ]));
+  }
+
+  void _onHover(int? index) {
+    print('onHover: $index');
+  }
+
+  void _onRowTap(Person p) {
+    print('tap: ${p.value}');
+  }
+
+  void _onclick() {
+    setState(() {});
+  }
+}
+
+class MM extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() => St();
+}
+
+class St extends State<MM> {
+  Color color = Colors.white;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+        padding: EdgeInsets.all(50),
+        child: MouseRegion(
+            cursor: SystemMouseCursors.click,
+            onEnter: _onEnter,
+            onExit: _onExit,
+            child: GestureDetector(
+                onTap: _onTap,
+                child: Container(
+                    color: color,
+                    child: Column(children: [
+                      TextField(),
+                      Expanded(child: Container())
+                    ])))));
+    //return Stack(children: [Positioned.fill(child: MouseRegion(onEnter: _onEnter, onExit: _onExit, child: Container(color:color))), TextField()]);
+  }
+
+  void _onEnter(e) {
+    print('onenter');
+    setState(() {
+      color = Colors.blue;
+    });
+  }
+
+  void _onTap() {
+    print('tap');
+  }
+
+  void _onExit(e) {
+    print('onExit');
+    setState(() {
+      color = Colors.white;
+    });
   }
 }

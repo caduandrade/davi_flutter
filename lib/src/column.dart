@@ -3,7 +3,6 @@ import 'dart:math' as math;
 import 'package:davi/src/cell_background.dart';
 import 'package:davi/src/cell_builder.dart';
 import 'package:davi/src/cell_semantics_builder.dart';
-import 'package:davi/src/cell_style.dart';
 import 'package:davi/src/column_id.dart';
 import 'package:davi/src/pin_status.dart';
 import 'package:davi/src/row.dart';
@@ -45,7 +44,6 @@ class DaviColumn<DATA> extends ChangeNotifier {
       this.resizable = true,
       this.cellClip = false,
       this.sortable = true,
-      this.cellStyleBuilder,
       this.semanticsBuilder = defaultSemanticsBuilder})
       : id = id ?? DaviColumnId(),
         _width = width,
@@ -98,7 +96,6 @@ class DaviColumn<DATA> extends ChangeNotifier {
   final DaviStringValueMapper<DATA>? stringValueMapper;
   final DaviObjectValueMapper<DATA>? objectValueMapper;
   final DaviIconValueMapper<DATA>? iconValueMapper;
-  final CellStyleBuilder<DATA>? cellStyleBuilder;
 
   /// Indicates whether the cell widget should be clipped.
   final bool cellClip;

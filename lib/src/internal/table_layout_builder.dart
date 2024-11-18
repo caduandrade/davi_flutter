@@ -1,4 +1,6 @@
 import 'package:davi/src/column_width_behavior.dart';
+import 'package:davi/src/internal/new/hover_index.dart';
+import 'package:davi/src/internal/new/row_cursor.dart';
 import 'package:davi/src/internal/row_callbacks.dart';
 import 'package:davi/src/internal/scroll_controllers.dart';
 import 'package:davi/src/internal/scroll_offsets.dart';
@@ -11,7 +13,7 @@ import 'package:davi/src/last_row_widget_listener.dart';
 import 'package:davi/src/last_visible_row_listener.dart';
 import 'package:davi/src/model.dart';
 import 'package:davi/src/row_color.dart';
-import 'package:davi/src/row_cursor.dart';
+import 'package:davi/src/row_cursor_builder.dart';
 import 'package:davi/src/row_hover_listener.dart';
 import 'package:davi/src/theme/theme.dart';
 import 'package:davi/src/theme/theme_data.dart';
@@ -35,8 +37,12 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
       required this.lastRowWidget,
       required this.onLastRowWidget,
       required this.rowColor,
-      required this.rowCursor,
-      required this.tapToSortEnabled})
+      required this.rowCursorBuilder,
+        required this.rowCursor,
+      required this.tapToSortEnabled,
+      required this.hoverIndex,
+        required this.focusable,
+        required this.focusNode})
       : super(key: key);
 
   final OnLastVisibleRowListener onLastVisibleRow;
@@ -52,8 +58,12 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
   final Widget? lastRowWidget;
   final OnLastRowWidgetListener onLastRowWidget;
   final DaviRowColor<DATA>? rowColor;
-  final DaviRowCursor<DATA>? rowCursor;
+  final RowCursorBuilder<DATA>? rowCursorBuilder;
+  final RowCursor rowCursor;
   final bool tapToSortEnabled;
+  final HoverIndex hoverIndex;
+  final bool focusable;
+  final FocusNode focusNode;
 
   @override
   Widget build(BuildContext context) {
@@ -122,19 +132,40 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
       }
     }
 
-    children.add(TableLayoutChild<DATA>.rows(
-        model: model,
-        layoutSettings: layoutSettings,
-        scrolling: scrolling,
-        horizontalScrollOffsets: horizontalScrollOffsets,
-        verticalScrollController: scrollControllers.vertical,
-        onHover: onHover,
-        rowCallbacks: rowCallbacks,
-        rowColor: rowColor,
-        rowCursor: rowCursor,
-        lastRowWidget: lastRowWidget,
-        onLastVisibleRow: onLastVisibleRow,
-        onLastRowWidget: onLastRowWidget));
+    if(true) {
+      children.add(TableLayoutChild<DATA>.cells(model: model,
+          layoutSettings: layoutSettings,
+          scrolling: scrolling,
+          horizontalScrollOffsets: horizontalScrollOffsets,
+          verticalScrollController: scrollControllers.vertical,
+          onHover: onHover,
+          rowCallbacks: rowCallbacks,
+          rowColor: rowColor,
+          rowCursorBuilder: rowCursorBuilder,
+          rowCursor: rowCursor,
+          lastRowWidget: lastRowWidget,
+          onLastVisibleRow: onLastVisibleRow,
+          onLastRowWidget: onLastRowWidget,
+      hoverIndex: hoverIndex,
+      focusable: focusable,
+      focusNode: focusNode));
+    } else {
+    //TODO remove
+
+      children.add(TableLayoutChild<DATA>.rows(
+          model: model,
+          layoutSettings: layoutSettings,
+          scrolling: scrolling,
+          horizontalScrollOffsets: horizontalScrollOffsets,
+          verticalScrollController: scrollControllers.vertical,
+          onHover: onHover,
+          rowCallbacks: rowCallbacks,
+          rowColor: rowColor,
+          rowCursor: rowCursorBuilder,
+          lastRowWidget: lastRowWidget,
+          onLastVisibleRow: onLastVisibleRow,
+          onLastRowWidget: onLastRowWidget));
+    }
 
     return TableLayout<DATA>(
         layoutSettings: layoutSettings,

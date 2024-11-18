@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
 @internal
+//TODO need?
 class RowsPaintingSettings {
   RowsPaintingSettings(
       {required this.divisorColor,

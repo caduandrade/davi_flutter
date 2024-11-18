@@ -12,7 +12,7 @@ import 'package:davi/src/last_row_widget_listener.dart';
 import 'package:davi/src/last_visible_row_listener.dart';
 import 'package:davi/src/model.dart';
 import 'package:davi/src/row_color.dart';
-import 'package:davi/src/row_cursor.dart';
+import 'package:davi/src/row_cursor_builder.dart';
 import 'package:davi/src/row_hover_listener.dart';
 import 'package:davi/src/theme/theme.dart';
 import 'package:davi/src/theme/theme_data.dart';
@@ -20,6 +20,8 @@ import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
 @internal
+@Deprecated('message')
+//TODO delete
 class RowsBuilder<DATA> extends StatelessWidget {
   const RowsBuilder(
       {Key? key,
@@ -46,7 +48,7 @@ class RowsBuilder<DATA> extends StatelessWidget {
   final RowCallbacks<DATA> rowCallbacks;
   final Widget? lastRowWidget;
   final DaviRowColor<DATA>? rowColor;
-  final DaviRowCursor<DATA>? rowCursor;
+  final RowCursorBuilder<DATA>? rowCursor;
   final OnLastRowWidgetListener onLastRowWidget;
   final OnLastVisibleRowListener onLastVisibleRow;
 

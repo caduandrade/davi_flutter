@@ -1,6 +1,10 @@
 import 'dart:math' as math;
 
 import 'package:davi/src/column_width_behavior.dart';
+import 'package:davi/src/internal/new/cells_layout.dart';
+import 'package:davi/src/internal/new/cells_layout_child.dart';
+import 'package:davi/src/internal/new/hover_index.dart';
+import 'package:davi/src/internal/new/row_cursor.dart';
 import 'package:davi/src/internal/row_callbacks.dart';
 import 'package:davi/src/internal/scroll_controllers.dart';
 import 'package:davi/src/internal/table_layout_builder.dart';
@@ -10,13 +14,15 @@ import 'package:davi/src/last_visible_row_listener.dart';
 import 'package:davi/src/model.dart';
 import 'package:davi/src/row_callback_typedefs.dart';
 import 'package:davi/src/row_color.dart';
-import 'package:davi/src/row_cursor.dart';
+import 'package:davi/src/row_cursor_builder.dart';
 import 'package:davi/src/row_hover_listener.dart';
 import 'package:davi/src/theme/theme.dart';
 import 'package:davi/src/theme/theme_data.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
+import 'internal/new/table_events.dart';
 
 /// Table view designed for a large number of data.
 ///
@@ -54,7 +60,7 @@ class Davi<DATA> extends StatefulWidget {
   final ScrollController? verticalScrollController;
   final OnRowHoverListener? onHover;
   final DaviRowColor<DATA>? rowColor;
-  final DaviRowCursor<DATA>? rowCursor;
+  final RowCursorBuilder<DATA>? rowCursor;
   final RowDoubleTapCallback<DATA>? onRowDoubleTap;
   final RowTapCallback<DATA>? onRowTap;
   final RowTapCallback<DATA>? onRowSecondaryTap;
@@ -80,6 +86,8 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
   int? _hoveredRowIndex;
   bool _lastRowWidgetVisible = false;
   int? _lastVisibleRow;
+  final HoverIndex _hoverIndex = HoverIndex();
+  final RowCursor _rowCursor = RowCursor();
   final FocusNode _focusNode = FocusNode(debugLabel: 'Davi');
 
   void _setHoveredRowIndex(int? rowIndex) {
@@ -178,8 +186,10 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
 
     final TableThemeMetrics themeMetrics = TableThemeMetrics(theme);
 
+    //TODO need this cliprect?
     Widget table = ClipRect(
         child: TableLayoutBuilder(
+          hoverIndex: _hoverIndex,
             onHover: widget.onHover != null ? _setHoveredRowIndex : null,
             tapToSortEnabled: widget.tapToSortEnabled,
             scrollControllers: _scrollControllers,
@@ -191,7 +201,10 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
             model: widget.model,
             scrolling: _scrolling,
             rowColor: widget.rowColor,
-            rowCursor: widget.rowCursor,
+            rowCursorBuilder: widget.rowCursor,
+            rowCursor: _rowCursor,
+            focusable: widget.focusable,
+            focusNode: _focusNode,
             lastRowWidget: widget.lastRowWidget,
             rowCallbacks: RowCallbacks(
                 onRowTap: widget.onRowTap,
@@ -201,45 +214,15 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
             onDragScroll: _onDragScroll));
 
     if (widget.model != null) {
-      if (theme.row.hoverBackground != null ||
-          theme.row.hoverForeground != null) {
-        table = MouseRegion(
-            onExit: (event) => _setHoveredRowIndex(null), child: table);
-      }
-
-      table = Listener(
+            table = Listener(
         behavior: HitTestBehavior.translucent,
         onPointerDown: (pointer) {
           if (widget.focusable) {
             _focusNode.requestFocus();
           }
         },
-        onPointerSignal: (pointerSignal) {
-          if (pointerSignal is PointerScrollEvent &&
-              _scrollControllers.vertical.hasClients &&
-              pointerSignal.scrollDelta.dy != 0) {
-            _scrollControllers.vertical.position
-                .pointerScroll(pointerSignal.scrollDelta.dy);
-          }
-        },
-        onPointerPanZoomUpdate: (PointerPanZoomUpdateEvent event) {
-          // trackpad on macOS
-          if (_scrollControllers.vertical.hasClients &&
-              event.panDelta.dy != 0) {
-            _scrollControllers.vertical.position
-                .pointerScroll(-event.panDelta.dy);
-          }
-        },
         child: table,
       );
-
-      if (widget.focusable) {
-        table = Focus(
-            focusNode: _focusNode,
-            onKeyEvent: (node, event) =>
-                _handleKeyPress(node, event, themeMetrics.row.height),
-            child: table);
-      }
     }
 
     if (theme.decoration != null) {
@@ -257,42 +240,8 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
     return table;
   }
 
-  KeyEventResult _handleKeyPress(
-      FocusNode node, KeyEvent event, double rowHeight) {
-    if (event is KeyUpEvent) {
-      if (_scrollControllers.vertical.hasClients) {
-        if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-          double target = math.min(
-              _scrollControllers.vertical.position.pixels + rowHeight,
-              _scrollControllers.vertical.position.maxScrollExtent);
-          _scrollControllers.vertical.animateTo(target,
-              duration: const Duration(milliseconds: 30), curve: Curves.ease);
-        } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-          double target = math.max(
-              _scrollControllers.vertical.position.pixels - rowHeight, 0);
-          _scrollControllers.vertical.animateTo(target,
-              duration: const Duration(milliseconds: 30), curve: Curves.ease);
-        } else if (event.logicalKey == LogicalKeyboardKey.pageDown) {
-          double target = math.min(
-              _scrollControllers.vertical.position.pixels +
-                  _scrollControllers.vertical.position.viewportDimension,
-              _scrollControllers.vertical.position.maxScrollExtent);
-          _scrollControllers.vertical.animateTo(target,
-              duration: const Duration(milliseconds: 30), curve: Curves.ease);
-        } else if (event.logicalKey == LogicalKeyboardKey.pageUp) {
-          double target = math.max(
-              _scrollControllers.vertical.position.pixels -
-                  _scrollControllers.vertical.position.viewportDimension,
-              0);
-          _scrollControllers.vertical.animateTo(target,
-              duration: const Duration(milliseconds: 30), curve: Curves.ease);
-        }
-      }
-    }
-    return KeyEventResult.ignored;
-  }
-
-  void _onDragScroll(bool start) {
-    setState(() => _scrolling = start);
+  void _onDragScroll(bool running) {
+    _hoverIndex.enabled = !running;
+    setState(() => _scrolling = running);
   }
 }

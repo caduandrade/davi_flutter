@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
 @internal
+@Deprecated('message')
 class RowWidget<DATA> extends StatefulWidget {
   RowWidget(
       {required this.index,
@@ -34,7 +35,7 @@ class RowWidget<DATA> extends StatefulWidget {
   final TableLayoutSettings layoutSettings;
   final RowCallbacks<DATA> rowCallbacks;
   final DaviRowColor<DATA>? color;
-  final DaviRowCursor<DATA>? cursor;
+  final RowCursorBuilder<DATA>? cursor;
   final HorizontalScrollOffsets horizontalScrollOffsets;
 
   @override
@@ -67,10 +68,9 @@ class RowWidgetState<DATA> extends State<RowWidget<DATA>> {
         columnIndex < widget.model.columnsLength;
         columnIndex++) {
       final DaviColumn<DATA> column = widget.model.columnAt(columnIndex);
-      final CellWidget<DATA> cell =
-          CellWidget(column: column, columnIndex: columnIndex, row: _row);
+   //   final CellWidget<DATA> cell =  CellWidget(column: column, columnIndex: columnIndex, row: _row);
 
-      children.add(ColumnsLayoutChild<DATA>(index: columnIndex, child: cell));
+    //  children.add(ColumnsLayoutChild<DATA>(index: columnIndex, child: cell));
     }
 
     Widget layout = ColumnsLayout(

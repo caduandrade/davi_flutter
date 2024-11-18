@@ -1,5 +1,8 @@
 import 'package:davi/src/internal/header_widget.dart';
 import 'package:davi/src/internal/layout_child_id.dart';
+import 'package:davi/src/internal/new/hover_index.dart';
+import 'package:davi/src/internal/new/row_cursor.dart';
+import 'package:davi/src/internal/new/table_content.dart';
 import 'package:davi/src/internal/row_callbacks.dart';
 import 'package:davi/src/internal/rows_builder.dart';
 import 'package:davi/src/internal/scroll_offsets.dart';
@@ -12,7 +15,7 @@ import 'package:davi/src/last_row_widget_listener.dart';
 import 'package:davi/src/last_visible_row_listener.dart';
 import 'package:davi/src/model.dart';
 import 'package:davi/src/row_color.dart';
-import 'package:davi/src/row_cursor.dart';
+import 'package:davi/src/row_cursor_builder.dart';
 import 'package:davi/src/row_hover_listener.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -38,6 +41,33 @@ class TableLayoutChild<DATA> extends ParentDataWidget<TableLayoutParentData> {
             : Container());
   }
 
+  factory TableLayoutChild.cells({required DaviModel<DATA>? model,
+    required TableLayoutSettings layoutSettings,
+    required bool scrolling,
+    required HorizontalScrollOffsets horizontalScrollOffsets,
+    required ScrollController verticalScrollController,
+    required OnRowHoverListener? onHover,
+    required RowCallbacks<DATA> rowCallbacks,
+    required DaviRowColor<DATA>? rowColor,
+    required RowCursorBuilder<DATA>? rowCursorBuilder,
+    required Widget? lastRowWidget,
+    required OnLastRowWidgetListener onLastRowWidget,
+    required OnLastVisibleRowListener onLastVisibleRow,
+  required HoverIndex hoverIndex,
+    required RowCursor rowCursor,
+    required bool focusable,
+    required FocusNode focusNode}) {
+    return TableLayoutChild._(
+        id: LayoutChildId.cells,
+        child: TableContent(focusNode: focusNode,focusable: focusable,rowCallbacks: rowCallbacks,
+        hoverIndex: hoverIndex,scrolling: scrolling,rowCursorBuilder: rowCursorBuilder,rowCursor: rowCursor,
+        model: model, layoutSettings: layoutSettings,horizontalScrollOffsets: horizontalScrollOffsets,
+        verticalScrollController: verticalScrollController,
+        onHover: onHover)
+    );
+  }
+
+  @Deprecated('needs to be replaced by cells')
   factory TableLayoutChild.rows(
       {required DaviModel<DATA>? model,
       required TableLayoutSettings layoutSettings,
@@ -47,14 +77,14 @@ class TableLayoutChild<DATA> extends ParentDataWidget<TableLayoutParentData> {
       required OnRowHoverListener? onHover,
       required RowCallbacks<DATA> rowCallbacks,
       required DaviRowColor<DATA>? rowColor,
-      required DaviRowCursor<DATA>? rowCursor,
+      required RowCursorBuilder<DATA>? rowCursor,
       required Widget? lastRowWidget,
       required OnLastRowWidgetListener onLastRowWidget,
       required OnLastVisibleRowListener onLastVisibleRow}) {
     return TableLayoutChild._(
-        id: LayoutChildId.rows,
-        child: AnimatedBuilder(
-            animation: verticalScrollController,
+        id: LayoutChildId.cells,
+        child: ListenableBuilder(
+          listenable: verticalScrollController,
             builder: (BuildContext context, Widget? child) {
               return RowsBuilder<DATA>(
                   model: model,

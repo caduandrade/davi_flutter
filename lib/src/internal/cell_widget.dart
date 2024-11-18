@@ -1,8 +1,8 @@
 import 'package:davi/src/cell_icon.dart';
-import 'package:davi/src/cell_style.dart';
 import 'package:davi/src/column.dart';
-import 'package:davi/src/internal/cell_key.dart';
+import 'package:davi/src/internal/new/hover_index.dart';
 import 'package:davi/src/row.dart';
+import 'package:davi/src/theme/cell_null_color.dart';
 import 'package:davi/src/theme/theme.dart';
 import 'package:davi/src/theme/theme_data.dart';
 import 'package:flutter/material.dart';
@@ -13,15 +13,10 @@ class CellWidget<DATA> extends StatelessWidget {
   final int columnIndex;
   final DaviRow<DATA> row;
   final DaviColumn<DATA> column;
+  final HoverIndex hoverIndexNotifier;
 
-  CellWidget(
-      {required this.row, required this.column, required this.columnIndex})
-      : super(
-            key: CellKey(
-                row: row.index,
-                column: columnIndex,
-                rowSpan: 1,
-                columnSpan: 1));
+  const CellWidget(
+      {Key? key, required this.row, required this.column, required this.columnIndex, required this.hoverIndexNotifier}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -32,25 +27,13 @@ class CellWidget<DATA> extends StatelessWidget {
     Alignment? alignment = theme.cell.alignment;
     TextStyle? textStyle = theme.cell.textStyle;
     TextOverflow? overflow = theme.cell.overflow;
-    // Entire column
+     // Entire column
     padding = column.cellPadding ?? padding;
     alignment = column.cellAlignment ?? alignment;
-    Color? background =
-        column.cellBackground != null ? column.cellBackground!(row) : null;
     textStyle = column.cellTextStyle ?? textStyle;
     overflow = column.cellOverflow ?? overflow;
-    // Single cell
-    if (column.cellStyleBuilder != null) {
-      CellStyle? cellStyle = column.cellStyleBuilder!(row);
-      if (cellStyle != null) {
-        padding = cellStyle.padding ?? padding;
-        alignment = cellStyle.alignment ?? alignment;
-        background = cellStyle.background ?? background;
-        textStyle = cellStyle.textStyle ?? textStyle;
-        overflow = cellStyle.overflow ?? overflow;
-      }
-    }
 
+    bool tryNullValue = false;
     Widget? child;
     if (column.cellBuilder != null) {
       child = column.cellBuilder!(context, row);
@@ -66,7 +49,7 @@ class CellWidget<DATA> extends StatelessWidget {
             overflow: overflow ?? theme.cell.overflow,
             style: textStyle ?? theme.cell.textStyle);
       } else if (theme.cell.nullValueColor != null) {
-        background = theme.cell.nullValueColor!(row.index, row.hovered);
+        tryNullValue=true;
       }
     }
     if (child != null) {
@@ -78,8 +61,9 @@ class CellWidget<DATA> extends StatelessWidget {
     // To avoid the bug that makes a cursor disappear
     // (https://github.com/flutter/flutter/issues/106767),
     // always build a Container with some color.
-    background = background ?? Colors.transparent;
-    child = Container(color: background, child: child);
+    child=Container(color: Colors.transparent, child: child);
+    child= CustomPaint(painter: _CellBackgroundPainter(nullValueColor: tryNullValue?theme.cell.nullValueColor:null, hoverIndex: hoverIndexNotifier, column: column,    row: row),child: child);
+
     if (column.cellClip) {
       child = ClipRect(child: child);
     }
@@ -109,4 +93,32 @@ class CellWidget<DATA> extends StatelessWidget {
     }
     return null;
   }
+}
+
+class _CellBackgroundPainter<DATA> extends CustomPainter {
+  final DaviRow<DATA> row;
+  final DaviColumn<DATA> column;
+  final HoverIndex hoverIndex;
+  final CellNullColor? nullValueColor;
+
+  _CellBackgroundPainter({required this.row, required this.column, required this.hoverIndex,
+  required this.nullValueColor}) : super(repaint: hoverIndex);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    Color? background;
+    if( nullValueColor!=null) {
+      background = nullValueColor!(row.index, row.index==hoverIndex.value);
+    } else if(column.cellBackground != null) {
+        background=column.cellBackground!(row);
+    }
+    if(background!=null) {
+      final paint = Paint()
+        ..color = background;
+      canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

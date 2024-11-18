@@ -1,3 +1,17 @@
+## 4.0.0
+
+DaviRowCursor => RowCursorBuilder
+CellStyleBuilder removed
+Column.cellStyleBuilder => Column.style
+
+CellThemeData.background added
+CellThemeData.copyWith removed
+
+RowThemeData.copyWith removed
+HeaderCellThemeData.copyWith removed
+HeaderThemeData.copyWith removed
+DaviThemeData.copyWith removed
+
 ## 3.5.0
 
 * `Davi`
