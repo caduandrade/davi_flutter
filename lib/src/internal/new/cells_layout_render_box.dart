@@ -243,6 +243,9 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
     RowRegion? trailingRegion;
       //TODO old check to allow paint hover
 /*
+
+columnResizing:  model != null && columnNotifier.resizing
+
         !widget.columnResizing &&
         (widget.rowCallbacks.hasCallback ||
             theme.row.hoverBackground != null ||

@@ -4,6 +4,7 @@ import 'package:meta/meta.dart';
 
 @internal
 //TODO need?
+@Deprecated('message')
 class RowsPaintingSettings {
   RowsPaintingSettings(
       {required this.divisorColor,

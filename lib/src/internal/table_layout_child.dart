@@ -4,7 +4,6 @@ import 'package:davi/src/internal/new/column_notifier.dart';
 import 'package:davi/src/internal/new/hover_notifier.dart';
 import 'package:davi/src/internal/new/table_content.dart';
 import 'package:davi/src/internal/row_callbacks.dart';
-import 'package:davi/src/internal/rows_builder.dart';
 import 'package:davi/src/internal/scroll_offsets.dart';
 import 'package:davi/src/internal/table_corner.dart';
 import 'package:davi/src/internal/table_layout.dart';
@@ -69,42 +68,6 @@ class TableLayoutChild<DATA> extends ParentDataWidget<TableLayoutParentData> {
         verticalScrollController: verticalScrollController,
         onHover: onHover)
     );
-  }
-
-  @Deprecated('needs to be replaced by cells')
-  factory TableLayoutChild.rows(
-      {required DaviModel<DATA>? model,
-      required TableLayoutSettings layoutSettings,
-        required ColumnNotifier columnNotifier,
-      required bool scrolling,
-      required HorizontalScrollOffsets horizontalScrollOffsets,
-      required ScrollController verticalScrollController,
-      required OnRowHoverListener? onHover,
-      required RowCallbacks<DATA> rowCallbacks,
-      required DaviRowColor<DATA>? rowColor,
-      required RowCursorBuilder<DATA>? rowCursor,
-      required Widget? lastRowWidget,
-      required TrailingWidgetListener onLastRowWidget,
-      required LastVisibleRowListener onLastVisibleRow}) {
-    return TableLayoutChild._(
-        id: LayoutChildId.cells,
-        child: ListenableBuilder(
-          listenable: verticalScrollController,
-            builder: (BuildContext context, Widget? child) {
-              return RowsBuilder<DATA>(
-                  model: model,
-                  layoutSettings: layoutSettings,
-                  onHover: onHover,
-                  rowCallbacks: rowCallbacks,
-                  scrolling: scrolling,
-                  verticalOffset: verticalScrollController.hasClients
-                      ? verticalScrollController.offset
-                      : 0,
-                  horizontalScrollOffsets: horizontalScrollOffsets,
-                  rowColor: rowColor,
-                  rowCursor: rowCursor,
-                  columnNotifier: columnNotifier);
-            }));
   }
 
   factory TableLayoutChild.bottomCorner() {

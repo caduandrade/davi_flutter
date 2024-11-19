@@ -4,6 +4,7 @@ import 'package:meta/meta.dart';
 
 /// The [RowsLayout] element.
 @internal
+@Deprecated('message')
 class RowsLayoutElement extends MultiChildRenderObjectElement {
   RowsLayoutElement(RowsLayout widget) : super(widget);
 

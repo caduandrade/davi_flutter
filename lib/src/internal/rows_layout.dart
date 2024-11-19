@@ -12,6 +12,7 @@ import 'package:meta/meta.dart';
 
 /// Rows layout.
 @internal
+@Deprecated('message')
 class RowsLayout<DATA> extends MultiChildRenderObjectWidget {
   const RowsLayout(
       {Key? key,

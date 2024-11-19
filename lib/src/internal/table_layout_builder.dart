@@ -134,7 +134,6 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
       }
     }
 
-    if(true) {
       children.add(TableLayoutChild<DATA>.cells(model: model,
           layoutSettings: layoutSettings,
           scrolling: scrolling,
@@ -150,24 +149,6 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
       hoverIndex: hoverNotifier,
       focusable: focusable,
       focusNode: focusNode));
-    } else {
-    //TODO remove
-
-      children.add(TableLayoutChild<DATA>.rows(
-          model: model,
-          columnNotifier: columnNotifier,
-          layoutSettings: layoutSettings,
-          scrolling: scrolling,
-          horizontalScrollOffsets: horizontalScrollOffsets,
-          verticalScrollController: scrollControllers.vertical,
-          onHover: onHover,
-          rowCallbacks: rowCallbacks,
-          rowColor: rowColor,
-          rowCursor: rowCursorBuilder,
-          lastRowWidget: trailingWidget,
-          onLastVisibleRow: onLastVisibleRow,
-          onLastRowWidget: onTrailingWidget));
-    }
 
     return TableLayout<DATA>(
         layoutSettings: layoutSettings,

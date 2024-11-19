@@ -9,6 +9,7 @@ import 'package:flutter/rendering.dart';
 import 'package:meta/meta.dart';
 
 @internal
+@Deprecated('message')
 class RowsLayoutRenderBox extends RenderBox
     with
         ContainerRenderObjectMixin<RenderBox, RowsLayoutParentData>,

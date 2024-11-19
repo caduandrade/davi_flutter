@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
 @internal
+@Deprecated('message')
 class RowsLayoutChild extends ParentDataWidget<RowsLayoutParentData> {
   RowsLayoutChild({
     required this.index,
