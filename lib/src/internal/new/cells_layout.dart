@@ -50,9 +50,10 @@ final RowRegionCache rowRegionCache;
       unpinnedAreaBounds: unpinnedAreaBounds,
       hoverNotifier: hoverIndex,
       rowColor: theme.row.color,
+        dividerColor: theme.row.dividerColor,
       rowsLength: rowsLength,
         rowRegionCache:rowRegionCache,
-      fillHeight: theme.row.fillHeight
+      fillHeight: theme.row.fillHeight, dividerThickness: theme.row.dividerThickness
     );
   }
 
@@ -82,6 +83,8 @@ final RowRegionCache rowRegionCache;
     ..fillHeight=theme.row.fillHeight
     ..rowsLength=rowsLength
       ..rowRegionCache=rowRegionCache
+    ..dividerColor= theme.row.dividerColor
+      ..dividerThickness=theme.row.dividerThickness
     ..rowColor=theme.row.color;
   }
 }

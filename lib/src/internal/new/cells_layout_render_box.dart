@@ -9,7 +9,6 @@ import 'package:davi/src/internal/new/cells_layout_parent_data.dart';
 import 'package:davi/src/internal/scroll_offsets.dart';
 import 'package:davi/src/pin_status.dart';
 
-import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
@@ -31,9 +30,11 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
     required ThemeRowColor? rowColor,
     required int rowsLength,
     required bool fillHeight,
+    required double dividerThickness,
     required RowRegionCache rowRegionCache,
     required ThemeRowColor? hoverBackground,
-    required ThemeRowColor? hoverForeground
+    required ThemeRowColor? hoverForeground,
+    required Color? dividerColor
   })  :
         _cellHeight = cellHeight,
         _rowHeight = rowHeight,
@@ -43,9 +44,11 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
         _fillHeight = fillHeight,
         _rowColor = rowColor,
         _rowsLength = rowsLength,
+  _dividerThickness=dividerThickness,
   _rowRegionCache=rowRegionCache,
   _hoverBackground=hoverBackground,
   _hoverForeground=hoverForeground,
+  _dividerColor=dividerColor,
         _columnsMetrics = columnsMetrics {
     _areaBounds[PinStatus.left] = leftPinnedAreaBounds;
     _areaBounds[PinStatus.none] = unpinnedAreaBounds;
@@ -76,6 +79,24 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
   set unpinnedAreaBounds(Rect areaBounds) {
     if (_areaBounds[PinStatus.none] != areaBounds) {
       _areaBounds[PinStatus.none] = areaBounds;
+      markNeedsPaint();
+    }
+  }
+
+  double _dividerThickness;
+
+  set dividerThickness(double value) {
+    if(_dividerThickness!=value) {
+      _dividerThickness=value;
+      markNeedsLayout();
+    }
+  }
+
+  Color? _dividerColor;
+
+  set dividerColor(Color? value){
+    if(_dividerColor!=value){
+      _dividerColor=value;
       markNeedsPaint();
     }
   }
@@ -112,7 +133,7 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
   set cellHeight(double value) {
     if (_cellHeight != value) {
       _cellHeight = value;
-      markNeedsLayout();
+        markNeedsLayout();
     }
   }
 
@@ -190,7 +211,7 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
   @override
   void markNeedsLayout() {
     //TODO remove
-    //print('markNeedsLayout ${DateTime.now()}');
+    //print('markNeedsLayout ${DateTime.now()} - ${_rowRegionCache.values.length}');
     super.markNeedsLayout();
   }
 
@@ -256,7 +277,7 @@ columnResizing:  model != null && columnNotifier.resizing
 
     // backgrounds
     if (_rowColor != null || _hoverBackground!=null) {
-      for(RowRegion rowRegion in _rowRegionCache.values) {
+       for(RowRegion rowRegion in _rowRegionCache.values) {
         if(rowRegion.trailing){
           trailingRegion=rowRegion;
           continue;
@@ -338,21 +359,15 @@ columnResizing:  model != null && columnNotifier.resizing
     final lastRowIndex = _fillHeight?firstRowIndex+maxRowsLength:firstRowIndex+visibleRowsLength;
 
     // row divider
-    //TODO use _rowRegionCache
-    if (_rowColor != null) {
-      for (int rowIndex = firstRowIndex; rowIndex <= lastRowIndex; rowIndex++) {
-        Color? color = _rowColor!(rowIndex);
-        if (color != null) {
-          final Paint paint = Paint()..color =Colors.black
-          ..style=PaintingStyle.fill;// color;
-          //TODO thickness
-          double top = (rowIndex * _rowHeight) -_verticalOffset - 1;
-
-          //TODO thickness
-          context.canvas.drawRect(
-              Rect.fromLTWH(offset.dx, top + offset.dy, constraints.maxWidth, 1),
-              paint);
+    if(_dividerColor!=null) {
+      paint.color=_dividerColor!;
+      for(RowRegion rowRegion in _rowRegionCache.values) {
+        if(!rowRegion.hasData &&!_fillHeight){
+          continue;
         }
+        context.canvas.drawRect(
+            Rect.fromLTWH(offset.dx, offset.dy+ rowRegion.y + _cellHeight, constraints.maxWidth, _dividerThickness),
+            paint);
       }
     }
   }

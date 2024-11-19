@@ -60,7 +60,7 @@ class _HomePageState extends State<HomePage> {
     List<Person> rows = [];
 
     Random random = Random();
-    for (int i = 1; i < 5; i++) {
+    for (int i = 1; i < 100; i++) {
       rows.add(Person('User $i', 20 + random.nextInt(50), i == 1 ? null : i));
     }
     // rows.shuffle();
@@ -72,6 +72,7 @@ class _HomePageState extends State<HomePage> {
               name: 'Name',
               stringValue: (data) => data.name,
               pinStatus: PinStatus.left),
+
           DaviColumn(name: 'Age', intValue: (data) => data.age),
           DaviColumn(name: 'Value', intValue: (data) => data.value),
           DaviColumn(
@@ -81,11 +82,12 @@ class _HomePageState extends State<HomePage> {
               cellBackground: (data) =>
                   data.data.value == 12 ? Colors.green : null),
           DaviColumn(name: 'Value 3', intValue: (data) => data.value),
-          DaviColumn(
+
+        /*  DaviColumn(
               name: 'Editable',
               sortable: false,
               cellBuilder: _buildField,
-              cellBackground: (row) => row.data.valid ? null : Colors.red[800])
+              cellBackground: (row) => row.data.valid ? null : Colors.red[800])*/
         ],
         alwaysSorted: true,
         multiSortEnabled: true);
@@ -122,18 +124,19 @@ class _HomePageState extends State<HomePage> {
         data: DaviThemeData(
             row: RowThemeData(
               dividerThickness: 10,
-              color: RowThemeData.zebraColor(evenColor: Colors.pink[100], oddColor: Colors.yellow[100]),
-              //hoverBackground: (index) => Colors.blue[300],
+             color: RowThemeData.zebraColor(evenColor: Colors.pink[100], oddColor: Colors.yellow[100]),
+              hoverBackground: (index) => Colors.blue[300],
               hoverForeground: (index) => Colors.blue[300]!.withOpacity(.5),
             ),
             cell: CellThemeData(
-                nullValueColor: (index, hover) =>
-                    hover ? Colors.yellow : Colors.orange)),
+                nullValueColor: (index, hover) => hover ? Colors.yellow : Colors.orange
+            )
+        ),
         child: Davi<Person>(_model,
-            onRowTap: _onRowTap,
+           onRowTap: _onRowTap,
           //  onLastVisibleRow: (index)=>print('last visible row: $index ${DateTime.now()}'),
-            onTrailingWidget: (visible)=>print('trailing widget: $visible ${DateTime.now()}'),
-            trailingWidget: const Center(child: Text('last widget'))
+          //  onTrailingWidget: (visible)=>print('trailing widget: $visible ${DateTime.now()}'),
+            trailingWidget: const Center( child: Text('last widget'))
         ));
 
     return Scaffold(

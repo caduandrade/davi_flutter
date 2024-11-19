@@ -72,16 +72,12 @@ class TableContent<DATA> extends StatelessWidget {
     // This is used to determine if an extra row might become partially
     // visible during scrolling, allowing preemptive
     // caching to improve performance.
-    double rowsHeightBuffer = 0;
-    if(constraints.maxHeight % layoutSettings.themeMetrics.row.height==0) {
-      rowsHeightBuffer = layoutSettings.themeMetrics.row.height;
-    }
+    final maxVisualRows = ((constraints.maxHeight + layoutSettings.themeMetrics.cell.height) /layoutSettings.themeMetrics.row.height).ceil();
 
+    double rowY = (firstRowIndex *  layoutSettings.themeMetrics.row.height) -verticalOffset;
     int childIndex = 0;
 
-    int rowIndex= firstRowIndex;
-    double rowY = (firstRowIndex *  layoutSettings.themeMetrics.row.height) -verticalOffset;
-    while(rowY < constraints.maxHeight + rowsHeightBuffer) {
+    for(int rowIndex = firstRowIndex ; rowIndex < firstRowIndex+maxVisualRows;rowIndex++) {
       final Rect bounds = Rect.fromLTWH(0, rowY, constraints.maxWidth, layoutSettings.themeMetrics.cell.height);
 
       DATA? data;
@@ -97,7 +93,6 @@ class TableContent<DATA> extends StatelessWidget {
       }
 
       //TODO bool visible?
-
       rowRegionCache.add(RowRegion(index: rowIndex, bounds: bounds, hasData: data!=null, y:rowY, trailing:trailingRegion));
 
       for(int columnIndex = 0; columnIndex < layoutSettings.columnsMetrics.length ; columnIndex++) {
@@ -105,8 +100,7 @@ class TableContent<DATA> extends StatelessWidget {
           //TODO hovered
           DaviRow<DATA> row = DaviRow(data: data, index: rowIndex, hovered: false);
           final DaviColumn<DATA> column = model!.columnAt(columnIndex);
-          final CellWidget<DATA> cell =
-          CellWidget(column: column, columnIndex: columnIndex, row: row, hoverIndexNotifier:hoverIndex);
+          final CellWidget<DATA> cell =  CellWidget(column: column, columnIndex: columnIndex, row: row, hoverIndexNotifier:hoverIndex);
           children.add(CellsLayoutChild.cell(childIndex: childIndex, rowIndex: rowIndex, columnIndex: columnIndex, child: cell));
           lastVisibleRowIndex=rowIndex;
         } else {
@@ -114,13 +108,13 @@ class TableContent<DATA> extends StatelessWidget {
         }
         childIndex++;
       }
-
       rowY+=layoutSettings.themeMetrics.row.height;
-      rowIndex++;
     }
 
     onTrailingWidget(trailingWidgetBuilt);
     onLastVisibleRow(lastVisibleRowIndex);
+
+
 
     CellsLayout cellsLayout= CellsLayout(layoutSettings: layoutSettings, verticalOffset:verticalOffset,horizontalScrollOffsets:horizontalScrollOffsets,
         leftPinnedAreaBounds:layoutSettings.getAreaBounds(PinStatus.left), unpinnedAreaBounds:layoutSettings.getAreaBounds(PinStatus.none),
