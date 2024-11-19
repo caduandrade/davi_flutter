@@ -11,7 +11,7 @@ import 'package:davi/src/internal/table_layout.dart';
 import 'package:davi/src/internal/table_layout_parent_data.dart';
 import 'package:davi/src/internal/table_layout_settings.dart';
 import 'package:davi/src/internal/table_scrollbar.dart';
-import 'package:davi/src/last_row_widget_listener.dart';
+import 'package:davi/src/trailing_widget_listener.dart';
 import 'package:davi/src/last_visible_row_listener.dart';
 import 'package:davi/src/model.dart';
 import 'package:davi/src/row_color.dart';
@@ -54,15 +54,16 @@ class TableLayoutChild<DATA> extends ParentDataWidget<TableLayoutParentData> {
     required RowCallbacks<DATA> rowCallbacks,
     required DaviRowColor<DATA>? rowColor,
     required RowCursorBuilder<DATA>? rowCursorBuilder,
-    required Widget? lastRowWidget,
-    required OnLastRowWidgetListener onLastRowWidget,
-    required OnLastVisibleRowListener onLastVisibleRow,
+    required Widget? trailingWidget,
+    required TrailingWidgetListener onTrailingWidget,
+    required LastVisibleRowListener onLastVisibleRow,
   required HoverNotifier hoverIndex,
     required bool focusable,
     required FocusNode focusNode}) {
     return TableLayoutChild._(
         id: LayoutChildId.cells,
         child: TableContent(focusNode: focusNode,focusable: focusable,rowCallbacks: rowCallbacks,
+        onTrailingWidget: onTrailingWidget,onLastVisibleRow: onLastVisibleRow,trailingWidget: trailingWidget,
         hoverIndex: hoverIndex,scrolling: scrolling,rowCursorBuilder: rowCursorBuilder,
         model: model, layoutSettings: layoutSettings,horizontalScrollOffsets: horizontalScrollOffsets,
         verticalScrollController: verticalScrollController,
@@ -83,8 +84,8 @@ class TableLayoutChild<DATA> extends ParentDataWidget<TableLayoutParentData> {
       required DaviRowColor<DATA>? rowColor,
       required RowCursorBuilder<DATA>? rowCursor,
       required Widget? lastRowWidget,
-      required OnLastRowWidgetListener onLastRowWidget,
-      required OnLastVisibleRowListener onLastVisibleRow}) {
+      required TrailingWidgetListener onLastRowWidget,
+      required LastVisibleRowListener onLastVisibleRow}) {
     return TableLayoutChild._(
         id: LayoutChildId.cells,
         child: ListenableBuilder(
@@ -103,8 +104,6 @@ class TableLayoutChild<DATA> extends ParentDataWidget<TableLayoutParentData> {
                   rowColor: rowColor,
                   rowCursor: rowCursor,
                   columnNotifier: columnNotifier,
-                  lastRowWidget: lastRowWidget,
-                  onLastRowWidget: onLastRowWidget,
                   onLastVisibleRow: onLastVisibleRow);
             }));
   }

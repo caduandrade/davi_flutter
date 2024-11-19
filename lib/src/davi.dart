@@ -5,7 +5,7 @@ import 'package:davi/src/internal/row_callbacks.dart';
 import 'package:davi/src/internal/scroll_controllers.dart';
 import 'package:davi/src/internal/table_layout_builder.dart';
 import 'package:davi/src/internal/theme_metrics/theme_metrics.dart';
-import 'package:davi/src/last_row_widget_listener.dart';
+import 'package:davi/src/trailing_widget_listener.dart';
 import 'package:davi/src/last_visible_row_listener.dart';
 import 'package:davi/src/model.dart';
 import 'package:davi/src/row_callback_typedefs.dart';
@@ -37,10 +37,10 @@ class Davi<DATA> extends StatefulWidget {
       int? visibleRowsCount,
       this.focusable = true,
       this.tapToSortEnabled = true,
-      this.lastRowWidget,
+      this.trailingWidget,
       this.rowColor,
       this.rowCursor,
-      this.onLastRowWidget})
+      this.onTrailingWidget})
       : visibleRowsCount = visibleRowsCount == null || visibleRowsCount > 0
             ? visibleRowsCount
             : null,
@@ -59,10 +59,11 @@ class Davi<DATA> extends StatefulWidget {
   final RowTapUpCallback<DATA>? onRowSecondaryTapUp;
   final ColumnWidthBehavior columnWidthBehavior;
   final int? visibleRowsCount;
-  final OnLastVisibleRowListener? onLastVisibleRow;
+  final LastVisibleRowListener? onLastVisibleRow;
   final bool focusable;
-  final Widget? lastRowWidget;
-  final OnLastRowWidgetListener? onLastRowWidget;
+  /// An optional widget displayed at the end of the table's content.
+  final Widget? trailingWidget;
+  final TrailingWidgetListener? onTrailingWidget;
 
   /// Indicates whether sorting events are enabled on the header.
   final bool tapToSortEnabled;
@@ -151,11 +152,11 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
     }
   }
 
-  void _onLastRowWidget(bool visible) {
-    if (widget.onLastRowWidget != null) {
+  void _onTrailingWidget(bool visible) {
+    if (widget.onTrailingWidget != null) {
       if (_lastRowWidgetVisible != visible) {
         _lastRowWidgetVisible = visible;
-        Future.microtask(() => widget.onLastRowWidget!(_lastRowWidgetVisible));
+        Future.microtask(() => widget.onTrailingWidget!(_lastRowWidgetVisible));
       }
     }
   }
@@ -190,7 +191,7 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
             columnWidthBehavior: widget.columnWidthBehavior,
             themeMetrics: themeMetrics,
             visibleRowsLength: widget.visibleRowsCount,
-            onLastRowWidget: _onLastRowWidget,
+            onTrailingWidget: _onTrailingWidget,
             onLastVisibleRow: _onLastVisibleRowListener,
             model: widget.model,
             scrolling: _scrolling,
@@ -198,7 +199,7 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
             rowCursorBuilder: widget.rowCursor,
             focusable: widget.focusable,
             focusNode: _focusNode,
-            lastRowWidget: widget.lastRowWidget,
+            trailingWidget: widget.trailingWidget,
             rowCallbacks: RowCallbacks(
                 onRowTap: widget.onRowTap,
                 onRowSecondaryTap: widget.onRowSecondaryTap,

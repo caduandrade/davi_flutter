@@ -124,7 +124,7 @@ class _HomePageState extends State<HomePage> {
             rowColor: _rowColor
                 ? (data) => data.data.life < 1000 ? Colors.red[200] : null
                 : null,
-            lastRowWidget: _lastRowWidget
+            trailingWidget: _lastRowWidget
                 ? const Center(child: Text('LAST ROW WIDGET'))
                 : null),
         data: DaviThemeData(

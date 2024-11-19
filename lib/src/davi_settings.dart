@@ -1,5 +1,5 @@
 import 'package:davi/src/column_width_behavior.dart';
-import 'package:davi/src/last_row_widget_listener.dart';
+import 'package:davi/src/trailing_widget_listener.dart';
 import 'package:davi/src/last_visible_row_listener.dart';
 import 'package:davi/src/row_callback_typedefs.dart';
 import 'package:davi/src/row_color.dart';
@@ -45,10 +45,10 @@ class DaviSettings<DATA> {
   final RowTapUpCallback<DATA>? onRowSecondaryTapUp;
   final ColumnWidthBehavior columnWidthBehavior;
   final int? visibleRowsCount;
-  final OnLastVisibleRowListener? onLastVisibleRow;
+  final LastVisibleRowListener? onLastVisibleRow;
   final bool focusable;
   final Widget? lastRowWidget;
-  final OnLastRowWidgetListener? onLastRowWidget;
+  final TrailingWidgetListener? onLastRowWidget;
 
   /// Indicates whether sorting events are enabled on the header.
   final bool tapToSortEnabled;

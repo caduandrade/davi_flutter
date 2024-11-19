@@ -130,7 +130,9 @@ class _HomePageState extends State<HomePage> {
                     hover ? Colors.yellow : Colors.orange)),
         child: Davi<Person>(_model,
             onRowTap: _onRowTap,
-            lastRowWidget: const Center(child: Text('last widget'))
+          //  onLastVisibleRow: (index)=>print('last visible row: $index ${DateTime.now()}'),
+            onTrailingWidget: (visible)=>print('trailing widget: $visible ${DateTime.now()}'),
+            trailingWidget: const Center(child: Text('last widget'))
         ));
 
     return Scaffold(

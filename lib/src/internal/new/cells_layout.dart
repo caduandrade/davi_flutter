@@ -3,7 +3,7 @@ import 'package:davi/src/internal/new/cells_layout_child.dart';
 import 'package:davi/src/internal/new/cells_layout_element.dart';
 import 'package:davi/src/internal/new/cells_layout_render_box.dart';
 import 'package:davi/src/internal/new/hover_notifier.dart';
-import 'package:davi/src/internal/new/row_bounds.dart';
+import 'package:davi/src/internal/new/row_region.dart';
 import 'package:davi/src/internal/scroll_offsets.dart';
 import 'package:davi/src/internal/table_layout_settings.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +22,7 @@ class CellsLayout<DATA> extends MultiChildRenderObjectWidget {
         required this.unpinnedAreaBounds,
         required this.hoverIndex,
            required this.rowsLength,
-        required this.rowBoundsCache,
+        required this.rowRegionCache,
       required List<CellsLayoutChild> children})
       :  super(key: key, children: children);
 
@@ -32,7 +32,7 @@ class CellsLayout<DATA> extends MultiChildRenderObjectWidget {
   final Rect leftPinnedAreaBounds;
   final Rect unpinnedAreaBounds;
 final   HoverNotifier hoverIndex;
-final RowBoundsCache rowBoundsCache;
+final RowRegionCache rowRegionCache;
    final int rowsLength;
 
   @override
@@ -51,7 +51,7 @@ final RowBoundsCache rowBoundsCache;
       hoverNotifier: hoverIndex,
       rowColor: theme.row.color,
       rowsLength: rowsLength,
-        rowBoundsCache:rowBoundsCache,
+        rowRegionCache:rowRegionCache,
       fillHeight: theme.row.fillHeight
     );
   }
@@ -81,7 +81,7 @@ final RowBoundsCache rowBoundsCache;
     ..hoverNotifier=hoverIndex
     ..fillHeight=theme.row.fillHeight
     ..rowsLength=rowsLength
-      ..rowBoundsCache=rowBoundsCache
+      ..rowRegionCache=rowRegionCache
     ..rowColor=theme.row.color;
   }
 }

@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 import 'package:davi/src/internal/layout_utils.dart';
 import 'package:davi/src/internal/new/hover_notifier.dart';
-import 'package:davi/src/internal/new/row_bounds.dart';
+import 'package:davi/src/internal/new/row_region.dart';
 import 'package:davi/src/theme/theme_row_color.dart';
 import 'package:flutter/foundation.dart';
 import 'package:davi/src/internal/column_metrics.dart';
@@ -31,7 +31,7 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
     required ThemeRowColor? rowColor,
     required int rowsLength,
     required bool fillHeight,
-    required RowBoundsCache rowBoundsCache,
+    required RowRegionCache rowRegionCache,
     required ThemeRowColor? hoverBackground,
     required ThemeRowColor? hoverForeground
   })  :
@@ -43,7 +43,7 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
         _fillHeight = fillHeight,
         _rowColor = rowColor,
         _rowsLength = rowsLength,
-  _rowBoundsCache=rowBoundsCache,
+  _rowRegionCache=rowRegionCache,
   _hoverBackground=hoverBackground,
   _hoverForeground=hoverForeground,
         _columnsMetrics = columnsMetrics {
@@ -174,18 +174,18 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
     }
   }
 
-  RowBoundsCache _rowBoundsCache;
+  RowRegionCache _rowRegionCache;
 
-  set rowBoundsCache(RowBoundsCache value){
-    if(_rowBoundsCache!=value) {
-      _rowBoundsCache=value;
+  set rowRegionCache(RowRegionCache value){
+    if(_rowRegionCache!=value) {
+      _rowRegionCache=value;
       markNeedsPaint();
     }
   }
 
 
   final List<RenderBox> _cells = [];
-  final List<RenderBox> _rows = [];
+  RenderBox? _trailing;
 
   @override
   void markNeedsLayout() {
@@ -210,12 +210,12 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
   @override
   void performLayout() {
     _cells.clear();
-    _rows.clear();
+    _trailing=null;
     visitChildren((child) {
       final RenderBox renderBox = child as RenderBox;
       final CellsLayoutParentData childParentData = child._parentData();
       final int? columnIndex = childParentData.columnIndex;
-      if (columnIndex != null) {
+      if (columnIndex != null && columnIndex>=0) {
         // cell
         final ColumnMetrics columnMetrics = _columnsMetrics[columnIndex];
         renderBox.layout(
@@ -224,12 +224,12 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
             parentUsesSize: true);
         _cells.add(renderBox);
       } else {
-        // row
+        // trailing
         renderBox.layout(
             BoxConstraints.tightFor(
                 width: constraints.maxWidth, height: _cellHeight),
             parentUsesSize: true);
-        _rows.add(renderBox);
+        _trailing=renderBox;
       }
       renderBox._parentData().offset = const Offset(0, 0);
     });
@@ -239,18 +239,9 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
 
   @override
   void paint(PaintingContext context, Offset offset) {
-    final int firstRowIndex = (_verticalOffset / _rowHeight).floor();
-    final int maxRowsLength = LayoutUtils.maxRowsLength(
-        visibleAreaHeight: constraints.maxHeight,
-        rowHeight: _rowHeight);
-
-    final int visibleRowsLength = math.min(_rowsLength, maxRowsLength);
-    final lastRowIndex = _fillHeight?firstRowIndex+maxRowsLength:firstRowIndex+visibleRowsLength;
-
 
       //TODO old check to allow paint hover
 /*
-
         !widget.columnResizing &&
         (widget.rowCallbacks.hasCallback ||
             theme.row.hoverBackground != null ||
@@ -261,16 +252,18 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
 
     // backgrounds
     if (_rowColor != null) {
-      for (int rowIndex = firstRowIndex; rowIndex <= lastRowIndex; rowIndex++) {
-        Color? color = _rowColor!(rowIndex);
+      for(RowRegion rowRegion in _rowRegionCache.values) {
+        if(rowRegion.trailing){
+          continue;
+        }
+        Color? color = _rowColor!(rowRegion.index);
         if (color != null) {
-          if(_hoverNotifier.index==rowIndex){
+          if(_hoverNotifier.index==rowRegion.index){
             //TODO use correct color
             color=Colors.blue;
           }
           final Paint paint = Paint()..color = color..style=PaintingStyle.fill;
-            final RowBounds rowBounds = _rowBoundsCache.get(rowIndex);
-            context.canvas.drawRect(rowBounds.bounds.translate(offset.dx, offset.dy),         paint);
+          context.canvas.drawRect(rowRegion.bounds.translate(offset.dx, offset.dy),         paint);
         }
       }
     }
@@ -292,8 +285,6 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
 
         double top = (rowIndex * _rowHeight) -_verticalOffset;
 
-
-
         context.paintChild(
             child,
             offset.translate(columnMetrics.offset - horizontalOffset,
@@ -302,10 +293,28 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
         context.canvas.restore();
     }
 
+    // trailing
+    if(_trailing!=null) {
+          int lastRowIndex =_rowRegionCache.lastIndex!=null?_rowRegionCache.lastIndex!:0;
+      double top = (lastRowIndex * _rowHeight) -_verticalOffset;
+      context.paintChild(
+          _trailing!,
+          offset.translate(0, top
+          ));
+    }
+
     //TODO row foreground
 
+    final int firstRowIndex = (_verticalOffset / _rowHeight).floor();
+    final int maxRowsLength = LayoutUtils.maxRowsLength(
+        visibleAreaHeight: constraints.maxHeight,
+        rowHeight: _rowHeight);
+
+    final int visibleRowsLength = math.min(_rowsLength, maxRowsLength);
+    final lastRowIndex = _fillHeight?firstRowIndex+maxRowsLength:firstRowIndex+visibleRowsLength;
 
     // row divider
+    //TODO use _rowRegionCache
     if (_rowColor != null) {
       for (int rowIndex = firstRowIndex; rowIndex <= lastRowIndex; rowIndex++) {
         Color? color = _rowColor!(rowIndex);
@@ -346,10 +355,9 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
 
   @override
   bool hitTestChildren(BoxHitTestResult result, {required Offset position}) {
-
     final int firstRowIndex = (_verticalOffset / _rowHeight).floor();
 
-
+/*
     for(RenderBox child in _rows)  {
       final CellsLayoutParentData childParentData = child._parentData();
       final int rowIndex = childParentData.rowIndex!;
@@ -373,8 +381,11 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
          // return true;
         }
       }
-    }
+    }*/
 
+    if(_trailing!=null) {
+
+    }
 
     for(RenderBox child in _cells)  {
       final CellsLayoutParentData childParentData = child._parentData();

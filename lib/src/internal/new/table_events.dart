@@ -2,7 +2,7 @@ import 'dart:math' as math;
 
 import 'package:davi/davi.dart';
 import 'package:davi/src/internal/new/hover_notifier.dart';
-import 'package:davi/src/internal/new/row_bounds.dart';
+import 'package:davi/src/internal/new/row_region.dart';
 import 'package:davi/src/internal/row_callbacks.dart';
 import 'package:davi/src/internal/theme_metrics/theme_metrics.dart';
 import 'package:flutter/gestures.dart';
@@ -35,7 +35,7 @@ class TableEvents<DATA> extends StatelessWidget {
   final RowCallbacks<DATA> rowCallbacks;
 
   final bool focusable;
-  final RowBoundsCache rowBoundsCache;
+  final RowRegionCache rowBoundsCache;
 
   final ScrollController verticalScrollController;
   //TODO remove? disable key?

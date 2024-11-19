@@ -9,7 +9,7 @@ import 'package:davi/src/internal/rows_layout_child.dart';
 import 'package:davi/src/internal/rows_painting_settings.dart';
 import 'package:davi/src/internal/scroll_offsets.dart';
 import 'package:davi/src/internal/table_layout_settings.dart';
-import 'package:davi/src/last_row_widget_listener.dart';
+import 'package:davi/src/trailing_widget_listener.dart';
 import 'package:davi/src/last_visible_row_listener.dart';
 import 'package:davi/src/model.dart';
 import 'package:davi/src/row_color.dart';
@@ -36,8 +36,6 @@ class RowsBuilder<DATA> extends StatelessWidget {
       required this.rowCursor,
       required this.verticalOffset,
       required this.horizontalScrollOffsets,
-      required this.lastRowWidget,
-      required this.onLastRowWidget,
       required this.onLastVisibleRow})
       : super(key: key);
 
@@ -49,11 +47,9 @@ class RowsBuilder<DATA> extends StatelessWidget {
   final HorizontalScrollOffsets horizontalScrollOffsets;
   final OnRowHoverListener? onHover;
   final RowCallbacks<DATA> rowCallbacks;
-  final Widget? lastRowWidget;
   final DaviRowColor<DATA>? rowColor;
   final RowCursorBuilder<DATA>? rowCursor;
-  final OnLastRowWidgetListener onLastRowWidget;
-  final OnLastVisibleRowListener onLastVisibleRow;
+  final LastVisibleRowListener onLastVisibleRow;
 
   @override
   Widget build(BuildContext context) {
@@ -96,13 +92,9 @@ class RowsBuilder<DATA> extends StatelessWidget {
       } else {
         onLastVisibleRow(null);
       }
-      if (lastRowWidget != null && children.length < visibleRowsLength) {
-        children.add(RowsLayoutChild(
-            index: model!.rowsLength, last: true, child: lastRowWidget!));
-        onLastRowWidget(true);
-      } else {
-        onLastRowWidget(false);
-      }
+
+
+
 
       RowsPaintingSettings paintSettings = RowsPaintingSettings(
           divisorColor: theme.row.dividerColor,
@@ -121,7 +113,6 @@ class RowsBuilder<DATA> extends StatelessWidget {
               horizontalScrollOffsets: horizontalScrollOffsets,
               children: children));
     }
-    onLastRowWidget(false);
     onLastVisibleRow(-1);
     return Container();
   }

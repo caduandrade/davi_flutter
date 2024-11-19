@@ -1,61 +1,65 @@
-import 'package:davi/davi.dart';
-import 'package:davi/src/internal/new/hover_notifier.dart';
-import 'package:davi/src/internal/row_callbacks.dart';
-import 'package:davi/src/internal/scroll_offsets.dart';
-import 'package:flutter/gestures.dart';
+import 'dart:collection';
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
-import 'package:meta/meta.dart';
 
-@internal
-@Deprecated('')
-class RowRegion<DATA> extends StatelessWidget {
-  RowRegion(
-      {required this.index,
-      required this.data,
-      required this.onHover,
-      required this.cursor,
-      required this.rowCallbacks,
-      required this.horizontalScrollOffsets,
-      required this.hoverIndexNotifier})
-      : super(key: ValueKey<int>(index));
+class RowRegion implements Comparable<RowRegion>{
+  RowRegion({required this.index, required this.bounds, required this.hasData, required this.y, required this.trailing});
 
-  final DATA data;
   final int index;
-  final OnRowHoverListener? onHover;
-  final RowCallbacks<DATA> rowCallbacks;
-  final RowCursorBuilder<DATA>? cursor;
-  final HorizontalScrollOffsets horizontalScrollOffsets;
-  final HoverNotifier hoverIndexNotifier;
+  final double y;
+  final Rect bounds;
+  final bool hasData;
+  final bool trailing;
 
   @override
-  Widget build(BuildContext context) {
-    DaviRow<DATA> row = DaviRow(
-        data: data, index: index, hovered: hoverIndexNotifier.index == index);
+  int compareTo(RowRegion other) => index.compareTo(other.index);
+}
 
-    DaviThemeData theme = DaviTheme.of(context);
+class RowRegionCache {
+  final Map<int, RowRegion> _cache = {};
+  final List<RowRegion> _cache2=[];
 
-    return MouseRegion(
-        cursor: _cursor(theme, row),
-        child: rowCallbacks.hasCallback
-            ? GestureDetector(
-                //child: Container(color: Colors.transparent),
-                behavior: HitTestBehavior.opaque,
-              )
-            : null);
-  }
+  late final Iterable<RowRegion> values = UnmodifiableListView(_cache2);
 
-  //TODO keep rule
-  MouseCursor _cursor(DaviThemeData theme, DaviRow<DATA> row) {
-    if (!theme.row.cursorOnTapGesturesOnly || rowCallbacks.hasCallback) {
-      MouseCursor? mouseCursor;
-      if (cursor != null) {
-        mouseCursor = cursor!(row);
-      }
-      return mouseCursor ?? theme.row.cursor;
+  int? _firstIndex;
+
+  int? get firstIndex => _firstIndex;
+  int? _lastIndex;
+
+  int? get lastIndex => _lastIndex;
+
+  RowRegion get(int index) {
+    RowRegion? bounds = _cache[index];
+    if (bounds == null) {
+      throw StateError('Area bounds not found for index $index.');
     }
-    return MouseCursor.defer;
+    return bounds;
   }
 
+  void add(RowRegion region) {
+    _firstIndex = _firstIndex != null
+        ? math.min(_firstIndex!, region.index)
+        : region.index;
+    _lastIndex =
+        _lastIndex != null ? math.max(_lastIndex!, region.index) : region.index;
+    _cache[region.index] = region;
+    _cache2.add(region);
+  }
+
+  void sort(){
+    _cache2.sort();
+  }
+
+  int? boundsIndex(Offset position) {
+    for (RowRegion rowBounds in _cache.values) {
+      if (rowBounds.bounds.contains(position)) {
+        return rowBounds.index;
+      }
+    }
+    return null;
+  }
 
 
 }
+

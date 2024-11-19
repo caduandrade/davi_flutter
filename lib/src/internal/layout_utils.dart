@@ -19,6 +19,6 @@ class LayoutUtils {
   static int maxRowsLength(
       { required double visibleAreaHeight,
         required double rowHeight}) {
-    return (visibleAreaHeight/rowHeight).ceil()+1;
+    return (visibleAreaHeight/rowHeight).ceil();
   }
 }

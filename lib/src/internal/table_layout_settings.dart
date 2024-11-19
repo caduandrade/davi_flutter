@@ -326,6 +326,8 @@ class TableLayoutSettings {
 
   final TableThemeMetrics themeMetrics;
   final double height;
+  /// total height of the content (cells and dividers)
+  /// not counting the last widget
   final double contentHeight;
   final double unpinnedContentWidth;
   final double leftPinnedContentWidth;

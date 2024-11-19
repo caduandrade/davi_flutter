@@ -9,7 +9,7 @@ import 'package:davi/src/internal/table_layout_child.dart';
 import 'package:davi/src/internal/table_layout_settings.dart';
 import 'package:davi/src/internal/table_scrollbar.dart';
 import 'package:davi/src/internal/theme_metrics/theme_metrics.dart';
-import 'package:davi/src/last_row_widget_listener.dart';
+import 'package:davi/src/trailing_widget_listener.dart';
 import 'package:davi/src/last_visible_row_listener.dart';
 import 'package:davi/src/model.dart';
 import 'package:davi/src/row_color.dart';
@@ -34,8 +34,8 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
       required this.rowCallbacks,
       required this.onDragScroll,
       required this.scrolling,
-      required this.lastRowWidget,
-      required this.onLastRowWidget,
+      required this.trailingWidget,
+      required this.onTrailingWidget,
       required this.rowColor,
       required this.rowCursorBuilder,
       required this.tapToSortEnabled,
@@ -45,7 +45,7 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
         required this.focusNode})
       : super(key: key);
 
-  final OnLastVisibleRowListener onLastVisibleRow;
+  final LastVisibleRowListener onLastVisibleRow;
   final OnRowHoverListener? onHover;
   final ScrollControllers scrollControllers;
   final DaviModel<DATA>? model;
@@ -55,8 +55,8 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
   final bool scrolling;
   final RowCallbacks<DATA> rowCallbacks;
   final TableThemeMetrics themeMetrics;
-  final Widget? lastRowWidget;
-  final OnLastRowWidgetListener onLastRowWidget;
+  final Widget? trailingWidget;
+  final TrailingWidgetListener onTrailingWidget;
   final DaviRowColor<DATA>? rowColor;
   final RowCursorBuilder<DATA>? rowCursorBuilder;
   final bool tapToSortEnabled;
@@ -83,7 +83,7 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
         columnWidthBehavior: columnWidthBehavior,
         themeMetrics: themeMetrics,
         visibleRowsLength: visibleRowsLength,
-        hasLastRowWidget: lastRowWidget != null);
+        hasLastRowWidget: trailingWidget != null);
 
     final List<TableLayoutChild> children = [];
 
@@ -144,9 +144,9 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
           rowCallbacks: rowCallbacks,
           rowColor: rowColor,
           rowCursorBuilder: rowCursorBuilder,
-          lastRowWidget: lastRowWidget,
+          trailingWidget: trailingWidget,
           onLastVisibleRow: onLastVisibleRow,
-          onLastRowWidget: onLastRowWidget,
+          onTrailingWidget: onTrailingWidget,
       hoverIndex: hoverNotifier,
       focusable: focusable,
       focusNode: focusNode));
@@ -164,9 +164,9 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
           rowCallbacks: rowCallbacks,
           rowColor: rowColor,
           rowCursor: rowCursorBuilder,
-          lastRowWidget: lastRowWidget,
+          lastRowWidget: trailingWidget,
           onLastVisibleRow: onLastVisibleRow,
-          onLastRowWidget: onLastRowWidget));
+          onLastRowWidget: onTrailingWidget));
     }
 
     return TableLayout<DATA>(

@@ -7,14 +7,24 @@ Column.cellStyleBuilder => Column.style
 CellThemeData.background added
 CellThemeData.copyWith removed
 
+Davi.lastRowWidget renamed Davi.trailingWidget
+Davi.onLastRowWidget renamed Davi.onTrailingWidget
+
 RowThemeData.copyWith removed
 HeaderCellThemeData.copyWith removed
 HeaderThemeData.copyWith removed
 DaviThemeData.copyWith removed
 
+- typedef
+ - OnLastRowWidgetListener  renamed LastRowWidgetListener  
+ - OnLastRowWidgetListener renamed LastRowWidgetListener
+ - LastRowWidgetListener renamed 
+
 bug
 - resizing column outside
-  - lost icon? 
+  - lost icon?
+
+
 
 ## 3.5.0
 
