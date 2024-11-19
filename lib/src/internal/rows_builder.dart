@@ -35,8 +35,7 @@ class RowsBuilder<DATA> extends StatelessWidget {
       required this.rowColor,
       required this.rowCursor,
       required this.verticalOffset,
-      required this.horizontalScrollOffsets,
-      required this.onLastVisibleRow})
+      required this.horizontalScrollOffsets})
       : super(key: key);
 
   final DaviModel<DATA>? model;
@@ -49,7 +48,6 @@ class RowsBuilder<DATA> extends StatelessWidget {
   final RowCallbacks<DATA> rowCallbacks;
   final DaviRowColor<DATA>? rowColor;
   final RowCursorBuilder<DATA>? rowCursor;
-  final LastVisibleRowListener onLastVisibleRow;
 
   @override
   Widget build(BuildContext context) {
@@ -88,9 +86,6 @@ class RowsBuilder<DATA> extends StatelessWidget {
           children
               .add(RowsLayoutChild(index: rowIndex, last: false, child: row));
         }
-        onLastVisibleRow(lastRowIndex);
-      } else {
-        onLastVisibleRow(null);
       }
 
 
@@ -113,7 +108,6 @@ class RowsBuilder<DATA> extends StatelessWidget {
               horizontalScrollOffsets: horizontalScrollOffsets,
               children: children));
     }
-    onLastVisibleRow(-1);
     return Container();
   }
 }

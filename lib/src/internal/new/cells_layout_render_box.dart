@@ -239,7 +239,8 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
 
   @override
   void paint(PaintingContext context, Offset offset) {
-
+     Paint paint = Paint()..style=PaintingStyle.fill;
+    RowRegion? trailingRegion;
       //TODO old check to allow paint hover
 /*
         !widget.columnResizing &&
@@ -251,18 +252,24 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
   */
 
     // backgrounds
-    if (_rowColor != null) {
+    if (_rowColor != null || _hoverBackground!=null) {
       for(RowRegion rowRegion in _rowRegionCache.values) {
         if(rowRegion.trailing){
+          trailingRegion=rowRegion;
           continue;
         }
-        Color? color = _rowColor!(rowRegion.index);
+        if(!rowRegion.hasData &&!_fillHeight){
+          continue;
+        }
+        Color? color;
+        if(_rowColor!=null) {
+          color =_rowColor!(rowRegion.index);
+        }
+        if(_hoverBackground!=null&& _hoverNotifier.index==rowRegion.index){
+          color= _hoverBackground!(rowRegion.index)??color;
+        }
         if (color != null) {
-          if(_hoverNotifier.index==rowRegion.index){
-            //TODO use correct color
-            color=Colors.blue;
-          }
-          final Paint paint = Paint()..color = color..style=PaintingStyle.fill;
+          paint.color=color;
           context.canvas.drawRect(rowRegion.bounds.translate(offset.dx, offset.dy),         paint);
         }
       }
@@ -294,16 +301,30 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
     }
 
     // trailing
-    if(_trailing!=null) {
-          int lastRowIndex =_rowRegionCache.lastIndex!=null?_rowRegionCache.lastIndex!:0;
-      double top = (lastRowIndex * _rowHeight) -_verticalOffset;
+    if(_trailing!=null && trailingRegion!=null) {
       context.paintChild(
           _trailing!,
-          offset.translate(0, top
+          offset.translate(0,
+              trailingRegion.y
           ));
     }
 
-    //TODO row foreground
+    // foreground
+    if ( _hoverForeground!=null) {
+      for(RowRegion rowRegion in _rowRegionCache.values) {
+        if(!rowRegion.hasData){
+          continue;
+        }
+        if(_hoverNotifier.index==rowRegion.index) {
+          Color? color = _hoverForeground!(rowRegion.index);
+          if (color != null) {
+            paint.color = color;
+            context.canvas.drawRect(
+                rowRegion.bounds.translate(offset.dx, offset.dy), paint);
+          }
+        }
+      }
+    }
 
     final int firstRowIndex = (_verticalOffset / _rowHeight).floor();
     final int maxRowsLength = LayoutUtils.maxRowsLength(

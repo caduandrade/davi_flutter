@@ -103,8 +103,7 @@ class TableLayoutChild<DATA> extends ParentDataWidget<TableLayoutParentData> {
                   horizontalScrollOffsets: horizontalScrollOffsets,
                   rowColor: rowColor,
                   rowCursor: rowCursor,
-                  columnNotifier: columnNotifier,
-                  onLastVisibleRow: onLastVisibleRow);
+                  columnNotifier: columnNotifier);
             }));
   }
 

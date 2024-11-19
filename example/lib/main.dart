@@ -60,7 +60,7 @@ class _HomePageState extends State<HomePage> {
     List<Person> rows = [];
 
     Random random = Random();
-    for (int i = 1; i < 25; i++) {
+    for (int i = 1; i < 5; i++) {
       rows.add(Person('User $i', 20 + random.nextInt(50), i == 1 ? null : i));
     }
     // rows.shuffle();
@@ -123,7 +123,8 @@ class _HomePageState extends State<HomePage> {
             row: RowThemeData(
               dividerThickness: 10,
               color: RowThemeData.zebraColor(evenColor: Colors.pink[100], oddColor: Colors.yellow[100]),
-              hoverBackground: (index) => Colors.blue,
+              //hoverBackground: (index) => Colors.blue[300],
+              hoverForeground: (index) => Colors.blue[300]!.withOpacity(.5),
             ),
             cell: CellThemeData(
                 nullValueColor: (index, hover) =>
