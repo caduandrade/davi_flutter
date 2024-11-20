@@ -1,7 +1,6 @@
 import 'package:davi/src/cell_icon.dart';
 import 'package:davi/src/column.dart';
 import 'package:davi/src/internal/new/hover_notifier.dart';
-import 'package:davi/src/row.dart';
 import 'package:davi/src/theme/cell_null_color.dart';
 import 'package:davi/src/theme/theme.dart';
 import 'package:davi/src/theme/theme_data.dart';
@@ -11,12 +10,13 @@ import 'package:meta/meta.dart';
 @internal
 class CellWidget<DATA> extends StatelessWidget {
   final int columnIndex;
-  final DaviRow<DATA> row;
+  final DATA data;
+  final int rowIndex;
   final DaviColumn<DATA> column;
-  final HoverNotifier hoverIndexNotifier;
+  final HoverNotifier hoverNotifier;
 
   const CellWidget(
-      {Key? key, required this.row, required this.column, required this.columnIndex, required this.hoverIndexNotifier}) : super(key: key);
+      {Key? key, required this.data, required this.rowIndex, required this.column, required this.columnIndex, required this.hoverNotifier}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -36,14 +36,14 @@ class CellWidget<DATA> extends StatelessWidget {
     bool tryNullValue = false;
     Widget? child;
     if (column.cellBuilder != null) {
-      child = column.cellBuilder!(context, row);
+      child = column.cellBuilder!(context, data, rowIndex, rowIndex==hoverNotifier.index);
     } else if (column.iconValueMapper != null) {
-      CellIcon? cellIcon = column.iconValueMapper!(row.data);
+      CellIcon? cellIcon = column.iconValueMapper!(data);
       if (cellIcon != null) {
         child = Icon(cellIcon.icon, color: cellIcon.color, size: cellIcon.size);
       }
     } else {
-      String? value = _stringValue(column: column, data: row.data);
+      String? value = _stringValue(column: column, data: data);
       if (value != null) {
         child = Text(value,
             overflow: overflow ?? theme.cell.overflow,
@@ -62,14 +62,14 @@ class CellWidget<DATA> extends StatelessWidget {
     // (https://github.com/flutter/flutter/issues/106767),
     // always build a Container with some color.
     child=Container(color: Colors.transparent, child: child);
-    child= CustomPaint(painter: _CellBackgroundPainter(nullValueColor: tryNullValue?theme.cell.nullValueColor:null, hoverIndex: hoverIndexNotifier, column: column,    row: row),child: child);
+    child= CustomPaint(painter: _CellBackgroundPainter(data: data, rowIndex: rowIndex, nullValueColor: tryNullValue?theme.cell.nullValueColor:null, hoverIndex: hoverNotifier, column: column),child: child);
 
     if (column.cellClip) {
       child = ClipRect(child: child);
     }
     if (column.semanticsBuilder != null) {
       return Semantics.fromProperties(
-          properties: column.semanticsBuilder!(context, row), child: child);
+          properties: column.semanticsBuilder!(context, data, rowIndex, rowIndex==hoverNotifier.index), child: child);
     }
     return child;
   }
@@ -96,21 +96,22 @@ class CellWidget<DATA> extends StatelessWidget {
 }
 
 class _CellBackgroundPainter<DATA> extends CustomPainter {
-  final DaviRow<DATA> row;
+  final DATA data;
+  final int rowIndex;
   final DaviColumn<DATA> column;
   final HoverNotifier hoverIndex;
   final CellNullColor? nullValueColor;
 
-  _CellBackgroundPainter({required this.row, required this.column, required this.hoverIndex,
+  _CellBackgroundPainter({required this.data, required this.rowIndex, required this.column, required this.hoverIndex,
   required this.nullValueColor}) : super(repaint: hoverIndex);
 
   @override
   void paint(Canvas canvas, Size size) {
     Color? background;
     if( nullValueColor!=null) {
-      background = nullValueColor!(row.index, row.index==hoverIndex.index);
+      background = nullValueColor!(rowIndex, rowIndex==hoverIndex.index);
     } else if(column.cellBackground != null) {
-        background=column.cellBackground!(row);
+        background=column.cellBackground!(data, rowIndex, rowIndex==hoverIndex.index);
     }
     if(background!=null) {
       final paint = Paint()

@@ -63,7 +63,7 @@ class TableLayoutChild<DATA> extends ParentDataWidget<TableLayoutParentData> {
         id: LayoutChildId.cells,
         child: TableContent(focusNode: focusNode,focusable: focusable,rowCallbacks: rowCallbacks,
         onTrailingWidget: onTrailingWidget,onLastVisibleRow: onLastVisibleRow,trailingWidget: trailingWidget,
-        hoverIndex: hoverIndex,scrolling: scrolling,rowCursorBuilder: rowCursorBuilder,
+        hoverNotifier: hoverIndex,scrolling: scrolling,rowCursorBuilder: rowCursorBuilder,
         model: model, layoutSettings: layoutSettings,horizontalScrollOffsets: horizontalScrollOffsets,
         verticalScrollController: verticalScrollController,
         onHover: onHover)

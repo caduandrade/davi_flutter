@@ -5,7 +5,6 @@ import 'package:davi/src/cell_builder.dart';
 import 'package:davi/src/cell_semantics_builder.dart';
 import 'package:davi/src/column_id.dart';
 import 'package:davi/src/pin_status.dart';
-import 'package:davi/src/row.dart';
 import 'package:davi/src/sort.dart';
 import 'package:davi/src/value_mapper.dart';
 import 'package:flutter/semantics.dart';
@@ -259,7 +258,7 @@ class DaviColumn<DATA> extends ChangeNotifier {
   }
 }
 
-SemanticsProperties defaultSemanticsBuilder(BuildContext context, DaviRow row) {
+SemanticsProperties defaultSemanticsBuilder(BuildContext context, dynamic data, int index, bool hovered) {
   return const SemanticsProperties(enabled: true, label: 'cell');
 }
 

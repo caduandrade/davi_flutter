@@ -1,6 +1,5 @@
 import 'package:davi/davi.dart';
 import 'package:davi/src/internal/cell_widget.dart';
-import 'package:davi/src/internal/layout_utils.dart';
 import 'package:davi/src/internal/new/cells_layout.dart';
 import 'package:davi/src/internal/new/cells_layout_child.dart';
 import 'package:davi/src/internal/new/hover_notifier.dart';
@@ -18,7 +17,7 @@ import 'package:meta/meta.dart';
 class TableContent<DATA> extends StatelessWidget {
 
   const TableContent({Key? key, required this.layoutSettings,required this.verticalScrollController,
-    required this.horizontalScrollOffsets,required this.hoverIndex,
+    required this.horizontalScrollOffsets,required this.hoverNotifier,
     required this.onHover,
     required  this.rowCallbacks,
     required this.rowCursorBuilder,
@@ -30,7 +29,7 @@ class TableContent<DATA> extends StatelessWidget {
   final TableLayoutSettings layoutSettings;
   final ScrollController verticalScrollController;
   final HorizontalScrollOffsets horizontalScrollOffsets;
-  final HoverNotifier hoverIndex;
+  final HoverNotifier hoverNotifier;
   final OnRowHoverListener? onHover;
   final RowCallbacks<DATA> rowCallbacks;
   final RowCursorBuilder<DATA>? rowCursorBuilder;
@@ -97,14 +96,12 @@ class TableContent<DATA> extends StatelessWidget {
 
       for(int columnIndex = 0; columnIndex < layoutSettings.columnsMetrics.length ; columnIndex++) {
         if(data!=null){
-          //TODO hovered
-          DaviRow<DATA> row = DaviRow(data: data, index: rowIndex, hovered: false);
           final DaviColumn<DATA> column = model!.columnAt(columnIndex);
-          final CellWidget<DATA> cell =  CellWidget(column: column, columnIndex: columnIndex, row: row, hoverIndexNotifier:hoverIndex);
+          final CellWidget<DATA> cell =  CellWidget(column: column, columnIndex: columnIndex, data:data, rowIndex:rowIndex, hoverNotifier:hoverNotifier);
           children.add(CellsLayoutChild.cell(childIndex: childIndex, rowIndex: rowIndex, columnIndex: columnIndex, child: cell));
           lastVisibleRowIndex=rowIndex;
         } else {
-          children.add(CellsLayoutChild.cell(childIndex: childIndex, rowIndex: rowIndex, columnIndex: columnIndex, child: Text('$childIndex')));
+          children.add(CellsLayoutChild.cell(childIndex: childIndex, rowIndex: rowIndex, columnIndex: columnIndex, child: const Offstage()));
         }
         childIndex++;
       }
@@ -114,12 +111,10 @@ class TableContent<DATA> extends StatelessWidget {
     onTrailingWidget(trailingWidgetBuilt);
     onLastVisibleRow(lastVisibleRowIndex);
 
-
-
     CellsLayout cellsLayout= CellsLayout(layoutSettings: layoutSettings, verticalOffset:verticalOffset,horizontalScrollOffsets:horizontalScrollOffsets,
         leftPinnedAreaBounds:layoutSettings.getAreaBounds(PinStatus.left), unpinnedAreaBounds:layoutSettings.getAreaBounds(PinStatus.none),
         rowsLength: layoutSettings.rowsLength,
-        hoverIndex: hoverIndex,
+        hoverIndex: hoverNotifier,
         rowRegionCache:rowRegionCache,
         children: children);
 
@@ -128,7 +123,7 @@ class TableContent<DATA> extends StatelessWidget {
         verticalScrollController: verticalScrollController,
         scrolling: scrolling,
         focusNode: focusNode,
-        hoverIndex: hoverIndex,
+        hoverIndex: hoverNotifier,
         rowCallbacks: rowCallbacks,
         onHover: onHover,
         rowCursorBuilder: rowCursorBuilder,

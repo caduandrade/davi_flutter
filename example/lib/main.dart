@@ -79,8 +79,8 @@ class _HomePageState extends State<HomePage> {
               name: 'Value 2',
               intValue: (data) => data.value,
               cellTextStyle: TextStyle(fontWeight: FontWeight.bold),
-              cellBackground: (data) =>
-                  data.data.value == 12 ? Colors.green : null),
+              cellBackground: ( data,  index,  hovered) =>
+                  data.value == 12 ? Colors.green : null),
           DaviColumn(name: 'Value 3', intValue: (data) => data.value),
 
         /*  DaviColumn(
@@ -93,19 +93,19 @@ class _HomePageState extends State<HomePage> {
         multiSortEnabled: true);
   }
 
-  Widget _buildField(BuildContext context, DaviRow<Person> rowData) {
+  Widget _buildField(BuildContext context, Person data, int index, bool hovered) {
     if (true) {
       return TextFormField(
-          controller: rowData.data.c,
+          controller: data.c,
           //key: ValueKey(rowData.index),
           //initialValue: rowData.data.editable,
-          onChanged: (value) => _onFieldChange(value, rowData.data));
+          onChanged: (value) => _onFieldChange(value, data));
     }
     return TextFormField(
-        initialValue: rowData.data.editable,
+        initialValue: data.editable,
         style:
-            TextStyle(color: rowData.data.valid ? Colors.black : Colors.white),
-        onChanged: (value) => _onFieldChange(value, rowData.data));
+            TextStyle(color: data.valid ? Colors.black : Colors.white),
+        onChanged: (value) => _onFieldChange(value, data));
   }
 
   void _onFieldChange(String value, Person person) {

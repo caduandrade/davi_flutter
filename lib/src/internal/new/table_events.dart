@@ -131,10 +131,9 @@ class TableEvents<DATA> extends StatelessWidget {
           data = model?.rowAt(rowIndex);
         }
       if (data != null) {
-        hoverIndex.cursor = _buildCursor(
-            DaviRow(data: data,
+        hoverIndex.cursor = _buildCursor(data: data,
                 index: rowIndex!,
-                hovered: hoverIndex.index == rowIndex));
+                hovered: hoverIndex.index == rowIndex);
       } else {
         // hover over visual row without value
         rowIndex=null;
@@ -146,11 +145,11 @@ class TableEvents<DATA> extends StatelessWidget {
     }
   }
 
-  MouseCursor _buildCursor(DaviRow<DATA> row) {
+  MouseCursor _buildCursor({required DATA data, required int index,required bool hovered}) {
     if (!rowTheme.cursorOnTapGesturesOnly || rowCallbacks.hasCallback) {
       MouseCursor? mouseCursor;
       if (rowCursorBuilder != null) {
-        mouseCursor = rowCursorBuilder!(row);
+        mouseCursor = rowCursorBuilder!(data,index,hovered);
       }
       return mouseCursor ?? rowTheme.cursor;
     }

@@ -15,6 +15,13 @@ HeaderCellThemeData.copyWith removed
 HeaderThemeData.copyWith removed
 DaviThemeData.copyWith removed
 
+DaviRow removed
+RowCursorBuilder parameter : DaviRow to DATA data, int index, bool hovered
+CellBackgroundBuilder parameter : DaviRow to DATA data, int index, bool hovered
+DaviRowColor parameter : DaviRow to DATA data, int index, bool hovered
+DaviCellBuilder parameter : BuildContext, DaviRow to BuildContext, DATA data, int index, bool hovered
+DaviCellSemanticsBuilder parameter : BuildContext, DaviRow to BuildContext, DATA data, int index, bool hovered
+
 - typedef
  - OnLastRowWidgetListener  renamed LastRowWidgetListener  
  - OnLastRowWidgetListener renamed LastRowWidgetListener
