@@ -56,7 +56,10 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-
+   _buildModel();
+  }
+  
+  void _buildModel(){
     List<Person> rows = [];
 
     Random random = Random();
@@ -79,14 +82,14 @@ class _HomePageState extends State<HomePage> {
               intValue: (data) => data.value,
               cellTextStyle: TextStyle(fontWeight: FontWeight.bold),
               cellBackground: ( data,  index,  hovered) =>
-                  data.value == 12 ? Colors.green : null),
+              data.value == 12 ? Colors.green : null),
           DaviColumn(name: 'Value 3', intValue: (data) => data.value),
           DaviColumn(name: 'Value 4', intValue: (data) => data.value),
           DaviColumn(name: 'Value 5', intValue: (data) => data.value),
           DaviColumn(name: 'Value 6', intValue: (data) => data.value),
           DaviColumn(name: 'Value 7', intValue: (data) => data.value),
 
-        /*  DaviColumn(
+          /*  DaviColumn(
               name: 'Editable',
               sortable: false,
               cellBuilder: _buildField,
@@ -163,7 +166,10 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _onclick() {
-    setState(() {});
+    setState(() {
+      _buildModel();
+    });
+
   }
 }
 

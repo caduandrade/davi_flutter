@@ -26,7 +26,7 @@ class Davi<DATA> extends StatefulWidget {
       {Key? key,
       this.onHover,
       this.unpinnedHorizontalScrollController,
-      this.pinnedHorizontalScrollController,
+      this.leftPinnedHorizontalScrollController,
       this.verticalScrollController,
       this.onLastVisibleRow,
       this.onRowTap,
@@ -48,7 +48,7 @@ class Davi<DATA> extends StatefulWidget {
 
   final DaviModel<DATA>? model;
   final ScrollController? unpinnedHorizontalScrollController;
-  final ScrollController? pinnedHorizontalScrollController;
+  final ScrollController? leftPinnedHorizontalScrollController;
   final ScrollController? verticalScrollController;
   final OnRowHoverListener? onHover;
   final DaviRowColor<DATA>? rowColor;
@@ -75,6 +75,7 @@ class Davi<DATA> extends StatefulWidget {
 /// The [Davi] state.
 class _DaviState<DATA> extends State<Davi<DATA>> {
   late ScrollControllers _scrollControllers;
+  late Listenable _listenable;
   bool _scrolling = false;
   int? _hoveredRowIndex;
   bool _lastRowWidgetVisible = false;
@@ -84,32 +85,18 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
 
   final FocusNode _focusNode = FocusNode(debugLabel: 'Davi');
 
-  void _setHoveredRowIndex(int? rowIndex) {
-    if (widget.model != null && _hoveredRowIndex != rowIndex) {
-      _hoveredRowIndex = rowIndex;
-      if (widget.onHover != null) {
-        widget.onHover!(_hoveredRowIndex);
-      }
-    }
-  }
-
   @override
   void initState() {
     super.initState();
     _scrollControllers = ScrollControllers(
         unpinnedHorizontal: widget.unpinnedHorizontalScrollController,
-        leftPinnedHorizontal: widget.pinnedHorizontalScrollController,
+        leftPinnedHorizontal: widget.leftPinnedHorizontalScrollController,
         vertical: widget.verticalScrollController);
-    _scrollControllers.unpinnedHorizontal.addListener(_rebuild);
-    _scrollControllers.leftPinnedHorizontal.addListener(_rebuild);
-    widget.model?.addListener(_rebuild);
+    _buildListenable();
   }
 
   @override
   void dispose() {
-    _scrollControllers.unpinnedHorizontal.removeListener(_rebuild);
-    _scrollControllers.leftPinnedHorizontal.removeListener(_rebuild);
-    widget.model?.removeListener(_rebuild);
     _focusNode.dispose();
     super.dispose();
   }
@@ -117,29 +104,11 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
   @override
   void didUpdateWidget(covariant Davi<DATA> oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.verticalScrollController != null &&
-        _scrollControllers.vertical != widget.verticalScrollController) {
-      _scrollControllers.vertical = widget.verticalScrollController!;
-    }
-    if (widget.unpinnedHorizontalScrollController != null &&
-        _scrollControllers.unpinnedHorizontal !=
-            widget.unpinnedHorizontalScrollController) {
-      _scrollControllers.unpinnedHorizontal.removeListener(_rebuild);
-      _scrollControllers.unpinnedHorizontal =
-          widget.unpinnedHorizontalScrollController!;
-      _scrollControllers.unpinnedHorizontal.addListener(_rebuild);
-    }
-    if (widget.pinnedHorizontalScrollController != null &&
-        _scrollControllers.leftPinnedHorizontal !=
-            widget.pinnedHorizontalScrollController) {
-      _scrollControllers.leftPinnedHorizontal.removeListener(_rebuild);
-      _scrollControllers.leftPinnedHorizontal =
-          widget.pinnedHorizontalScrollController!;
-      _scrollControllers.leftPinnedHorizontal.addListener(_rebuild);
+    if(_scrollControllers.update(unpinnedHorizontal: widget.unpinnedHorizontalScrollController, leftPinnedHorizontal:
+        widget.leftPinnedHorizontalScrollController, vertical: widget.verticalScrollController)) {
+      _buildListenable();
     }
     if (widget.model != oldWidget.model) {
-      oldWidget.model?.removeListener(_rebuild);
-      widget.model?.addListener(_rebuild);
       if (_scrollControllers.vertical.hasClients) {
         _scrollControllers.vertical.jumpTo(0);
       }
@@ -148,6 +117,84 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
       }
       if (_scrollControllers.unpinnedHorizontal.hasClients) {
         _scrollControllers.unpinnedHorizontal.jumpTo(0);
+      }
+    }
+  }
+
+  void _buildListenable(){
+    _listenable = Listenable.merge([widget.model,_columnNotifier,_scrollControllers.vertical, _scrollControllers.leftPinnedHorizontal, _scrollControllers.unpinnedHorizontal]);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final DaviThemeData theme = DaviTheme.of(context);
+    if (theme.cell.overrideInputDecoration) {
+      return Theme(
+          data: ThemeData(
+              inputDecorationTheme: const InputDecorationTheme(
+                  isDense: true, border: InputBorder.none)),
+          child: _decoratedContainer(context));
+    }
+    return _decoratedContainer(context);
+  }
+
+  Widget _decoratedContainer(BuildContext context){
+    final DaviThemeData theme = DaviTheme.of(context);
+    if (theme.decoration != null) {
+     return Container(decoration: theme.decoration, child: _listenableBuilder());
+    }
+    return _listenableBuilder();
+  }
+  
+  Widget _listenableBuilder(){
+    return ListenableBuilder(listenable: _listenable, builder: _builder);
+  }
+
+  Widget _builder(BuildContext context, Widget? child){
+    final DaviThemeData theme = DaviTheme.of(context);
+    final TableThemeMetrics themeMetrics = TableThemeMetrics(theme);
+    final RowCallbacks<DATA> rowCallbacks = RowCallbacks(
+        onRowTap: widget.onRowTap,
+        onRowSecondaryTap: widget.onRowSecondaryTap,
+        onRowSecondaryTapUp: widget.onRowSecondaryTapUp,
+        onRowDoubleTap: widget.onRowDoubleTap);
+    
+    return Listener(
+      behavior: HitTestBehavior.translucent,
+      onPointerDown: (pointer) {
+        if (widget.model != null && widget.focusable) {
+          _focusNode.requestFocus();
+        }
+      },
+      child: ClipRect(
+          child: TableLayoutBuilder(
+              hoverNotifier: _hoverNotifier,
+              columnNotifier: _columnNotifier,
+              onHover: widget.onHover != null ? _setHoveredRowIndex : null,
+              tapToSortEnabled: widget.tapToSortEnabled,
+              scrollControllers: _scrollControllers,
+              columnWidthBehavior: widget.columnWidthBehavior,
+              themeMetrics: themeMetrics,
+              visibleRowsLength: widget.visibleRowsCount,
+              onTrailingWidget: _onTrailingWidget,
+              onLastVisibleRow: _onLastVisibleRowListener,
+              model: widget.model,
+              scrolling: _scrolling,
+              rowColor: widget.rowColor,
+              rowCursorBuilder: widget.rowCursor,
+              focusable: widget.focusable,
+              focusNode: _focusNode,
+              trailingWidget: widget.trailingWidget,
+              rowCallbacks: rowCallbacks,
+              onDragScroll: _onDragScroll)),
+    );
+  }
+
+  void _setHoveredRowIndex(int? rowIndex) {
+    if (widget.model != null && _hoveredRowIndex != rowIndex) {
+      _hoveredRowIndex = rowIndex;
+      if (widget.onHover != null) {
+        widget.onHover!(_hoveredRowIndex);
       }
     }
   }
@@ -168,70 +215,6 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
         Future.microtask(() => widget.onLastVisibleRow!(lastVisibleRowIndex));
       }
     }
-  }
-
-  void _rebuild() {
-    setState(() {});
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final DaviThemeData theme = DaviTheme.of(context);
-
-    final TableThemeMetrics themeMetrics = TableThemeMetrics(theme);
-
-    //TODO need this cliprect?
-    Widget table = ClipRect(
-        child: TableLayoutBuilder(
-          hoverNotifier: _hoverNotifier,
-            columnNotifier: _columnNotifier,
-            onHover: widget.onHover != null ? _setHoveredRowIndex : null,
-            tapToSortEnabled: widget.tapToSortEnabled,
-            scrollControllers: _scrollControllers,
-            columnWidthBehavior: widget.columnWidthBehavior,
-            themeMetrics: themeMetrics,
-            visibleRowsLength: widget.visibleRowsCount,
-            onTrailingWidget: _onTrailingWidget,
-            onLastVisibleRow: _onLastVisibleRowListener,
-            model: widget.model,
-            scrolling: _scrolling,
-            rowColor: widget.rowColor,
-            rowCursorBuilder: widget.rowCursor,
-            focusable: widget.focusable,
-            focusNode: _focusNode,
-            trailingWidget: widget.trailingWidget,
-            rowCallbacks: RowCallbacks(
-                onRowTap: widget.onRowTap,
-                onRowSecondaryTap: widget.onRowSecondaryTap,
-                onRowSecondaryTapUp: widget.onRowSecondaryTapUp,
-                onRowDoubleTap: widget.onRowDoubleTap),
-            onDragScroll: _onDragScroll));
-
-    if (widget.model != null) {
-            table = Listener(
-        behavior: HitTestBehavior.translucent,
-        onPointerDown: (pointer) {
-          if (widget.focusable) {
-            _focusNode.requestFocus();
-          }
-        },
-        child: table,
-      );
-    }
-
-    if (theme.decoration != null) {
-      table = Container(decoration: theme.decoration, child: table);
-    }
-
-    if (theme.cell.overrideInputDecoration) {
-      table = Theme(
-          data: ThemeData(
-              inputDecorationTheme: const InputDecorationTheme(
-                  isDense: true, border: InputBorder.none)),
-          child: table);
-    }
-
-    return table;
   }
 
   void _onDragScroll(bool running) {

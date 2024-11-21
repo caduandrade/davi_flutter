@@ -9,6 +9,7 @@ CellThemeData.copyWith removed
 
 Davi.lastRowWidget renamed Davi.trailingWidget
 Davi.onLastRowWidget renamed Davi.onTrailingWidget
+Davi.pinnedHorizontalScrollController renamed Davi.leftPinnedHorizontalScrollController
 
 RowThemeData.copyWith removed
 HeaderCellThemeData.copyWith removed
