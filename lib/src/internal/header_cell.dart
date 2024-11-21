@@ -42,6 +42,7 @@ class _DaviHeaderCellState extends State<DaviHeaderCell> {
 
   @override
   Widget build(BuildContext context) {
+
     HeaderCellThemeData theme = DaviTheme.of(context).headerCell;
 
     final bool sortEnabled = widget.tapToSortEnabled &&

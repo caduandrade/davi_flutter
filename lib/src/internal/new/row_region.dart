@@ -17,10 +17,9 @@ class RowRegion implements Comparable<RowRegion>{
 }
 
 class RowRegionCache {
-  final Map<int, RowRegion> _cache = {};
-  final List<RowRegion> _cache2=[];
+  final List<RowRegion> _cache=[];
 
-  late final Iterable<RowRegion> values = UnmodifiableListView(_cache2);
+  late final Iterable<RowRegion> values = UnmodifiableListView(_cache);
 
   int? _firstIndex;
 
@@ -29,12 +28,13 @@ class RowRegionCache {
 
   int? get lastIndex => _lastIndex;
 
-  RowRegion get(int index) {
-    RowRegion? bounds = _cache[index];
-    if (bounds == null) {
-      throw StateError('Area bounds not found for index $index.');
+  RowRegion? get lastWithData {
+    for(RowRegion rowRegion in _cache.reversed) {
+      if(rowRegion.hasData){
+        return rowRegion;
+      }
     }
-    return bounds;
+    return null;
   }
 
   void add(RowRegion region) {
@@ -43,16 +43,15 @@ class RowRegionCache {
         : region.index;
     _lastIndex =
         _lastIndex != null ? math.max(_lastIndex!, region.index) : region.index;
-    _cache[region.index] = region;
-    _cache2.add(region);
+     _cache.add(region);
   }
 
   void sort(){
-    _cache2.sort();
+    _cache.sort();
   }
 
   int? boundsIndex(Offset position) {
-    for (RowRegion rowBounds in _cache.values) {
+    for (RowRegion rowBounds in _cache) {
       if (rowBounds.bounds.contains(position)) {
         return rowBounds.index;
       }

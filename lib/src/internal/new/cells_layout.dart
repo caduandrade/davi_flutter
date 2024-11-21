@@ -53,6 +53,8 @@ final RowRegionCache rowRegionCache;
         dividerColor: theme.row.dividerColor,
       rowsLength: rowsLength,
         rowRegionCache:rowRegionCache,
+      columnDividerColor: theme.columnDividerColor,
+        columnDividerThickness: theme.columnDividerThickness,
       fillHeight: theme.row.fillHeight, dividerThickness: theme.row.dividerThickness
     );
   }
@@ -85,6 +87,8 @@ final RowRegionCache rowRegionCache;
       ..rowRegionCache=rowRegionCache
     ..dividerColor= theme.row.dividerColor
       ..dividerThickness=theme.row.dividerThickness
+    ..columnDividerColor= theme.columnDividerColor
+    ..columnDividerThickness= theme.columnDividerThickness
     ..rowColor=theme.row.color;
   }
 }

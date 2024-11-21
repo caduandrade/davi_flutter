@@ -60,7 +60,7 @@ class _HomePageState extends State<HomePage> {
     List<Person> rows = [];
 
     Random random = Random();
-    for (int i = 1; i < 100; i++) {
+    for (int i = 1; i < 215; i++) {
       rows.add(Person('User $i', 20 + random.nextInt(50), i == 1 ? null : i));
     }
     // rows.shuffle();
@@ -72,9 +72,8 @@ class _HomePageState extends State<HomePage> {
               name: 'Name',
               stringValue: (data) => data.name,
               pinStatus: PinStatus.left),
-
-          DaviColumn(name: 'Age', intValue: (data) => data.age),
-          DaviColumn(name: 'Value', intValue: (data) => data.value),
+          DaviColumn(name: 'Age', intValue: (data) => data.age,pinStatus: PinStatus.left),
+          DaviColumn(name: 'Value', intValue: (data) => data.value,pinStatus: PinStatus.left),
           DaviColumn(
               name: 'Value 2',
               intValue: (data) => data.value,
@@ -82,6 +81,10 @@ class _HomePageState extends State<HomePage> {
               cellBackground: ( data,  index,  hovered) =>
                   data.value == 12 ? Colors.green : null),
           DaviColumn(name: 'Value 3', intValue: (data) => data.value),
+          DaviColumn(name: 'Value 4', intValue: (data) => data.value),
+          DaviColumn(name: 'Value 5', intValue: (data) => data.value),
+          DaviColumn(name: 'Value 6', intValue: (data) => data.value),
+          DaviColumn(name: 'Value 7', intValue: (data) => data.value),
 
         /*  DaviColumn(
               name: 'Editable',
@@ -122,8 +125,13 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     DaviTheme theme = DaviTheme(
         data: DaviThemeData(
+
+          columnDividerThickness: 10,
+            columnDividerColor: Colors.yellow,
             row: RowThemeData(
+              fillHeight: true,
               dividerThickness: 10,
+             dividerColor: Colors.pink,
              color: RowThemeData.zebraColor(evenColor: Colors.pink[100], oddColor: Colors.yellow[100]),
               hoverBackground: (index) => Colors.blue[300],
               hoverForeground: (index) => Colors.blue[300]!.withOpacity(.5),

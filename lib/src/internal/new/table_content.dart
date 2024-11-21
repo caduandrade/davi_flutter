@@ -91,7 +91,6 @@ class TableContent<DATA> extends StatelessWidget {
             children.add(CellsLayoutChild.trailing(child: trailingWidget!));
       }
 
-      //TODO bool visible?
       rowRegionCache.add(RowRegion(index: rowIndex, bounds: bounds, hasData: data!=null, y:rowY, trailing:trailingRegion));
 
       for(int columnIndex = 0; columnIndex < layoutSettings.columnsMetrics.length ; columnIndex++) {
