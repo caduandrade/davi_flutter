@@ -15,16 +15,23 @@ import 'package:meta/meta.dart';
 
 @internal
 class TableContent<DATA> extends StatelessWidget {
-
-  const TableContent({Key? key, required this.layoutSettings,required this.verticalScrollController,
-    required this.horizontalScrollOffsets,required this.hoverNotifier,
-    required this.onHover,
-    required  this.rowCallbacks,
-    required this.rowCursorBuilder,
-    required this.onTrailingWidget,
-    required this.onLastVisibleRow,
-    required this.trailingWidget,
-    required this.model, required this.focusable, required this.scrolling, required this.focusNode}) : super(key: key);
+  const TableContent(
+      {Key? key,
+      required this.layoutSettings,
+      required this.verticalScrollController,
+      required this.horizontalScrollOffsets,
+      required this.hoverNotifier,
+      required this.onHover,
+      required this.rowCallbacks,
+      required this.rowCursorBuilder,
+      required this.onTrailingWidget,
+      required this.onLastVisibleRow,
+      required this.trailingWidget,
+      required this.model,
+      required this.focusable,
+      required this.scrolling,
+      required this.focusNode})
+      : super(key: key);
 
   final TableLayoutSettings layoutSettings;
   final ScrollController verticalScrollController;
@@ -50,7 +57,7 @@ class TableContent<DATA> extends StatelessWidget {
         });
   }
 
-  Widget _builder(BuildContext context, BoxConstraints constraints){
+  Widget _builder(BuildContext context, BoxConstraints constraints) {
     //TODO null hover on resizing
     DaviThemeData theme = DaviTheme.of(context);
 
@@ -59,7 +66,7 @@ class TableContent<DATA> extends StatelessWidget {
         : 0;
 
     final int firstRowIndex =
-    (verticalOffset / layoutSettings.themeMetrics.row.height).floor();
+        (verticalOffset / layoutSettings.themeMetrics.row.height).floor();
 
     List<CellsLayoutChild> children = [];
 
@@ -71,65 +78,96 @@ class TableContent<DATA> extends StatelessWidget {
     // This is used to determine if an extra row might become partially
     // visible during scrolling, allowing preemptive
     // caching to improve performance.
-    final maxVisualRows = ((constraints.maxHeight + layoutSettings.themeMetrics.cell.height) /layoutSettings.themeMetrics.row.height).ceil();
+    final maxVisualRows =
+        ((constraints.maxHeight + layoutSettings.themeMetrics.cell.height) /
+                layoutSettings.themeMetrics.row.height)
+            .ceil();
 
-    double rowY = (firstRowIndex *  layoutSettings.themeMetrics.row.height) -verticalOffset;
+    double rowY = (firstRowIndex * layoutSettings.themeMetrics.row.height) -
+        verticalOffset;
     int childIndex = 0;
 
-    for(int rowIndex = firstRowIndex ; rowIndex < firstRowIndex+maxVisualRows;rowIndex++) {
-      final Rect bounds = Rect.fromLTWH(0, rowY, constraints.maxWidth, layoutSettings.themeMetrics.cell.height);
+    for (int rowIndex = firstRowIndex;
+        rowIndex < firstRowIndex + maxVisualRows;
+        rowIndex++) {
+      final Rect bounds = Rect.fromLTWH(0, rowY, constraints.maxWidth,
+          layoutSettings.themeMetrics.cell.height);
 
       DATA? data;
       if (model != null && rowIndex < model!.rowsLength) {
         data = model!.rowAt(rowIndex);
       }
 
-      bool trailingRegion=false;
-      if(trailingWidget!=null && !trailingWidgetBuilt && data==null) {
-           trailingWidgetBuilt=true;
-           trailingRegion=true;
-            children.add(CellsLayoutChild.trailing(child: trailingWidget!));
+      bool trailingRegion = false;
+      if (trailingWidget != null && !trailingWidgetBuilt && data == null) {
+        trailingWidgetBuilt = true;
+        trailingRegion = true;
+        children.add(CellsLayoutChild.trailing(child: trailingWidget!));
       }
 
-      rowRegionCache.add(RowRegion(index: rowIndex, bounds: bounds, hasData: data!=null, y:rowY, trailing:trailingRegion));
+      rowRegionCache.add(RowRegion(
+          index: rowIndex,
+          bounds: bounds,
+          hasData: data != null,
+          y: rowY,
+          trailing: trailingRegion));
 
-      for(int columnIndex = 0; columnIndex < layoutSettings.columnsMetrics.length ; columnIndex++) {
-        if(data!=null){
+      for (int columnIndex = 0;
+          columnIndex < layoutSettings.columnsMetrics.length;
+          columnIndex++) {
+        if (data != null) {
           final DaviColumn<DATA> column = model!.columnAt(columnIndex);
-          final CellWidget<DATA> cell =  CellWidget(column: column, columnIndex: columnIndex, data:data, rowIndex:rowIndex, hoverNotifier:hoverNotifier);
-          children.add(CellsLayoutChild.cell(childIndex: childIndex, rowIndex: rowIndex, columnIndex: columnIndex, child: cell));
-          lastVisibleRowIndex=rowIndex;
+          final CellWidget<DATA> cell = CellWidget(
+              column: column,
+              columnIndex: columnIndex,
+              data: data,
+              rowIndex: rowIndex,
+              hoverNotifier: hoverNotifier);
+          children.add(CellsLayoutChild.cell(
+              childIndex: childIndex,
+              rowIndex: rowIndex,
+              columnIndex: columnIndex,
+              child: cell));
+          lastVisibleRowIndex = rowIndex;
         } else {
-          children.add(CellsLayoutChild.cell(childIndex: childIndex, rowIndex: rowIndex, columnIndex: columnIndex, child: const Offstage()));
+          children.add(CellsLayoutChild.cell(
+              childIndex: childIndex,
+              rowIndex: rowIndex,
+              columnIndex: columnIndex,
+              child: const Offstage()));
         }
         childIndex++;
       }
-      rowY+=layoutSettings.themeMetrics.row.height;
+      rowY += layoutSettings.themeMetrics.row.height;
     }
 
     onTrailingWidget(trailingWidgetBuilt);
     onLastVisibleRow(lastVisibleRowIndex);
 
-    CellsLayout cellsLayout= CellsLayout(layoutSettings: layoutSettings, verticalOffset:verticalOffset,horizontalScrollOffsets:horizontalScrollOffsets,
-        leftPinnedAreaBounds:layoutSettings.getAreaBounds(PinStatus.left), unpinnedAreaBounds:layoutSettings.getAreaBounds(PinStatus.none),
+    CellsLayout cellsLayout = CellsLayout(
+        layoutSettings: layoutSettings,
+        verticalOffset: verticalOffset,
+        horizontalScrollOffsets: horizontalScrollOffsets,
+        leftPinnedAreaBounds: layoutSettings.getAreaBounds(PinStatus.left),
+        unpinnedAreaBounds: layoutSettings.getAreaBounds(PinStatus.none),
         rowsLength: layoutSettings.rowsLength,
         hoverIndex: hoverNotifier,
-        rowRegionCache:rowRegionCache,
+        rowRegionCache: rowRegionCache,
         children: children);
 
-    return ClipRect(child:TableEvents(model: model,
-        rowBoundsCache: rowRegionCache,
-        verticalScrollController: verticalScrollController,
-        scrolling: scrolling,
-        focusNode: focusNode,
-        hoverIndex: hoverNotifier,
-        rowCallbacks: rowCallbacks,
-        onHover: onHover,
-        rowCursorBuilder: rowCursorBuilder,
-        focusable: focusable,
-        rowTheme: theme.row,
-        child: cellsLayout));
+    return ClipRect(
+        child: TableEvents(
+            model: model,
+            rowBoundsCache: rowRegionCache,
+            verticalScrollController: verticalScrollController,
+            scrolling: scrolling,
+            focusNode: focusNode,
+            hoverIndex: hoverNotifier,
+            rowCallbacks: rowCallbacks,
+            onHover: onHover,
+            rowCursorBuilder: rowCursorBuilder,
+            focusable: focusable,
+            rowTheme: theme.row,
+            child: cellsLayout));
   }
-
 }
-

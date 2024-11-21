@@ -42,7 +42,6 @@ class _DaviHeaderCellState extends State<DaviHeaderCell> {
 
   @override
   Widget build(BuildContext context) {
-
     HeaderCellThemeData theme = DaviTheme.of(context).headerCell;
 
     final bool sortEnabled = widget.tapToSortEnabled &&
@@ -159,11 +158,11 @@ class _DaviHeaderCellState extends State<DaviHeaderCell> {
 
   void _onResizeDragStart(DragStartDetails details) {
     final Offset pos = details.globalPosition;
-    widget.hoverNotifier.enabled=false;
-    widget.columnNotifier.resizing=true;
+    widget.hoverNotifier.enabled = false;
+    widget.columnNotifier.resizing = true;
     setState(() {
       _lastDragPos = pos.dx;
-      _resizing=true;
+      _resizing = true;
     });
   }
 
@@ -175,10 +174,10 @@ class _DaviHeaderCellState extends State<DaviHeaderCell> {
   }
 
   void _onResizeDragEnd(DragEndDetails details) {
-    widget.hoverNotifier.enabled=true;
-    widget.columnNotifier.resizing=false;
+    widget.hoverNotifier.enabled = true;
+    widget.columnNotifier.resizing = false;
     setState(() {
-      _resizing=false;
+      _resizing = false;
     });
   }
 

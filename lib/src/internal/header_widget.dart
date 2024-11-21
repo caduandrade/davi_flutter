@@ -54,8 +54,8 @@ class HeaderWidget<DATA> extends StatelessWidget {
           tapToSortEnabled: tapToSortEnabled,
           isMultiSorted: isMultiSorted,
           columnIndex: columnIndex,
-      columnNotifier: columnNotifier,
-      hoverNotifier: hoverNotifier);
+          columnNotifier: columnNotifier,
+          hoverNotifier: hoverNotifier);
       children.add(ColumnsLayoutChild<DATA>(index: columnIndex, child: cell));
     }
 

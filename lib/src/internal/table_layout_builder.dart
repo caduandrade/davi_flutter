@@ -40,9 +40,9 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
       required this.rowCursorBuilder,
       required this.tapToSortEnabled,
       required this.hoverNotifier,
-        required this.columnNotifier,
-        required this.focusable,
-        required this.focusNode})
+      required this.columnNotifier,
+      required this.focusable,
+      required this.focusNode})
       : super(key: key);
 
   final LastVisibleRowListener onLastVisibleRow;
@@ -134,21 +134,22 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
       }
     }
 
-      children.add(TableLayoutChild<DATA>.cells(model: model,
-          layoutSettings: layoutSettings,
-          scrolling: scrolling,
-          horizontalScrollOffsets: horizontalScrollOffsets,
-          verticalScrollController: scrollControllers.vertical,
-          onHover: onHover,
-          rowCallbacks: rowCallbacks,
-          rowColor: rowColor,
-          rowCursorBuilder: rowCursorBuilder,
-          trailingWidget: trailingWidget,
-          onLastVisibleRow: onLastVisibleRow,
-          onTrailingWidget: onTrailingWidget,
-      hoverIndex: hoverNotifier,
-      focusable: focusable,
-      focusNode: focusNode));
+    children.add(TableLayoutChild<DATA>.cells(
+        model: model,
+        layoutSettings: layoutSettings,
+        scrolling: scrolling,
+        horizontalScrollOffsets: horizontalScrollOffsets,
+        verticalScrollController: scrollControllers.vertical,
+        onHover: onHover,
+        rowCallbacks: rowCallbacks,
+        rowColor: rowColor,
+        rowCursorBuilder: rowCursorBuilder,
+        trailingWidget: trailingWidget,
+        onLastVisibleRow: onLastVisibleRow,
+        onTrailingWidget: onTrailingWidget,
+        hoverIndex: hoverNotifier,
+        focusable: focusable,
+        focusNode: focusNode));
 
     return TableLayout<DATA>(
         layoutSettings: layoutSettings,

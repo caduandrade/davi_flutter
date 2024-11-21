@@ -61,6 +61,7 @@ class Davi<DATA> extends StatefulWidget {
   final int? visibleRowsCount;
   final LastVisibleRowListener? onLastVisibleRow;
   final bool focusable;
+
   /// An optional widget displayed at the end of the table's content.
   final Widget? trailingWidget;
   final TrailingWidgetListener? onTrailingWidget;
@@ -81,7 +82,7 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
   bool _lastRowWidgetVisible = false;
   int? _lastVisibleRow;
   final HoverNotifier _hoverNotifier = HoverNotifier();
-  final ColumnNotifier _columnNotifier= ColumnNotifier();
+  final ColumnNotifier _columnNotifier = ColumnNotifier();
 
   final FocusNode _focusNode = FocusNode(debugLabel: 'Davi');
 
@@ -104,8 +105,10 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
   @override
   void didUpdateWidget(covariant Davi<DATA> oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if(_scrollControllers.update(unpinnedHorizontal: widget.unpinnedHorizontalScrollController, leftPinnedHorizontal:
-        widget.leftPinnedHorizontalScrollController, vertical: widget.verticalScrollController)) {
+    if (_scrollControllers.update(
+        unpinnedHorizontal: widget.unpinnedHorizontalScrollController,
+        leftPinnedHorizontal: widget.leftPinnedHorizontalScrollController,
+        vertical: widget.verticalScrollController)) {
       _buildListenable();
     }
     if (widget.model != oldWidget.model) {
@@ -121,8 +124,14 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
     }
   }
 
-  void _buildListenable(){
-    _listenable = Listenable.merge([widget.model,_columnNotifier,_scrollControllers.vertical, _scrollControllers.leftPinnedHorizontal, _scrollControllers.unpinnedHorizontal]);
+  void _buildListenable() {
+    _listenable = Listenable.merge([
+      widget.model,
+      _columnNotifier,
+      _scrollControllers.vertical,
+      _scrollControllers.leftPinnedHorizontal,
+      _scrollControllers.unpinnedHorizontal
+    ]);
   }
 
   @override
@@ -138,19 +147,20 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
     return _decoratedContainer(context);
   }
 
-  Widget _decoratedContainer(BuildContext context){
+  Widget _decoratedContainer(BuildContext context) {
     final DaviThemeData theme = DaviTheme.of(context);
     if (theme.decoration != null) {
-     return Container(decoration: theme.decoration, child: _listenableBuilder());
+      return Container(
+          decoration: theme.decoration, child: _listenableBuilder());
     }
     return _listenableBuilder();
   }
-  
-  Widget _listenableBuilder(){
+
+  Widget _listenableBuilder() {
     return ListenableBuilder(listenable: _listenable, builder: _builder);
   }
 
-  Widget _builder(BuildContext context, Widget? child){
+  Widget _builder(BuildContext context, Widget? child) {
     final DaviThemeData theme = DaviTheme.of(context);
     final TableThemeMetrics themeMetrics = TableThemeMetrics(theme);
     final RowCallbacks<DATA> rowCallbacks = RowCallbacks(
@@ -158,7 +168,7 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
         onRowSecondaryTap: widget.onRowSecondaryTap,
         onRowSecondaryTapUp: widget.onRowSecondaryTapUp,
         onRowDoubleTap: widget.onRowDoubleTap);
-    
+
     return Listener(
       behavior: HitTestBehavior.translucent,
       onPointerDown: (pointer) {

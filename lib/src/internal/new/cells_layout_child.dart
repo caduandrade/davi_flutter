@@ -5,22 +5,28 @@ import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
 @internal
-class CellsLayoutChild<DATA>
-    extends ParentDataWidget<CellsLayoutParentData> {
+class CellsLayoutChild<DATA> extends ParentDataWidget<CellsLayoutParentData> {
+  static const _CellKey _trailingKey = _CellKey(childIndex: -100);
 
-  static const _CellKey _trailingKey =  _CellKey(childIndex: -100);
-
-  factory CellsLayoutChild.cell({required int childIndex, required int rowIndex,
-    required int columnIndex, required Widget child}){
-   return CellsLayoutChild._(key:_CellKey(childIndex: childIndex), rowIndex: rowIndex, columnIndex: columnIndex, child: child);
+  factory CellsLayoutChild.cell(
+      {required int childIndex,
+      required int rowIndex,
+      required int columnIndex,
+      required Widget child}) {
+    return CellsLayoutChild._(
+        key: _CellKey(childIndex: childIndex),
+        rowIndex: rowIndex,
+        columnIndex: columnIndex,
+        child: child);
   }
 
-  factory CellsLayoutChild.trailing({required Widget child}){
-    return CellsLayoutChild._(key:_trailingKey, rowIndex: -1, columnIndex: -1, child: child);
+  factory CellsLayoutChild.trailing({required Widget child}) {
+    return CellsLayoutChild._(
+        key: _trailingKey, rowIndex: -1, columnIndex: -1, child: child);
   }
 
-   const CellsLayoutChild._({
-     required Key key,
+  const CellsLayoutChild._({
+    required Key key,
     required this.rowIndex,
     required this.columnIndex,
     required Widget child,
@@ -56,7 +62,6 @@ class CellsLayoutChild<DATA>
 }
 
 class _CellKey extends LocalKey {
-
   const _CellKey({required this.childIndex});
 
   final int childIndex;

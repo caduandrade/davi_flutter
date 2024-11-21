@@ -43,7 +43,7 @@ class TableEvents<DATA> extends StatelessWidget {
 
   final HoverNotifier hoverIndex;
   final FocusNode focusNode;
-  
+
   final RowThemeData rowTheme;
 
   @override
@@ -62,8 +62,8 @@ class TableEvents<DATA> extends StatelessWidget {
             child: widget);
       }
 
-      if(rowCallbacks.hasCallback){
-        widget=GestureDetector(
+      if (rowCallbacks.hasCallback) {
+        widget = GestureDetector(
             behavior: HitTestBehavior.opaque,
             onTap: _buildOnTap(),
             onDoubleTap: _buildOnDoubleTap(),
@@ -73,11 +73,10 @@ class TableEvents<DATA> extends StatelessWidget {
       }
 
       widget = Listener(
-        behavior: HitTestBehavior.translucent,
-        onPointerSignal: _onPointerSignal,
-        onPointerPanZoomUpdate: _onPointerPanZoomUpdate,
-        child: widget
-      );
+          behavior: HitTestBehavior.translucent,
+          onPointerSignal: _onPointerSignal,
+          onPointerPanZoomUpdate: _onPointerPanZoomUpdate,
+          child: widget);
 
       if (focusable) {
         //TODO from parent?
@@ -121,22 +120,23 @@ class TableEvents<DATA> extends StatelessWidget {
   }
 
   void _updateHover(Offset? position) {
-    if(model!=null) {
+    if (model != null) {
       int? rowIndex;
-      if(position!=null) {
+      if (position != null) {
         rowIndex = rowBoundsCache.boundsIndex(position);
       }
       DATA? data;
-        if(model!=null && rowIndex!=null &&rowIndex< model!.rowsLength) {
-          data = model?.rowAt(rowIndex);
-        }
+      if (model != null && rowIndex != null && rowIndex < model!.rowsLength) {
+        data = model?.rowAt(rowIndex);
+      }
       if (data != null) {
-        hoverIndex.cursor = _buildCursor(data: data,
-                index: rowIndex!,
-                hovered: hoverIndex.index == rowIndex);
+        hoverIndex.cursor = _buildCursor(
+            data: data,
+            index: rowIndex!,
+            hovered: hoverIndex.index == rowIndex);
       } else {
         // hover over visual row without value
-        rowIndex=null;
+        rowIndex = null;
       }
       hoverIndex.index = rowIndex;
       if (onHover != null) {
@@ -145,22 +145,22 @@ class TableEvents<DATA> extends StatelessWidget {
     }
   }
 
-  MouseCursor _buildCursor({required DATA data, required int index,required bool hovered}) {
+  MouseCursor _buildCursor(
+      {required DATA data, required int index, required bool hovered}) {
     if (!rowTheme.cursorOnTapGesturesOnly || rowCallbacks.hasCallback) {
       MouseCursor? mouseCursor;
       if (rowCursorBuilder != null) {
-        mouseCursor = rowCursorBuilder!(data,index,hovered);
+        mouseCursor = rowCursorBuilder!(data, index, hovered);
       }
       return mouseCursor ?? rowTheme.cursor;
     }
     return MouseCursor.defer;
   }
 
-
   DATA? get _hoverData {
     DATA? data;
-    if(hoverIndex.index!=null) {
-      if(model!=null &&hoverIndex.index!< model!.rowsLength) {
+    if (hoverIndex.index != null) {
+      if (model != null && hoverIndex.index! < model!.rowsLength) {
         data = model?.rowAt(hoverIndex.index!);
       }
     }
@@ -169,9 +169,9 @@ class TableEvents<DATA> extends StatelessWidget {
 
   GestureTapCallback? _buildOnTap() {
     if (rowCallbacks.onRowTap != null) {
-      return () {        
+      return () {
         DATA? data = _hoverData;
-        if(data!=null) {
+        if (data != null) {
           rowCallbacks.onRowTap!(data);
         }
       };
@@ -183,7 +183,7 @@ class TableEvents<DATA> extends StatelessWidget {
     if (rowCallbacks.onRowDoubleTap != null) {
       return () {
         DATA? data = _hoverData;
-        if(data!=null) {
+        if (data != null) {
           rowCallbacks.onRowDoubleTap!(data);
         }
       };
@@ -207,7 +207,7 @@ class TableEvents<DATA> extends StatelessWidget {
     if (rowCallbacks.onRowSecondaryTapUp != null) {
       return (detail) {
         DATA? data = _hoverData;
-        if(data!=null) {
+        if (data != null) {
           rowCallbacks.onRowSecondaryTapUp!(data, detail);
         }
       };
@@ -226,8 +226,8 @@ class TableEvents<DATA> extends StatelessWidget {
           verticalScrollController.animateTo(target,
               duration: const Duration(milliseconds: 30), curve: Curves.ease);
         } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-          double target = math.max(
-              verticalScrollController.position.pixels - rowHeight, 0);
+          double target =
+              math.max(verticalScrollController.position.pixels - rowHeight, 0);
           verticalScrollController.animateTo(target,
               duration: const Duration(milliseconds: 30), curve: Curves.ease);
         } else if (event.logicalKey == LogicalKeyboardKey.pageDown) {

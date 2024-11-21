@@ -16,7 +16,13 @@ class CellWidget<DATA> extends StatelessWidget {
   final HoverNotifier hoverNotifier;
 
   const CellWidget(
-      {Key? key, required this.data, required this.rowIndex, required this.column, required this.columnIndex, required this.hoverNotifier}) : super(key: key);
+      {Key? key,
+      required this.data,
+      required this.rowIndex,
+      required this.column,
+      required this.columnIndex,
+      required this.hoverNotifier})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +33,7 @@ class CellWidget<DATA> extends StatelessWidget {
     Alignment? alignment = theme.cell.alignment;
     TextStyle? textStyle = theme.cell.textStyle;
     TextOverflow? overflow = theme.cell.overflow;
-     // Entire column
+    // Entire column
     padding = column.cellPadding ?? padding;
     alignment = column.cellAlignment ?? alignment;
     textStyle = column.cellTextStyle ?? textStyle;
@@ -36,7 +42,8 @@ class CellWidget<DATA> extends StatelessWidget {
     bool tryNullValue = false;
     Widget? child;
     if (column.cellBuilder != null) {
-      child = column.cellBuilder!(context, data, rowIndex, rowIndex==hoverNotifier.index);
+      child = column.cellBuilder!(
+          context, data, rowIndex, rowIndex == hoverNotifier.index);
     } else if (column.iconValueMapper != null) {
       CellIcon? cellIcon = column.iconValueMapper!(data);
       if (cellIcon != null) {
@@ -49,7 +56,7 @@ class CellWidget<DATA> extends StatelessWidget {
             overflow: overflow ?? theme.cell.overflow,
             style: textStyle ?? theme.cell.textStyle);
       } else if (theme.cell.nullValueColor != null) {
-        tryNullValue=true;
+        tryNullValue = true;
       }
     }
     if (child != null) {
@@ -61,15 +68,24 @@ class CellWidget<DATA> extends StatelessWidget {
     // To avoid the bug that makes a cursor disappear
     // (https://github.com/flutter/flutter/issues/106767),
     // always build a Container with some color.
-    child=Container(color: Colors.transparent, child: child);
-    child= CustomPaint(painter: _CellBackgroundPainter(data: data, rowIndex: rowIndex, nullValueColor: tryNullValue?theme.cell.nullValueColor:null, hoverIndex: hoverNotifier, column: column),child: child);
+    child = Container(color: Colors.transparent, child: child);
+    child = CustomPaint(
+        painter: _CellBackgroundPainter(
+            data: data,
+            rowIndex: rowIndex,
+            nullValueColor: tryNullValue ? theme.cell.nullValueColor : null,
+            hoverIndex: hoverNotifier,
+            column: column),
+        child: child);
 
     if (column.cellClip) {
       child = ClipRect(child: child);
     }
     if (column.semanticsBuilder != null) {
       return Semantics.fromProperties(
-          properties: column.semanticsBuilder!(context, data, rowIndex, rowIndex==hoverNotifier.index), child: child);
+          properties: column.semanticsBuilder!(
+              context, data, rowIndex, rowIndex == hoverNotifier.index),
+          child: child);
     }
     return child;
   }
@@ -102,20 +118,25 @@ class _CellBackgroundPainter<DATA> extends CustomPainter {
   final HoverNotifier hoverIndex;
   final CellNullColor? nullValueColor;
 
-  _CellBackgroundPainter({required this.data, required this.rowIndex, required this.column, required this.hoverIndex,
-  required this.nullValueColor}) : super(repaint: hoverIndex);
+  _CellBackgroundPainter(
+      {required this.data,
+      required this.rowIndex,
+      required this.column,
+      required this.hoverIndex,
+      required this.nullValueColor})
+      : super(repaint: hoverIndex);
 
   @override
   void paint(Canvas canvas, Size size) {
     Color? background;
-    if( nullValueColor!=null) {
-      background = nullValueColor!(rowIndex, rowIndex==hoverIndex.index);
-    } else if(column.cellBackground != null) {
-        background=column.cellBackground!(data, rowIndex, rowIndex==hoverIndex.index);
+    if (nullValueColor != null) {
+      background = nullValueColor!(rowIndex, rowIndex == hoverIndex.index);
+    } else if (column.cellBackground != null) {
+      background =
+          column.cellBackground!(data, rowIndex, rowIndex == hoverIndex.index);
     }
-    if(background!=null) {
-      final paint = Paint()
-        ..color = background;
+    if (background != null) {
+      final paint = Paint()..color = background;
       canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), paint);
     }
   }

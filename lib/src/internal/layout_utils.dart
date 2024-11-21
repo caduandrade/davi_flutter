@@ -4,7 +4,6 @@ import 'package:meta/meta.dart';
 
 @internal
 class LayoutUtils {
-
   static int maxVisibleRowsLength(
       {required double scrollOffset,
       required double visibleAreaHeight,
@@ -17,8 +16,7 @@ class LayoutUtils {
   }
 
   static int maxRowsLength(
-      { required double visibleAreaHeight,
-        required double rowHeight}) {
-    return (visibleAreaHeight/rowHeight).ceil();
+      {required double visibleAreaHeight, required double rowHeight}) {
+    return (visibleAreaHeight / rowHeight).ceil();
   }
 }

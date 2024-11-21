@@ -258,7 +258,8 @@ class DaviColumn<DATA> extends ChangeNotifier {
   }
 }
 
-SemanticsProperties defaultSemanticsBuilder(BuildContext context, dynamic data, int index, bool hovered) {
+SemanticsProperties defaultSemanticsBuilder(
+    BuildContext context, dynamic data, int index, bool hovered) {
   return const SemanticsProperties(enabled: true, label: 'cell');
 }
 

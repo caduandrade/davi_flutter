@@ -4,7 +4,6 @@ import 'package:meta/meta.dart';
 
 @internal
 class ScrollControllers {
-
   ScrollControllers(
       {required ScrollController? unpinnedHorizontal,
       required ScrollController? leftPinnedHorizontal,
@@ -15,7 +14,7 @@ class ScrollControllers {
 
   ScrollController _unpinnedHorizontal;
 
-  ScrollController get unpinnedHorizontal=> _unpinnedHorizontal;
+  ScrollController get unpinnedHorizontal => _unpinnedHorizontal;
 
   ScrollController _leftPinnedHorizontal;
 
@@ -25,28 +24,29 @@ class ScrollControllers {
 
   ScrollController get vertical => _vertical;
 
-  bool update({required ScrollController? unpinnedHorizontal,
-    required ScrollController? leftPinnedHorizontal,
-    required ScrollController? vertical}){
+  bool update(
+      {required ScrollController? unpinnedHorizontal,
+      required ScrollController? leftPinnedHorizontal,
+      required ScrollController? vertical}) {
     bool updated = false;
 
-    if(unpinnedHorizontal!=null && _unpinnedHorizontal!=unpinnedHorizontal) {
-      _unpinnedHorizontal=unpinnedHorizontal;
-      updated=true;
+    if (unpinnedHorizontal != null &&
+        _unpinnedHorizontal != unpinnedHorizontal) {
+      _unpinnedHorizontal = unpinnedHorizontal;
+      updated = true;
     }
 
-    if(leftPinnedHorizontal!=null && _leftPinnedHorizontal!=leftPinnedHorizontal){
-      _leftPinnedHorizontal=leftPinnedHorizontal;
-      updated=true;
+    if (leftPinnedHorizontal != null &&
+        _leftPinnedHorizontal != leftPinnedHorizontal) {
+      _leftPinnedHorizontal = leftPinnedHorizontal;
+      updated = true;
     }
 
-    if(vertical!=null && _vertical!=vertical) {
-      _vertical=vertical;
-      updated=true;
+    if (vertical != null && _vertical != vertical) {
+      _vertical = vertical;
+      updated = true;
     }
 
     return updated;
   }
-
-
 }

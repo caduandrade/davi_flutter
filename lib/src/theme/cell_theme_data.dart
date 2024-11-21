@@ -8,7 +8,7 @@ class CellThemeData {
   const CellThemeData(
       {this.textStyle,
       this.nullValueColor,
-        this.background,
+      this.background,
       this.contentHeight = CellThemeDataDefaults.contentHeight,
       this.overflow = CellThemeDataDefaults.overflow,
       this.alignment = CellThemeDataDefaults.alignment,

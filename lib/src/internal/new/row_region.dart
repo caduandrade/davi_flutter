@@ -3,8 +3,13 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
-class RowRegion implements Comparable<RowRegion>{
-  RowRegion({required this.index, required this.bounds, required this.hasData, required this.y, required this.trailing});
+class RowRegion implements Comparable<RowRegion> {
+  RowRegion(
+      {required this.index,
+      required this.bounds,
+      required this.hasData,
+      required this.y,
+      required this.trailing});
 
   final int index;
   final double y;
@@ -17,7 +22,7 @@ class RowRegion implements Comparable<RowRegion>{
 }
 
 class RowRegionCache {
-  final List<RowRegion> _cache=[];
+  final List<RowRegion> _cache = [];
 
   late final Iterable<RowRegion> values = UnmodifiableListView(_cache);
 
@@ -29,8 +34,8 @@ class RowRegionCache {
   int? get lastIndex => _lastIndex;
 
   RowRegion? get lastWithData {
-    for(RowRegion rowRegion in _cache.reversed) {
-      if(rowRegion.hasData){
+    for (RowRegion rowRegion in _cache.reversed) {
+      if (rowRegion.hasData) {
         return rowRegion;
       }
     }
@@ -43,10 +48,10 @@ class RowRegionCache {
         : region.index;
     _lastIndex =
         _lastIndex != null ? math.max(_lastIndex!, region.index) : region.index;
-     _cache.add(region);
+    _cache.add(region);
   }
 
-  void sort(){
+  void sort() {
     _cache.sort();
   }
 
@@ -58,7 +63,4 @@ class RowRegionCache {
     }
     return null;
   }
-
-
 }
-

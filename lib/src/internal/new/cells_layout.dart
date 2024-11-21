@@ -12,54 +12,51 @@ import 'package:meta/meta.dart';
 
 @internal
 class CellsLayout<DATA> extends MultiChildRenderObjectWidget {
-
   const CellsLayout(
       {Key? key,
-        required this.layoutSettings,
-        required this.verticalOffset,
-        required this.horizontalScrollOffsets,
-        required this.leftPinnedAreaBounds,
-        required this.unpinnedAreaBounds,
-        required this.hoverIndex,
-           required this.rowsLength,
-        required this.rowRegionCache,
+      required this.layoutSettings,
+      required this.verticalOffset,
+      required this.horizontalScrollOffsets,
+      required this.leftPinnedAreaBounds,
+      required this.unpinnedAreaBounds,
+      required this.hoverIndex,
+      required this.rowsLength,
+      required this.rowRegionCache,
       required List<CellsLayoutChild> children})
-      :  super(key: key, children: children);
+      : super(key: key, children: children);
 
   final TableLayoutSettings layoutSettings;
   final double verticalOffset;
   final HorizontalScrollOffsets horizontalScrollOffsets;
   final Rect leftPinnedAreaBounds;
   final Rect unpinnedAreaBounds;
-final   HoverNotifier hoverIndex;
-final RowRegionCache rowRegionCache;
-   final int rowsLength;
+  final HoverNotifier hoverIndex;
+  final RowRegionCache rowRegionCache;
+  final int rowsLength;
 
   @override
   RenderObject createRenderObject(BuildContext context) {
     DaviThemeData theme = DaviTheme.of(context);
     return CellsLayoutRenderBox<DATA>(
         hoverBackground: theme.row.hoverBackground,
-    hoverForeground: theme.row.hoverForeground,
-    cellHeight: layoutSettings.themeMetrics.cell.height,
-        rowHeight:layoutSettings.themeMetrics.row.height,
+        hoverForeground: theme.row.hoverForeground,
+        cellHeight: layoutSettings.themeMetrics.cell.height,
+        rowHeight: layoutSettings.themeMetrics.row.height,
         columnsMetrics: layoutSettings.columnsMetrics,
-        verticalOffset:verticalOffset,
-        horizontalScrollOffsets:horizontalScrollOffsets,
-      leftPinnedAreaBounds: leftPinnedAreaBounds,
-      unpinnedAreaBounds: unpinnedAreaBounds,
-      hoverNotifier: hoverIndex,
-      rowColor: theme.row.color,
+        verticalOffset: verticalOffset,
+        horizontalScrollOffsets: horizontalScrollOffsets,
+        leftPinnedAreaBounds: leftPinnedAreaBounds,
+        unpinnedAreaBounds: unpinnedAreaBounds,
+        hoverNotifier: hoverIndex,
+        rowColor: theme.row.color,
         dividerColor: theme.row.dividerColor,
-      rowsLength: rowsLength,
-        rowRegionCache:rowRegionCache,
-      columnDividerColor: theme.columnDividerColor,
+        rowsLength: rowsLength,
+        rowRegionCache: rowRegionCache,
+        columnDividerColor: theme.columnDividerColor,
         columnDividerThickness: theme.columnDividerThickness,
-      fillHeight: theme.row.fillHeight, dividerThickness: theme.row.dividerThickness
-    );
+        fillHeight: theme.row.fillHeight,
+        dividerThickness: theme.row.dividerThickness);
   }
-
-
 
   @override
   MultiChildRenderObjectElement createElement() {
@@ -72,24 +69,23 @@ final RowRegionCache rowRegionCache;
     super.updateRenderObject(context, renderObject);
     DaviThemeData theme = DaviTheme.of(context);
     renderObject
-    ..hoverBackground=theme.row.hoverBackground
-      ..hoverForeground=theme.row.hoverForeground
-    ..cellHeight= layoutSettings.themeMetrics.cell.height
-      ..rowHeight=layoutSettings.themeMetrics.row.height
-    ..columnsMetrics=layoutSettings.columnsMetrics
-    ..verticalOffset=verticalOffset
-    ..horizontalScrollOffsets=horizontalScrollOffsets
-    ..leftPinnedAreaBounds=leftPinnedAreaBounds
-    ..unpinnedAreaBounds=unpinnedAreaBounds
-    ..hoverNotifier=hoverIndex
-    ..fillHeight=theme.row.fillHeight
-    ..rowsLength=rowsLength
-      ..rowRegionCache=rowRegionCache
-    ..dividerColor= theme.row.dividerColor
-      ..dividerThickness=theme.row.dividerThickness
-    ..columnDividerColor= theme.columnDividerColor
-    ..columnDividerThickness= theme.columnDividerThickness
-    ..rowColor=theme.row.color;
+      ..hoverBackground = theme.row.hoverBackground
+      ..hoverForeground = theme.row.hoverForeground
+      ..cellHeight = layoutSettings.themeMetrics.cell.height
+      ..rowHeight = layoutSettings.themeMetrics.row.height
+      ..columnsMetrics = layoutSettings.columnsMetrics
+      ..verticalOffset = verticalOffset
+      ..horizontalScrollOffsets = horizontalScrollOffsets
+      ..leftPinnedAreaBounds = leftPinnedAreaBounds
+      ..unpinnedAreaBounds = unpinnedAreaBounds
+      ..hoverNotifier = hoverIndex
+      ..fillHeight = theme.row.fillHeight
+      ..rowsLength = rowsLength
+      ..rowRegionCache = rowRegionCache
+      ..dividerColor = theme.row.dividerColor
+      ..dividerThickness = theme.row.dividerThickness
+      ..columnDividerColor = theme.columnDividerColor
+      ..columnDividerThickness = theme.columnDividerThickness
+      ..rowColor = theme.row.color;
   }
 }
-

@@ -81,7 +81,6 @@ class DaviModel<DATA> extends ChangeNotifier {
 
   bool get isColumnsNotEmpty => _columns.isNotEmpty;
 
-
   /// Indicates whether the model is sorted.
   ///
   /// The model will be sorted if it has at least one sorted column.

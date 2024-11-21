@@ -28,8 +28,8 @@ class TableLayoutChild<DATA> extends ParentDataWidget<TableLayoutParentData> {
       required bool resizable,
       required HorizontalScrollOffsets horizontalScrollOffsets,
       required bool tapToSortEnabled,
-        required ColumnNotifier columnNotifier,
-        required HoverNotifier hoverNotifier}) {
+      required ColumnNotifier columnNotifier,
+      required HoverNotifier hoverNotifier}) {
     return TableLayoutChild._(
         id: LayoutChildId.header,
         child: model != null
@@ -39,35 +39,44 @@ class TableLayoutChild<DATA> extends ParentDataWidget<TableLayoutParentData> {
                 horizontalScrollOffsets: horizontalScrollOffsets,
                 resizable: resizable,
                 tapToSortEnabled: tapToSortEnabled,
-        hoverNotifier: hoverNotifier,
-        columnNotifier: columnNotifier)
+                hoverNotifier: hoverNotifier,
+                columnNotifier: columnNotifier)
             : Container());
   }
 
-  factory TableLayoutChild.cells({required DaviModel<DATA>? model,
-    required TableLayoutSettings layoutSettings,
-    required bool scrolling,
-    required HorizontalScrollOffsets horizontalScrollOffsets,
-    required ScrollController verticalScrollController,
-    required OnRowHoverListener? onHover,
-    required RowCallbacks<DATA> rowCallbacks,
-    required DaviRowColor<DATA>? rowColor,
-    required RowCursorBuilder<DATA>? rowCursorBuilder,
-    required Widget? trailingWidget,
-    required TrailingWidgetListener onTrailingWidget,
-    required LastVisibleRowListener onLastVisibleRow,
-  required HoverNotifier hoverIndex,
-    required bool focusable,
-    required FocusNode focusNode}) {
+  factory TableLayoutChild.cells(
+      {required DaviModel<DATA>? model,
+      required TableLayoutSettings layoutSettings,
+      required bool scrolling,
+      required HorizontalScrollOffsets horizontalScrollOffsets,
+      required ScrollController verticalScrollController,
+      required OnRowHoverListener? onHover,
+      required RowCallbacks<DATA> rowCallbacks,
+      required DaviRowColor<DATA>? rowColor,
+      required RowCursorBuilder<DATA>? rowCursorBuilder,
+      required Widget? trailingWidget,
+      required TrailingWidgetListener onTrailingWidget,
+      required LastVisibleRowListener onLastVisibleRow,
+      required HoverNotifier hoverIndex,
+      required bool focusable,
+      required FocusNode focusNode}) {
     return TableLayoutChild._(
         id: LayoutChildId.cells,
-        child: TableContent(focusNode: focusNode,focusable: focusable,rowCallbacks: rowCallbacks,
-        onTrailingWidget: onTrailingWidget,onLastVisibleRow: onLastVisibleRow,trailingWidget: trailingWidget,
-        hoverNotifier: hoverIndex,scrolling: scrolling,rowCursorBuilder: rowCursorBuilder,
-        model: model, layoutSettings: layoutSettings,horizontalScrollOffsets: horizontalScrollOffsets,
-        verticalScrollController: verticalScrollController,
-        onHover: onHover)
-    );
+        child: TableContent(
+            focusNode: focusNode,
+            focusable: focusable,
+            rowCallbacks: rowCallbacks,
+            onTrailingWidget: onTrailingWidget,
+            onLastVisibleRow: onLastVisibleRow,
+            trailingWidget: trailingWidget,
+            hoverNotifier: hoverIndex,
+            scrolling: scrolling,
+            rowCursorBuilder: rowCursorBuilder,
+            model: model,
+            layoutSettings: layoutSettings,
+            horizontalScrollOffsets: horizontalScrollOffsets,
+            verticalScrollController: verticalScrollController,
+            onHover: onHover));
   }
 
   factory TableLayoutChild.bottomCorner() {
