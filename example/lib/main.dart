@@ -56,10 +56,10 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-   _buildModel();
+    _buildModel();
   }
-  
-  void _buildModel(){
+
+  void _buildModel() {
     List<Person> rows = [];
 
     Random random = Random();
@@ -75,14 +75,20 @@ class _HomePageState extends State<HomePage> {
               name: 'Name',
               stringValue: (data) => data.name,
               pinStatus: PinStatus.left),
-          DaviColumn(name: 'Age', intValue: (data) => data.age,pinStatus: PinStatus.left),
-          DaviColumn(name: 'Value', intValue: (data) => data.value,pinStatus: PinStatus.left),
+          DaviColumn(
+              name: 'Age',
+              intValue: (data) => data.age,
+              pinStatus: PinStatus.left),
+          DaviColumn(
+              name: 'Value',
+              intValue: (data) => data.value,
+              pinStatus: PinStatus.left),
           DaviColumn(
               name: 'Value 2',
               intValue: (data) => data.value,
               cellTextStyle: TextStyle(fontWeight: FontWeight.bold),
-              cellBackground: ( data,  index,  hovered) =>
-              data.value == 12 ? Colors.green : null),
+              cellBackground: (data, index, hovered) =>
+                  data.value == 12 ? Colors.green : null),
           DaviColumn(name: 'Value 3', intValue: (data) => data.value),
           DaviColumn(name: 'Value 4', intValue: (data) => data.value),
           DaviColumn(name: 'Value 5', intValue: (data) => data.value),
@@ -99,7 +105,8 @@ class _HomePageState extends State<HomePage> {
         multiSortEnabled: true);
   }
 
-  Widget _buildField(BuildContext context, Person data, int index, bool hovered) {
+  Widget _buildField(
+      BuildContext context, Person data, int index, bool hovered) {
     if (true) {
       return TextFormField(
           controller: data.c,
@@ -109,8 +116,7 @@ class _HomePageState extends State<HomePage> {
     }
     return TextFormField(
         initialValue: data.editable,
-        style:
-            TextStyle(color: data.valid ? Colors.black : Colors.white),
+        style: TextStyle(color: data.valid ? Colors.black : Colors.white),
         onChanged: (value) => _onFieldChange(value, data));
   }
 
@@ -128,27 +134,25 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     DaviTheme theme = DaviTheme(
         data: DaviThemeData(
-
-          columnDividerThickness: 10,
+            columnDividerThickness: 10,
             columnDividerColor: Colors.yellow,
             row: RowThemeData(
               fillHeight: true,
               dividerThickness: 10,
-             dividerColor: Colors.pink,
-             color: RowThemeData.zebraColor(evenColor: Colors.pink[100], oddColor: Colors.yellow[100]),
+              dividerColor: Colors.pink,
+              color: RowThemeData.zebraColor(
+                  evenColor: Colors.pink[100], oddColor: Colors.yellow[100]),
               hoverBackground: (index) => Colors.blue[300],
               hoverForeground: (index) => Colors.blue[300]!.withOpacity(.5),
             ),
             cell: CellThemeData(
-                nullValueColor: (index, hover) => hover ? Colors.yellow : Colors.orange
-            )
-        ),
+                nullValueColor: (index, hover) =>
+                    hover ? Colors.yellow : Colors.orange)),
         child: Davi<Person>(_model,
-           onRowTap: _onRowTap,
-          //  onLastVisibleRow: (index)=>print('last visible row: $index ${DateTime.now()}'),
-          //  onTrailingWidget: (visible)=>print('trailing widget: $visible ${DateTime.now()}'),
-            trailingWidget: const Center( child: Text('last widget'))
-        ));
+            onRowTap: _onRowTap,
+            //  onLastVisibleRow: (index)=>print('last visible row: $index ${DateTime.now()}'),
+            //  onTrailingWidget: (visible)=>print('trailing widget: $visible ${DateTime.now()}'),
+            trailingWidget: const Center(child: Text('last widget'))));
 
     return Scaffold(
         body: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
@@ -169,7 +173,6 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       _buildModel();
     });
-
   }
 }
 

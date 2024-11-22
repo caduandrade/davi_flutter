@@ -29,6 +29,7 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
       required ThemeRowColor? rowColor,
       required int rowsLength,
       required bool fillHeight,
+      required bool columnDividerFillHeight,
       required double dividerThickness,
       required RowRegionCache rowRegionCache,
       required ThemeRowColor? hoverBackground,
@@ -42,6 +43,7 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
         _horizontalScrollOffsets = horizontalScrollOffsets,
         _hoverNotifier = hoverNotifier,
         _fillHeight = fillHeight,
+        _columnDividerFillHeight = columnDividerFillHeight,
         _rowColor = rowColor,
         _rowsLength = rowsLength,
         _dividerThickness = dividerThickness,
@@ -176,6 +178,15 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
     }
   }
 
+  bool _columnDividerFillHeight;
+
+  set columnDividerFillHeight(bool value) {
+    if (_columnDividerFillHeight != value) {
+      _columnDividerFillHeight = value;
+      markNeedsPaint();
+    }
+  }
+
   bool _fillHeight;
 
   set fillHeight(bool value) {
@@ -280,7 +291,6 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
     }
 
     Paint paint = Paint()..style = PaintingStyle.fill;
-    RowRegion? trailingRegion;
     //TODO old check to allow paint hover
 /*
 
@@ -298,7 +308,6 @@ columnResizing:  model != null && columnNotifier.resizing
     if (_rowColor != null || _hoverBackground != null) {
       for (RowRegion rowRegion in _rowRegionCache.values) {
         if (rowRegion.trailing) {
-          trailingRegion = rowRegion;
           continue;
         }
         if (!rowRegion.hasData && !_fillHeight) {
@@ -343,8 +352,9 @@ columnResizing:  model != null && columnNotifier.resizing
     }
 
     // trailing
-    if (_trailing != null && trailingRegion != null) {
-      context.paintChild(_trailing!, offset.translate(0, trailingRegion.y));
+    if (_trailing != null && _rowRegionCache.trailingRegion != null) {
+      context.paintChild(
+          _trailing!, offset.translate(0, _rowRegionCache.trailingRegion!.y));
     }
 
     // foreground
@@ -368,13 +378,12 @@ columnResizing:  model != null && columnNotifier.resizing
     if (_dividerColor != null) {
       paint.color = _dividerColor!;
       for (RowRegion rowRegion in _rowRegionCache.values) {
-        if (!rowRegion.hasData && !_fillHeight) {
-          continue;
+        if (_fillHeight || rowRegion.hasData || rowRegion.trailing) {
+          context.canvas.drawRect(
+              Rect.fromLTWH(offset.dx, offset.dy + rowRegion.y + _cellHeight,
+                  constraints.maxWidth, _dividerThickness),
+              paint);
         }
-        context.canvas.drawRect(
-            Rect.fromLTWH(offset.dx, offset.dy + rowRegion.y + _cellHeight,
-                constraints.maxWidth, _dividerThickness),
-            paint);
       }
     }
 
@@ -383,9 +392,9 @@ columnResizing:  model != null && columnNotifier.resizing
       paint.color = _columnDividerColor!;
 
       double height = 0;
-      if (_trailing != null && trailingRegion != null) {
-        height = trailingRegion.y;
-      } else if (_fillHeight) {
+      if (_trailing != null && _rowRegionCache.trailingRegion != null) {
+        height = _rowRegionCache.trailingRegion!.y;
+      } else if (_columnDividerFillHeight) {
         height = constraints.maxHeight;
       } else {
         height = _rowRegionCache.lastWithData!.y + _rowHeight;
@@ -394,8 +403,10 @@ columnResizing:  model != null && columnNotifier.resizing
       _paintColumns(
           context: context, paint: paint, offset: offset, y: 0, height: height);
 
-      if (_trailing != null && trailingRegion != null && _fillHeight) {
-        final double y = trailingRegion.y + _rowHeight;
+      if (_trailing != null &&
+          _rowRegionCache.trailingRegion != null &&
+          _columnDividerFillHeight) {
+        final double y = _rowRegionCache.trailingRegion!.y + _rowHeight;
         height = constraints.maxHeight - y;
         if (height > 0) {
           _paintColumns(

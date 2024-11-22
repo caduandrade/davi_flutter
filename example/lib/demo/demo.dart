@@ -38,11 +38,11 @@ class _HomePageState extends State<HomePage> {
   bool _hoverForeground = true;
   bool _rowFillHeight = RowThemeDataDefaults.fillHeight;
   bool _nullValueColor = true;
-  bool _lastRowWidget = false;
-  bool _lastRowDividerVisible = RowThemeDataDefaults.lastDividerVisible;
+  bool _trailingWidget = false;
   bool _columnDividerFillHeight = DaviThemeDataDefaults.columnDividerFillHeight;
   RowThemeColor _demoBackground = RowThemeColor.none;
   bool _columnsWithIcon = true;
+  bool _customDividerThickness = false;
 
   @override
   void initState() {
@@ -94,7 +94,7 @@ class _HomePageState extends State<HomePage> {
           name: 'Skills',
           width: 100,
           cellClip: true,
-          cellBuilder: (context,  data,  index,  hovered) =>
+          cellBuilder: (context, data, index, hovered) =>
               SkillsWidget(skills: data.skills)));
     }
     list.add(DaviColumn(
@@ -122,10 +122,11 @@ class _HomePageState extends State<HomePage> {
     Widget table = DaviTheme(
         child: Davi<Character>(_model,
             rowColor: _rowColor
-                ? (data, rowIndex, hovered) => data.life < 1000 ? Colors.red[200] : null
+                ? (data, rowIndex, hovered) =>
+                    data.life < 1000 ? Colors.red[200] : null
                 : null,
-            trailingWidget: _lastRowWidget
-                ? const Center(child: Text('LAST ROW WIDGET'))
+            trailingWidget: _trailingWidget
+                ? const Center(child: Text('TRAILING WIDGET'))
                 : null),
         data: DaviThemeData(
             columnDividerFillHeight: _columnDividerFillHeight,
@@ -151,7 +152,12 @@ class _HomePageState extends State<HomePage> {
     }
     return RowThemeData(
         color: color,
-        lastDividerVisible: _lastRowDividerVisible,
+        dividerThickness: _customDividerThickness
+            ? 10
+            : RowThemeDataDefaults.dividerThickness,
+        dividerColor: _customDividerThickness
+            ? Colors.blue[200]
+            : RowThemeDataDefaults.dividerColor,
         fillHeight: _rowFillHeight,
         hoverBackground: _hoverBackground ? (index) => Colors.blue[50] : null,
         hoverForeground:
@@ -187,9 +193,9 @@ class _HomePageState extends State<HomePage> {
                   onChanged: _onLeftPinned,
                   text: 'Left pinned'),
               CheckboxUtil.build(
-                  value: _lastRowWidget,
-                  onChanged: _onLastRowWidgetSwitch,
-                  text: 'Last row widget'),
+                  value: _trailingWidget,
+                  onChanged: _onTrailingWidgetSwitch,
+                  text: 'Trailing widget'),
               CheckboxUtil.build(
                   value: _columnDividerFillHeight,
                   onChanged: _onColumnDividerFillHeight,
@@ -211,11 +217,11 @@ class _HomePageState extends State<HomePage> {
                   onChanged: _onNullValueColor,
                   text: 'Null value color'),
               CheckboxUtil.build(
-                  value: _rowColor, onChanged: _onRowColor, text: 'Row color'),
+                  value: _customDividerThickness,
+                  onChanged: _onCustomDividerThickness,
+                  text: 'Custom divider thickness'),
               CheckboxUtil.build(
-                  value: _lastRowDividerVisible,
-                  onChanged: _onLastRowDividerVisible,
-                  text: 'Last row divider visible'),
+                  value: _rowColor, onChanged: _onRowColor, text: 'Row color'),
               const Text('Row theme color'),
               RadioButton<RowThemeColor>(
                   text: 'None',
@@ -268,12 +274,6 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  void _onLastRowDividerVisible() {
-    setState(() {
-      _lastRowDividerVisible = !_lastRowDividerVisible;
-    });
-  }
-
   void _onRowColor() {
     setState(() {
       _rowColor = !_rowColor;
@@ -315,9 +315,9 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  void _onLastRowWidgetSwitch() {
+  void _onTrailingWidgetSwitch() {
     setState(() {
-      _lastRowWidget = !_lastRowWidget;
+      _trailingWidget = !_trailingWidget;
     });
   }
 
@@ -346,6 +346,12 @@ class _HomePageState extends State<HomePage> {
           _model = model;
         });
       });
+    });
+  }
+
+  void _onCustomDividerThickness() {
+    setState(() {
+      _customDividerThickness = !_customDividerThickness;
     });
   }
 }

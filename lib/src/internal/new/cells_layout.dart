@@ -55,6 +55,7 @@ class CellsLayout<DATA> extends MultiChildRenderObjectWidget {
         columnDividerColor: theme.columnDividerColor,
         columnDividerThickness: theme.columnDividerThickness,
         fillHeight: theme.row.fillHeight,
+        columnDividerFillHeight: theme.columnDividerFillHeight,
         dividerThickness: theme.row.dividerThickness);
   }
 
@@ -80,6 +81,7 @@ class CellsLayout<DATA> extends MultiChildRenderObjectWidget {
       ..unpinnedAreaBounds = unpinnedAreaBounds
       ..hoverNotifier = hoverIndex
       ..fillHeight = theme.row.fillHeight
+      ..columnDividerFillHeight = theme.columnDividerFillHeight
       ..rowsLength = rowsLength
       ..rowRegionCache = rowRegionCache
       ..dividerColor = theme.row.dividerColor

@@ -83,7 +83,7 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
         columnWidthBehavior: columnWidthBehavior,
         themeMetrics: themeMetrics,
         visibleRowsLength: visibleRowsLength,
-        hasLastRowWidget: trailingWidget != null);
+        hasTrailingWidget: trailingWidget != null);
 
     final List<TableLayoutChild> children = [];
 

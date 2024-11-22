@@ -18,7 +18,7 @@ class TableLayoutSettings {
       required ColumnWidthBehavior columnWidthBehavior,
       required TableThemeMetrics themeMetrics,
       required int? visibleRowsLength,
-      required bool hasLastRowWidget,
+      required bool hasTrailingWidget,
       required DaviThemeData theme}) {
     if (!constraints.hasBoundedWidth) {
       throw FlutterError('Davi was given unbounded width.');
@@ -35,7 +35,7 @@ class TableLayoutSettings {
     }
 
     final int rowsLength =
-        (model != null ? model.rowsLength : 0) + (hasLastRowWidget ? 1 : 0);
+        (model != null ? model.rowsLength : 0) + (hasTrailingWidget ? 1 : 0);
 
     // Let's find out the dynamic metrics given the constraints!!!
     // I'm so excited!!!
@@ -264,7 +264,7 @@ class TableLayoutSettings {
         rowsLength.hashCode ^
         contentHeight.hashCode ^
         themeMetrics.hashCode ^
-        hasLastRowWidget.hashCode ^
+        hasTrailingWidget.hashCode ^
         headerBounds.hashCode ^
         cellsBounds.hashCode ^
         horizontalScrollbarBounds.hashCode ^
@@ -287,7 +287,7 @@ class TableLayoutSettings {
         hasVerticalScrollbar: hasVerticalScrollbar,
         hasHorizontalScrollbar: hasHorizontalScrollbar,
         columnsMetrics: columnsMetrics,
-        hasLastRowWidget: hasLastRowWidget,
+        hasTrailingWidget: hasTrailingWidget,
         rowsLength: rowsLength,
         headerBounds: headerBounds,
         cellsBounds: cellsBounds,
@@ -308,7 +308,7 @@ class TableLayoutSettings {
       required this.leftPinnedContentWidth,
       required this.unpinnedContentWidth,
       required this.height,
-      required this.hasLastRowWidget,
+      required this.hasTrailingWidget,
       required this.rowsLength,
       required this.contentHeight,
       required this.hasVerticalScrollbar,
@@ -334,7 +334,7 @@ class TableLayoutSettings {
   final double leftPinnedContentWidth;
   final bool hasVerticalScrollbar;
   final bool hasHorizontalScrollbar;
-  final bool hasLastRowWidget;
+  final bool hasTrailingWidget;
   final int rowsLength;
   final List<ColumnMetrics> columnsMetrics;
   final Rect headerBounds;

@@ -16,6 +16,8 @@ HeaderCellThemeData.copyWith removed
 HeaderThemeData.copyWith removed
 DaviThemeData.copyWith removed
 
+RowThemeData.lastDividerVisible removed
+
 DaviRow removed
 RowCursorBuilder parameter : DaviRow to DATA data, int index, bool hovered
 CellBackgroundBuilder parameter : DaviRow to DATA data, int index, bool hovered
