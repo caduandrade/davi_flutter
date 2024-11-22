@@ -112,6 +112,7 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
       _buildListenable();
     }
     if (widget.model != oldWidget.model) {
+      _buildListenable();
       if (_scrollControllers.vertical.hasClients) {
         _scrollControllers.vertical.jumpTo(0);
       }
