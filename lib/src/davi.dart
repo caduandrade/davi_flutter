@@ -152,9 +152,20 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
     final DaviThemeData theme = DaviTheme.of(context);
     if (theme.decoration != null) {
       return Container(
-          decoration: theme.decoration, child: _listenableBuilder());
+          decoration: theme.decoration, child: _cursorBugWorkaround(context));
     }
-    return _listenableBuilder();
+    return _cursorBugWorkaround(context);
+  }
+
+  Widget _cursorBugWorkaround(BuildContext context) {
+    final DaviThemeData theme = DaviTheme.of(context);
+    if (theme.decoration?.color != null) {
+      return _listenableBuilder();
+    }
+    // To avoid the bug that makes a cursor disappear
+    // (https://github.com/flutter/flutter/issues/106767),
+    // always build a Container with some color.
+    return Container(color: Colors.transparent, child: _listenableBuilder());
   }
 
   Widget _listenableBuilder() {

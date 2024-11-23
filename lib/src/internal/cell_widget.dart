@@ -65,10 +65,7 @@ class CellWidget<DATA> extends StatelessWidget {
         child = Padding(padding: padding, child: child);
       }
     }
-    // To avoid the bug that makes a cursor disappear
-    // (https://github.com/flutter/flutter/issues/106767),
-    // always build a Container with some color.
-    child = Container(color: Colors.transparent, child: child);
+
     child = CustomPaint(
         painter: _CellBackgroundPainter(
             data: data,
