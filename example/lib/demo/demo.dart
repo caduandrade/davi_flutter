@@ -41,7 +41,7 @@ class _HomePageState extends State<HomePage> {
   bool _trailingWidget = false;
   bool _columnDividerFillHeight = DaviThemeDataDefaults.columnDividerFillHeight;
   RowThemeColor _demoBackground = RowThemeColor.none;
-  bool _columnsWithIcon = true;
+  bool _columnsWithIcon = false;
   bool _customDividerThickness = false;
 
   @override
@@ -133,7 +133,7 @@ class _HomePageState extends State<HomePage> {
             header: HeaderThemeData(visible: _headerVisible),
             cell: CellThemeData(
                 nullValueColor: _nullValueColor
-                    ? (index, hovered) => Colors.grey[200]
+                    ? (index, hovered) => Colors.grey[400]
                     : null),
             row: _rowThemeData()));
 

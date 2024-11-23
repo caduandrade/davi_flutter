@@ -1,11 +1,11 @@
+import 'package:davi/davi.dart';
 import 'package:davi/src/internal/new/hover_notifier.dart';
 import 'package:davi/src/internal/new/row_region.dart';
-import 'package:davi/src/theme/theme_row_color.dart';
+import 'package:davi/src/internal/new/value_cache.dart';
 import 'package:flutter/foundation.dart';
 import 'package:davi/src/internal/column_metrics.dart';
 import 'package:davi/src/internal/new/cells_layout_parent_data.dart';
 import 'package:davi/src/internal/scroll_offsets.dart';
-import 'package:davi/src/pin_status.dart';
 
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -36,8 +36,14 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
       required ThemeRowColor? hoverForeground,
       required double columnDividerThickness,
       required Color? columnDividerColor,
-      required Color? dividerColor})
-      : _cellHeight = cellHeight,
+      required Color? dividerColor,
+      required CellNullColor? nullValueColor,
+      required ValueCache<DATA> valueCache,
+      required DaviModel<DATA>? model})
+      : _model = model,
+        _valueCache = valueCache,
+        _nullValueColor = nullValueColor,
+        _cellHeight = cellHeight,
         _rowHeight = rowHeight,
         _verticalOffset = verticalOffset,
         _horizontalScrollOffsets = horizontalScrollOffsets,
@@ -57,6 +63,33 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
     _areaBounds[PinStatus.left] = leftPinnedAreaBounds;
     _areaBounds[PinStatus.none] = unpinnedAreaBounds;
     _hoverNotifier.addListener(markNeedsPaint);
+  }
+
+  CellNullColor? _nullValueColor;
+
+  set nullValueColor(CellNullColor? value) {
+    if (_nullValueColor != value) {
+      _nullValueColor = value;
+      markNeedsPaint();
+    }
+  }
+
+  ValueCache<DATA> _valueCache;
+
+  set valueCache(ValueCache<DATA> value) {
+    if (_valueCache != value) {
+      _valueCache = value;
+      markNeedsPaint();
+    }
+  }
+
+  DaviModel<DATA>? _model;
+
+  set model(DaviModel<DATA>? value) {
+    if (_model != value) {
+      _model = value;
+      markNeedsPaint();
+    }
   }
 
   List<ColumnMetrics> _columnsMetrics;
@@ -329,6 +362,8 @@ columnResizing:  model != null && columnNotifier.resizing
       }
     }
 
+    Paint cellBackgroundPaint = Paint();
+
     // cells
     for (RenderBox child in _cells) {
       final CellsLayoutParentData childParentData = child._parentData();
@@ -344,10 +379,32 @@ columnResizing:  model != null && columnNotifier.resizing
       final Rect bounds = _areaBounds[pinStatus]!;
       context.canvas.clipRect(bounds.translate(offset.dx, offset.dy));
 
-      double top = (rowIndex * _rowHeight) - _verticalOffset;
+      final double top = (rowIndex * _rowHeight) - _verticalOffset;
+      final Offset childOffset =
+          offset.translate(columnMetrics.offset - horizontalOffset, top);
 
-      context.paintChild(child,
-          offset.translate(columnMetrics.offset - horizontalOffset, top));
+      // cell background
+      if (_model != null && rowIndex < _model!.rowsLength) {
+        DaviColumn<DATA> column = _model!.columnAt(columnIndex);
+        Color? background;
+        if (_nullValueColor != null &&
+            _valueCache.isNull(rowIndex: rowIndex, columnIndex: columnIndex)) {
+          background =
+              _nullValueColor!(rowIndex, rowIndex == _hoverNotifier.index);
+        } else if (column.cellBackground != null) {
+          background = column.cellBackground!(_model!.rowAt(rowIndex), rowIndex,
+              rowIndex == _hoverNotifier.index);
+        }
+        if (background != null) {
+          cellBackgroundPaint.color = background;
+          context.canvas.drawRect(
+              Rect.fromLTWH(childOffset.dx, childOffset.dy, child.size.width,
+                  child.size.height),
+              cellBackgroundPaint);
+        }
+      }
+
+      context.paintChild(child, childOffset);
       context.canvas.restore();
     }
 

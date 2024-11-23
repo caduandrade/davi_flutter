@@ -1,7 +1,6 @@
 import 'package:davi/src/cell_icon.dart';
 import 'package:davi/src/column.dart';
 import 'package:davi/src/internal/new/hover_notifier.dart';
-import 'package:davi/src/theme/cell_null_color.dart';
 import 'package:davi/src/theme/theme.dart';
 import 'package:davi/src/theme/theme_data.dart';
 import 'package:flutter/material.dart';
@@ -39,7 +38,6 @@ class CellWidget<DATA> extends StatelessWidget {
     textStyle = column.cellTextStyle ?? textStyle;
     overflow = column.cellOverflow ?? overflow;
 
-    bool tryNullValue = false;
     Widget? child;
     if (column.cellBuilder != null) {
       child = column.cellBuilder!(
@@ -55,8 +53,6 @@ class CellWidget<DATA> extends StatelessWidget {
         child = Text(value,
             overflow: overflow ?? theme.cell.overflow,
             style: textStyle ?? theme.cell.textStyle);
-      } else if (theme.cell.nullValueColor != null) {
-        tryNullValue = true;
       }
     }
     if (child != null) {
@@ -65,15 +61,6 @@ class CellWidget<DATA> extends StatelessWidget {
         child = Padding(padding: padding, child: child);
       }
     }
-
-    child = CustomPaint(
-        painter: _CellBackgroundPainter(
-            data: data,
-            rowIndex: rowIndex,
-            nullValueColor: tryNullValue ? theme.cell.nullValueColor : null,
-            hoverIndex: hoverNotifier,
-            column: column),
-        child: child);
 
     if (column.cellClip) {
       child = ClipRect(child: child);
@@ -84,7 +71,7 @@ class CellWidget<DATA> extends StatelessWidget {
               context, data, rowIndex, rowIndex == hoverNotifier.index),
           child: child);
     }
-    return child;
+    return child ?? Container();
   }
 
   String? _stringValue({required DaviColumn<DATA> column, required DATA data}) {
@@ -106,38 +93,4 @@ class CellWidget<DATA> extends StatelessWidget {
     }
     return null;
   }
-}
-
-class _CellBackgroundPainter<DATA> extends CustomPainter {
-  final DATA data;
-  final int rowIndex;
-  final DaviColumn<DATA> column;
-  final HoverNotifier hoverIndex;
-  final CellNullColor? nullValueColor;
-
-  _CellBackgroundPainter(
-      {required this.data,
-      required this.rowIndex,
-      required this.column,
-      required this.hoverIndex,
-      required this.nullValueColor})
-      : super(repaint: hoverIndex);
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    Color? background;
-    if (nullValueColor != null) {
-      background = nullValueColor!(rowIndex, rowIndex == hoverIndex.index);
-    } else if (column.cellBackground != null) {
-      background =
-          column.cellBackground!(data, rowIndex, rowIndex == hoverIndex.index);
-    }
-    if (background != null) {
-      final paint = Paint()..color = background;
-      canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), paint);
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

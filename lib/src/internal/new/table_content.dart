@@ -5,6 +5,7 @@ import 'package:davi/src/internal/new/cells_layout_child.dart';
 import 'package:davi/src/internal/new/hover_notifier.dart';
 import 'package:davi/src/internal/new/row_region.dart';
 import 'package:davi/src/internal/new/table_events.dart';
+import 'package:davi/src/internal/new/value_cache.dart';
 import 'package:davi/src/internal/row_callbacks.dart';
 import 'package:davi/src/internal/scroll_offsets.dart';
 import 'package:davi/src/internal/table_layout_settings.dart';
@@ -85,6 +86,9 @@ class TableContent<DATA> extends StatelessWidget {
 
     double rowY = (firstRowIndex * layoutSettings.themeMetrics.row.height) -
         verticalOffset;
+
+    ValueCache<DATA> valueCache = ValueCache();
+
     int childIndex = 0;
 
     for (int rowIndex = firstRowIndex;
@@ -115,6 +119,9 @@ class TableContent<DATA> extends StatelessWidget {
       for (int columnIndex = 0;
           columnIndex < layoutSettings.columnsMetrics.length;
           columnIndex++) {
+        valueCache.load(
+            model: model, rowIndex: rowIndex, columnIndex: columnIndex);
+
         if (data != null) {
           final DaviColumn<DATA> column = model!.columnAt(columnIndex);
           final CellWidget<DATA> cell = CellWidget(
@@ -144,7 +151,9 @@ class TableContent<DATA> extends StatelessWidget {
     onTrailingWidget(trailingWidgetBuilt);
     onLastVisibleRow(lastVisibleRowIndex);
 
-    CellsLayout cellsLayout = CellsLayout(
+    CellsLayout<DATA> cellsLayout = CellsLayout(
+        model: model,
+        valueCache: valueCache,
         layoutSettings: layoutSettings,
         verticalOffset: verticalOffset,
         horizontalScrollOffsets: horizontalScrollOffsets,
