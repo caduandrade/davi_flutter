@@ -22,7 +22,6 @@ class TableContent<DATA> extends StatelessWidget {
       required this.verticalScrollController,
       required this.horizontalScrollOffsets,
       required this.hoverNotifier,
-      required this.onHover,
       required this.rowCallbacks,
       required this.rowCursorBuilder,
       required this.onTrailingWidget,
@@ -39,7 +38,6 @@ class TableContent<DATA> extends StatelessWidget {
   final ScrollController verticalScrollController;
   final HorizontalScrollOffsets horizontalScrollOffsets;
   final HoverNotifier hoverNotifier;
-  final OnRowHoverListener? onHover;
   final RowCallbacks<DATA> rowCallbacks;
   final RowCursorBuilder<DATA>? rowCursorBuilder;
   final bool focusable;
@@ -163,7 +161,7 @@ class TableContent<DATA> extends StatelessWidget {
         leftPinnedAreaBounds: layoutSettings.getAreaBounds(PinStatus.left),
         unpinnedAreaBounds: layoutSettings.getAreaBounds(PinStatus.none),
         rowsLength: layoutSettings.rowsLength,
-        hoverIndex: hoverNotifier,
+        hoverNotifier: hoverNotifier,
         rowRegionCache: rowRegionCache,
         children: children);
 
@@ -174,9 +172,8 @@ class TableContent<DATA> extends StatelessWidget {
             verticalScrollController: verticalScrollController,
             scrolling: scrolling,
             focusNode: focusNode,
-            hoverIndex: hoverNotifier,
+            hoverNotifier: hoverNotifier,
             rowCallbacks: rowCallbacks,
-            onHover: onHover,
             rowCursorBuilder: rowCursorBuilder,
             focusable: focusable,
             rowTheme: theme.row,

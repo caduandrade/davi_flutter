@@ -149,6 +149,7 @@ class _HomePageState extends State<HomePage> {
                 nullValueColor: (index, hover) =>
                     hover ? Colors.yellow : Colors.orange)),
         child: Davi<Person>(_model,
+            onHover: (index) => print('hover: $index'),
             onRowTap: _onRowTap,
             //  onLastVisibleRow: (index)=>print('last visible row: $index ${DateTime.now()}'),
             //  onTrailingWidget: (visible)=>print('trailing widget: $visible ${DateTime.now()}'),

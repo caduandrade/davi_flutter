@@ -20,7 +20,7 @@ class CellsLayout<DATA> extends MultiChildRenderObjectWidget {
       required this.horizontalScrollOffsets,
       required this.leftPinnedAreaBounds,
       required this.unpinnedAreaBounds,
-      required this.hoverIndex,
+      required this.hoverNotifier,
       required this.rowsLength,
       required this.rowRegionCache,
       required this.valueCache,
@@ -33,7 +33,7 @@ class CellsLayout<DATA> extends MultiChildRenderObjectWidget {
   final HorizontalScrollOffsets horizontalScrollOffsets;
   final Rect leftPinnedAreaBounds;
   final Rect unpinnedAreaBounds;
-  final HoverNotifier hoverIndex;
+  final HoverNotifier hoverNotifier;
   final RowRegionCache rowRegionCache;
   final int rowsLength;
   final ValueCache<DATA> valueCache;
@@ -55,7 +55,7 @@ class CellsLayout<DATA> extends MultiChildRenderObjectWidget {
         horizontalScrollOffsets: horizontalScrollOffsets,
         leftPinnedAreaBounds: leftPinnedAreaBounds,
         unpinnedAreaBounds: unpinnedAreaBounds,
-        hoverNotifier: hoverIndex,
+        hoverNotifier: hoverNotifier,
         rowColor: theme.row.color,
         dividerColor: theme.row.dividerColor,
         rowsLength: rowsLength,
@@ -87,7 +87,7 @@ class CellsLayout<DATA> extends MultiChildRenderObjectWidget {
       ..horizontalScrollOffsets = horizontalScrollOffsets
       ..leftPinnedAreaBounds = leftPinnedAreaBounds
       ..unpinnedAreaBounds = unpinnedAreaBounds
-      ..hoverNotifier = hoverIndex
+      ..hoverNotifier = hoverNotifier
       ..fillHeight = theme.row.fillHeight
       ..columnDividerFillHeight = theme.columnDividerFillHeight
       ..rowsLength = rowsLength

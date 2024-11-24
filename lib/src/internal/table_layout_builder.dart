@@ -14,7 +14,6 @@ import 'package:davi/src/last_visible_row_listener.dart';
 import 'package:davi/src/model.dart';
 import 'package:davi/src/row_color.dart';
 import 'package:davi/src/row_cursor_builder.dart';
-import 'package:davi/src/row_hover_listener.dart';
 import 'package:davi/src/theme/theme.dart';
 import 'package:davi/src/theme/theme_data.dart';
 import 'package:flutter/material.dart';
@@ -24,7 +23,6 @@ import 'package:meta/meta.dart';
 class TableLayoutBuilder<DATA> extends StatelessWidget {
   const TableLayoutBuilder(
       {Key? key,
-      required this.onHover,
       required this.scrollControllers,
       required this.onLastVisibleRow,
       required this.model,
@@ -47,7 +45,6 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
       : super(key: key);
 
   final LastVisibleRowListener onLastVisibleRow;
-  final OnRowHoverListener? onHover;
   final ScrollControllers scrollControllers;
   final DaviModel<DATA>? model;
   final ColumnWidthBehavior columnWidthBehavior;
@@ -142,14 +139,13 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
         scrolling: scrolling,
         horizontalScrollOffsets: horizontalScrollOffsets,
         verticalScrollController: scrollControllers.vertical,
-        onHover: onHover,
         rowCallbacks: rowCallbacks,
         rowColor: rowColor,
         rowCursorBuilder: rowCursorBuilder,
         trailingWidget: trailingWidget,
         onLastVisibleRow: onLastVisibleRow,
         onTrailingWidget: onTrailingWidget,
-        hoverIndex: hoverNotifier,
+        hoverNotifier: hoverNotifier,
         focusable: focusable,
         focusNode: focusNode,
         semanticsEnabled: semanticsEnabled));

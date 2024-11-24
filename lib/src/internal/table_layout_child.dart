@@ -15,7 +15,6 @@ import 'package:davi/src/last_visible_row_listener.dart';
 import 'package:davi/src/model.dart';
 import 'package:davi/src/row_color.dart';
 import 'package:davi/src/row_cursor_builder.dart';
-import 'package:davi/src/row_hover_listener.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
@@ -50,14 +49,13 @@ class TableLayoutChild<DATA> extends ParentDataWidget<TableLayoutParentData> {
       required bool scrolling,
       required HorizontalScrollOffsets horizontalScrollOffsets,
       required ScrollController verticalScrollController,
-      required OnRowHoverListener? onHover,
       required RowCallbacks<DATA> rowCallbacks,
       required DaviRowColor<DATA>? rowColor,
       required RowCursorBuilder<DATA>? rowCursorBuilder,
       required Widget? trailingWidget,
       required TrailingWidgetListener onTrailingWidget,
       required LastVisibleRowListener onLastVisibleRow,
-      required HoverNotifier hoverIndex,
+      required HoverNotifier hoverNotifier,
       required bool focusable,
       required bool semanticsEnabled,
       required FocusNode focusNode}) {
@@ -70,15 +68,14 @@ class TableLayoutChild<DATA> extends ParentDataWidget<TableLayoutParentData> {
             onTrailingWidget: onTrailingWidget,
             onLastVisibleRow: onLastVisibleRow,
             trailingWidget: trailingWidget,
-            hoverNotifier: hoverIndex,
+            hoverNotifier: hoverNotifier,
             scrolling: scrolling,
             rowCursorBuilder: rowCursorBuilder,
             model: model,
             semanticsEnabled: semanticsEnabled,
             layoutSettings: layoutSettings,
             horizontalScrollOffsets: horizontalScrollOffsets,
-            verticalScrollController: verticalScrollController,
-            onHover: onHover));
+            verticalScrollController: verticalScrollController));
   }
 
   factory TableLayoutChild.bottomCorner() {

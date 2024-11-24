@@ -83,7 +83,6 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
   late ScrollControllers _scrollControllers;
   late Listenable _listenable;
   bool _scrolling = false;
-  int? _hoveredRowIndex;
   bool _lastRowWidgetVisible = false;
   int? _lastVisibleRow;
   final HoverNotifier _hoverNotifier = HoverNotifier();
@@ -98,11 +97,15 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
         unpinnedHorizontal: widget.unpinnedHorizontalScrollController,
         leftPinnedHorizontal: widget.leftPinnedHorizontalScrollController,
         vertical: widget.verticalScrollController);
+    _hoverNotifier.addListener(_onHover);
     _buildListenable();
   }
 
   @override
   void dispose() {
+    _hoverNotifier.removeListener(_onHover);
+    _hoverNotifier.dispose();
+    _columnNotifier.dispose();
     _focusNode.dispose();
     super.dispose();
   }
@@ -197,7 +200,6 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
           child: TableLayoutBuilder(
               hoverNotifier: _hoverNotifier,
               columnNotifier: _columnNotifier,
-              onHover: widget.onHover != null ? _setHoveredRowIndex : null,
               tapToSortEnabled: widget.tapToSortEnabled,
               scrollControllers: _scrollControllers,
               columnWidthBehavior: widget.columnWidthBehavior,
@@ -218,12 +220,9 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
     );
   }
 
-  void _setHoveredRowIndex(int? rowIndex) {
-    if (widget.model != null && _hoveredRowIndex != rowIndex) {
-      _hoveredRowIndex = rowIndex;
-      if (widget.onHover != null) {
-        widget.onHover!(_hoveredRowIndex);
-      }
+  void _onHover() {
+    if (widget.onHover != null) {
+      widget.onHover!(_hoverNotifier.index);
     }
   }
 

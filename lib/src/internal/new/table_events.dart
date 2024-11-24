@@ -15,14 +15,13 @@ class TableEvents<DATA> extends StatelessWidget {
   const TableEvents(
       {Key? key,
       required this.model,
-      required this.onHover,
       required this.rowCallbacks,
       required this.focusable,
       required this.rowCursorBuilder,
       required this.child,
       required this.verticalScrollController,
       required this.scrolling,
-      required this.hoverIndex,
+      required this.hoverNotifier,
       required this.focusNode,
       required this.rowBoundsCache,
       required this.rowTheme})
@@ -30,7 +29,6 @@ class TableEvents<DATA> extends StatelessWidget {
 
   final Widget child;
   final DaviModel<DATA>? model;
-  final OnRowHoverListener? onHover;
   final RowCursorBuilder<DATA>? rowCursorBuilder;
   final RowCallbacks<DATA> rowCallbacks;
 
@@ -41,7 +39,7 @@ class TableEvents<DATA> extends StatelessWidget {
   //TODO remove? disable key?
   final bool scrolling;
 
-  final HoverNotifier hoverIndex;
+  final HoverNotifier hoverNotifier;
   final FocusNode focusNode;
 
   final RowThemeData rowTheme;
@@ -130,18 +128,15 @@ class TableEvents<DATA> extends StatelessWidget {
         data = model?.rowAt(rowIndex);
       }
       if (data != null) {
-        hoverIndex.cursor = _buildCursor(
+        hoverNotifier.cursor = _buildCursor(
             data: data,
             index: rowIndex!,
-            hovered: hoverIndex.index == rowIndex);
+            hovered: hoverNotifier.index == rowIndex);
       } else {
         // hover over visual row without value
         rowIndex = null;
       }
-      hoverIndex.index = rowIndex;
-      if (onHover != null) {
-        onHover!(hoverIndex.index);
-      }
+      hoverNotifier.index = rowIndex;
     }
   }
 
@@ -159,9 +154,9 @@ class TableEvents<DATA> extends StatelessWidget {
 
   DATA? get _hoverData {
     DATA? data;
-    if (hoverIndex.index != null) {
-      if (model != null && hoverIndex.index! < model!.rowsLength) {
-        data = model?.rowAt(hoverIndex.index!);
+    if (hoverNotifier.index != null) {
+      if (model != null && hoverNotifier.index! < model!.rowsLength) {
+        data = model?.rowAt(hoverNotifier.index!);
       }
     }
     return data;
