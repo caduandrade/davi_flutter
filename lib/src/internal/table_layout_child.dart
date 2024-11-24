@@ -59,6 +59,7 @@ class TableLayoutChild<DATA> extends ParentDataWidget<TableLayoutParentData> {
       required LastVisibleRowListener onLastVisibleRow,
       required HoverNotifier hoverIndex,
       required bool focusable,
+      required bool semanticsEnabled,
       required FocusNode focusNode}) {
     return TableLayoutChild._(
         id: LayoutChildId.cells,
@@ -73,6 +74,7 @@ class TableLayoutChild<DATA> extends ParentDataWidget<TableLayoutParentData> {
             scrolling: scrolling,
             rowCursorBuilder: rowCursorBuilder,
             model: model,
+            semanticsEnabled: semanticsEnabled,
             layoutSettings: layoutSettings,
             horizontalScrollOffsets: horizontalScrollOffsets,
             verticalScrollController: verticalScrollController,

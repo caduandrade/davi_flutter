@@ -31,7 +31,8 @@ class TableContent<DATA> extends StatelessWidget {
       required this.model,
       required this.focusable,
       required this.scrolling,
-      required this.focusNode})
+      required this.focusNode,
+      required this.semanticsEnabled})
       : super(key: key);
 
   final TableLayoutSettings layoutSettings;
@@ -48,6 +49,7 @@ class TableContent<DATA> extends StatelessWidget {
   final Widget? trailingWidget;
   final TrailingWidgetListener onTrailingWidget;
   final LastVisibleRowListener onLastVisibleRow;
+  final bool semanticsEnabled;
 
   @override
   Widget build(BuildContext context) {
@@ -129,7 +131,8 @@ class TableContent<DATA> extends StatelessWidget {
               columnIndex: columnIndex,
               data: data,
               rowIndex: rowIndex,
-              hoverNotifier: hoverNotifier);
+              hoverNotifier: hoverNotifier,
+              semanticsEnabled: semanticsEnabled);
           children.add(CellsLayoutChild.cell(
               childIndex: childIndex,
               rowIndex: rowIndex,

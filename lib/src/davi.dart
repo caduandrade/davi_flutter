@@ -40,6 +40,7 @@ class Davi<DATA> extends StatefulWidget {
       this.trailingWidget,
       this.rowColor,
       this.rowCursor,
+      this.semanticsEnabled = false,
       this.onTrailingWidget})
       : visibleRowsCount = visibleRowsCount == null || visibleRowsCount > 0
             ? visibleRowsCount
@@ -68,6 +69,10 @@ class Davi<DATA> extends StatefulWidget {
 
   /// Indicates whether sorting events are enabled on the header.
   final bool tapToSortEnabled;
+
+  /// Activates semantics by adding a Semantics widget internally,
+  /// but it may degrade performance.
+  final bool semanticsEnabled;
 
   @override
   State<StatefulWidget> createState() => _DaviState<DATA>();
@@ -207,6 +212,7 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
               focusable: widget.focusable,
               focusNode: _focusNode,
               trailingWidget: widget.trailingWidget,
+              semanticsEnabled: widget.semanticsEnabled,
               rowCallbacks: rowCallbacks,
               onDragScroll: _onDragScroll)),
     );

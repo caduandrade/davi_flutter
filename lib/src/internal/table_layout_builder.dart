@@ -42,6 +42,7 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
       required this.hoverNotifier,
       required this.columnNotifier,
       required this.focusable,
+      required this.semanticsEnabled,
       required this.focusNode})
       : super(key: key);
 
@@ -64,6 +65,7 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
   final ColumnNotifier columnNotifier;
   final bool focusable;
   final FocusNode focusNode;
+  final bool semanticsEnabled;
 
   @override
   Widget build(BuildContext context) {
@@ -149,7 +151,8 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
         onTrailingWidget: onTrailingWidget,
         hoverIndex: hoverNotifier,
         focusable: focusable,
-        focusNode: focusNode));
+        focusNode: focusNode,
+        semanticsEnabled: semanticsEnabled));
 
     return TableLayout<DATA>(
         layoutSettings: layoutSettings,

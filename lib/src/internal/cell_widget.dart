@@ -13,6 +13,7 @@ class CellWidget<DATA> extends StatelessWidget {
   final int rowIndex;
   final DaviColumn<DATA> column;
   final HoverNotifier hoverNotifier;
+  final bool semanticsEnabled;
 
   const CellWidget(
       {Key? key,
@@ -20,7 +21,8 @@ class CellWidget<DATA> extends StatelessWidget {
       required this.rowIndex,
       required this.column,
       required this.columnIndex,
-      required this.hoverNotifier})
+      required this.hoverNotifier,
+      required this.semanticsEnabled})
       : super(key: key);
 
   @override
@@ -65,7 +67,7 @@ class CellWidget<DATA> extends StatelessWidget {
     if (column.cellClip) {
       child = ClipRect(child: child);
     }
-    if (column.semanticsBuilder != null) {
+    if (semanticsEnabled && column.semanticsBuilder != null) {
       return Semantics.fromProperties(
           properties: column.semanticsBuilder!(
               context, data, rowIndex, rowIndex == hoverNotifier.index),
