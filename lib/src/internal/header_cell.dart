@@ -1,7 +1,6 @@
 import 'package:axis_layout/axis_layout.dart';
 import 'package:davi/davi.dart';
-import 'package:davi/src/internal/new/column_notifier.dart';
-import 'package:davi/src/internal/new/hover_notifier.dart';
+import 'package:davi/src/internal/new/davi_context.dart';
 import 'package:davi/src/internal/sort_util.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
@@ -12,24 +11,16 @@ class DaviHeaderCell<DATA> extends StatefulWidget {
   /// Builds a header cell.
   const DaviHeaderCell(
       {Key? key,
-      required this.model,
+      required this.daviContext,
       required this.column,
       required this.resizable,
-      required this.tapToSortEnabled,
-      required this.columnIndex,
-      required this.isMultiSorted,
-      required this.columnNotifier,
-      required this.hoverNotifier})
+      required this.columnIndex})
       : super(key: key);
 
-  final DaviModel<DATA> model;
+  final DaviContext<DATA> daviContext;
   final DaviColumn<DATA> column;
   final bool resizable;
-  final bool tapToSortEnabled;
   final int columnIndex;
-  final bool isMultiSorted;
-  final ColumnNotifier columnNotifier;
-  final HoverNotifier hoverNotifier;
 
   @override
   State<StatefulWidget> createState() => _DaviHeaderCellState();
@@ -44,9 +35,9 @@ class _DaviHeaderCellState extends State<DaviHeaderCell> {
   Widget build(BuildContext context) {
     HeaderCellThemeData theme = DaviTheme.of(context).headerCell;
 
-    final bool sortEnabled = widget.tapToSortEnabled &&
+    final bool sortEnabled = widget.daviContext.tapToSortEnabled &&
         !_resizing &&
-        !widget.columnNotifier.resizing;
+        !widget.daviContext.columnNotifier.resizing;
     final bool resizable = widget.resizable &&
         widget.column.resizable &&
         widget.column.grow == null &&
@@ -73,7 +64,7 @@ class _DaviHeaderCellState extends State<DaviHeaderCell> {
         child: sortIconWidget,
       ));
 
-      if (widget.isMultiSorted) {
+      if (widget.daviContext.model.isMultiSorted) {
         if (theme.sortPriorityGap != null) {
           children.add(SizedBox(width: theme.sortPriorityGap));
         }
@@ -158,8 +149,8 @@ class _DaviHeaderCellState extends State<DaviHeaderCell> {
 
   void _onResizeDragStart(DragStartDetails details) {
     final Offset pos = details.globalPosition;
-    widget.hoverNotifier.enabled = false;
-    widget.columnNotifier.resizing = true;
+    widget.daviContext.hoverNotifier.enabled = false;
+    widget.daviContext.columnNotifier.resizing = true;
     setState(() {
       _lastDragPos = pos.dx;
       _resizing = true;
@@ -174,19 +165,20 @@ class _DaviHeaderCellState extends State<DaviHeaderCell> {
   }
 
   void _onResizeDragEnd(DragEndDetails details) {
-    widget.hoverNotifier.enabled = true;
-    widget.columnNotifier.resizing = false;
+    widget.daviContext.hoverNotifier.enabled = true;
+    widget.daviContext.columnNotifier.resizing = false;
     setState(() {
       _resizing = false;
     });
   }
 
   void _onHeaderSortPressed() {
+    final DaviModel model = widget.daviContext.model;
     List<DaviSort> sortList = SortUtil.newSortList(
-        sortList: widget.model.sortList,
-        multiSortEnabled: widget.model.multiSortEnabled,
-        alwaysSorted: widget.model.alwaysSorted,
+        sortList: model.sortList,
+        multiSortEnabled: model.multiSortEnabled,
+        alwaysSorted: model.alwaysSorted,
         columnIdToSort: widget.column.id);
-    widget.model.sort(sortList);
+    model.sort(sortList);
   }
 }

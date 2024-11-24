@@ -2,14 +2,12 @@ import 'package:davi/davi.dart';
 import 'package:davi/src/internal/cell_widget.dart';
 import 'package:davi/src/internal/new/cells_layout.dart';
 import 'package:davi/src/internal/new/cells_layout_child.dart';
-import 'package:davi/src/internal/new/hover_notifier.dart';
+import 'package:davi/src/internal/new/davi_context.dart';
 import 'package:davi/src/internal/new/row_region.dart';
 import 'package:davi/src/internal/new/table_events.dart';
 import 'package:davi/src/internal/new/value_cache.dart';
-import 'package:davi/src/internal/row_callbacks.dart';
 import 'package:davi/src/internal/scroll_offsets.dart';
 import 'package:davi/src/internal/table_layout_settings.dart';
-import 'package:davi/src/trailing_widget_listener.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
@@ -19,35 +17,18 @@ class TableContent<DATA> extends StatelessWidget {
   const TableContent(
       {Key? key,
       required this.layoutSettings,
+      required this.daviContext,
       required this.verticalScrollController,
       required this.horizontalScrollOffsets,
-      required this.hoverNotifier,
-      required this.rowCallbacks,
-      required this.rowCursorBuilder,
-      required this.onTrailingWidget,
-      required this.onLastVisibleRow,
-      required this.trailingWidget,
-      required this.model,
-      required this.focusable,
-      required this.scrolling,
-      required this.focusNode,
-      required this.semanticsEnabled})
+      required this.scrolling})
       : super(key: key);
 
   final TableLayoutSettings layoutSettings;
+  final DaviContext<DATA> daviContext;
   final ScrollController verticalScrollController;
   final HorizontalScrollOffsets horizontalScrollOffsets;
-  final HoverNotifier hoverNotifier;
-  final RowCallbacks<DATA> rowCallbacks;
-  final RowCursorBuilder<DATA>? rowCursorBuilder;
-  final bool focusable;
+
   final bool scrolling;
-  final FocusNode focusNode;
-  final DaviModel<DATA>? model;
-  final Widget? trailingWidget;
-  final TrailingWidgetListener onTrailingWidget;
-  final LastVisibleRowListener onLastVisibleRow;
-  final bool semanticsEnabled;
 
   @override
   Widget build(BuildContext context) {
@@ -98,15 +79,18 @@ class TableContent<DATA> extends StatelessWidget {
           layoutSettings.themeMetrics.cell.height);
 
       DATA? data;
-      if (model != null && rowIndex < model!.rowsLength) {
-        data = model!.rowAt(rowIndex);
+      if (rowIndex < daviContext.model.rowsLength) {
+        data = daviContext.model.rowAt(rowIndex);
       }
 
       bool trailingRegion = false;
-      if (trailingWidget != null && !trailingWidgetBuilt && data == null) {
+      if (daviContext.trailingWidget != null &&
+          !trailingWidgetBuilt &&
+          data == null) {
         trailingWidgetBuilt = true;
         trailingRegion = true;
-        children.add(CellsLayoutChild.trailing(child: trailingWidget!));
+        children
+            .add(CellsLayoutChild.trailing(child: daviContext.trailingWidget!));
       }
 
       rowRegionCache.add(RowRegion(
@@ -120,17 +104,19 @@ class TableContent<DATA> extends StatelessWidget {
           columnIndex < layoutSettings.columnsMetrics.length;
           columnIndex++) {
         valueCache.load(
-            model: model, rowIndex: rowIndex, columnIndex: columnIndex);
+            model: daviContext.model,
+            rowIndex: rowIndex,
+            columnIndex: columnIndex);
 
         if (data != null) {
-          final DaviColumn<DATA> column = model!.columnAt(columnIndex);
+          final DaviColumn<DATA> column =
+              daviContext.model.columnAt(columnIndex);
           final CellWidget<DATA> cell = CellWidget(
               column: column,
               columnIndex: columnIndex,
               data: data,
               rowIndex: rowIndex,
-              hoverNotifier: hoverNotifier,
-              semanticsEnabled: semanticsEnabled);
+              daviContext: daviContext);
           children.add(CellsLayoutChild.cell(
               childIndex: childIndex,
               rowIndex: rowIndex,
@@ -149,11 +135,12 @@ class TableContent<DATA> extends StatelessWidget {
       rowY += layoutSettings.themeMetrics.row.height;
     }
 
-    onTrailingWidget(trailingWidgetBuilt);
-    onLastVisibleRow(lastVisibleRowIndex);
+    daviContext.onTrailingWidget(trailingWidgetBuilt);
+    daviContext.onLastVisibleRow(lastVisibleRowIndex);
 
     CellsLayout<DATA> cellsLayout = CellsLayout(
-        model: model,
+        daviContext: daviContext,
+        model: daviContext.model,
         valueCache: valueCache,
         layoutSettings: layoutSettings,
         verticalOffset: verticalOffset,
@@ -161,21 +148,15 @@ class TableContent<DATA> extends StatelessWidget {
         leftPinnedAreaBounds: layoutSettings.getAreaBounds(PinStatus.left),
         unpinnedAreaBounds: layoutSettings.getAreaBounds(PinStatus.none),
         rowsLength: layoutSettings.rowsLength,
-        hoverNotifier: hoverNotifier,
         rowRegionCache: rowRegionCache,
         children: children);
 
     return ClipRect(
         child: TableEvents(
-            model: model,
+            daviContext: daviContext,
             rowBoundsCache: rowRegionCache,
             verticalScrollController: verticalScrollController,
             scrolling: scrolling,
-            focusNode: focusNode,
-            hoverNotifier: hoverNotifier,
-            rowCallbacks: rowCallbacks,
-            rowCursorBuilder: rowCursorBuilder,
-            focusable: focusable,
             rowTheme: theme.row,
             child: cellsLayout));
   }

@@ -202,6 +202,9 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
     }
   }
 
+  //TODO check
+  DaviRowColor<DATA>? _rowColor2;
+
   ThemeRowColor? _rowColor;
 
   set rowColor(ThemeRowColor? value) {

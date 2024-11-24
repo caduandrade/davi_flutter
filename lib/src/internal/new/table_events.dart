@@ -1,9 +1,8 @@
 import 'dart:math' as math;
 
 import 'package:davi/davi.dart';
-import 'package:davi/src/internal/new/hover_notifier.dart';
+import 'package:davi/src/internal/new/davi_context.dart';
 import 'package:davi/src/internal/new/row_region.dart';
-import 'package:davi/src/internal/row_callbacks.dart';
 import 'package:davi/src/internal/theme_metrics/theme_metrics.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -14,33 +13,22 @@ import 'package:meta/meta.dart';
 class TableEvents<DATA> extends StatelessWidget {
   const TableEvents(
       {Key? key,
-      required this.model,
-      required this.rowCallbacks,
-      required this.focusable,
-      required this.rowCursorBuilder,
+      required this.daviContext,
       required this.child,
       required this.verticalScrollController,
       required this.scrolling,
-      required this.hoverNotifier,
-      required this.focusNode,
       required this.rowBoundsCache,
       required this.rowTheme})
       : super(key: key);
 
   final Widget child;
-  final DaviModel<DATA>? model;
-  final RowCursorBuilder<DATA>? rowCursorBuilder;
-  final RowCallbacks<DATA> rowCallbacks;
+  final DaviContext daviContext;
 
-  final bool focusable;
   final RowRegionCache rowBoundsCache;
 
   final ScrollController verticalScrollController;
   //TODO remove? disable key?
   final bool scrolling;
-
-  final HoverNotifier hoverNotifier;
-  final FocusNode focusNode;
 
   final RowThemeData rowTheme;
 
@@ -50,7 +38,7 @@ class TableEvents<DATA> extends StatelessWidget {
 
     Widget widget = child;
 
-    if (model != null) {
+    if (daviContext.model.isRowsNotEmpty) {
       if (theme.row.hoverBackground != null ||
           theme.row.hoverForeground != null) {
         widget = MouseRegion(
@@ -60,7 +48,7 @@ class TableEvents<DATA> extends StatelessWidget {
             child: widget);
       }
 
-      if (rowCallbacks.hasCallback) {
+      if (daviContext.hasCallback) {
         widget = GestureDetector(
             behavior: HitTestBehavior.opaque,
             onTap: _buildOnTap(),
@@ -76,12 +64,12 @@ class TableEvents<DATA> extends StatelessWidget {
           onPointerPanZoomUpdate: _onPointerPanZoomUpdate,
           child: widget);
 
-      if (focusable) {
+      if (daviContext.focusable) {
         //TODO from parent?
         final TableThemeMetrics themeMetrics = TableThemeMetrics(theme);
 
         widget = Focus(
-            focusNode: focusNode,
+            focusNode: daviContext.focusNode,
             onKeyEvent: (node, event) =>
                 _handleKeyPress(node, event, themeMetrics.row.height),
             child: widget);
@@ -118,34 +106,34 @@ class TableEvents<DATA> extends StatelessWidget {
   }
 
   void _updateHover(Offset? position) {
-    if (model != null) {
+    if (daviContext.model.isRowsNotEmpty) {
       int? rowIndex;
       if (position != null) {
         rowIndex = rowBoundsCache.boundsIndex(position);
       }
       DATA? data;
-      if (model != null && rowIndex != null && rowIndex < model!.rowsLength) {
-        data = model?.rowAt(rowIndex);
+      if (rowIndex != null && rowIndex < daviContext.model.rowsLength) {
+        data = daviContext.model.rowAt(rowIndex);
       }
       if (data != null) {
-        hoverNotifier.cursor = _buildCursor(
+        daviContext.hoverNotifier.cursor = _buildCursor(
             data: data,
             index: rowIndex!,
-            hovered: hoverNotifier.index == rowIndex);
+            hovered: daviContext.hoverNotifier.index == rowIndex);
       } else {
         // hover over visual row without value
         rowIndex = null;
       }
-      hoverNotifier.index = rowIndex;
+      daviContext.hoverNotifier.index = rowIndex;
     }
   }
 
   MouseCursor _buildCursor(
       {required DATA data, required int index, required bool hovered}) {
-    if (!rowTheme.cursorOnTapGesturesOnly || rowCallbacks.hasCallback) {
+    if (!rowTheme.cursorOnTapGesturesOnly || daviContext.hasCallback) {
       MouseCursor? mouseCursor;
-      if (rowCursorBuilder != null) {
-        mouseCursor = rowCursorBuilder!(data, index, hovered);
+      if (daviContext.rowCursorBuilder != null) {
+        mouseCursor = daviContext.rowCursorBuilder!(data, index, hovered);
       }
       return mouseCursor ?? rowTheme.cursor;
     }
@@ -154,20 +142,20 @@ class TableEvents<DATA> extends StatelessWidget {
 
   DATA? get _hoverData {
     DATA? data;
-    if (hoverNotifier.index != null) {
-      if (model != null && hoverNotifier.index! < model!.rowsLength) {
-        data = model?.rowAt(hoverNotifier.index!);
+    if (daviContext.hoverNotifier.index != null) {
+      if (daviContext.hoverNotifier.index! < daviContext.model.rowsLength) {
+        data = daviContext.model.rowAt(daviContext.hoverNotifier.index!);
       }
     }
     return data;
   }
 
   GestureTapCallback? _buildOnTap() {
-    if (rowCallbacks.onRowTap != null) {
+    if (daviContext.onRowTap != null) {
       return () {
         DATA? data = _hoverData;
         if (data != null) {
-          rowCallbacks.onRowTap!(data);
+          daviContext.onRowTap!(data);
         }
       };
     }
@@ -175,11 +163,11 @@ class TableEvents<DATA> extends StatelessWidget {
   }
 
   GestureTapCallback? _buildOnDoubleTap() {
-    if (rowCallbacks.onRowDoubleTap != null) {
+    if (daviContext.onRowDoubleTap != null) {
       return () {
         DATA? data = _hoverData;
         if (data != null) {
-          rowCallbacks.onRowDoubleTap!(data);
+          daviContext.onRowDoubleTap!(data);
         }
       };
     }
@@ -187,11 +175,11 @@ class TableEvents<DATA> extends StatelessWidget {
   }
 
   GestureTapCallback? _buildOnSecondaryTap() {
-    if (rowCallbacks.onRowSecondaryTap != null) {
+    if (daviContext.onRowSecondaryTap != null) {
       return () {
         DATA? data = _hoverData;
         if (data != null) {
-          rowCallbacks.onRowSecondaryTap!(data);
+          daviContext.onRowSecondaryTap!(data);
         }
       };
     }
@@ -199,11 +187,11 @@ class TableEvents<DATA> extends StatelessWidget {
   }
 
   GestureTapUpCallback? _buildOnSecondaryTapUp() {
-    if (rowCallbacks.onRowSecondaryTapUp != null) {
+    if (daviContext.onRowSecondaryTapUp != null) {
       return (detail) {
         DATA? data = _hoverData;
         if (data != null) {
-          rowCallbacks.onRowSecondaryTapUp!(data, detail);
+          daviContext.onRowSecondaryTapUp!(data, detail);
         }
       };
     }

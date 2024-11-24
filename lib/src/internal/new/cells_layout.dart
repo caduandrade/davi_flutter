@@ -2,7 +2,7 @@ import 'package:davi/davi.dart';
 import 'package:davi/src/internal/new/cells_layout_child.dart';
 import 'package:davi/src/internal/new/cells_layout_element.dart';
 import 'package:davi/src/internal/new/cells_layout_render_box.dart';
-import 'package:davi/src/internal/new/hover_notifier.dart';
+import 'package:davi/src/internal/new/davi_context.dart';
 import 'package:davi/src/internal/new/row_region.dart';
 import 'package:davi/src/internal/new/value_cache.dart';
 import 'package:davi/src/internal/scroll_offsets.dart';
@@ -16,11 +16,11 @@ class CellsLayout<DATA> extends MultiChildRenderObjectWidget {
   const CellsLayout(
       {Key? key,
       required this.layoutSettings,
+      required this.daviContext,
       required this.verticalOffset,
       required this.horizontalScrollOffsets,
       required this.leftPinnedAreaBounds,
       required this.unpinnedAreaBounds,
-      required this.hoverNotifier,
       required this.rowsLength,
       required this.rowRegionCache,
       required this.valueCache,
@@ -29,11 +29,11 @@ class CellsLayout<DATA> extends MultiChildRenderObjectWidget {
       : super(key: key, children: children);
 
   final TableLayoutSettings layoutSettings;
+  final DaviContext daviContext;
   final double verticalOffset;
   final HorizontalScrollOffsets horizontalScrollOffsets;
   final Rect leftPinnedAreaBounds;
   final Rect unpinnedAreaBounds;
-  final HoverNotifier hoverNotifier;
   final RowRegionCache rowRegionCache;
   final int rowsLength;
   final ValueCache<DATA> valueCache;
@@ -55,7 +55,7 @@ class CellsLayout<DATA> extends MultiChildRenderObjectWidget {
         horizontalScrollOffsets: horizontalScrollOffsets,
         leftPinnedAreaBounds: leftPinnedAreaBounds,
         unpinnedAreaBounds: unpinnedAreaBounds,
-        hoverNotifier: hoverNotifier,
+        hoverNotifier: daviContext.hoverNotifier,
         rowColor: theme.row.color,
         dividerColor: theme.row.dividerColor,
         rowsLength: rowsLength,
@@ -87,7 +87,7 @@ class CellsLayout<DATA> extends MultiChildRenderObjectWidget {
       ..horizontalScrollOffsets = horizontalScrollOffsets
       ..leftPinnedAreaBounds = leftPinnedAreaBounds
       ..unpinnedAreaBounds = unpinnedAreaBounds
-      ..hoverNotifier = hoverNotifier
+      ..hoverNotifier = daviContext.hoverNotifier
       ..fillHeight = theme.row.fillHeight
       ..columnDividerFillHeight = theme.columnDividerFillHeight
       ..rowsLength = rowsLength

@@ -1,7 +1,7 @@
 import 'package:davi/src/column_width_behavior.dart';
 import 'package:davi/src/internal/new/column_notifier.dart';
+import 'package:davi/src/internal/new/davi_context.dart';
 import 'package:davi/src/internal/new/hover_notifier.dart';
-import 'package:davi/src/internal/row_callbacks.dart';
 import 'package:davi/src/internal/scroll_controllers.dart';
 import 'package:davi/src/internal/table_layout_builder.dart';
 import 'package:davi/src/internal/theme_metrics/theme_metrics.dart';
@@ -47,7 +47,7 @@ class Davi<DATA> extends StatefulWidget {
             : null,
         super(key: key);
 
-  final DaviModel<DATA>? model;
+  final DaviModel<DATA> model;
   final ScrollController? unpinnedHorizontalScrollController;
   final ScrollController? leftPinnedHorizontalScrollController;
   final ScrollController? verticalScrollController;
@@ -181,41 +181,41 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
   }
 
   Widget _builder(BuildContext context, Widget? child) {
-    final DaviThemeData theme = DaviTheme.of(context);
-    final TableThemeMetrics themeMetrics = TableThemeMetrics(theme);
-    final RowCallbacks<DATA> rowCallbacks = RowCallbacks(
+    final DaviContext<DATA> daviContext = DaviContext(
+        hoverNotifier: _hoverNotifier,
+        columnNotifier: _columnNotifier,
+        semanticsEnabled: widget.semanticsEnabled,
+        model: widget.model,
+        onLastVisibleRow: _onLastVisibleRowListener,
+        onTrailingWidget: _onTrailingWidget,
+        rowColor: widget.rowColor,
+        focusable: widget.focusable,
+        tapToSortEnabled: widget.tapToSortEnabled,
+        focusNode: _focusNode,
+        rowCursorBuilder: widget.rowCursor,
+        trailingWidget: widget.trailingWidget,
         onRowTap: widget.onRowTap,
         onRowSecondaryTap: widget.onRowSecondaryTap,
         onRowSecondaryTapUp: widget.onRowSecondaryTapUp,
         onRowDoubleTap: widget.onRowDoubleTap);
+    final DaviThemeData theme = DaviTheme.of(context);
+    final TableThemeMetrics themeMetrics = TableThemeMetrics(theme);
 
     return Listener(
       behavior: HitTestBehavior.translucent,
       onPointerDown: (pointer) {
-        if (widget.model != null && widget.focusable) {
+        if (widget.model.isRowsNotEmpty && widget.focusable) {
           _focusNode.requestFocus();
         }
       },
       child: ClipRect(
           child: TableLayoutBuilder(
-              hoverNotifier: _hoverNotifier,
-              columnNotifier: _columnNotifier,
-              tapToSortEnabled: widget.tapToSortEnabled,
+              daviContext: daviContext,
               scrollControllers: _scrollControllers,
               columnWidthBehavior: widget.columnWidthBehavior,
               themeMetrics: themeMetrics,
               visibleRowsLength: widget.visibleRowsCount,
-              onTrailingWidget: _onTrailingWidget,
-              onLastVisibleRow: _onLastVisibleRowListener,
-              model: widget.model,
               scrolling: _scrolling,
-              rowColor: widget.rowColor,
-              rowCursorBuilder: widget.rowCursor,
-              focusable: widget.focusable,
-              focusNode: _focusNode,
-              trailingWidget: widget.trailingWidget,
-              semanticsEnabled: widget.semanticsEnabled,
-              rowCallbacks: rowCallbacks,
               onDragScroll: _onDragScroll)),
     );
   }

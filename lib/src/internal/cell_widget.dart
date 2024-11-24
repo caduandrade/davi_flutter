@@ -1,6 +1,6 @@
 import 'package:davi/src/cell_icon.dart';
 import 'package:davi/src/column.dart';
-import 'package:davi/src/internal/new/hover_notifier.dart';
+import 'package:davi/src/internal/new/davi_context.dart';
 import 'package:davi/src/theme/theme.dart';
 import 'package:davi/src/theme/theme_data.dart';
 import 'package:flutter/material.dart';
@@ -12,8 +12,7 @@ class CellWidget<DATA> extends StatelessWidget {
   final DATA data;
   final int rowIndex;
   final DaviColumn<DATA> column;
-  final HoverNotifier hoverNotifier;
-  final bool semanticsEnabled;
+  final DaviContext daviContext;
 
   const CellWidget(
       {Key? key,
@@ -21,8 +20,7 @@ class CellWidget<DATA> extends StatelessWidget {
       required this.rowIndex,
       required this.column,
       required this.columnIndex,
-      required this.hoverNotifier,
-      required this.semanticsEnabled})
+      required this.daviContext})
       : super(key: key);
 
   @override
@@ -43,7 +41,7 @@ class CellWidget<DATA> extends StatelessWidget {
     Widget? child;
     if (column.cellBuilder != null) {
       child = column.cellBuilder!(
-          context, data, rowIndex, rowIndex == hoverNotifier.index);
+          context, data, rowIndex, rowIndex == daviContext.hoverNotifier.index);
     } else if (column.iconValueMapper != null) {
       CellIcon? cellIcon = column.iconValueMapper!(data);
       if (cellIcon != null) {
@@ -67,10 +65,10 @@ class CellWidget<DATA> extends StatelessWidget {
     if (column.cellClip) {
       child = ClipRect(child: child);
     }
-    if (semanticsEnabled && column.semanticsBuilder != null) {
+    if (daviContext.semanticsEnabled && column.semanticsBuilder != null) {
       return Semantics.fromProperties(
-          properties: column.semanticsBuilder!(
-              context, data, rowIndex, rowIndex == hoverNotifier.index),
+          properties: column.semanticsBuilder!(context, data, rowIndex,
+              rowIndex == daviContext.hoverNotifier.index),
           child: child);
     }
     return child ?? Container();

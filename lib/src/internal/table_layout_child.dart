@@ -1,20 +1,13 @@
 import 'package:davi/src/internal/header_widget.dart';
 import 'package:davi/src/internal/layout_child_id.dart';
-import 'package:davi/src/internal/new/column_notifier.dart';
-import 'package:davi/src/internal/new/hover_notifier.dart';
+import 'package:davi/src/internal/new/davi_context.dart';
 import 'package:davi/src/internal/new/table_content.dart';
-import 'package:davi/src/internal/row_callbacks.dart';
 import 'package:davi/src/internal/scroll_offsets.dart';
 import 'package:davi/src/internal/table_corner.dart';
 import 'package:davi/src/internal/table_layout.dart';
 import 'package:davi/src/internal/table_layout_parent_data.dart';
 import 'package:davi/src/internal/table_layout_settings.dart';
 import 'package:davi/src/internal/table_scrollbar.dart';
-import 'package:davi/src/trailing_widget_listener.dart';
-import 'package:davi/src/last_visible_row_listener.dart';
-import 'package:davi/src/model.dart';
-import 'package:davi/src/row_color.dart';
-import 'package:davi/src/row_cursor_builder.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
@@ -22,57 +15,30 @@ import 'package:meta/meta.dart';
 @internal
 class TableLayoutChild<DATA> extends ParentDataWidget<TableLayoutParentData> {
   factory TableLayoutChild.header(
-      {required TableLayoutSettings layoutSettings,
-      required DaviModel<DATA>? model,
+      {required DaviContext daviContext,
+      required TableLayoutSettings layoutSettings,
       required bool resizable,
-      required HorizontalScrollOffsets horizontalScrollOffsets,
-      required bool tapToSortEnabled,
-      required ColumnNotifier columnNotifier,
-      required HoverNotifier hoverNotifier}) {
+      required HorizontalScrollOffsets horizontalScrollOffsets}) {
     return TableLayoutChild._(
         id: LayoutChildId.header,
-        child: model != null
-            ? HeaderWidget(
-                layoutSettings: layoutSettings,
-                model: model,
-                horizontalScrollOffsets: horizontalScrollOffsets,
-                resizable: resizable,
-                tapToSortEnabled: tapToSortEnabled,
-                hoverNotifier: hoverNotifier,
-                columnNotifier: columnNotifier)
-            : Container());
+        child: HeaderWidget(
+            daviContext: daviContext,
+            layoutSettings: layoutSettings,
+            horizontalScrollOffsets: horizontalScrollOffsets,
+            resizable: resizable));
   }
 
   factory TableLayoutChild.cells(
-      {required DaviModel<DATA>? model,
+      {required DaviContext<DATA> daviContext,
       required TableLayoutSettings layoutSettings,
       required bool scrolling,
       required HorizontalScrollOffsets horizontalScrollOffsets,
-      required ScrollController verticalScrollController,
-      required RowCallbacks<DATA> rowCallbacks,
-      required DaviRowColor<DATA>? rowColor,
-      required RowCursorBuilder<DATA>? rowCursorBuilder,
-      required Widget? trailingWidget,
-      required TrailingWidgetListener onTrailingWidget,
-      required LastVisibleRowListener onLastVisibleRow,
-      required HoverNotifier hoverNotifier,
-      required bool focusable,
-      required bool semanticsEnabled,
-      required FocusNode focusNode}) {
+      required ScrollController verticalScrollController}) {
     return TableLayoutChild._(
         id: LayoutChildId.cells,
         child: TableContent(
-            focusNode: focusNode,
-            focusable: focusable,
-            rowCallbacks: rowCallbacks,
-            onTrailingWidget: onTrailingWidget,
-            onLastVisibleRow: onLastVisibleRow,
-            trailingWidget: trailingWidget,
-            hoverNotifier: hoverNotifier,
+            daviContext: daviContext,
             scrolling: scrolling,
-            rowCursorBuilder: rowCursorBuilder,
-            model: model,
-            semanticsEnabled: semanticsEnabled,
             layoutSettings: layoutSettings,
             horizontalScrollOffsets: horizontalScrollOffsets,
             verticalScrollController: verticalScrollController));

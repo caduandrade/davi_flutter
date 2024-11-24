@@ -120,7 +120,7 @@ class _HomePageState extends State<HomePage> {
     }
 
     Widget table = DaviTheme(
-        child: Davi<Character>(_model,
+        child: Davi<Character>(_model!,
             rowColor: _rowColor
                 ? (data, rowIndex, hovered) =>
                     data.life < 1000 ? Colors.red[200] : null

@@ -51,7 +51,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  DaviModel<Person>? _model;
+  late DaviModel<Person> _model;
 
   @override
   void initState() {
