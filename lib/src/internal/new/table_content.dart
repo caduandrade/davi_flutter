@@ -140,7 +140,6 @@ class TableContent<DATA> extends StatelessWidget {
 
     CellsLayout<DATA> cellsLayout = CellsLayout(
         daviContext: daviContext,
-        model: daviContext.model,
         valueCache: valueCache,
         layoutSettings: layoutSettings,
         verticalOffset: verticalOffset,

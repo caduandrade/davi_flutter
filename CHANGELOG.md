@@ -1,5 +1,6 @@
 ## 4.0.0
 
+Davi.model cant be null
 DaviRowCursor => RowCursorBuilder
 CellStyleBuilder removed
 Column.cellStyleBuilder => Column.style

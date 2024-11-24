@@ -24,12 +24,11 @@ class CellsLayout<DATA> extends MultiChildRenderObjectWidget {
       required this.rowsLength,
       required this.rowRegionCache,
       required this.valueCache,
-      required this.model,
       required List<CellsLayoutChild> children})
       : super(key: key, children: children);
 
   final TableLayoutSettings layoutSettings;
-  final DaviContext daviContext;
+  final DaviContext<DATA> daviContext;
   final double verticalOffset;
   final HorizontalScrollOffsets horizontalScrollOffsets;
   final Rect leftPinnedAreaBounds;
@@ -37,13 +36,12 @@ class CellsLayout<DATA> extends MultiChildRenderObjectWidget {
   final RowRegionCache rowRegionCache;
   final int rowsLength;
   final ValueCache<DATA> valueCache;
-  final DaviModel<DATA>? model;
 
   @override
   RenderObject createRenderObject(BuildContext context) {
     DaviThemeData theme = DaviTheme.of(context);
     return CellsLayoutRenderBox<DATA>(
-        model: model,
+        model: daviContext.model,
         valueCache: valueCache,
         nullValueColor: theme.cell.nullValueColor,
         hoverBackground: theme.row.hoverBackground,
@@ -56,7 +54,8 @@ class CellsLayout<DATA> extends MultiChildRenderObjectWidget {
         leftPinnedAreaBounds: leftPinnedAreaBounds,
         unpinnedAreaBounds: unpinnedAreaBounds,
         hoverNotifier: daviContext.hoverNotifier,
-        rowColor: theme.row.color,
+        themeRowColor: theme.row.color,
+        rowColor: daviContext.rowColor,
         dividerColor: theme.row.dividerColor,
         rowsLength: rowsLength,
         rowRegionCache: rowRegionCache,
@@ -74,7 +73,7 @@ class CellsLayout<DATA> extends MultiChildRenderObjectWidget {
 
   @override
   void updateRenderObject(
-      BuildContext context, covariant CellsLayoutRenderBox renderObject) {
+      BuildContext context, covariant CellsLayoutRenderBox<DATA> renderObject) {
     super.updateRenderObject(context, renderObject);
     DaviThemeData theme = DaviTheme.of(context);
     renderObject
@@ -96,9 +95,10 @@ class CellsLayout<DATA> extends MultiChildRenderObjectWidget {
       ..dividerThickness = theme.row.dividerThickness
       ..columnDividerColor = theme.columnDividerColor
       ..columnDividerThickness = theme.columnDividerThickness
-      ..rowColor = theme.row.color
+      ..themeRowColor = theme.row.color
+      ..rowColor = daviContext.rowColor
       ..nullValueColor = theme.cell.nullValueColor
-      ..model = model
+      ..model = daviContext.model
       ..valueCache = valueCache;
   }
 }

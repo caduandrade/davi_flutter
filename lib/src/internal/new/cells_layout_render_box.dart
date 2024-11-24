@@ -26,7 +26,7 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
       required Rect leftPinnedAreaBounds,
       required Rect unpinnedAreaBounds,
       required HoverNotifier hoverNotifier,
-      required ThemeRowColor? rowColor,
+      required ThemeRowColor? themeRowColor,
       required int rowsLength,
       required bool fillHeight,
       required bool columnDividerFillHeight,
@@ -37,9 +37,10 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
       required double columnDividerThickness,
       required Color? columnDividerColor,
       required Color? dividerColor,
+      required DaviRowColor<DATA>? rowColor,
       required CellNullColor? nullValueColor,
       required ValueCache<DATA> valueCache,
-      required DaviModel<DATA>? model})
+      required DaviModel<DATA> model})
       : _model = model,
         _valueCache = valueCache,
         _nullValueColor = nullValueColor,
@@ -50,6 +51,7 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
         _hoverNotifier = hoverNotifier,
         _fillHeight = fillHeight,
         _columnDividerFillHeight = columnDividerFillHeight,
+        _themeRowColor = themeRowColor,
         _rowColor = rowColor,
         _rowsLength = rowsLength,
         _dividerThickness = dividerThickness,
@@ -83,9 +85,9 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
     }
   }
 
-  DaviModel<DATA>? _model;
+  DaviModel<DATA> _model;
 
-  set model(DaviModel<DATA>? value) {
+  set model(DaviModel<DATA> value) {
     if (_model != value) {
       _model = value;
       markNeedsPaint();
@@ -202,14 +204,20 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
     }
   }
 
-  //TODO check
-  DaviRowColor<DATA>? _rowColor2;
+  DaviRowColor<DATA>? _rowColor;
 
-  ThemeRowColor? _rowColor;
-
-  set rowColor(ThemeRowColor? value) {
+  set rowColor(DaviRowColor<DATA>? value) {
     if (_rowColor != value) {
       _rowColor = value;
+      markNeedsPaint();
+    }
+  }
+
+  ThemeRowColor? _themeRowColor;
+
+  set themeRowColor(ThemeRowColor? value) {
+    if (_themeRowColor != value) {
+      _themeRowColor = value;
       markNeedsPaint();
     }
   }
@@ -341,7 +349,9 @@ columnResizing:  model != null && columnNotifier.resizing
   */
 
     // backgrounds
-    if (_rowColor != null || _hoverBackground != null) {
+    if (_themeRowColor != null ||
+        _hoverBackground != null ||
+        _rowColor != null) {
       for (RowRegion rowRegion in _rowRegionCache.values) {
         if (rowRegion.trailing) {
           continue;
@@ -350,12 +360,17 @@ columnResizing:  model != null && columnNotifier.resizing
           continue;
         }
         Color? color;
-        if (_rowColor != null) {
-          color = _rowColor!(rowRegion.index);
-        }
         if (_hoverBackground != null &&
             _hoverNotifier.index == rowRegion.index) {
           color = _hoverBackground!(rowRegion.index) ?? color;
+        }
+        if (rowRegion.hasData && color == null && _rowColor != null) {
+          final DATA data = _model.rowAt(rowRegion.index);
+          color = _rowColor!(
+              data, rowRegion.index, _hoverNotifier.index == rowRegion.index);
+        }
+        if (color == null && _themeRowColor != null) {
+          color = _themeRowColor!(rowRegion.index);
         }
         if (color != null) {
           paint.color = color;
@@ -387,15 +402,15 @@ columnResizing:  model != null && columnNotifier.resizing
           offset.translate(columnMetrics.offset - horizontalOffset, top);
 
       // cell background
-      if (_model != null && rowIndex < _model!.rowsLength) {
-        DaviColumn<DATA> column = _model!.columnAt(columnIndex);
+      if (rowIndex < _model.rowsLength) {
+        DaviColumn<DATA> column = _model.columnAt(columnIndex);
         Color? background;
         if (_nullValueColor != null &&
             _valueCache.isNull(rowIndex: rowIndex, columnIndex: columnIndex)) {
           background =
               _nullValueColor!(rowIndex, rowIndex == _hoverNotifier.index);
         } else if (column.cellBackground != null) {
-          background = column.cellBackground!(_model!.rowAt(rowIndex), rowIndex,
+          background = column.cellBackground!(_model.rowAt(rowIndex), rowIndex,
               rowIndex == _hoverNotifier.index);
         }
         if (background != null) {
