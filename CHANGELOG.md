@@ -1,3 +1,45 @@
+## 4.0.0
+
+
+CellThemeData.overflow removed
+
+Davi.model cant be null
+DaviRowCursor => RowCursorBuilder
+CellStyleBuilder removed
+Column.cellStyleBuilder => Column.style
+
+CellThemeData.background added
+CellThemeData.copyWith removed
+
+Davi.lastRowWidget renamed Davi.trailingWidget
+Davi.onLastRowWidget renamed Davi.onTrailingWidget
+Davi.pinnedHorizontalScrollController renamed Davi.leftPinnedHorizontalScrollController
+
+RowThemeData.copyWith removed
+HeaderCellThemeData.copyWith removed
+HeaderThemeData.copyWith removed
+DaviThemeData.copyWith removed
+
+RowThemeData.lastDividerVisible removed
+
+DaviRow removed
+RowCursorBuilder parameter : DaviRow to DATA data, int index, bool hovered
+CellBackgroundBuilder parameter : DaviRow to DATA data, int index, bool hovered
+DaviRowColor parameter : DaviRow to DATA data, int index, bool hovered
+DaviCellBuilder parameter : BuildContext, DaviRow to BuildContext, DATA data, int index, bool hovered
+DaviCellSemanticsBuilder parameter : BuildContext, DaviRow to BuildContext, DATA data, int index, bool hovered
+
+- typedef
+ - OnLastRowWidgetListener  renamed LastRowWidgetListener  
+ - OnLastRowWidgetListener renamed LastRowWidgetListener
+ - LastRowWidgetListener renamed 
+
+bug
+- resizing column outside
+  - lost icon?
+
+
+
 ## 3.5.0
 
 * `Davi`

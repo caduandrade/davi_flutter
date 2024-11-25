@@ -1,8 +1,8 @@
 import 'package:davi/src/cell_icon.dart';
-import 'package:davi/src/cell_style.dart';
 import 'package:davi/src/column.dart';
-import 'package:davi/src/internal/cell_key.dart';
-import 'package:davi/src/row.dart';
+import 'package:davi/src/internal/new/cell_painter.dart';
+import 'package:davi/src/internal/new/painter_cache.dart';
+import 'package:davi/src/internal/new/davi_context.dart';
 import 'package:davi/src/theme/theme.dart';
 import 'package:davi/src/theme/theme_data.dart';
 import 'package:flutter/material.dart';
@@ -10,18 +10,20 @@ import 'package:meta/meta.dart';
 
 @internal
 class CellWidget<DATA> extends StatelessWidget {
-  final int columnIndex;
-  final DaviRow<DATA> row;
-  final DaviColumn<DATA> column;
+  const CellWidget(
+      {Key? key,
+      required this.data,
+      required this.rowIndex,
+      required this.column,
+      required this.daviContext,
+      required this.painterCache})
+      : super(key: key);
 
-  CellWidget(
-      {required this.row, required this.column, required this.columnIndex})
-      : super(
-            key: CellKey(
-                row: row.index,
-                column: columnIndex,
-                rowSpan: 1,
-                columnSpan: 1));
+  final DATA data;
+  final int rowIndex;
+  final DaviColumn<DATA> column;
+  final DaviContext daviContext;
+  final PainterCache<DATA> painterCache;
 
   @override
   Widget build(BuildContext context) {
@@ -29,63 +31,64 @@ class CellWidget<DATA> extends StatelessWidget {
 
     // Theme
     EdgeInsets? padding = theme.cell.padding;
-    Alignment? alignment = theme.cell.alignment;
+    Alignment alignment = theme.cell.alignment;
     TextStyle? textStyle = theme.cell.textStyle;
-    TextOverflow? overflow = theme.cell.overflow;
     // Entire column
     padding = column.cellPadding ?? padding;
     alignment = column.cellAlignment ?? alignment;
-    Color? background =
-        column.cellBackground != null ? column.cellBackground!(row) : null;
     textStyle = column.cellTextStyle ?? textStyle;
-    overflow = column.cellOverflow ?? overflow;
-    // Single cell
-    if (column.cellStyleBuilder != null) {
-      CellStyle? cellStyle = column.cellStyleBuilder!(row);
-      if (cellStyle != null) {
-        padding = cellStyle.padding ?? padding;
-        alignment = cellStyle.alignment ?? alignment;
-        background = cellStyle.background ?? background;
-        textStyle = cellStyle.textStyle ?? textStyle;
-        overflow = cellStyle.overflow ?? overflow;
-      }
-    }
 
     Widget? child;
+    String? value;
+
+    bool hasCustomWidget = false;
     if (column.cellBuilder != null) {
-      child = column.cellBuilder!(context, row);
+      hasCustomWidget = true;
+      child = column.cellBuilder!(
+          context, data, rowIndex, rowIndex == daviContext.hoverNotifier.index);
     } else if (column.iconValueMapper != null) {
-      CellIcon? cellIcon = column.iconValueMapper!(row.data);
+      CellIcon? cellIcon = column.iconValueMapper!(data);
       if (cellIcon != null) {
-        child = Icon(cellIcon.icon, color: cellIcon.color, size: cellIcon.size);
+        value = String.fromCharCode(cellIcon.icon.codePoint);
+        textStyle = TextStyle(
+            fontSize: cellIcon.size,
+            fontFamily: cellIcon.icon.fontFamily,
+            package: cellIcon.icon.fontPackage,
+            color: cellIcon.color);
       }
     } else {
-      String? value = _stringValue(column: column, data: row.data);
-      if (value != null) {
-        child = Text(value,
-            overflow: overflow ?? theme.cell.overflow,
-            style: textStyle ?? theme.cell.textStyle);
-      } else if (theme.cell.nullValueColor != null) {
-        background = theme.cell.nullValueColor!(row.index, row.hovered);
-      }
+      value = _stringValue(column: column, data: data);
     }
-    if (child != null) {
-      child = Align(alignment: alignment, child: child);
-      if (padding != null) {
-        child = Padding(padding: padding, child: child);
-      }
+
+    if (child == null && value != null) {
+      child = CellPainter(
+          text: value, painterCache: painterCache, textStyle: textStyle);
     }
-    // To avoid the bug that makes a cursor disappear
-    // (https://github.com/flutter/flutter/issues/106767),
-    // always build a Container with some color.
-    background = background ?? Colors.transparent;
+
+    if (daviContext.semanticsEnabled && column.semanticsBuilder != null) {
+      child = Semantics.fromProperties(
+          properties: column.semanticsBuilder!(context, data, rowIndex,
+              rowIndex == daviContext.hoverNotifier.index),
+          child: child);
+    }
+
+    child = Padding(padding: padding ?? EdgeInsets.zero, child: child);
+    child = Align(alignment: alignment, child: child);
+
+    Color? background;
+    if (!hasCustomWidget &&
+        value == null &&
+        theme.cell.nullValueColor != null) {
+      background = theme.cell.nullValueColor!(
+          rowIndex, rowIndex == daviContext.hoverNotifier.index);
+    } else if (column.cellBackground != null) {
+      background = column.cellBackground!(
+          data, rowIndex, rowIndex == daviContext.hoverNotifier.index);
+    }
     child = Container(color: background, child: child);
+
     if (column.cellClip) {
       child = ClipRect(child: child);
-    }
-    if (column.semanticsBuilder != null) {
-      return Semantics.fromProperties(
-          properties: column.semanticsBuilder!(context, row), child: child);
     }
     return child;
   }

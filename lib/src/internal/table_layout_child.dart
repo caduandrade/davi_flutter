@@ -1,19 +1,13 @@
 import 'package:davi/src/internal/header_widget.dart';
 import 'package:davi/src/internal/layout_child_id.dart';
-import 'package:davi/src/internal/row_callbacks.dart';
-import 'package:davi/src/internal/rows_builder.dart';
+import 'package:davi/src/internal/new/davi_context.dart';
+import 'package:davi/src/internal/new/table_content.dart';
 import 'package:davi/src/internal/scroll_offsets.dart';
 import 'package:davi/src/internal/table_corner.dart';
 import 'package:davi/src/internal/table_layout.dart';
 import 'package:davi/src/internal/table_layout_parent_data.dart';
 import 'package:davi/src/internal/table_layout_settings.dart';
 import 'package:davi/src/internal/table_scrollbar.dart';
-import 'package:davi/src/last_row_widget_listener.dart';
-import 'package:davi/src/last_visible_row_listener.dart';
-import 'package:davi/src/model.dart';
-import 'package:davi/src/row_color.dart';
-import 'package:davi/src/row_cursor.dart';
-import 'package:davi/src/row_hover_listener.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
@@ -21,57 +15,31 @@ import 'package:meta/meta.dart';
 @internal
 class TableLayoutChild<DATA> extends ParentDataWidget<TableLayoutParentData> {
   factory TableLayoutChild.header(
-      {required TableLayoutSettings layoutSettings,
-      required DaviModel<DATA>? model,
+      {required DaviContext daviContext,
+      required TableLayoutSettings layoutSettings,
       required bool resizable,
-      required HorizontalScrollOffsets horizontalScrollOffsets,
-      required bool tapToSortEnabled}) {
+      required HorizontalScrollOffsets horizontalScrollOffsets}) {
     return TableLayoutChild._(
         id: LayoutChildId.header,
-        child: model != null
-            ? HeaderWidget(
-                layoutSettings: layoutSettings,
-                model: model,
-                horizontalScrollOffsets: horizontalScrollOffsets,
-                resizable: resizable,
-                tapToSortEnabled: tapToSortEnabled)
-            : Container());
+        child: HeaderWidget(
+            daviContext: daviContext,
+            layoutSettings: layoutSettings,
+            horizontalScrollOffsets: horizontalScrollOffsets,
+            resizable: resizable));
   }
 
-  factory TableLayoutChild.rows(
-      {required DaviModel<DATA>? model,
+  factory TableLayoutChild.cells(
+      {required DaviContext<DATA> daviContext,
       required TableLayoutSettings layoutSettings,
-      required bool scrolling,
       required HorizontalScrollOffsets horizontalScrollOffsets,
-      required ScrollController verticalScrollController,
-      required OnRowHoverListener? onHover,
-      required RowCallbacks<DATA> rowCallbacks,
-      required DaviRowColor<DATA>? rowColor,
-      required DaviRowCursor<DATA>? rowCursor,
-      required Widget? lastRowWidget,
-      required OnLastRowWidgetListener onLastRowWidget,
-      required OnLastVisibleRowListener onLastVisibleRow}) {
+      required ScrollController verticalScrollController}) {
     return TableLayoutChild._(
-        id: LayoutChildId.rows,
-        child: AnimatedBuilder(
-            animation: verticalScrollController,
-            builder: (BuildContext context, Widget? child) {
-              return RowsBuilder<DATA>(
-                  model: model,
-                  layoutSettings: layoutSettings,
-                  onHover: onHover,
-                  rowCallbacks: rowCallbacks,
-                  scrolling: scrolling,
-                  verticalOffset: verticalScrollController.hasClients
-                      ? verticalScrollController.offset
-                      : 0,
-                  horizontalScrollOffsets: horizontalScrollOffsets,
-                  rowColor: rowColor,
-                  rowCursor: rowCursor,
-                  lastRowWidget: lastRowWidget,
-                  onLastRowWidget: onLastRowWidget,
-                  onLastVisibleRow: onLastVisibleRow);
-            }));
+        id: LayoutChildId.cells,
+        child: TableContent(
+            daviContext: daviContext,
+            layoutSettings: layoutSettings,
+            horizontalScrollOffsets: horizontalScrollOffsets,
+            verticalScrollController: verticalScrollController));
   }
 
   factory TableLayoutChild.bottomCorner() {

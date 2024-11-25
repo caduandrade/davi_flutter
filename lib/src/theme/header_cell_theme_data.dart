@@ -41,36 +41,6 @@ class HeaderCellThemeData {
   final Color? resizeAreaHoverColor;
   final bool expandableName;
 
-  /// Creates a copy of this theme but with the given fields replaced with
-  /// the new values.
-  HeaderCellThemeData copyWith(
-      {TextStyle? textStyle,
-      EdgeInsets? padding,
-      Alignment? alignment,
-      SortIconColors? sortIconColors,
-      SortIconBuilder? sortIconBuilder,
-      Color? sortPriorityColor,
-      double? sortPrioritySize,
-      double? sortPriorityGap,
-      double? height,
-      double? resizeAreaWidth,
-      Color? resizeAreaHoverColor,
-      bool? expandableName}) {
-    return HeaderCellThemeData(
-        textStyle: textStyle ?? this.textStyle,
-        padding: padding ?? this.padding,
-        alignment: alignment ?? this.alignment,
-        sortIconColors: sortIconColors ?? this.sortIconColors,
-        sortIconBuilder: sortIconBuilder ?? this.sortIconBuilder,
-        sortPriorityColor: sortPriorityColor ?? this.sortPriorityColor,
-        sortPrioritySize: sortPrioritySize ?? this.sortPrioritySize,
-        sortPriorityGap: sortPriorityGap ?? this.sortPriorityGap,
-        height: height ?? this.height,
-        resizeAreaWidth: resizeAreaWidth ?? this.resizeAreaWidth,
-        resizeAreaHoverColor: resizeAreaHoverColor ?? this.resizeAreaHoverColor,
-        expandableName: expandableName ?? this.expandableName);
-  }
-
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||

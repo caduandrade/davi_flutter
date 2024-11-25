@@ -2,9 +2,9 @@ import 'package:davi/src/column.dart';
 import 'package:davi/src/internal/columns_layout.dart';
 import 'package:davi/src/internal/columns_layout_child.dart';
 import 'package:davi/src/internal/header_cell.dart';
+import 'package:davi/src/internal/new/davi_context.dart';
 import 'package:davi/src/internal/scroll_offsets.dart';
 import 'package:davi/src/internal/table_layout_settings.dart';
-import 'package:davi/src/model.dart';
 import 'package:davi/src/theme/theme.dart';
 import 'package:davi/src/theme/theme_data.dart';
 import 'package:flutter/widgets.dart';
@@ -14,39 +14,36 @@ import 'package:meta/meta.dart';
 class HeaderWidget<DATA> extends StatelessWidget {
   const HeaderWidget(
       {Key? key,
+      required this.daviContext,
       required this.layoutSettings,
-      required this.model,
       required this.resizable,
-      required this.horizontalScrollOffsets,
-      required this.tapToSortEnabled})
+      required this.horizontalScrollOffsets})
       : super(key: key);
 
+  final DaviContext<DATA> daviContext;
   final TableLayoutSettings layoutSettings;
-  final DaviModel<DATA> model;
   final bool resizable;
   final HorizontalScrollOffsets horizontalScrollOffsets;
-  final bool tapToSortEnabled;
 
   @override
   Widget build(BuildContext context) {
+    if (daviContext.model.isColumnsEmpty) {
+      return Container();
+    }
     DaviThemeData theme = DaviTheme.of(context);
 
     List<ColumnsLayoutChild<DATA>> children = [];
 
-    final isMultiSorted = model.isMultiSorted;
-
     for (int columnIndex = 0;
-        columnIndex < model.columnsLength;
+        columnIndex < daviContext.model.columnsLength;
         columnIndex++) {
-      final DaviColumn<DATA> column = model.columnAt(columnIndex);
+      final DaviColumn<DATA> column = daviContext.model.columnAt(columnIndex);
 
       final Widget cell = DaviHeaderCell<DATA>(
           key: ValueKey<int>(columnIndex),
-          model: model,
+          daviContext: daviContext,
           column: column,
           resizable: resizable,
-          tapToSortEnabled: tapToSortEnabled,
-          isMultiSorted: isMultiSorted,
           columnIndex: columnIndex);
       children.add(ColumnsLayoutChild<DATA>(index: columnIndex, child: cell));
     }

@@ -1,11 +1,11 @@
-import 'package:davi/src/internal/rows_layout.dart';
+import 'package:davi/src/internal/new/cells_layout.dart';
 import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
 
-/// The [RowsLayout] element.
+/// The [CellsLayout] element.
 @internal
-class RowsLayoutElement extends MultiChildRenderObjectElement {
-  RowsLayoutElement(RowsLayout widget) : super(widget);
+class CellsLayoutElement extends MultiChildRenderObjectElement {
+  CellsLayoutElement(CellsLayout widget) : super(widget);
 
   @override
   void debugVisitOnstageChildren(ElementVisitor visitor) {

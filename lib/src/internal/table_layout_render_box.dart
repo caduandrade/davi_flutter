@@ -79,7 +79,7 @@ class TableLayoutRenderBox<DATA> extends RenderBox
     visitChildren((child) {
       RenderBox renderBox = child as RenderBox;
       TableLayoutParentData parentData = child._parentData();
-      if (parentData.id == LayoutChildId.rows) {
+      if (parentData.id == LayoutChildId.cells) {
         _rows = renderBox;
       } else if (parentData.id == LayoutChildId.verticalScrollbar) {
         _verticalScrollbar = renderBox;

@@ -42,41 +42,6 @@ class DaviThemeData {
   final Color bottomCornerBorderColor;
   final Color bottomCornerColor;
 
-  /// Creates a copy of this theme but with the given fields replaced with
-  /// the new values.
-  DaviThemeData copyWith(
-      {bool? columnDividerFillHeight,
-      double? columnDividerThickness,
-      Color? columnDividerColor,
-      BoxDecoration? decoration,
-      CellThemeData? cell,
-      HeaderThemeData? header,
-      HeaderCellThemeData? headerCell,
-      RowThemeData? row,
-      TableScrollbarThemeData? scrollbar,
-      Color? topCornerBorderColor,
-      Color? topCornerColor,
-      Color? bottomCornerBorderColor,
-      Color? bottomCornerColor}) {
-    return DaviThemeData(
-        columnDividerFillHeight:
-            columnDividerFillHeight ?? this.columnDividerFillHeight,
-        columnDividerThickness:
-            columnDividerThickness ?? this.columnDividerThickness,
-        columnDividerColor: columnDividerColor ?? this.columnDividerColor,
-        decoration: decoration ?? this.decoration,
-        cell: cell ?? this.cell,
-        header: header ?? this.header,
-        headerCell: headerCell ?? this.headerCell,
-        row: row ?? this.row,
-        scrollbar: scrollbar ?? this.scrollbar,
-        topCornerBorderColor: topCornerBorderColor ?? this.topCornerBorderColor,
-        topCornerColor: topCornerColor ?? this.topCornerColor,
-        bottomCornerBorderColor:
-            bottomCornerBorderColor ?? this.bottomCornerBorderColor,
-        bottomCornerColor: bottomCornerColor ?? this.bottomCornerColor);
-  }
-
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
