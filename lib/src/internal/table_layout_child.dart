@@ -31,14 +31,12 @@ class TableLayoutChild<DATA> extends ParentDataWidget<TableLayoutParentData> {
   factory TableLayoutChild.cells(
       {required DaviContext<DATA> daviContext,
       required TableLayoutSettings layoutSettings,
-      required bool scrolling,
       required HorizontalScrollOffsets horizontalScrollOffsets,
       required ScrollController verticalScrollController}) {
     return TableLayoutChild._(
         id: LayoutChildId.cells,
         child: TableContent(
             daviContext: daviContext,
-            scrolling: scrolling,
             layoutSettings: layoutSettings,
             horizontalScrollOffsets: horizontalScrollOffsets,
             verticalScrollController: verticalScrollController));

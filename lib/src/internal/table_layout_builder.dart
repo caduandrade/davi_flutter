@@ -6,7 +6,6 @@ import 'package:davi/src/internal/table_layout.dart';
 import 'package:davi/src/internal/table_layout_child.dart';
 import 'package:davi/src/internal/table_layout_settings.dart';
 import 'package:davi/src/internal/table_scrollbar.dart';
-import 'package:davi/src/internal/theme_metrics/theme_metrics.dart';
 import 'package:davi/src/theme/theme.dart';
 import 'package:davi/src/theme/theme_data.dart';
 import 'package:flutter/material.dart';
@@ -18,20 +17,12 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
       {Key? key,
       required this.daviContext,
       required this.scrollControllers,
-      required this.themeMetrics,
-      required this.columnWidthBehavior,
-      required this.visibleRowsLength,
-      required this.onDragScroll,
-      required this.scrolling})
+      required this.onDragScroll})
       : super(key: key);
 
   final DaviContext<DATA> daviContext;
   final ScrollControllers scrollControllers;
-  final ColumnWidthBehavior columnWidthBehavior;
-  final int? visibleRowsLength;
   final OnDragScroll onDragScroll;
-  final bool scrolling;
-  final TableThemeMetrics themeMetrics;
 
   @override
   Widget build(BuildContext context) {
@@ -48,9 +39,9 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
         constraints: constraints,
         model: daviContext.model,
         theme: theme,
-        columnWidthBehavior: columnWidthBehavior,
-        themeMetrics: themeMetrics,
-        visibleRowsLength: visibleRowsLength,
+        columnWidthBehavior: daviContext.columnWidthBehavior,
+        themeMetrics: daviContext.themeMetrics,
+        visibleRowsCount: daviContext.visibleRowsCount,
         hasTrailingWidget: daviContext.trailingWidget != null);
 
     final List<TableLayoutChild> children = [];
@@ -66,11 +57,12 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
               onDragScroll: onDragScroll)));
     }
 
-    if (themeMetrics.header.visible) {
+    if (daviContext.themeMetrics.header.visible) {
       children.add(TableLayoutChild.header(
           daviContext: daviContext,
           layoutSettings: layoutSettings,
-          resizable: columnWidthBehavior == ColumnWidthBehavior.scrollable,
+          resizable:
+              daviContext.columnWidthBehavior == ColumnWidthBehavior.scrollable,
           horizontalScrollOffsets: horizontalScrollOffsets));
       if (layoutSettings.hasVerticalScrollbar) {
         children.add(TableLayoutChild.topCorner());
@@ -102,7 +94,6 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
     children.add(TableLayoutChild<DATA>.cells(
         daviContext: daviContext,
         layoutSettings: layoutSettings,
-        scrolling: scrolling,
         horizontalScrollOffsets: horizontalScrollOffsets,
         verticalScrollController: scrollControllers.vertical));
 

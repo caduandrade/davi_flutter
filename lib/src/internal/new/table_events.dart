@@ -16,7 +16,6 @@ class TableEvents<DATA> extends StatelessWidget {
       required this.daviContext,
       required this.child,
       required this.verticalScrollController,
-      required this.scrolling,
       required this.rowBoundsCache,
       required this.rowTheme})
       : super(key: key);
@@ -27,8 +26,6 @@ class TableEvents<DATA> extends StatelessWidget {
   final RowRegionCache rowBoundsCache;
 
   final ScrollController verticalScrollController;
-  //TODO remove? disable key?
-  final bool scrolling;
 
   final RowThemeData rowTheme;
 

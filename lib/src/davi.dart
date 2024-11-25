@@ -181,6 +181,9 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
   }
 
   Widget _builder(BuildContext context, Widget? child) {
+    final DaviThemeData theme = DaviTheme.of(context);
+    final TableThemeMetrics themeMetrics = TableThemeMetrics(theme);
+
     final DaviContext<DATA> daviContext = DaviContext(
         hoverNotifier: _hoverNotifier,
         columnNotifier: _columnNotifier,
@@ -198,9 +201,10 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
         onRowSecondaryTap: widget.onRowSecondaryTap,
         onRowSecondaryTapUp: widget.onRowSecondaryTapUp,
         onRowDoubleTap: widget.onRowDoubleTap,
-        scrolling: _scrolling);
-    final DaviThemeData theme = DaviTheme.of(context);
-    final TableThemeMetrics themeMetrics = TableThemeMetrics(theme);
+        scrolling: _scrolling,
+        visibleRowsCount: widget.visibleRowsCount,
+        columnWidthBehavior: widget.columnWidthBehavior,
+        themeMetrics: themeMetrics);
 
     return Listener(
       behavior: HitTestBehavior.translucent,
@@ -213,10 +217,6 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
           child: TableLayoutBuilder(
               daviContext: daviContext,
               scrollControllers: _scrollControllers,
-              columnWidthBehavior: widget.columnWidthBehavior,
-              themeMetrics: themeMetrics,
-              visibleRowsLength: widget.visibleRowsCount,
-              scrolling: _scrolling,
               onDragScroll: _onDragScroll)),
     );
   }

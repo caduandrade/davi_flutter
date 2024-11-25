@@ -19,15 +19,13 @@ class TableContent<DATA> extends StatefulWidget {
       required this.layoutSettings,
       required this.daviContext,
       required this.verticalScrollController,
-      required this.horizontalScrollOffsets,
-      required this.scrolling})
+      required this.horizontalScrollOffsets})
       : super(key: key);
 
   final TableLayoutSettings layoutSettings;
   final DaviContext<DATA> daviContext;
   final ScrollController verticalScrollController;
   final HorizontalScrollOffsets horizontalScrollOffsets;
-  final bool scrolling;
 
   @override
   State<StatefulWidget> createState() => TableContentState<DATA>();
@@ -176,7 +174,6 @@ class TableContentState<DATA> extends State<TableContent<DATA>> {
             daviContext: widget.daviContext,
             rowBoundsCache: rowRegionCache,
             verticalScrollController: widget.verticalScrollController,
-            scrolling: widget.scrolling,
             rowTheme: theme.row,
             child: cellsLayout));
   }

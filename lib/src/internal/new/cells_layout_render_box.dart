@@ -312,19 +312,6 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
     }
 
     Paint paint = Paint()..style = PaintingStyle.fill;
-    //TODO old check to allow paint hover
-/*
-
-columnResizing:  model != null && columnNotifier.resizing
-
-        !widget.columnResizing &&
-        (widget.rowCallbacks.hasCallback ||
-            theme.row.hoverBackground != null ||
-            theme.row.hoverForeground != null ||
-            widget.onHover != null ||
-            !theme.row.cursorOnTapGesturesOnly
-  */
-
     // backgrounds
     if (_themeRowColor != null ||
         _hoverBackground != null ||
@@ -503,7 +490,7 @@ columnResizing:  model != null && columnNotifier.resizing
     final int firstRowIndex = (_verticalOffset / _rowHeight).floor();
 
     if (_trailing != null) {
-//TODO trailing hit
+      //TODO trailing hit
     }
 
     for (RenderBox child in _cells) {
