@@ -1,5 +1,8 @@
 ## 4.0.0
 
+
+CellThemeData.overflow removed
+
 Davi.model cant be null
 DaviRowCursor => RowCursorBuilder
 CellStyleBuilder removed

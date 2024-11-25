@@ -41,7 +41,7 @@ class _HomePageState extends State<HomePage> {
   bool _trailingWidget = false;
   bool _columnDividerFillHeight = DaviThemeDataDefaults.columnDividerFillHeight;
   RowThemeColor _demoBackground = RowThemeColor.none;
-  bool _columnsWithIcon = false;
+  bool _columnsWithCustomWidget = false;
   bool _customDividerThickness = false;
 
   @override
@@ -73,23 +73,21 @@ class _HomePageState extends State<HomePage> {
         name: 'Name',
         width: 100,
         stringValue: (row) => row.name));
-    if (_columnsWithIcon) {
-      list.add(DaviColumn(
-          //pinStatus: _leftPinned ? PinStatus.left : PinStatus.none,
-          name: 'Gender',
-          width: 80,
-          cellClip: true,
-          iconValue: (row) => row.male
-              ? CellIcon(icon: Icons.male, color: Colors.blue[700]!)
-              : CellIcon(icon: Icons.female, color: Colors.pink[600]!)));
-    }
+    list.add(DaviColumn(
+        //pinStatus: _leftPinned ? PinStatus.left : PinStatus.none,
+        name: 'Gender',
+        width: 80,
+        cellClip: true,
+        iconValue: (row) => row.male
+            ? CellIcon(icon: Icons.male, color: Colors.blue[700]!)
+            : CellIcon(icon: Icons.female, color: Colors.pink[600]!)));
     list.add(
         DaviColumn(name: 'Race', width: 100, stringValue: (row) => row.race));
     list.add(
         DaviColumn(name: 'Class', width: 110, stringValue: (row) => row.cls));
     list.add(
         DaviColumn(name: 'Level', width: 70, intValue: (row) => row.level));
-    if (_columnsWithIcon) {
+    if (_columnsWithCustomWidget) {
       list.add(DaviColumn(
           name: 'Skills',
           width: 100,
@@ -181,9 +179,9 @@ class _HomePageState extends State<HomePage> {
                   onChanged: _onMultipleSortSwitch,
                   text: 'Multiple sort'),
               CheckboxUtil.build(
-                  value: _columnsWithIcon,
-                  onChanged: _onColumnsWithIcon,
-                  text: 'Columns with icons widget'),
+                  value: _columnsWithCustomWidget,
+                  onChanged: _onColumnsWithCustomWidget,
+                  text: 'Columns with custom widget'),
               CheckboxUtil.build(
                   value: _headerVisible,
                   onChanged: _onHeaderVisible,
@@ -338,9 +336,9 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  void _onColumnsWithIcon() {
+  void _onColumnsWithCustomWidget() {
     setState(() {
-      _columnsWithIcon = !_columnsWithIcon;
+      _columnsWithCustomWidget = !_columnsWithCustomWidget;
       _buildModel().then((model) {
         setState(() {
           _model = model;

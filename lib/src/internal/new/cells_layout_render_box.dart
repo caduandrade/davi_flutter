@@ -1,7 +1,6 @@
 import 'package:davi/davi.dart';
 import 'package:davi/src/internal/new/hover_notifier.dart';
 import 'package:davi/src/internal/new/row_region.dart';
-import 'package:davi/src/internal/new/value_cache.dart';
 import 'package:flutter/foundation.dart';
 import 'package:davi/src/internal/column_metrics.dart';
 import 'package:davi/src/internal/new/cells_layout_parent_data.dart';
@@ -38,12 +37,8 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
       required Color? columnDividerColor,
       required Color? dividerColor,
       required DaviRowColor<DATA>? rowColor,
-      required CellNullColor? nullValueColor,
-      required ValueCache<DATA> valueCache,
       required DaviModel<DATA> model})
       : _model = model,
-        _valueCache = valueCache,
-        _nullValueColor = nullValueColor,
         _cellHeight = cellHeight,
         _rowHeight = rowHeight,
         _verticalOffset = verticalOffset,
@@ -65,24 +60,6 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
     _areaBounds[PinStatus.left] = leftPinnedAreaBounds;
     _areaBounds[PinStatus.none] = unpinnedAreaBounds;
     _hoverNotifier.addListener(markNeedsPaint);
-  }
-
-  CellNullColor? _nullValueColor;
-
-  set nullValueColor(CellNullColor? value) {
-    if (_nullValueColor != value) {
-      _nullValueColor = value;
-      markNeedsPaint();
-    }
-  }
-
-  ValueCache<DATA> _valueCache;
-
-  set valueCache(ValueCache<DATA> value) {
-    if (_valueCache != value) {
-      _valueCache = value;
-      markNeedsPaint();
-    }
   }
 
   DaviModel<DATA> _model;
@@ -312,14 +289,14 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
         renderBox.layout(
             BoxConstraints.tightFor(
                 width: columnMetrics.width, height: _cellHeight),
-            parentUsesSize: true);
+            parentUsesSize: false);
         _cells.add(renderBox);
       } else {
         // trailing
         renderBox.layout(
             BoxConstraints.tightFor(
                 width: constraints.maxWidth, height: _cellHeight),
-            parentUsesSize: true);
+            parentUsesSize: false);
         _trailing = renderBox;
       }
       renderBox._parentData().offset = const Offset(0, 0);
@@ -380,14 +357,12 @@ columnResizing:  model != null && columnNotifier.resizing
       }
     }
 
-    Paint cellBackgroundPaint = Paint();
-
-    // cells
+    // cell widgets
     for (RenderBox child in _cells) {
       final CellsLayoutParentData childParentData = child._parentData();
       final int rowIndex = childParentData.rowIndex!;
       final int columnIndex = childParentData.columnIndex!;
-      // cell
+
       final ColumnMetrics columnMetrics = _columnsMetrics[columnIndex];
       final PinStatus pinStatus = columnMetrics.pinStatus;
       final double horizontalOffset =
@@ -400,27 +375,6 @@ columnResizing:  model != null && columnNotifier.resizing
       final double top = (rowIndex * _rowHeight) - _verticalOffset;
       final Offset childOffset =
           offset.translate(columnMetrics.offset - horizontalOffset, top);
-
-      // cell background
-      if (rowIndex < _model.rowsLength) {
-        DaviColumn<DATA> column = _model.columnAt(columnIndex);
-        Color? background;
-        if (_nullValueColor != null &&
-            _valueCache.isNull(rowIndex: rowIndex, columnIndex: columnIndex)) {
-          background =
-              _nullValueColor!(rowIndex, rowIndex == _hoverNotifier.index);
-        } else if (column.cellBackground != null) {
-          background = column.cellBackground!(_model.rowAt(rowIndex), rowIndex,
-              rowIndex == _hoverNotifier.index);
-        }
-        if (background != null) {
-          cellBackgroundPaint.color = background;
-          context.canvas.drawRect(
-              Rect.fromLTWH(childOffset.dx, childOffset.dy, child.size.width,
-                  child.size.height),
-              cellBackgroundPaint);
-        }
-      }
 
       context.paintChild(child, childOffset);
       context.canvas.restore();

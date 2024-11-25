@@ -4,7 +4,6 @@ import 'package:davi/src/internal/new/cells_layout_element.dart';
 import 'package:davi/src/internal/new/cells_layout_render_box.dart';
 import 'package:davi/src/internal/new/davi_context.dart';
 import 'package:davi/src/internal/new/row_region.dart';
-import 'package:davi/src/internal/new/value_cache.dart';
 import 'package:davi/src/internal/scroll_offsets.dart';
 import 'package:davi/src/internal/table_layout_settings.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +22,6 @@ class CellsLayout<DATA> extends MultiChildRenderObjectWidget {
       required this.unpinnedAreaBounds,
       required this.rowsLength,
       required this.rowRegionCache,
-      required this.valueCache,
       required List<CellsLayoutChild> children})
       : super(key: key, children: children);
 
@@ -35,15 +33,12 @@ class CellsLayout<DATA> extends MultiChildRenderObjectWidget {
   final Rect unpinnedAreaBounds;
   final RowRegionCache rowRegionCache;
   final int rowsLength;
-  final ValueCache<DATA> valueCache;
 
   @override
   RenderObject createRenderObject(BuildContext context) {
     DaviThemeData theme = DaviTheme.of(context);
     return CellsLayoutRenderBox<DATA>(
         model: daviContext.model,
-        valueCache: valueCache,
-        nullValueColor: theme.cell.nullValueColor,
         hoverBackground: theme.row.hoverBackground,
         hoverForeground: theme.row.hoverForeground,
         cellHeight: layoutSettings.themeMetrics.cell.height,
@@ -97,8 +92,6 @@ class CellsLayout<DATA> extends MultiChildRenderObjectWidget {
       ..columnDividerThickness = theme.columnDividerThickness
       ..themeRowColor = theme.row.color
       ..rowColor = daviContext.rowColor
-      ..nullValueColor = theme.cell.nullValueColor
-      ..model = daviContext.model
-      ..valueCache = valueCache;
+      ..model = daviContext.model;
   }
 }

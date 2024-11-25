@@ -1,5 +1,7 @@
 import 'package:davi/src/cell_icon.dart';
 import 'package:davi/src/column.dart';
+import 'package:davi/src/internal/new/cell_painter.dart';
+import 'package:davi/src/internal/new/painter_cache.dart';
 import 'package:davi/src/internal/new/davi_context.dart';
 import 'package:davi/src/theme/theme.dart';
 import 'package:davi/src/theme/theme_data.dart';
@@ -8,20 +10,20 @@ import 'package:meta/meta.dart';
 
 @internal
 class CellWidget<DATA> extends StatelessWidget {
-  final int columnIndex;
-  final DATA data;
-  final int rowIndex;
-  final DaviColumn<DATA> column;
-  final DaviContext daviContext;
-
   const CellWidget(
       {Key? key,
       required this.data,
       required this.rowIndex,
       required this.column,
-      required this.columnIndex,
-      required this.daviContext})
+      required this.daviContext,
+      required this.painterCache})
       : super(key: key);
+
+  final DATA data;
+  final int rowIndex;
+  final DaviColumn<DATA> column;
+  final DaviContext daviContext;
+  final PainterCache<DATA> painterCache;
 
   @override
   Widget build(BuildContext context) {
@@ -29,49 +31,66 @@ class CellWidget<DATA> extends StatelessWidget {
 
     // Theme
     EdgeInsets? padding = theme.cell.padding;
-    Alignment? alignment = theme.cell.alignment;
+    Alignment alignment = theme.cell.alignment;
     TextStyle? textStyle = theme.cell.textStyle;
-    TextOverflow? overflow = theme.cell.overflow;
     // Entire column
     padding = column.cellPadding ?? padding;
     alignment = column.cellAlignment ?? alignment;
     textStyle = column.cellTextStyle ?? textStyle;
-    overflow = column.cellOverflow ?? overflow;
 
     Widget? child;
+    String? value;
+
+    bool hasCustomWidget = false;
     if (column.cellBuilder != null) {
+      hasCustomWidget = true;
       child = column.cellBuilder!(
           context, data, rowIndex, rowIndex == daviContext.hoverNotifier.index);
     } else if (column.iconValueMapper != null) {
       CellIcon? cellIcon = column.iconValueMapper!(data);
       if (cellIcon != null) {
-        child = Icon(cellIcon.icon, color: cellIcon.color, size: cellIcon.size);
+        value = String.fromCharCode(cellIcon.icon.codePoint);
+        textStyle = TextStyle(
+            fontSize: cellIcon.size,
+            fontFamily: cellIcon.icon.fontFamily,
+            package: cellIcon.icon.fontPackage,
+            color: cellIcon.color);
       }
     } else {
-      String? value = _stringValue(column: column, data: data);
-      if (value != null) {
-        child = Text(value,
-            overflow: overflow ?? theme.cell.overflow,
-            style: textStyle ?? theme.cell.textStyle);
-      }
-    }
-    if (child != null) {
-      child = Align(alignment: alignment, child: child);
-      if (padding != null) {
-        child = Padding(padding: padding, child: child);
-      }
+      value = _stringValue(column: column, data: data);
     }
 
-    if (column.cellClip) {
-      child = ClipRect(child: child);
+    if (child == null && value != null) {
+      child = CellPainter(
+          text: value, painterCache: painterCache, textStyle: textStyle);
     }
+
     if (daviContext.semanticsEnabled && column.semanticsBuilder != null) {
-      return Semantics.fromProperties(
+      child = Semantics.fromProperties(
           properties: column.semanticsBuilder!(context, data, rowIndex,
               rowIndex == daviContext.hoverNotifier.index),
           child: child);
     }
-    return child ?? Container();
+
+    child = Padding(padding: padding ?? EdgeInsets.zero, child: child);
+    child = Align(alignment: alignment, child: child);
+
+    Color? background;
+    if (!hasCustomWidget &&
+        value == null &&
+        theme.cell.nullValueColor != null) {
+      background = theme.cell.nullValueColor!(
+          rowIndex, rowIndex == daviContext.hoverNotifier.index);
+    } else if (column.cellBackground != null) {
+      background = column.cellBackground!(
+          data, rowIndex, rowIndex == daviContext.hoverNotifier.index);
+    }
+    child = Container(color: background, child: child);
+
+    if (column.cellClip) {
+      child = ClipRect(child: child);
+    }
+    return child;
   }
 
   String? _stringValue({required DaviColumn<DATA> column, required DATA data}) {

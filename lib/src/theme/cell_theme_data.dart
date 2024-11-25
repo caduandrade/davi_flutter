@@ -10,7 +10,6 @@ class CellThemeData {
       this.nullValueColor,
       this.background,
       this.contentHeight = CellThemeDataDefaults.contentHeight,
-      this.overflow = CellThemeDataDefaults.overflow,
       this.alignment = CellThemeDataDefaults.alignment,
       this.padding = CellThemeDataDefaults.padding,
       this.overrideInputDecoration =
@@ -27,8 +26,6 @@ class CellThemeData {
   final double contentHeight;
 
   final Alignment alignment;
-
-  final TextOverflow? overflow;
 
   /// Defines a background.
   final Color? background;
@@ -49,7 +46,6 @@ class CellThemeData {
           padding == other.padding &&
           contentHeight == other.contentHeight &&
           alignment == other.alignment &&
-          overflow == other.overflow &&
           background == other.background &&
           nullValueColor == other.nullValueColor &&
           overrideInputDecoration == other.overrideInputDecoration;
@@ -60,7 +56,6 @@ class CellThemeData {
       padding.hashCode ^
       contentHeight.hashCode ^
       alignment.hashCode ^
-      overflow.hashCode ^
       background.hashCode ^
       nullValueColor.hashCode ^
       overrideInputDecoration.hashCode;
@@ -68,7 +63,6 @@ class CellThemeData {
 
 class CellThemeDataDefaults {
   static const double contentHeight = 32;
-  static const TextOverflow overflow = TextOverflow.ellipsis;
   static const EdgeInsets padding = EdgeInsets.only(left: 8, right: 8);
   static const Alignment alignment = Alignment.centerLeft;
   static const bool overrideInputDecoration = true;
