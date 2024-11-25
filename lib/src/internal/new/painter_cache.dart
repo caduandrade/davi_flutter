@@ -4,8 +4,11 @@ import 'package:meta/meta.dart';
 
 @internal
 class PainterCache<DATA> {
-  //TODO set cache max de linhas
-  final FifoCache<_Key, TextPainter> _cache = FifoCache(900);
+  final FifoCache<_Key, TextPainter> _cache = FifoCache();
+
+  set size(int size) {
+    _cache.maxSize = size;
+  }
 
   TextPainter getTextPainter(
       {required double width,

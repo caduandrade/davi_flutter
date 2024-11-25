@@ -35,21 +35,24 @@ class TableContent<DATA> extends StatefulWidget {
 
 @internal
 class TableContentState<DATA> extends State<TableContent<DATA>> {
-  final PainterCache<DATA> _cellRenderCache = PainterCache();
+  final PainterCache<DATA> _painterCache = PainterCache();
 
   @override
   void initState() {
     super.initState();
+    _updatePainterCacheSize();
   }
 
   @override
   void didUpdateWidget(covariant TableContent<DATA> oldWidget) {
     super.didUpdateWidget(oldWidget);
+    _updatePainterCacheSize();
   }
 
-  @override
-  void dispose() {
-    super.dispose();
+  void _updatePainterCacheSize() {
+    _painterCache.size = widget.layoutSettings.maxVisibleRows *
+        2 *
+        widget.layoutSettings.columnsMetrics.length;
   }
 
   @override
@@ -131,7 +134,7 @@ class TableContentState<DATA> extends State<TableContent<DATA>> {
 
           Widget? cellWidget = CellWidget<DATA>(
               daviContext: widget.daviContext,
-              painterCache: _cellRenderCache,
+              painterCache: _painterCache,
               data: data,
               column: column,
               rowIndex: rowIndex);

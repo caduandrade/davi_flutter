@@ -355,6 +355,9 @@ class TableLayoutSettings {
     throw ArgumentError('Not recognized $pinStatus');
   }
 
+  int get maxVisibleRows =>
+      (cellsBounds.height / themeMetrics.row.height).ceil();
+
   @override
   final int hashCode;
 

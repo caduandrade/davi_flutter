@@ -2,16 +2,24 @@ import 'package:meta/meta.dart';
 
 @internal
 class FifoCache<K, V> {
-  final int maxSize;
+  FifoCache({int maxSize = 100}) : _maxSize = maxSize > 0 ? maxSize : 1;
+
+  int _maxSize;
   final Map<K, V> _map = {};
   final List<K> _order = [];
 
-  FifoCache(this.maxSize);
+  set maxSize(int value) {
+    if (value > 0) {
+      _maxSize = value;
+    }
+  }
 
   void put(K key, V value) {
     if (_map.containsKey(key)) {
       _order.remove(key);
-    } else if (_order.length == maxSize) {
+    }
+
+    if (_order.length > _maxSize) {
       var oldestKey = _order.removeAt(0);
       _map.remove(oldestKey);
     }
