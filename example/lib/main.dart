@@ -142,14 +142,14 @@ class _HomePageState extends State<HomePage> {
               dividerColor: Colors.pink,
               color: RowThemeData.zebraColor(
                   evenColor: Colors.pink[100], oddColor: Colors.yellow[100]),
-              hoverBackground: (index) => Colors.blue[300],
+            //  hoverBackground: (index) => Colors.blue[300],
               hoverForeground: (index) => Colors.blue[300]!.withOpacity(.5),
             ),
             cell: CellThemeData(
                 nullValueColor: (index, hover) =>
                     hover ? Colors.yellow : Colors.orange)),
         child: Davi<Person>(_model,
-            onHover: (index) => print('hover: $index'),
+           // onHover: (index) => print('hover: $index'),
             onRowTap: _onRowTap,
             //  onLastVisibleRow: (index)=>print('last visible row: $index ${DateTime.now()}'),
             //  onTrailingWidget: (visible)=>print('trailing widget: $visible ${DateTime.now()}'),

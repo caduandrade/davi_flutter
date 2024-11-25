@@ -37,7 +37,8 @@ class _DaviHeaderCellState extends State<DaviHeaderCell> {
 
     final bool sortEnabled = widget.daviContext.tapToSortEnabled &&
         !_resizing &&
-        !widget.daviContext.columnNotifier.resizing;
+        !widget.daviContext.columnNotifier.resizing &&
+        !widget.daviContext.scrolling;
     final bool resizable = widget.resizable &&
         widget.column.resizable &&
         widget.column.grow == null &&

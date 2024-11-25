@@ -197,7 +197,8 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
         onRowTap: widget.onRowTap,
         onRowSecondaryTap: widget.onRowSecondaryTap,
         onRowSecondaryTapUp: widget.onRowSecondaryTapUp,
-        onRowDoubleTap: widget.onRowDoubleTap);
+        onRowDoubleTap: widget.onRowDoubleTap,
+        scrolling: _scrolling);
     final DaviThemeData theme = DaviTheme.of(context);
     final TableThemeMetrics themeMetrics = TableThemeMetrics(theme);
 

@@ -22,7 +22,7 @@ class TableEvents<DATA> extends StatelessWidget {
       : super(key: key);
 
   final Widget child;
-  final DaviContext daviContext;
+  final DaviContext<DATA> daviContext;
 
   final RowRegionCache rowBoundsCache;
 
@@ -65,7 +65,6 @@ class TableEvents<DATA> extends StatelessWidget {
           child: widget);
 
       if (daviContext.focusable) {
-        //TODO from parent?
         final TableThemeMetrics themeMetrics = TableThemeMetrics(theme);
 
         widget = Focus(

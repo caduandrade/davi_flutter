@@ -27,7 +27,8 @@ class DaviContext<DATA> {
       required this.onRowSecondaryTap,
       required this.onRowDoubleTap,
       required this.onRowTap,
-      required this.tapToSortEnabled});
+      required this.tapToSortEnabled,
+      required this.scrolling});
 
   final HoverNotifier hoverNotifier;
   final ColumnNotifier columnNotifier;
@@ -45,6 +46,7 @@ class DaviContext<DATA> {
   final RowTapCallback<DATA>? onRowTap;
   final RowTapCallback<DATA>? onRowSecondaryTap;
   final RowTapUpCallback<DATA>? onRowSecondaryTapUp;
+  final bool scrolling;
 
   bool get hasCallback =>
       onRowDoubleTap != null ||
