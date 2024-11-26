@@ -32,6 +32,9 @@ class DaviModel<DATA> extends ChangeNotifier {
 
   final bool multiSortEnabled;
 
+  bool _hasSummary = false;
+  bool get hasSummary => _hasSummary;
+
   /// Gets the sorted columns.
   List<DaviColumn<DATA>> get sortedColumns {
     List<DaviColumn<DATA>> list =
@@ -163,6 +166,7 @@ class DaviModel<DATA> extends ChangeNotifier {
     column.clearSort();
     _columns.add(column);
     _checkColumnIdCollision();
+    _checkSummary();
     column.addListener(notifyListeners);
     _ensureSort();
     notifyListeners();
@@ -175,6 +179,7 @@ class DaviModel<DATA> extends ChangeNotifier {
       column.addListener(notifyListeners);
     }
     _checkColumnIdCollision();
+    _checkSummary();
     _ensureSort();
     notifyListeners();
   }
@@ -191,6 +196,7 @@ class DaviModel<DATA> extends ChangeNotifier {
   /// Remove all columns.
   void removeColumns() {
     _columns.clear();
+    _hasSummary = false;
     _updateRows(notify: true);
   }
 
@@ -212,8 +218,13 @@ class DaviModel<DATA> extends ChangeNotifier {
         }
         _updateRows(notify: false);
       }
+      _checkSummary();
       notifyListeners();
     }
+  }
+
+  void _checkSummary() {
+    _hasSummary = _columns.any((column) => column.summaryValue != null);
   }
 
   void _notifyOnSort() {

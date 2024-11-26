@@ -1,7 +1,11 @@
 import 'package:davi/src/column_width_behavior.dart';
+import 'package:davi/src/internal/header_widget.dart';
+import 'package:davi/src/internal/layout_child_id.dart';
 import 'package:davi/src/internal/new/davi_context.dart';
+import 'package:davi/src/internal/new/table_content.dart';
 import 'package:davi/src/internal/scroll_controllers.dart';
 import 'package:davi/src/internal/scroll_offsets.dart';
+import 'package:davi/src/internal/table_corner.dart';
 import 'package:davi/src/internal/table_layout.dart';
 import 'package:davi/src/internal/table_layout_child.dart';
 import 'package:davi/src/internal/table_layout_settings.dart';
@@ -47,7 +51,8 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
     final List<TableLayoutChild> children = [];
 
     if (layoutSettings.hasVerticalScrollbar) {
-      children.add(TableLayoutChild.verticalScrollbar(
+      children.add(TableLayoutChild(
+          id: LayoutChildId.verticalScrollbar,
           child: TableScrollbar(
               axis: Axis.vertical,
               contentSize: layoutSettings.contentHeight,
@@ -58,14 +63,17 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
     }
 
     if (daviContext.themeMetrics.header.visible) {
-      children.add(TableLayoutChild.header(
-          daviContext: daviContext,
-          layoutSettings: layoutSettings,
-          resizable:
-              daviContext.columnWidthBehavior == ColumnWidthBehavior.scrollable,
-          horizontalScrollOffsets: horizontalScrollOffsets));
+      children.add(TableLayoutChild(
+          id: LayoutChildId.header,
+          child: HeaderWidget(
+              daviContext: daviContext,
+              layoutSettings: layoutSettings,
+              resizable: daviContext.columnWidthBehavior ==
+                  ColumnWidthBehavior.scrollable,
+              horizontalScrollOffsets: horizontalScrollOffsets)));
       if (layoutSettings.hasVerticalScrollbar) {
-        children.add(TableLayoutChild.topCorner());
+        children.add(TableLayoutChild(
+            id: LayoutChildId.topCorner, child: const TableCorner(top: true)));
       }
     }
 
@@ -77,25 +85,37 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
           borderColor: theme.scrollbar.pinnedHorizontalBorderColor,
           contentSize: layoutSettings.leftPinnedContentWidth,
           onDragScroll: onDragScroll);
-      children.add(TableLayoutChild.leftPinnedHorizontalScrollbar(
-          leftPinnedHorizontalScrollbar));
-      children.add(TableLayoutChild.unpinnedHorizontalScrollbar(TableScrollbar(
-          axis: Axis.horizontal,
-          scrollController: scrollControllers.unpinnedHorizontal,
-          color: theme.scrollbar.unpinnedHorizontalColor,
-          borderColor: theme.scrollbar.unpinnedHorizontalBorderColor,
-          contentSize: layoutSettings.unpinnedContentWidth,
-          onDragScroll: onDragScroll)));
+      children.add(TableLayoutChild(
+          id: LayoutChildId.leftPinnedHorizontalScrollbar,
+          child: leftPinnedHorizontalScrollbar));
+      children.add(TableLayoutChild(
+          id: LayoutChildId.unpinnedHorizontalScrollbar,
+          child: TableScrollbar(
+              axis: Axis.horizontal,
+              scrollController: scrollControllers.unpinnedHorizontal,
+              color: theme.scrollbar.unpinnedHorizontalColor,
+              borderColor: theme.scrollbar.unpinnedHorizontalBorderColor,
+              contentSize: layoutSettings.unpinnedContentWidth,
+              onDragScroll: onDragScroll)));
       if (layoutSettings.hasVerticalScrollbar) {
-        children.add(TableLayoutChild.bottomCorner());
+        children.add(TableLayoutChild(
+            id: LayoutChildId.bottomCorner,
+            child: const TableCorner(top: false)));
       }
     }
 
-    children.add(TableLayoutChild<DATA>.cells(
-        daviContext: daviContext,
-        layoutSettings: layoutSettings,
-        horizontalScrollOffsets: horizontalScrollOffsets,
-        verticalScrollController: scrollControllers.vertical));
+    children.add(TableLayoutChild(
+        id: LayoutChildId.cells,
+        child: TableContent(
+            daviContext: daviContext,
+            layoutSettings: layoutSettings,
+            horizontalScrollOffsets: horizontalScrollOffsets,
+            verticalScrollController: scrollControllers.vertical)));
+
+    if (daviContext.model.hasSummary) {
+      children.add(TableLayoutChild(
+          id: LayoutChildId.summary, child: Container(color: Colors.green)));
+    }
 
     return TableLayout<DATA>(
         layoutSettings: layoutSettings,

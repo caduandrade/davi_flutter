@@ -3,6 +3,7 @@ import 'package:davi/src/theme/header_cell_theme_data.dart';
 import 'package:davi/src/theme/header_theme_data.dart';
 import 'package:davi/src/theme/row_theme_data.dart';
 import 'package:davi/src/theme/scrollbar_theme_data.dart';
+import 'package:davi/src/theme/summary_theme_data.dart';
 import 'package:flutter/material.dart';
 
 //TODO handle negative values
@@ -25,6 +26,7 @@ class DaviThemeData {
       this.row = const RowThemeData(),
       this.cell = const CellThemeData(),
       this.header = const HeaderThemeData(),
+      this.summary = const SummaryThemeData(),
       this.headerCell = const HeaderCellThemeData(),
       this.scrollbar = const TableScrollbarThemeData()});
 
@@ -34,6 +36,7 @@ class DaviThemeData {
   final BoxDecoration? decoration;
   final CellThemeData cell;
   final HeaderThemeData header;
+  final SummaryThemeData summary;
   final HeaderCellThemeData headerCell;
   final RowThemeData row;
   final TableScrollbarThemeData scrollbar;
@@ -53,6 +56,7 @@ class DaviThemeData {
           decoration == other.decoration &&
           cell == other.cell &&
           header == other.header &&
+          summary == other.summary &&
           headerCell == other.headerCell &&
           row == other.row &&
           scrollbar == other.scrollbar &&
@@ -69,6 +73,7 @@ class DaviThemeData {
       decoration.hashCode ^
       cell.hashCode ^
       header.hashCode ^
+      summary.hashCode ^
       headerCell.hashCode ^
       row.hashCode ^
       scrollbar.hashCode ^

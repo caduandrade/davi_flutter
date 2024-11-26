@@ -78,7 +78,9 @@ class _HomePageState extends State<HomePage> {
           DaviColumn(
               name: 'Age',
               intValue: (data) => data.age,
-              pinStatus: PinStatus.left),
+              pinStatus: PinStatus.left,
+          summaryValue: (data)=>'test'
+    ),
           DaviColumn(
               name: 'Value',
               intValue: (data) => data.value,
@@ -153,7 +155,8 @@ class _HomePageState extends State<HomePage> {
             onRowTap: _onRowTap,
             //  onLastVisibleRow: (index)=>print('last visible row: $index ${DateTime.now()}'),
             //  onTrailingWidget: (visible)=>print('trailing widget: $visible ${DateTime.now()}'),
-            trailingWidget: const Center(child: Text('last widget'))));
+           // trailingWidget: const Center(child: Text('last widget'))
+          ));
 
     return Scaffold(
         body: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [

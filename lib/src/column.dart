@@ -35,11 +35,12 @@ class DaviColumn<DATA> extends ChangeNotifier {
       this.leading,
       DaviDataComparator<DATA>? dataComparator,
       this.pinStatus = PinStatus.none,
-      DaviIntValueMapper<DATA>? intValue,
-      DaviDoubleValueMapper<DATA>? doubleValue,
-      DaviStringValueMapper<DATA>? stringValue,
-      DaviIconValueMapper<DATA>? iconValue,
-      DaviObjectValueMapper<DATA>? objectValue,
+      this.intValue,
+      this.doubleValue,
+      this.stringValue,
+      this.iconValue,
+      this.objectValue,
+      this.summaryValue,
       this.resizable = true,
       this.cellClip = false,
       this.sortable = true,
@@ -47,11 +48,6 @@ class DaviColumn<DATA> extends ChangeNotifier {
       : id = id ?? DaviColumnId(),
         _width = width,
         _grow = grow != null ? math.max(1, grow) : null,
-        stringValueMapper = stringValue,
-        intValueMapper = intValue,
-        iconValueMapper = iconValue,
-        doubleValueMapper = doubleValue,
-        objectValueMapper = objectValue,
         dataComparator = dataComparator ??
             _buildDataComparator(
                 intValue, doubleValue, stringValue, iconValue, objectValue);
@@ -90,11 +86,13 @@ class DaviColumn<DATA> extends ChangeNotifier {
   /// according to value mappings.
   final DaviDataComparator<DATA> dataComparator;
 
-  final DaviIntValueMapper<DATA>? intValueMapper;
-  final DaviDoubleValueMapper<DATA>? doubleValueMapper;
-  final DaviStringValueMapper<DATA>? stringValueMapper;
-  final DaviObjectValueMapper<DATA>? objectValueMapper;
-  final DaviIconValueMapper<DATA>? iconValueMapper;
+  final DaviIntValueMapper<DATA>? intValue;
+  final DaviDoubleValueMapper<DATA>? doubleValue;
+  final DaviStringValueMapper<DATA>? stringValue;
+  final DaviObjectValueMapper<DATA>? objectValue;
+  final DaviIconValueMapper<DATA>? iconValue;
+
+  final DaviStringValueMapper<DATA>? summaryValue;
 
   /// Indicates whether the cell widget should be clipped.
   final bool cellClip;

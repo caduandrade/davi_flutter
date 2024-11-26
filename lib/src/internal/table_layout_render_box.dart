@@ -29,6 +29,7 @@ class TableLayoutRenderBox<DATA> extends RenderBox
   RenderBox? _leftPinnedHorizontalScrollbar;
   RenderBox? _topCorner;
   RenderBox? _bottomCorner;
+  RenderBox? _summary;
 
   HorizontalScrollOffsets _horizontalScrollOffsets;
 
@@ -75,6 +76,7 @@ class TableLayoutRenderBox<DATA> extends RenderBox
     _verticalScrollbar = null;
     _topCorner = null;
     _bottomCorner = null;
+    _summary = null;
 
     visitChildren((child) {
       RenderBox renderBox = child as RenderBox;
@@ -93,6 +95,8 @@ class TableLayoutRenderBox<DATA> extends RenderBox
         _bottomCorner = renderBox;
       } else if (parentData.id == LayoutChildId.header) {
         _header = renderBox;
+      } else if (parentData.id == LayoutChildId.summary) {
+        _summary = renderBox;
       }
     });
 
@@ -108,6 +112,17 @@ class TableLayoutRenderBox<DATA> extends RenderBox
 
     // rows
     _layoutChild(child: _rows, bounds: _layoutSettings.cellsBounds);
+    if (_summary != null) {
+      _summary!.layout(
+          BoxConstraints.tightFor(
+              width: _layoutSettings.summaryBounds.width,
+              height: _layoutSettings.summaryBounds.height),
+          parentUsesSize: true);
+      _summary!._parentData().offset = Offset(
+          0,
+          _layoutSettings.headerBounds.height +
+              _layoutSettings.cellsBounds.height);
+    }
 
     // horizontal scrollbars
     _layoutChild(
@@ -207,6 +222,8 @@ class TableLayoutRenderBox<DATA> extends RenderBox
         child: _bottomCorner,
         clipBounds: null);
     _paintChild(
+        context: context, offset: offset, child: _summary, clipBounds: null);
+    _paintChild(
         context: context,
         offset: offset,
         child: _rows,
@@ -227,7 +244,8 @@ class TableLayoutRenderBox<DATA> extends RenderBox
                   _layoutSettings.leftPinnedHorizontalScrollbarBounds.width,
               offset.dy +
                   _layoutSettings.headerBounds.height +
-                  _layoutSettings.cellsBounds.height,
+                  _layoutSettings.cellsBounds.height +
+                  _layoutSettings.summaryBounds.height,
               _layoutSettings.themeMetrics.columnDividerThickness,
               _layoutSettings.leftPinnedHorizontalScrollbarBounds.height),
           Paint()..color = _theme.scrollbar.columnDividerColor!);
