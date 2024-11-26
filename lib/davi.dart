@@ -25,6 +25,8 @@ export 'src/theme/sort_icon.dart';
 export 'src/theme/cell_theme_data.dart';
 export 'src/theme/header_cell_theme_data.dart';
 export 'src/theme/header_theme_data.dart';
+export 'src/theme/edge_theme_data.dart';
+export 'src/theme/summary_theme_data.dart';
 export 'src/theme/row_theme_data.dart';
 export 'src/theme/scrollbar_theme_data.dart';
 export 'src/theme/theme.dart';

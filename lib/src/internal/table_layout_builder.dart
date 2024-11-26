@@ -2,10 +2,11 @@ import 'package:davi/src/column_width_behavior.dart';
 import 'package:davi/src/internal/header_widget.dart';
 import 'package:davi/src/internal/layout_child_id.dart';
 import 'package:davi/src/internal/new/davi_context.dart';
+import 'package:davi/src/internal/new/summary_widget.dart';
 import 'package:davi/src/internal/new/table_content.dart';
 import 'package:davi/src/internal/scroll_controllers.dart';
 import 'package:davi/src/internal/scroll_offsets.dart';
-import 'package:davi/src/internal/table_corner.dart';
+import 'package:davi/src/internal/table_edge.dart';
 import 'package:davi/src/internal/table_layout.dart';
 import 'package:davi/src/internal/table_layout_child.dart';
 import 'package:davi/src/internal/table_layout_settings.dart';
@@ -73,7 +74,8 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
               horizontalScrollOffsets: horizontalScrollOffsets)));
       if (layoutSettings.hasVerticalScrollbar) {
         children.add(TableLayoutChild(
-            id: LayoutChildId.topCorner, child: const TableCorner(top: true)));
+            id: LayoutChildId.topCorner,
+            child: const TableEdge(type: CornerType.header)));
       }
     }
 
@@ -100,7 +102,7 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
       if (layoutSettings.hasVerticalScrollbar) {
         children.add(TableLayoutChild(
             id: LayoutChildId.bottomCorner,
-            child: const TableCorner(top: false)));
+            child: const TableEdge(type: CornerType.scrollbar)));
       }
     }
 
@@ -114,7 +116,8 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
 
     if (daviContext.model.hasSummary) {
       children.add(TableLayoutChild(
-          id: LayoutChildId.summary, child: Container(color: Colors.green)));
+          id: LayoutChildId.summary,
+          child: SummaryWidget(daviContext: daviContext)));
     }
 
     return TableLayout<DATA>(

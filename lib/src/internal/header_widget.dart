@@ -56,11 +56,11 @@ class HeaderWidget<DATA> extends StatelessWidget {
 
     Color? color = theme.header.color;
     BoxBorder? border;
-    if (theme.header.bottomBorderHeight > 0 &&
+    if (theme.header.bottomBorderThickness > 0 &&
         theme.header.bottomBorderColor != null) {
       border = Border(
           bottom: BorderSide(
-              width: theme.header.bottomBorderHeight,
+              width: theme.header.bottomBorderThickness,
               color: theme.header.bottomBorderColor!));
     }
 

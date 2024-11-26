@@ -79,7 +79,7 @@ class _HomePageState extends State<HomePage> {
               name: 'Age',
               intValue: (data) => data.age,
               pinStatus: PinStatus.left,
-          summaryValue: (data)=>'test'
+              summaryValue: (data)=>'test'
     ),
           DaviColumn(
               name: 'Value',

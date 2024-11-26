@@ -9,5 +9,6 @@ enum LayoutChildId {
   verticalScrollbar,
   summary,
   topCorner,
+  //TODO rename
   bottomCorner
 }

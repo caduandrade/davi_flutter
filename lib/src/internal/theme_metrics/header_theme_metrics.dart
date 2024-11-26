@@ -9,9 +9,9 @@ class HeaderThemeMetrics {
       {required HeaderThemeData headerThemeData,
       required HeaderCellThemeMetrics headerCellThemeMetrics})
       : visible = headerThemeData.visible,
-        bottomBorderHeight = headerThemeData.bottomBorderHeight,
-        height =
-            headerCellThemeMetrics.height + headerThemeData.bottomBorderHeight;
+        bottomBorderHeight = headerThemeData.bottomBorderThickness,
+        height = headerCellThemeMetrics.height +
+            headerThemeData.bottomBorderThickness;
 
   final bool visible;
   final double bottomBorderHeight;
