@@ -27,8 +27,9 @@ class TableLayoutRenderBox<DATA> extends RenderBox
   RenderBox? _verticalScrollbar;
   RenderBox? _unpinnedHorizontalScrollbar;
   RenderBox? _leftPinnedHorizontalScrollbar;
-  RenderBox? _topCorner;
-  RenderBox? _bottomCorner;
+  RenderBox? _headerEdge;
+  RenderBox? _scrollbarEdge;
+  RenderBox? _summaryEdge;
   RenderBox? _summary;
 
   HorizontalScrollOffsets _horizontalScrollOffsets;
@@ -74,8 +75,9 @@ class TableLayoutRenderBox<DATA> extends RenderBox
     _unpinnedHorizontalScrollbar = null;
     _leftPinnedHorizontalScrollbar = null;
     _verticalScrollbar = null;
-    _topCorner = null;
-    _bottomCorner = null;
+    _headerEdge = null;
+    _scrollbarEdge = null;
+    _summaryEdge = null;
     _summary = null;
 
     visitChildren((child) {
@@ -89,14 +91,16 @@ class TableLayoutRenderBox<DATA> extends RenderBox
         _unpinnedHorizontalScrollbar = renderBox;
       } else if (parentData.id == LayoutChildId.leftPinnedHorizontalScrollbar) {
         _leftPinnedHorizontalScrollbar = renderBox;
-      } else if (parentData.id == LayoutChildId.topCorner) {
-        _topCorner = renderBox;
-      } else if (parentData.id == LayoutChildId.bottomCorner) {
-        _bottomCorner = renderBox;
+      } else if (parentData.id == LayoutChildId.headerEdge) {
+        _headerEdge = renderBox;
+      } else if (parentData.id == LayoutChildId.scrollbarEdge) {
+        _scrollbarEdge = renderBox;
       } else if (parentData.id == LayoutChildId.header) {
         _header = renderBox;
       } else if (parentData.id == LayoutChildId.summary) {
         _summary = renderBox;
+      } else if (parentData.id == LayoutChildId.summaryEdge) {
+        _summaryEdge = renderBox;
       }
     });
 
@@ -137,26 +141,42 @@ class TableLayoutRenderBox<DATA> extends RenderBox
         child: _verticalScrollbar,
         bounds: _layoutSettings.verticalScrollbarBounds);
 
-    // top corner
-    if (_topCorner != null) {
-      _topCorner!.layout(
+    // header edge
+    if (_headerEdge != null) {
+      _headerEdge!.layout(
           BoxConstraints.tightFor(
               width: _layoutSettings.themeMetrics.scrollbar.width,
               height: _layoutSettings.themeMetrics.header.height),
           parentUsesSize: true);
-      _topCorner!._parentData().offset = Offset(
+      _headerEdge!._parentData().offset = Offset(
           constraints.maxWidth - _layoutSettings.themeMetrics.scrollbar.width,
           0);
     }
 
-    // bottom corner
-    if (_bottomCorner != null) {
-      _bottomCorner!.layout(
+    // summary edge
+    if (_summaryEdge != null) {
+      _summaryEdge!.layout(
+          BoxConstraints.tightFor(
+              width: _layoutSettings.themeMetrics.scrollbar.width,
+              height: _layoutSettings.themeMetrics.summary.height),
+          parentUsesSize: true);
+      _summaryEdge!._parentData().offset = Offset(
+          constraints.maxWidth - _layoutSettings.themeMetrics.scrollbar.width,
+          _layoutSettings.height -
+              (_layoutSettings.hasHorizontalScrollbar
+                  ? _layoutSettings.themeMetrics.scrollbar.height
+                  : 0) -
+              _layoutSettings.themeMetrics.summary.height);
+    }
+
+    // scrollbar edge
+    if (_scrollbarEdge != null) {
+      _scrollbarEdge!.layout(
           BoxConstraints.tightFor(
               width: _layoutSettings.themeMetrics.scrollbar.width,
               height: _layoutSettings.themeMetrics.scrollbar.height),
           parentUsesSize: true);
-      _bottomCorner!._parentData().offset = Offset(
+      _scrollbarEdge!._parentData().offset = Offset(
           constraints.maxWidth - _layoutSettings.themeMetrics.scrollbar.width,
           _layoutSettings.height -
               _layoutSettings.themeMetrics.scrollbar.height);
@@ -200,7 +220,7 @@ class TableLayoutRenderBox<DATA> extends RenderBox
         child: _header,
         clipBounds: _layoutSettings.headerBounds);
     _paintChild(
-        context: context, offset: offset, child: _topCorner, clipBounds: null);
+        context: context, offset: offset, child: _headerEdge, clipBounds: null);
     _paintChild(
         context: context,
         offset: offset,
@@ -219,7 +239,12 @@ class TableLayoutRenderBox<DATA> extends RenderBox
     _paintChild(
         context: context,
         offset: offset,
-        child: _bottomCorner,
+        child: _scrollbarEdge,
+        clipBounds: null);
+    _paintChild(
+        context: context,
+        offset: offset,
+        child: _summaryEdge,
         clipBounds: null);
     _paintChild(
         context: context, offset: offset, child: _summary, clipBounds: null);

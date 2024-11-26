@@ -74,7 +74,7 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
               horizontalScrollOffsets: horizontalScrollOffsets)));
       if (layoutSettings.hasVerticalScrollbar) {
         children.add(TableLayoutChild(
-            id: LayoutChildId.topCorner,
+            id: LayoutChildId.headerEdge,
             child: const TableEdge(type: CornerType.header)));
       }
     }
@@ -101,7 +101,7 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
               onDragScroll: onDragScroll)));
       if (layoutSettings.hasVerticalScrollbar) {
         children.add(TableLayoutChild(
-            id: LayoutChildId.bottomCorner,
+            id: LayoutChildId.scrollbarEdge,
             child: const TableEdge(type: CornerType.scrollbar)));
       }
     }
@@ -118,6 +118,11 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
       children.add(TableLayoutChild(
           id: LayoutChildId.summary,
           child: SummaryWidget(daviContext: daviContext)));
+      if (layoutSettings.hasVerticalScrollbar) {
+        children.add(TableLayoutChild(
+            id: LayoutChildId.summaryEdge,
+            child: const TableEdge(type: CornerType.summary)));
+      }
     }
 
     return TableLayout<DATA>(

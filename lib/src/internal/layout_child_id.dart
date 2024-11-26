@@ -8,7 +8,7 @@ enum LayoutChildId {
   unpinnedHorizontalScrollbar,
   verticalScrollbar,
   summary,
-  topCorner,
-  //TODO rename
-  bottomCorner
+  headerEdge,
+  scrollbarEdge,
+  summaryEdge
 }
