@@ -117,7 +117,10 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
     if (daviContext.model.hasSummary) {
       children.add(TableLayoutChild(
           id: LayoutChildId.summary,
-          child: SummaryWidget(daviContext: daviContext)));
+          child: SummaryWidget(
+              daviContext: daviContext,
+              layoutSettings: layoutSettings,
+              horizontalScrollOffsets: horizontalScrollOffsets)));
       if (layoutSettings.hasVerticalScrollbar) {
         children.add(TableLayoutChild(
             id: LayoutChildId.summaryEdge,

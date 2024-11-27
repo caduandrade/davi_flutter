@@ -137,6 +137,7 @@ class _HomePageState extends State<HomePage> {
         data: DaviThemeData(
             columnDividerThickness: 10,
             columnDividerColor: Colors.yellow,
+            header: const HeaderThemeData(bottomBorderThickness: 5),
             row: RowThemeData(
               fillHeight: true,
               dividerThickness: 10,

@@ -3,42 +3,39 @@ import 'package:davi/src/internal/columns_layout_parent_data.dart';
 import 'package:davi/src/internal/scroll_offsets.dart';
 import 'package:davi/src/internal/table_layout_settings.dart';
 import 'package:davi/src/pin_status.dart';
-import 'package:davi/src/theme/theme_data.dart';
 import 'package:flutter/rendering.dart';
 import 'package:meta/meta.dart';
 
 @internal
-class ColumnsLayoutRenderBox<DATA> extends RenderBox
+class ColumnsLayoutRenderBox extends RenderBox
     with
         ContainerRenderObjectMixin<RenderBox, ColumnsLayoutParentData>,
         RenderBoxContainerDefaultsMixin<RenderBox, ColumnsLayoutParentData> {
   ColumnsLayoutRenderBox(
       {required TableLayoutSettings layoutSettings,
       required HorizontalScrollOffsets horizontalScrollOffsets,
-      required DaviThemeData theme,
-      required bool paintDividerColumns})
+      required Color? columnDividerColor,
+      required double columnDividerThickness})
       : _layoutSettings = layoutSettings,
         _horizontalScrollOffsets = horizontalScrollOffsets,
-        _paintDividerColumns = paintDividerColumns,
-        _theme = theme;
+        _columnDividerThickness = columnDividerThickness,
+        _columnDividerColor = columnDividerColor;
 
-  bool _paintDividerColumns;
+  double _columnDividerThickness;
 
-  set paintDividerColumns(bool value) {
-    if (_paintDividerColumns != value) {
-      _paintDividerColumns = value;
+  set columnDividerThickness(double value) {
+    if (_columnDividerThickness != value) {
+      _columnDividerThickness = value;
       markNeedsPaint();
     }
   }
 
-  DaviThemeData _theme;
+  Color? _columnDividerColor;
 
-  set theme(DaviThemeData value) {
-    if (_theme != value) {
-      _theme = value;
-      if (_paintDividerColumns) {
-        markNeedsPaint();
-      }
+  set columnDividerColor(Color? value) {
+    if (_columnDividerColor != value) {
+      _columnDividerColor = value;
+      markNeedsPaint();
     }
   }
 
@@ -110,14 +107,8 @@ class ColumnsLayoutRenderBox<DATA> extends RenderBox
     }
 
     // column dividers
-    if (_paintDividerColumns &&
-        _theme.columnDividerThickness > 0 &&
-        _theme.header.columnDividerColor != null) {
-      Paint? headerPaint;
-      if (_layoutSettings.themeMetrics.header.visible &&
-          _theme.header.columnDividerColor != null) {
-        headerPaint = Paint()..color = _theme.header.columnDividerColor!;
-      }
+    if (_columnDividerThickness > 0 && _columnDividerColor != null) {
+      Paint paint = Paint()..color = _columnDividerColor!;
 
       bool needAreaDivisor = false;
       for (int columnIndex = 0;
@@ -135,15 +126,13 @@ class ColumnsLayoutRenderBox<DATA> extends RenderBox
             scrollOffset;
         context.canvas.save();
         context.canvas.clipRect(areaBounds.translate(offset.dx, offset.dy));
-        if (headerPaint != null) {
-          context.canvas.drawRect(
-              Rect.fromLTWH(
-                  left,
-                  offset.dy,
-                  _layoutSettings.themeMetrics.columnDividerThickness,
-                  _layoutSettings.themeMetrics.headerCell.height),
-              headerPaint);
-        }
+        context.canvas.drawRect(
+            Rect.fromLTWH(
+                left,
+                offset.dy,
+                _layoutSettings.themeMetrics.columnDividerThickness,
+                constraints.maxHeight),
+            paint);
         context.canvas.restore();
         if (pinStatus == PinStatus.left) {
           needAreaDivisor = true;
@@ -155,15 +144,13 @@ class ColumnsLayoutRenderBox<DATA> extends RenderBox
           left = offset.dx +
               columnMetrics.offset -
               _layoutSettings.themeMetrics.columnDividerThickness;
-          if (headerPaint != null) {
-            context.canvas.drawRect(
-                Rect.fromLTWH(
-                    left,
-                    offset.dy,
-                    _layoutSettings.themeMetrics.columnDividerThickness,
-                    _layoutSettings.themeMetrics.headerCell.height),
-                headerPaint);
-          }
+          context.canvas.drawRect(
+              Rect.fromLTWH(
+                  left,
+                  offset.dy,
+                  _layoutSettings.themeMetrics.columnDividerThickness,
+                  constraints.maxHeight),
+              paint);
           context.canvas.restore();
         }
       }

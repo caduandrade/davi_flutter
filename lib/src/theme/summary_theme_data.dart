@@ -5,6 +5,7 @@ class SummaryThemeData {
       {this.contentHeight = SummaryThemeDataDefaults.contentHeight,
       this.topBorderThickness = SummaryThemeDataDefaults.topBorderThickness,
       this.topBorderColor = SummaryThemeDataDefaults.topBorderColor,
+      this.columnDividerColor = SummaryThemeDataDefaults.columnDividerColor,
       this.color = SummaryThemeDataDefaults.color});
 
   double get height => contentHeight + topBorderThickness;
@@ -13,6 +14,7 @@ class SummaryThemeData {
   final double topBorderThickness;
   final Color? topBorderColor;
   final Color? color;
+  final Color? columnDividerColor;
 
   @override
   bool operator ==(Object other) =>
@@ -22,14 +24,16 @@ class SummaryThemeData {
           contentHeight == other.contentHeight &&
           topBorderThickness == other.topBorderThickness &&
           topBorderColor == other.topBorderColor &&
-          color == other.color;
+          color == other.color &&
+          columnDividerColor == other.columnDividerColor;
 
   @override
   int get hashCode =>
       contentHeight.hashCode ^
       topBorderThickness.hashCode ^
       topBorderColor.hashCode ^
-      color.hashCode;
+      color.hashCode ^
+      columnDividerColor.hashCode;
 }
 
 class SummaryThemeDataDefaults {
@@ -37,4 +41,5 @@ class SummaryThemeDataDefaults {
   static const double topBorderThickness = 5;
   static const Color topBorderColor = Colors.grey;
   static const Color color = Color(0xFFE0E0E0);
+  static const Color columnDividerColor = Colors.grey;
 }

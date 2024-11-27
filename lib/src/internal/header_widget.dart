@@ -51,7 +51,8 @@ class HeaderWidget<DATA> extends StatelessWidget {
     Widget header = ColumnsLayout(
         layoutSettings: layoutSettings,
         horizontalScrollOffsets: horizontalScrollOffsets,
-        paintDividerColumns: true,
+        columnDividerThickness: theme.columnDividerThickness,
+        columnDividerColor: theme.header.columnDividerColor,
         children: children);
 
     Color? color = theme.header.color;
