@@ -224,7 +224,7 @@ class DaviModel<DATA> extends ChangeNotifier {
   }
 
   void _checkSummary() {
-    _hasSummary = _columns.any((column) => column.summaryValue != null);
+    _hasSummary = _columns.any((column) => column.summary != null);
   }
 
   void _notifyOnSort() {

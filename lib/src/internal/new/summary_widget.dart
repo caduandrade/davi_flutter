@@ -33,16 +33,20 @@ class SummaryWidget<DATA> extends StatelessWidget {
         columnIndex < daviContext.model.columnsLength;
         columnIndex++) {
       final DaviColumn<DATA> column = daviContext.model.columnAt(columnIndex);
-      /*
-      final Widget cell = DaviHeaderCell<DATA>(
-          key: ValueKey<int>(columnIndex),
-          daviContext: daviContext,
-          column: column,
-          resizable: resizable,
-          columnIndex: columnIndex);
-       */
-      children.add(
-          ColumnsLayoutChild<DATA>(index: columnIndex, child: Container()));
+      if (column.summary != null) {
+        Widget summaryCell = ClipRect(child: column.summary!(context));
+        if (theme.summary.padding != null) {
+          summaryCell =
+              Padding(padding: theme.summary.padding!, child: summaryCell);
+        }
+        if (theme.summary.alignment != null) {
+          summaryCell =
+              Align(alignment: theme.summary.alignment!, child: summaryCell);
+        }
+
+        children.add(
+            ColumnsLayoutChild<DATA>(index: columnIndex, child: summaryCell));
+      }
     }
 
     Widget summary = ColumnsLayout(

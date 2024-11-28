@@ -6,6 +6,7 @@ import 'package:davi/src/cell_semantics_builder.dart';
 import 'package:davi/src/column_id.dart';
 import 'package:davi/src/pin_status.dart';
 import 'package:davi/src/sort.dart';
+import 'package:davi/src/summary_builder.dart';
 import 'package:davi/src/value_mapper.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter/widgets.dart';
@@ -40,7 +41,7 @@ class DaviColumn<DATA> extends ChangeNotifier {
       this.stringValue,
       this.iconValue,
       this.objectValue,
-      this.summaryValue,
+      this.summary,
       this.resizable = true,
       this.cellClip = false,
       this.sortable = true,
@@ -92,7 +93,7 @@ class DaviColumn<DATA> extends ChangeNotifier {
   final DaviObjectValueMapper<DATA>? objectValue;
   final DaviIconValueMapper<DATA>? iconValue;
 
-  final DaviStringValueMapper<DATA>? summaryValue;
+  final SummaryBuilder? summary;
 
   /// Indicates whether the cell widget should be clipped.
   final bool cellClip;
