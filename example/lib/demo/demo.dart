@@ -32,7 +32,9 @@ class _HomePageState extends State<HomePage> {
   bool _headerVisible = HeaderThemeDataDefaults.visible;
   bool _fewRows = false;
   bool _leftPinned = false;
+  bool _columnsFit =false;
   bool _rowColor = false;
+  bool _growColumns = false;
   bool _hoverBackground = false;
   bool _multipleSort = false;
   bool _hoverForeground = true;
@@ -75,7 +77,7 @@ class _HomePageState extends State<HomePage> {
         width: 100,
         stringValue: (row) => row.name));
     list.add(DaviColumn(
-        //pinStatus: _leftPinned ? PinStatus.left : PinStatus.none,
+        pinStatus: _leftPinned ? PinStatus.left : PinStatus.none,
         name: 'Gender',
         width: 80,
         cellClip: true,
@@ -96,6 +98,10 @@ class _HomePageState extends State<HomePage> {
           cellBuilder: (context, data, index, hovered) =>
               SkillsWidget(skills: data.skills)));
     }
+    if(_growColumns){
+      list.add(DaviColumn(
+          name: 'Grow 1', grow: 1, width: 80, intValue: (row) => row.strength));
+    }
     list.add(DaviColumn(
         name: 'Strength', width: 80, intValue: (row) => row.strength));
     list.add(DaviColumn(
@@ -105,6 +111,10 @@ class _HomePageState extends State<HomePage> {
         summary: _summaryEnabled ? (context) => const Text('summary') : null));
     list.add(DaviColumn(
         name: 'Intelligence', width: 90, intValue: (row) => row.intelligence));
+    if(_growColumns){
+      list.add(DaviColumn(
+          name: 'Grow2', grow: 2, width: 80, intValue: (row) => row.dexterity));
+    }
     list.add(DaviColumn(name: 'Life', width: 70, intValue: (row) => row.life));
     list.add(DaviColumn(name: 'Mana', width: 70, intValue: (row) => row.mana));
     list.add(DaviColumn(
@@ -123,6 +133,7 @@ class _HomePageState extends State<HomePage> {
 
     Widget table = DaviTheme(
         child: Davi<Character>(_model!,
+            columnWidthBehavior: _columnsFit?ColumnWidthBehavior.fit:ColumnWidthBehavior.scrollable,
             rowColor: _rowColor
                 ? (data, rowIndex, hovered) =>
                     data.life < 1000 ? Colors.red[200] : null
@@ -226,6 +237,13 @@ class _HomePageState extends State<HomePage> {
                   value: _summaryEnabled,
                   onChanged: _onSummaryEnabled,
                   text: 'Summary'),
+            CheckboxUtil.build(    value: _columnsFit,
+                  onChanged: _onColumnsFit,
+                  text: 'Columns fit'),
+              CheckboxUtil.build(
+                  value: _growColumns,
+                  onChanged: _onGrowColumns,
+                  text: 'Grow columns'),
               CheckboxUtil.build(
                   value: _rowColor, onChanged: _onRowColor, text: 'Row color'),
               const Text('Row theme color'),
@@ -304,6 +322,14 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  void _onGrowColumns(){
+    setState(() {
+      _growColumns=!_growColumns;
+      _model?.removeColumns();
+      _model?.addColumns(_buildColumns());
+    });
+  }
+
   void _onFewRows() {
     _fewRows = !_fewRows;
     _buildModel().then((model) {
@@ -360,6 +386,12 @@ class _HomePageState extends State<HomePage> {
           _model = model;
         });
       });
+    });
+  }
+
+  void _onColumnsFit(){
+    setState(() {
+      _columnsFit=!_columnsFit;
     });
   }
 

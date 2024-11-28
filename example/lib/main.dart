@@ -87,7 +87,7 @@ class _HomePageState extends State<HomePage> {
           DaviColumn(
               name: 'Value 2',
               intValue: (data) => data.value,
-              cellTextStyle: TextStyle(fontWeight: FontWeight.bold),
+              cellTextStyle: const TextStyle(fontWeight: FontWeight.bold),
               cellBackground: (data, index, hovered) =>
                   data.value == 12 ? Colors.green : null),
           DaviColumn(name: 'Value 3', intValue: (data) => data.value),
