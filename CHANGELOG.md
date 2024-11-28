@@ -3,6 +3,16 @@
 
 CellThemeData.overflow removed
 
+EdgeThemeData new
+- DaviThemeData.topCornerBorderColor to EdgeThemeData.headerColor
+  DaviThemeData.topCornerColor to EdgeThemeData.headerBottomBorderColor and headerLeftBorderColor
+  DaviThemeData.bottomCornerBorderColor to EdgeThemeData.scrollbarLeftBorderColor and scrollbarTopBorderColor
+  DaviThemeData.bottomCornerColor to EdgeThemeData.scrollbarColor
+- 
+
+
+
+HeaderThemeData.bottomBorderHeight  to HeaderThemeData.bottomBorderThickness
 Davi.model cant be null
 DaviRowCursor => RowCursorBuilder
 CellStyleBuilder removed

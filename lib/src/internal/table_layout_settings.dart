@@ -57,6 +57,7 @@ class TableLayoutSettings {
       final double availableRowsHeight = math.max(
           0,
           constraints.maxHeight -
+              (model.hasSummary ? themeMetrics.summary.height : 0) -
               (themeMetrics.header.visible ? themeMetrics.header.height : 0) -
               (hasHorizontalScrollbar ? themeMetrics.scrollbar.height : 0));
       needVerticalScrollbar = (rowsLength * themeMetrics.row.height) -
@@ -138,6 +139,7 @@ class TableLayoutSettings {
           final double availableRowsHeight = math.max(
               0,
               constraints.maxHeight -
+                  (model.hasSummary ? themeMetrics.summary.height : 0) -
                   (themeMetrics.header.visible
                       ? themeMetrics.header.height
                       : 0) -
@@ -165,10 +167,12 @@ class TableLayoutSettings {
     final Rect headerBounds = themeMetrics.header.visible
         ? Rect.fromLTWH(0, 0, contentAreaWidth, themeMetrics.header.height)
         : Rect.zero;
+
     final Rect cellsBounds;
     final Rect horizontalScrollbarBounds;
     final Rect unpinnedHorizontalScrollbarsBounds;
     final Rect leftPinnedHorizontalScrollbarBounds;
+    final Rect summaryBounds;
     if (constraints.hasBoundedHeight) {
       cellsBounds = Rect.fromLTWH(
           0,
@@ -178,6 +182,7 @@ class TableLayoutSettings {
               0,
               constraints.maxHeight -
                   headerBounds.height -
+                  (model.hasSummary ? themeMetrics.summary.height : 0) -
                   (hasHorizontalScrollbar
                       ? themeMetrics.scrollbar.height
                       : 0)));
@@ -192,8 +197,18 @@ class TableLayoutSettings {
               (visibleRowsCount! * themeMetrics.row.height) -
                   themeMetrics.row.dividerThickness));
     }
+
+    if (model.hasSummary) {
+      summaryBounds = Rect.fromLTWH(0, cellsBounds.bottom, cellsBounds.width,
+          themeMetrics.summary.height);
+    } else {
+      summaryBounds = Rect.zero;
+    }
+
     if (hasHorizontalScrollbar) {
-      final double top = headerBounds.height + cellsBounds.height;
+      final double top = headerBounds.height +
+          cellsBounds.height +
+          (model.hasSummary ? themeMetrics.summary.height : 0);
       final double leftDivisorWidth =
           leftPinnedContentWidth > 0 ? themeMetrics.columnDividerThickness : 0;
       horizontalScrollbarBounds = Rect.fromLTWH(
@@ -220,6 +235,7 @@ class TableLayoutSettings {
 
     height = headerBounds.height +
         cellsBounds.height +
+        summaryBounds.height +
         horizontalScrollbarBounds.height;
 
     final Rect verticalScrollbarBounds = Rect.fromLTWH(
@@ -256,6 +272,7 @@ class TableLayoutSettings {
         hasTrailingWidget.hashCode ^
         headerBounds.hashCode ^
         cellsBounds.hashCode ^
+        summaryBounds.hashCode ^
         horizontalScrollbarBounds.hashCode ^
         unpinnedHorizontalScrollbarsBounds.hashCode ^
         leftPinnedHorizontalScrollbarBounds.hashCode ^
@@ -280,6 +297,7 @@ class TableLayoutSettings {
         rowsLength: rowsLength,
         headerBounds: headerBounds,
         cellsBounds: cellsBounds,
+        summaryBounds: summaryBounds,
         horizontalScrollbarsBounds: horizontalScrollbarBounds,
         unpinnedHorizontalScrollbarsBounds: unpinnedHorizontalScrollbarsBounds,
         leftPinnedHorizontalScrollbarBounds:
@@ -304,6 +322,7 @@ class TableLayoutSettings {
       required this.hasHorizontalScrollbar,
       required this.columnsMetrics,
       required this.headerBounds,
+      required this.summaryBounds,
       required this.cellsBounds,
       required this.horizontalScrollbarsBounds,
       required this.unpinnedHorizontalScrollbarsBounds,
@@ -327,6 +346,7 @@ class TableLayoutSettings {
   final int rowsLength;
   final List<ColumnMetrics> columnsMetrics;
   final Rect headerBounds;
+  final Rect summaryBounds;
   final Rect cellsBounds;
   final Rect unpinnedHorizontalScrollbarsBounds;
   final Rect leftPinnedHorizontalScrollbarBounds;

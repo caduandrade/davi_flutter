@@ -43,6 +43,7 @@ class _HomePageState extends State<HomePage> {
   RowThemeColor _demoBackground = RowThemeColor.none;
   bool _columnsWithCustomWidget = false;
   bool _customDividerThickness = false;
+  bool _summaryEnabled = false;
 
   @override
   void initState() {
@@ -98,7 +99,10 @@ class _HomePageState extends State<HomePage> {
     list.add(DaviColumn(
         name: 'Strength', width: 80, intValue: (row) => row.strength));
     list.add(DaviColumn(
-        name: 'Dexterity', width: 80, intValue: (row) => row.dexterity));
+        name: 'Dexterity',
+        width: 80,
+        intValue: (row) => row.dexterity,
+        summary: _summaryEnabled ? (context) => const Text('summary') : null));
     list.add(DaviColumn(
         name: 'Intelligence', width: 90, intValue: (row) => row.intelligence));
     list.add(DaviColumn(name: 'Life', width: 70, intValue: (row) => row.life));
@@ -219,6 +223,10 @@ class _HomePageState extends State<HomePage> {
                   onChanged: _onCustomDividerThickness,
                   text: 'Custom divider thickness'),
               CheckboxUtil.build(
+                  value: _summaryEnabled,
+                  onChanged: _onSummaryEnabled,
+                  text: 'Summary'),
+              CheckboxUtil.build(
                   value: _rowColor, onChanged: _onRowColor, text: 'Row color'),
               const Text('Row theme color'),
               RadioButton<RowThemeColor>(
@@ -316,6 +324,14 @@ class _HomePageState extends State<HomePage> {
   void _onTrailingWidgetSwitch() {
     setState(() {
       _trailingWidget = !_trailingWidget;
+    });
+  }
+
+  void _onSummaryEnabled() {
+    setState(() {
+      _summaryEnabled = !_summaryEnabled;
+      _model?.removeColumns();
+      _model?.addColumns(_buildColumns());
     });
   }
 

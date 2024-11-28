@@ -1,28 +1,23 @@
 import 'package:davi/src/column.dart';
 import 'package:davi/src/internal/columns_layout.dart';
 import 'package:davi/src/internal/columns_layout_child.dart';
-import 'package:davi/src/internal/header_cell.dart';
 import 'package:davi/src/internal/new/davi_context.dart';
 import 'package:davi/src/internal/scroll_offsets.dart';
 import 'package:davi/src/internal/table_layout_settings.dart';
 import 'package:davi/src/theme/theme.dart';
 import 'package:davi/src/theme/theme_data.dart';
 import 'package:flutter/widgets.dart';
-import 'package:meta/meta.dart';
 
-@internal
-class HeaderWidget<DATA> extends StatelessWidget {
-  const HeaderWidget(
+class SummaryWidget<DATA> extends StatelessWidget {
+  const SummaryWidget(
       {Key? key,
       required this.daviContext,
       required this.layoutSettings,
-      required this.resizable,
       required this.horizontalScrollOffsets})
       : super(key: key);
 
   final DaviContext<DATA> daviContext;
   final TableLayoutSettings layoutSettings;
-  final bool resizable;
   final HorizontalScrollOffsets horizontalScrollOffsets;
 
   @override
@@ -38,38 +33,47 @@ class HeaderWidget<DATA> extends StatelessWidget {
         columnIndex < daviContext.model.columnsLength;
         columnIndex++) {
       final DaviColumn<DATA> column = daviContext.model.columnAt(columnIndex);
+      if (column.summary != null) {
+        Widget summaryCell = ClipRect(child: column.summary!(context));
+        if (theme.summary.padding != null) {
+          summaryCell =
+              Padding(padding: theme.summary.padding!, child: summaryCell);
+        }
+        if (theme.summary.alignment != null) {
+          summaryCell =
+              Align(alignment: theme.summary.alignment!, child: summaryCell);
+        }
 
-      final Widget cell = DaviHeaderCell<DATA>(
-          key: ValueKey<int>(columnIndex),
-          daviContext: daviContext,
-          column: column,
-          resizable: resizable,
-          columnIndex: columnIndex);
-      children.add(ColumnsLayoutChild<DATA>(index: columnIndex, child: cell));
+        children.add(
+            ColumnsLayoutChild<DATA>(index: columnIndex, child: summaryCell));
+      }
     }
 
-    Widget header = ColumnsLayout(
+    Widget summary = ColumnsLayout(
         layoutSettings: layoutSettings,
         horizontalScrollOffsets: horizontalScrollOffsets,
         columnDividerThickness: theme.columnDividerThickness,
-        columnDividerColor: theme.header.columnDividerColor,
+        columnDividerColor: theme.summary.columnDividerColor,
         children: children);
 
-    Color? color = theme.header.color;
+    Color? color = theme.summary.color;
     BoxBorder? border;
-    if (theme.header.bottomBorderThickness > 0 &&
-        theme.header.bottomBorderColor != null) {
+    if (theme.summary.topBorderThickness > 0 &&
+        theme.summary.topBorderColor != null) {
       border = Border(
-          bottom: BorderSide(
-              width: theme.header.bottomBorderThickness,
-              color: theme.header.bottomBorderColor!));
+          top: BorderSide(
+              width: theme.summary.topBorderThickness,
+              color: theme.summary.topBorderColor!));
     }
 
     if (color != null || border != null) {
-      header = Container(
-          decoration: BoxDecoration(border: border, color: color),
-          child: header);
+      return Container(
+          decoration: BoxDecoration(
+            border: border,
+            color: color,
+          ),
+          child: summary);
     }
-    return header;
+    return summary;
   }
 }

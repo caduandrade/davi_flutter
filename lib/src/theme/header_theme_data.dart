@@ -7,14 +7,14 @@ class HeaderThemeData {
   const HeaderThemeData({
     this.color,
     this.visible = HeaderThemeDataDefaults.visible,
-    this.bottomBorderHeight = HeaderThemeDataDefaults.bottomBorderHeight,
+    this.bottomBorderThickness = HeaderThemeDataDefaults.bottomBorderThickness,
     this.bottomBorderColor = HeaderThemeDataDefaults.bottomBorderColor,
     this.columnDividerColor = HeaderThemeDataDefaults.columnDividerColor,
   });
 
   final bool visible;
   final Color? color;
-  final double bottomBorderHeight;
+  final double bottomBorderThickness;
   final Color? bottomBorderColor;
   final Color? columnDividerColor;
 
@@ -25,7 +25,7 @@ class HeaderThemeData {
           runtimeType == other.runtimeType &&
           visible == other.visible &&
           color == other.color &&
-          bottomBorderHeight == other.bottomBorderHeight &&
+          bottomBorderThickness == other.bottomBorderThickness &&
           bottomBorderColor == other.bottomBorderColor &&
           columnDividerColor == other.columnDividerColor;
 
@@ -33,14 +33,14 @@ class HeaderThemeData {
   int get hashCode =>
       visible.hashCode ^
       color.hashCode ^
-      bottomBorderHeight.hashCode ^
+      bottomBorderThickness.hashCode ^
       bottomBorderColor.hashCode ^
       columnDividerColor.hashCode;
 }
 
 class HeaderThemeDataDefaults {
   static const bool visible = true;
-  static const double bottomBorderHeight = 1;
+  static const double bottomBorderThickness = 1;
   static const Color bottomBorderColor = Colors.grey;
   static const Color columnDividerColor = Colors.grey;
 }

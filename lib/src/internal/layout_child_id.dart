@@ -7,6 +7,8 @@ enum LayoutChildId {
   leftPinnedHorizontalScrollbar,
   unpinnedHorizontalScrollbar,
   verticalScrollbar,
-  topCorner,
-  bottomCorner
+  summary,
+  headerEdge,
+  scrollbarEdge,
+  summaryEdge
 }

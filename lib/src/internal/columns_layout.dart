@@ -1,4 +1,3 @@
-import 'package:davi/davi.dart';
 import 'package:davi/src/internal/columns_layout_child.dart';
 import 'package:davi/src/internal/columns_layout_element.dart';
 import 'package:davi/src/internal/columns_layout_render_box.dart';
@@ -9,27 +8,28 @@ import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
 
 @internal
-class ColumnsLayout<DATA> extends MultiChildRenderObjectWidget {
+class ColumnsLayout extends MultiChildRenderObjectWidget {
   const ColumnsLayout(
       {Key? key,
       required this.layoutSettings,
       required this.horizontalScrollOffsets,
-      required this.paintDividerColumns,
+      required this.columnDividerThickness,
+      required this.columnDividerColor,
       required List<ColumnsLayoutChild> children})
       : super(key: key, children: children);
 
   final TableLayoutSettings layoutSettings;
   final HorizontalScrollOffsets horizontalScrollOffsets;
-  final bool paintDividerColumns;
+  final double columnDividerThickness;
+  final Color? columnDividerColor;
 
   @override
   RenderObject createRenderObject(BuildContext context) {
-    DaviThemeData theme = DaviTheme.of(context);
-    return ColumnsLayoutRenderBox<DATA>(
+    return ColumnsLayoutRenderBox(
         layoutSettings: layoutSettings,
         horizontalScrollOffsets: horizontalScrollOffsets,
-        theme: theme,
-        paintDividerColumns: paintDividerColumns);
+        columnDividerColor: columnDividerColor,
+        columnDividerThickness: columnDividerThickness);
   }
 
   @override
@@ -41,11 +41,10 @@ class ColumnsLayout<DATA> extends MultiChildRenderObjectWidget {
   void updateRenderObject(
       BuildContext context, covariant ColumnsLayoutRenderBox renderObject) {
     super.updateRenderObject(context, renderObject);
-    DaviThemeData theme = DaviTheme.of(context);
     renderObject
       ..layoutSettings = layoutSettings
       ..horizontalScrollOffsets = horizontalScrollOffsets
-      ..theme = theme
-      ..paintDividerColumns = paintDividerColumns;
+      ..columnDividerColor = columnDividerColor
+      ..columnDividerThickness = columnDividerThickness;
   }
 }

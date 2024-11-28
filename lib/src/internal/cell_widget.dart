@@ -46,8 +46,8 @@ class CellWidget<DATA> extends StatelessWidget {
       hasCustomWidget = true;
       child = column.cellBuilder!(
           context, data, rowIndex, rowIndex == daviContext.hoverNotifier.index);
-    } else if (column.iconValueMapper != null) {
-      CellIcon? cellIcon = column.iconValueMapper!(data);
+    } else if (column.iconValue != null) {
+      CellIcon? cellIcon = column.iconValue!(data);
       if (cellIcon != null) {
         value = String.fromCharCode(cellIcon.icon.codePoint);
         textStyle = TextStyle(
@@ -94,12 +94,12 @@ class CellWidget<DATA> extends StatelessWidget {
   }
 
   String? _stringValue({required DaviColumn<DATA> column, required DATA data}) {
-    if (column.stringValueMapper != null) {
-      return column.stringValueMapper!(data);
-    } else if (column.intValueMapper != null) {
-      return column.intValueMapper!(data)?.toString();
-    } else if (column.doubleValueMapper != null) {
-      final double? doubleValue = column.doubleValueMapper!(data);
+    if (column.stringValue != null) {
+      return column.stringValue!(data);
+    } else if (column.intValue != null) {
+      return column.intValue!(data)?.toString();
+    } else if (column.doubleValue != null) {
+      final double? doubleValue = column.doubleValue!(data);
       if (doubleValue != null) {
         if (column.fractionDigits != null) {
           return doubleValue.toStringAsFixed(column.fractionDigits!);
@@ -107,8 +107,8 @@ class CellWidget<DATA> extends StatelessWidget {
           return doubleValue.toString();
         }
       }
-    } else if (column.objectValueMapper != null) {
-      return column.objectValueMapper!(data)?.toString();
+    } else if (column.objectValue != null) {
+      return column.objectValue!(data)?.toString();
     }
     return null;
   }

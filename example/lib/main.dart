@@ -78,7 +78,8 @@ class _HomePageState extends State<HomePage> {
           DaviColumn(
               name: 'Age',
               intValue: (data) => data.age,
-              pinStatus: PinStatus.left),
+              pinStatus: PinStatus.left,
+              summary: (context) => const Text('test')),
           DaviColumn(
               name: 'Value',
               intValue: (data) => data.value,
@@ -136,24 +137,27 @@ class _HomePageState extends State<HomePage> {
         data: DaviThemeData(
             columnDividerThickness: 10,
             columnDividerColor: Colors.yellow,
+            header: const HeaderThemeData(bottomBorderThickness: 5),
             row: RowThemeData(
               fillHeight: true,
               dividerThickness: 10,
               dividerColor: Colors.pink,
               color: RowThemeData.zebraColor(
                   evenColor: Colors.pink[100], oddColor: Colors.yellow[100]),
-            //  hoverBackground: (index) => Colors.blue[300],
+              //  hoverBackground: (index) => Colors.blue[300],
               hoverForeground: (index) => Colors.blue[300]!.withOpacity(.5),
             ),
             cell: CellThemeData(
                 nullValueColor: (index, hover) =>
                     hover ? Colors.yellow : Colors.orange)),
-        child: Davi<Person>(_model,
-           // onHover: (index) => print('hover: $index'),
-            onRowTap: _onRowTap,
-            //  onLastVisibleRow: (index)=>print('last visible row: $index ${DateTime.now()}'),
-            //  onTrailingWidget: (visible)=>print('trailing widget: $visible ${DateTime.now()}'),
-            trailingWidget: const Center(child: Text('last widget'))));
+        child: Davi<Person>(
+          _model,
+          // onHover: (index) => print('hover: $index'),
+          onRowTap: _onRowTap,
+          //  onLastVisibleRow: (index)=>print('last visible row: $index ${DateTime.now()}'),
+          //  onTrailingWidget: (visible)=>print('trailing widget: $visible ${DateTime.now()}'),
+          // trailingWidget: const Center(child: Text('last widget'))
+        ));
 
     return Scaffold(
         body: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
