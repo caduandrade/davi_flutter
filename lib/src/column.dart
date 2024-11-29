@@ -130,6 +130,11 @@ class DaviColumn<DATA> extends ChangeNotifier {
     }
   }
 
+  /// Indicates whether the layout process has been executed at least once
+  /// for this column. If true, disable grow in
+  /// [ColumnWidthBehavior.scrollable] mode.
+  bool _layoutPerformed = false;
+
   bool resizable;
 
   DaviSort? _sort;
@@ -267,3 +272,17 @@ typedef DaviDataComparator<DATA> = int Function(
     DATA a, DATA b, DaviColumn<DATA> column);
 
 int _defaultDataComparator<DATA>(DATA a, DATA b, DaviColumn<DATA> column) => 0;
+
+@internal
+class DaviColumnHelper {
+  static void performLayout(
+      {required DaviColumn column, required double layoutWidth}) {
+    column._layoutPerformed = true;
+    if (column._grow != null) {
+      column._width = layoutWidth;
+    }
+  }
+
+  static bool isLayoutPerformed({required DaviColumn column}) =>
+      column._layoutPerformed;
+}

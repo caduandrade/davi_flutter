@@ -1,4 +1,7 @@
+import 'package:davi/davi.dart';
+import 'package:davi/src/column.dart';
 import 'package:davi/src/column_width_behavior.dart';
+import 'package:davi/src/internal/column_metrics.dart';
 import 'package:davi/src/internal/header_widget.dart';
 import 'package:davi/src/internal/layout_child_id.dart';
 import 'package:davi/src/internal/new/davi_context.dart';
@@ -48,6 +51,20 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
         themeMetrics: daviContext.themeMetrics,
         visibleRowsCount: daviContext.visibleRowsCount,
         hasTrailingWidget: daviContext.trailingWidget != null);
+
+    if (daviContext.columnWidthBehavior == ColumnWidthBehavior.scrollable) {
+      for (int columnIndex = 0;
+          columnIndex < daviContext.model.columnsLength;
+          columnIndex++) {
+        DaviColumn column = daviContext.model.columnAt(columnIndex);
+        if (!DaviColumnHelper.isLayoutPerformed(column: column)) {
+          ColumnMetrics columnMetrics =
+              layoutSettings.columnsMetrics[columnIndex];
+          DaviColumnHelper.performLayout(
+              column: column, layoutWidth: columnMetrics.width);
+        }
+      }
+    }
 
     final List<TableLayoutChild> children = [];
 

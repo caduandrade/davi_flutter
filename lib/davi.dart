@@ -3,7 +3,7 @@ library davi;
 export 'src/cell_background.dart';
 export 'src/cell_builder.dart';
 export 'src/cell_icon.dart';
-export 'src/column.dart';
+export 'src/column.dart' hide DaviColumnHelper;
 export 'src/column_id.dart';
 export 'src/sort.dart';
 export 'src/column_width_behavior.dart';
