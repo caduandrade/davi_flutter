@@ -41,7 +41,6 @@ class _DaviHeaderCellState extends State<DaviHeaderCell> {
         !widget.daviContext.scrolling;
     final bool resizable = widget.resizable &&
         widget.column.resizable &&
-        widget.column.grow == null &&
         (sortEnabled || _resizing);
 
     List<Widget> children = [];

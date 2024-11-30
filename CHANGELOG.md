@@ -44,6 +44,10 @@ DaviCellSemanticsBuilder parameter : BuildContext, DaviRow to BuildContext, DATA
  - OnLastRowWidgetListener renamed LastRowWidgetListener
  - LastRowWidgetListener renamed 
 
+
+DaviColumn.grow attribute is now applied only during the initial layout for columns when ColumnWidthBehavior is set to scrollable
+
+
 bug
 - resizing column outside
   - lost icon?

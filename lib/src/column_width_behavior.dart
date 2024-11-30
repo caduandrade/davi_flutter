@@ -2,11 +2,12 @@
 enum ColumnWidthBehavior {
   /// If the total column width is greater than the available width,
   /// horizontal scrolling is displayed.
-  /// When it is smaller, the remaining width will be distributed
-  /// to the columns according to the value of the `grow` attribute.
-  /// Columns with null `grow` value will not stretch.
-  /// Columns set to grow cannot be resized and
-  /// the width value is considered the minimum value.
+  /// When it is smaller, the remaining width will be stretched
+  /// to fill the space according to the value of the grow attribute.
+  /// This stretching based on grow will only occur the first time a column
+  /// is laid out. For newly added columns, this behavior will apply during
+  /// their initial layout. Afterward, columns can be resized manually
+  /// like any other.
   scrollable,
 
   /// All columns will fit in the available width.
