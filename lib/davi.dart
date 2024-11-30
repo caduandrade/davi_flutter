@@ -2,7 +2,7 @@ library davi;
 
 export 'src/cell_background.dart';
 export 'src/cell_builder.dart';
-export 'src/cell_icon.dart';
+export 'src/cell.dart';
 export 'src/column.dart' hide DaviColumnHelper;
 export 'src/column_id.dart';
 export 'src/sort.dart';
@@ -33,4 +33,3 @@ export 'src/theme/scrollbar_theme_data.dart';
 export 'src/theme/theme.dart';
 export 'src/theme/theme_data.dart';
 export 'src/theme/theme_row_color.dart';
-export 'src/value_mapper.dart';

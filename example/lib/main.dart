@@ -73,28 +73,28 @@ class _HomePageState extends State<HomePage> {
         columns: [
           DaviColumn(
               name: 'Name',
-              stringValue: (data) => data.name,
+              cellValue: (data,rowIndex)=>CellValue(data.name),
               pinStatus: PinStatus.left),
           DaviColumn(
               name: 'Age',
-              intValue: (data) => data.age,
+              cellValue: (data,rowIndex)=>CellValue(data.age.toString()),
               pinStatus: PinStatus.left,
               summary: (context) => const Text('test')),
           DaviColumn(
               name: 'Value',
-              intValue: (data) => data.value,
+              cellValue: (data,rowIndex)=>CellValue(data.value?.toString()),
               pinStatus: PinStatus.left),
           DaviColumn(
               name: 'Value 2',
-              intValue: (data) => data.value,
+              cellValue: (data,rowIndex)=>CellValue(data.value?.toString()),
               cellTextStyle: const TextStyle(fontWeight: FontWeight.bold),
               cellBackground: (data, index, hovered) =>
                   data.value == 12 ? Colors.green : null),
-          DaviColumn(name: 'Value 3', intValue: (data) => data.value),
-          DaviColumn(name: 'Value 4', intValue: (data) => data.value),
-          DaviColumn(name: 'Value 5', intValue: (data) => data.value),
-          DaviColumn(name: 'Value 6', intValue: (data) => data.value),
-          DaviColumn(name: 'Value 7', intValue: (data) => data.value),
+          DaviColumn(name: 'Value 3', cellValue: (data,rowIndex)=>CellValue(data.value?.toString())),
+          DaviColumn(name: 'Value 4', cellValue: (data,rowIndex)=>CellValue(data.value?.toString())),
+          DaviColumn(name: 'Value 5', cellValue: (data,rowIndex)=>CellValue(data.value?.toString())),
+          DaviColumn(name: 'Value 6',cellValue: (data,rowIndex)=>CellValue(data.value?.toString())),
+          DaviColumn(name: 'Value 7', cellValue: (data,rowIndex)=>CellValue(data.value?.toString())),
 
           /*  DaviColumn(
               name: 'Editable',

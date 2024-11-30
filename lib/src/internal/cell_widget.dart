@@ -1,4 +1,4 @@
-import 'package:davi/src/cell_icon.dart';
+import 'package:davi/src/cell.dart';
 import 'package:davi/src/column.dart';
 import 'package:davi/src/internal/new/cell_painter.dart';
 import 'package:davi/src/internal/new/painter_cache.dart';
@@ -9,8 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
 @internal
-class CellWidget<DATA> extends StatelessWidget {
-  const CellWidget(
+class TableCellWidget<DATA> extends StatelessWidget {
+  const TableCellWidget(
       {Key? key,
       required this.data,
       required this.rowIndex,
@@ -40,24 +40,26 @@ class CellWidget<DATA> extends StatelessWidget {
 
     Widget? child;
     String? value;
-
     bool hasCustomWidget = false;
-    if (column.cellBuilder != null) {
-      hasCustomWidget = true;
-      child = column.cellBuilder!(
-          context, data, rowIndex, rowIndex == daviContext.hoverNotifier.index);
-    } else if (column.iconValue != null) {
-      CellIcon? cellIcon = column.iconValue!(data);
-      if (cellIcon != null) {
-        value = String.fromCharCode(cellIcon.icon.codePoint);
+
+    if(column.cellValue!=null){
+      CellValue cellValue =column.cellValue!(data, rowIndex);
+      value=cellValue.value;
+    } else if(column.cellIcon!=null) {
+      CellIcon cellIcon = column.cellIcon!(data, rowIndex);
+      IconData? icon = cellIcon.icon;
+      if(icon!=null) {
+        value = String.fromCharCode(icon.codePoint);
         textStyle = TextStyle(
             fontSize: cellIcon.size,
-            fontFamily: cellIcon.icon.fontFamily,
-            package: cellIcon.icon.fontPackage,
+            fontFamily: icon.fontFamily,
+            package: icon.fontPackage,
             color: cellIcon.color);
       }
-    } else {
-      value = _stringValue(column: column, data: data);
+    }  else if(column.cellWidget!=null){
+      CellWidget cellWidget =column.cellWidget!(context,data,rowIndex);
+      hasCustomWidget = true;
+      child = cellWidget.widget;
     }
 
     if (child == null && value != null) {
@@ -91,25 +93,5 @@ class CellWidget<DATA> extends StatelessWidget {
       child = ClipRect(child: child);
     }
     return child;
-  }
-
-  String? _stringValue({required DaviColumn<DATA> column, required DATA data}) {
-    if (column.stringValue != null) {
-      return column.stringValue!(data);
-    } else if (column.intValue != null) {
-      return column.intValue!(data)?.toString();
-    } else if (column.doubleValue != null) {
-      final double? doubleValue = column.doubleValue!(data);
-      if (doubleValue != null) {
-        if (column.fractionDigits != null) {
-          return doubleValue.toStringAsFixed(column.fractionDigits!);
-        } else {
-          return doubleValue.toString();
-        }
-      }
-    } else if (column.objectValue != null) {
-      return column.objectValue!(data)?.toString();
-    }
-    return null;
   }
 }

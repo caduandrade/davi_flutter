@@ -7,7 +7,6 @@ import 'package:davi/src/column_id.dart';
 import 'package:davi/src/pin_status.dart';
 import 'package:davi/src/sort.dart';
 import 'package:davi/src/summary_builder.dart';
-import 'package:davi/src/value_mapper.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
@@ -32,15 +31,12 @@ class DaviColumn<DATA> extends ChangeNotifier {
       this.cellTextStyle,
       this.cellOverflow,
       this.fractionDigits,
-      this.cellBuilder,
+        this.cellValue,
+      this.cellIcon,
+        this.cellWidget,
       this.leading,
       DaviDataComparator<DATA>? dataComparator,
       this.pinStatus = PinStatus.none,
-      this.intValue,
-      this.doubleValue,
-      this.stringValue,
-      this.iconValue,
-      this.objectValue,
       this.summary,
       this.resizable = true,
       this.cellClip = false,
@@ -49,9 +45,7 @@ class DaviColumn<DATA> extends ChangeNotifier {
       : id = id ?? DaviColumnId(),
         _width = width,
         _grow = grow != null ? math.max(1, grow) : null,
-        dataComparator = dataComparator ??
-            _buildDataComparator(
-                intValue, doubleValue, stringValue, iconValue, objectValue);
+        dataComparator = dataComparator ?? _buildDataComparator();
 
   /// Identifier that can be assigned to this column.
   ///
@@ -80,18 +74,18 @@ class DaviColumn<DATA> extends ChangeNotifier {
 
   final PinStatus pinStatus;
 
+  /// Cell value builder for each row in that column.
+  final CellValueBuilder<DATA>? cellValue;
+
+  /// Cell icon builder for each row in that column.
+  final CellIconBuilder<DATA>? cellIcon;
+
   /// Cell widget builder for each row in that column.
-  final DaviCellBuilder<DATA>? cellBuilder;
+  final CellWidgetBuilder<DATA>? cellWidget;
 
   /// Function used to sort the column. If not defined, it can be created
   /// according to value mappings.
   final DaviDataComparator<DATA> dataComparator;
-
-  final DaviIntValueMapper<DATA>? intValue;
-  final DaviDoubleValueMapper<DATA>? doubleValue;
-  final DaviStringValueMapper<DATA>? stringValue;
-  final DaviObjectValueMapper<DATA>? objectValue;
-  final DaviIconValueMapper<DATA>? iconValue;
 
   final SummaryBuilder? summary;
 
@@ -188,12 +182,8 @@ class DaviColumn<DATA> extends ChangeNotifier {
   int get hashCode => id.hashCode;
 
   /// Builds a default sort
-  static DaviDataComparator _buildDataComparator<DATA>(
-      DaviIntValueMapper<DATA>? intValue,
-      DaviDoubleValueMapper<DATA>? doubleValue,
-      DaviStringValueMapper<DATA>? stringValue,
-      DaviIconValueMapper<DATA>? iconValue,
-      DaviObjectValueMapper<DATA>? objectValue) {
+  static DaviDataComparator _buildDataComparator<DATA>() {
+    /*
     if (intValue != null) {
       return (a, b, column) {
         int? v1 = intValue(a);
@@ -258,6 +248,8 @@ class DaviColumn<DATA> extends ChangeNotifier {
         return 0;
       };
     }
+
+     */
     return _defaultDataComparator;
   }
 }
