@@ -50,6 +50,7 @@ class TableScrollbar extends StatelessWidget {
                         WidgetStateProperty.all(scrollTheme.thumbColor))),
             child: Scrollbar(
                 controller: scrollController,
+                interactive: true,
                 thickness: scrollTheme.thickness,
                 radius: scrollTheme.radius,
                 thumbVisibility: true,
@@ -62,6 +63,7 @@ class TableScrollbar extends StatelessWidget {
                       PointerDeviceKind.trackpad
                     }),
                     child: SingleChildScrollView(
+                        dragStartBehavior: DragStartBehavior.down,
                         controller: scrollController,
                         scrollDirection: axis,
                         child: _sizedBox())))));
