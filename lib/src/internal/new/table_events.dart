@@ -204,11 +204,13 @@ class TableEvents<DATA> extends StatelessWidget {
               verticalScrollController.position.maxScrollExtent);
           verticalScrollController.animateTo(target,
               duration: const Duration(milliseconds: 30), curve: Curves.ease);
+          return KeyEventResult.handled;
         } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
           double target =
               math.max(verticalScrollController.position.pixels - rowHeight, 0);
           verticalScrollController.animateTo(target,
               duration: const Duration(milliseconds: 30), curve: Curves.ease);
+          return KeyEventResult.handled;
         } else if (event.logicalKey == LogicalKeyboardKey.pageDown) {
           double target = math.min(
               verticalScrollController.position.pixels +
@@ -216,6 +218,7 @@ class TableEvents<DATA> extends StatelessWidget {
               verticalScrollController.position.maxScrollExtent);
           verticalScrollController.animateTo(target,
               duration: const Duration(milliseconds: 30), curve: Curves.ease);
+          return KeyEventResult.handled;
         } else if (event.logicalKey == LogicalKeyboardKey.pageUp) {
           double target = math.max(
               verticalScrollController.position.pixels -
@@ -223,6 +226,7 @@ class TableEvents<DATA> extends StatelessWidget {
               0);
           verticalScrollController.animateTo(target,
               duration: const Duration(milliseconds: 30), curve: Curves.ease);
+          return KeyEventResult.handled;
         }
       }
     }
