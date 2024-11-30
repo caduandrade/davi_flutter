@@ -206,19 +206,21 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
         columnWidthBehavior: widget.columnWidthBehavior,
         themeMetrics: themeMetrics);
 
-    return Listener(
-      behavior: HitTestBehavior.translucent,
-      onPointerDown: (pointer) {
-        if (widget.model.isRowsNotEmpty && widget.focusable) {
-          _focusNode.requestFocus();
-        }
-      },
-      child: ClipRect(
-          child: TableLayoutBuilder(
-              daviContext: daviContext,
-              scrollControllers: _scrollControllers,
-              onDragScroll: _onDragScroll)),
-    );
+    return FocusTraversalGroup(
+        policy: _NoTraversalPolicy(),
+        child: Listener(
+          behavior: HitTestBehavior.translucent,
+          onPointerDown: (pointer) {
+            if (widget.model.isRowsNotEmpty && widget.focusable) {
+              _focusNode.requestFocus();
+            }
+          },
+          child: ClipRect(
+              child: TableLayoutBuilder(
+                  daviContext: daviContext,
+                  scrollControllers: _scrollControllers,
+                  onDragScroll: _onDragScroll)),
+        ));
   }
 
   void _onHover() {
@@ -249,4 +251,20 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
     _hoverNotifier.enabled = !running;
     setState(() => _scrolling = running);
   }
+}
+
+class _NoTraversalPolicy extends FocusTraversalPolicy {
+  @override
+  FocusNode? findFirstFocusInDirection(
+          FocusNode currentNode, TraversalDirection direction) =>
+      null;
+
+  @override
+  bool inDirection(FocusNode currentNode, TraversalDirection direction) =>
+      false;
+
+  @override
+  Iterable<FocusNode> sortDescendants(
+          Iterable<FocusNode> descendants, FocusNode currentNode) =>
+      descendants;
 }
