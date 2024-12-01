@@ -64,7 +64,11 @@ class _HomePageState extends State<HomePage> {
 
     Random random = Random();
     for (int i = 1; i < 215; i++) {
-      rows.add(Person('User $i', 20 + random.nextInt(50), i == 1 ? null : i));
+      String name = 'User $i';
+      if(i==4){
+        name+=' 12345678901234567890';
+      }
+      rows.add(Person(name, 20 + random.nextInt(50), i == 1 ? null : i));
     }
     // rows.shuffle();
 
@@ -73,10 +77,11 @@ class _HomePageState extends State<HomePage> {
         columns: [
           DaviColumn(
               name: 'Name',
-              cellValue: (data,rowIndex)=>data.name,
+              cellValue: (data,rowIndex)=>rowIndex==0?'SPAN 1234567890123456789':data.name,
               rowSpan: (data, rowIndex)=>1,
-              columnSpan: (data, rowIndex)=>1,
-              pinStatus: PinStatus.left),
+              columnSpan: (data, rowIndex)=>rowIndex==0?2:1,
+              pinStatus: PinStatus.left
+          ),
           DaviColumn(
               name: 'Age',
               cellValue: (data,rowIndex)=>data.age.toString(),
@@ -85,18 +90,24 @@ class _HomePageState extends State<HomePage> {
           DaviColumn(
               name: 'Value',
               cellValue: (data,rowIndex)=>data.value?.toString(),
-              pinStatus: PinStatus.left),
+              pinStatus: PinStatus.left
+    ),
           DaviColumn(
               name: 'Value 2',
               cellValue: (data,rowIndex)=>data.value?.toString(),
               cellTextStyle: const TextStyle(fontWeight: FontWeight.bold),
               cellBackground: (data, index, hovered) =>
                   data.value == 12 ? Colors.green : null),
-          DaviColumn(name: 'Value 3', cellValue: (data,rowIndex)=>data.value?.toString()),
+
+
+
           DaviColumn(name: 'Value 4', cellValue: (data,rowIndex)=>data.value?.toString()),
           DaviColumn(name: 'Value 5', cellValue: (data,rowIndex)=>data.value?.toString()),
           DaviColumn(name: 'Value 6',cellValue: (data,rowIndex)=>data.value?.toString()),
           DaviColumn(name: 'Value 7', cellValue: (data,rowIndex)=>data.value?.toString()),
+
+          DaviColumn(name: 'Value 3', cellValue: (data,rowIndex)=>rowIndex==4?'SPAN':data.value?.toString(),
+              rowSpan: (data, rowIndex)=>rowIndex==4?2:1),
 
           /*  DaviColumn(
               name: 'Editable',
