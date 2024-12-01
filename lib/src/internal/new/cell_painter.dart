@@ -7,18 +7,26 @@ class CellPainter extends LeafRenderObjectWidget {
   const CellPainter(
       {Key? key,
       required this.text,
+      required this.rowSpan,
+      required this.columnSpan,
       required this.painterCache,
       required this.textStyle})
       : super(key: key);
 
   final PainterCache painterCache;
   final String text;
+  final int rowSpan;
+  final int columnSpan;
   final TextStyle? textStyle;
 
   @override
   RenderObject createRenderObject(BuildContext context) {
     return CellPainterRenderBox(
-        text: text, renderCache: painterCache, textStyle: textStyle);
+        text: text,
+        rowSpan: rowSpan,
+        columnSpan: columnSpan,
+        renderCache: painterCache,
+        textStyle: textStyle);
   }
 
   @override
@@ -26,6 +34,8 @@ class CellPainter extends LeafRenderObjectWidget {
       BuildContext context, CellPainterRenderBox renderObject) {
     renderObject
       ..text = text
+      ..rowSpan = rowSpan
+      ..columnSpan = columnSpan
       ..painterCache = painterCache
       ..textStyle = textStyle;
   }
@@ -35,9 +45,13 @@ class CellPainter extends LeafRenderObjectWidget {
 class CellPainterRenderBox extends RenderBox {
   CellPainterRenderBox(
       {required String text,
+      required int rowSpan,
+      required int columnSpan,
       required PainterCache renderCache,
       required TextStyle? textStyle})
       : _text = text,
+        _rowSpan = rowSpan,
+        _columnSpan = columnSpan,
         _painterCache = renderCache,
         _textStyle = textStyle;
 
@@ -65,6 +79,24 @@ class CellPainterRenderBox extends RenderBox {
     }
   }
 
+  int _rowSpan;
+
+  set rowSpan(int value) {
+    if (_rowSpan != value) {
+      _rowSpan = value;
+      markNeedsLayout();
+    }
+  }
+
+  int _columnSpan;
+
+  set columnSpan(int value) {
+    if (_columnSpan != value) {
+      _columnSpan = value;
+      markNeedsLayout();
+    }
+  }
+
   late TextPainter _textPainter;
 
   @override
@@ -73,7 +105,8 @@ class CellPainterRenderBox extends RenderBox {
         width: constraints.maxWidth,
         textStyle: _textStyle,
         value: _text,
-        rowSpan: 1);
+        rowSpan: _rowSpan,
+        columnSpan: _columnSpan);
     size = Size(_textPainter.width, _textPainter.height);
   }
 

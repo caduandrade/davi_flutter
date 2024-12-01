@@ -285,10 +285,17 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
       final int? columnIndex = childParentData.columnIndex;
       if (columnIndex != null && columnIndex >= 0) {
         // cell
-        final ColumnMetrics columnMetrics = _columnsMetrics[columnIndex];
+        final int columnSpan = childParentData.columnSpan!;
+        double width = 0;
+        for (int i = columnIndex; i < columnIndex + columnSpan; i++) {
+          final ColumnMetrics columnMetrics = _columnsMetrics[i];
+          width += columnMetrics.width;
+          if (i < columnIndex + columnSpan - 1) {
+            width += _columnDividerThickness;
+          }
+        }
         renderBox.layout(
-            BoxConstraints.tightFor(
-                width: columnMetrics.width, height: _cellHeight),
+            BoxConstraints.tightFor(width: width, height: _cellHeight),
             parentUsesSize: false);
         _cells.add(renderBox);
       } else {
@@ -349,6 +356,8 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
       final CellsLayoutParentData childParentData = child._parentData();
       final int rowIndex = childParentData.rowIndex!;
       final int columnIndex = childParentData.columnIndex!;
+      final int rowSpan = childParentData.rowSpan!;
+      final int columSpan = childParentData.columnSpan!;
 
       final ColumnMetrics columnMetrics = _columnsMetrics[columnIndex];
       final PinStatus pinStatus = columnMetrics.pinStatus;

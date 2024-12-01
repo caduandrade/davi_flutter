@@ -14,6 +14,8 @@ class CellWidget<DATA> extends StatelessWidget {
       {Key? key,
       required this.data,
       required this.rowIndex,
+      required this.rowSpan,
+      required this.columnSpan,
       required this.column,
       required this.daviContext,
       required this.painterCache})
@@ -21,6 +23,8 @@ class CellWidget<DATA> extends StatelessWidget {
 
   final DATA data;
   final int rowIndex;
+  final int rowSpan;
+  final int columnSpan;
   final DaviColumn<DATA> column;
   final DaviContext daviContext;
   final PainterCache<DATA> painterCache;
@@ -42,11 +46,11 @@ class CellWidget<DATA> extends StatelessWidget {
     String? value;
     bool hasCustomWidget = false;
 
-    if(column.cellValue!=null){
-      value =column.cellValue!(data, rowIndex);
-    } else if(column.cellIcon!=null) {
+    if (column.cellValue != null) {
+      value = column.cellValue!(data, rowIndex);
+    } else if (column.cellIcon != null) {
       CellIcon? cellIcon = column.cellIcon!(data, rowIndex);
-      if(cellIcon!=null) {
+      if (cellIcon != null) {
         value = String.fromCharCode(cellIcon.icon.codePoint);
         textStyle = TextStyle(
             fontSize: cellIcon.size,
@@ -54,16 +58,20 @@ class CellWidget<DATA> extends StatelessWidget {
             package: cellIcon.icon.fontPackage,
             color: cellIcon.color);
       }
-    }  else if(column.cellWidget!=null){
-      child =column.cellWidget!(context,data,rowIndex);
-      if(child!=null) {
+    } else if (column.cellWidget != null) {
+      child = column.cellWidget!(context, data, rowIndex);
+      if (child != null) {
         hasCustomWidget = true;
       }
     }
 
     if (child == null && value != null) {
       child = CellPainter(
-          text: value, painterCache: painterCache, textStyle: textStyle);
+          text: value,
+          rowSpan: rowSpan,
+          columnSpan: columnSpan,
+          painterCache: painterCache,
+          textStyle: textStyle);
     }
 
     if (daviContext.semanticsEnabled && column.semanticsBuilder != null) {
@@ -76,15 +84,18 @@ class CellWidget<DATA> extends StatelessWidget {
     child = Padding(padding: padding ?? EdgeInsets.zero, child: child);
     child = Align(alignment: alignment, child: child);
 
-    Color? background;
+    // Always keep some color to avoid parent markNeedsLayout
+    Color background = Colors.transparent;
     if (!hasCustomWidget &&
         value == null &&
         theme.cell.nullValueColor != null) {
       background = theme.cell.nullValueColor!(
-          rowIndex, rowIndex == daviContext.hoverNotifier.index);
+              rowIndex, rowIndex == daviContext.hoverNotifier.index) ??
+          background;
     } else if (column.cellBackground != null) {
       background = column.cellBackground!(
-          data, rowIndex, rowIndex == daviContext.hoverNotifier.index);
+              data, rowIndex, rowIndex == daviContext.hoverNotifier.index) ??
+          background;
     }
     child = Container(color: background, child: child);
 

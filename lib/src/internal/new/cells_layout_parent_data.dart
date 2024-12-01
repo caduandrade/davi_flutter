@@ -6,6 +6,8 @@ import 'package:meta/meta.dart';
 class CellsLayoutParentData extends ContainerBoxParentData<RenderBox> {
   int? rowIndex;
   int? columnIndex;
+  int? rowSpan;
+  int? columnSpan;
 
   bool get isCell =>
       rowIndex != null &&

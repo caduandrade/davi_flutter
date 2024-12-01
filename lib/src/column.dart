@@ -86,9 +86,9 @@ class DaviColumn<DATA> extends ChangeNotifier {
   /// Cell widget mapper for each row in that column.
   final CellWidgetMapper<DATA>? cellWidget;
 
-  final SpanProvider<DATA>? rowSpan;
+  final SpanProvider<DATA> rowSpan;
 
-  final SpanProvider<DATA>? columnSpan;
+  final SpanProvider<DATA> columnSpan;
 
   /// Function used to sort the column. If not defined, it can be created
   /// according to value mappings.

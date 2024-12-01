@@ -130,16 +130,24 @@ class TableContentState<DATA> extends State<TableContent<DATA>> {
           final DaviColumn<DATA> column =
               widget.daviContext.model.columnAt(columnIndex);
 
+          final int rowSpan = column.rowSpan(data, rowIndex);
+          final int columnSpan = column.columnSpan(data, rowIndex);
+
           Widget? cellWidget = CellWidget<DATA>(
               daviContext: widget.daviContext,
               painterCache: _painterCache,
               data: data,
               column: column,
-              rowIndex: rowIndex);
+              rowIndex: rowIndex,
+              rowSpan: rowSpan,
+              columnSpan: columnSpan);
+
           children.add(CellsLayoutChild.cell(
               childIndex: childIndex,
               rowIndex: rowIndex,
               columnIndex: columnIndex,
+              rowSpan: rowSpan,
+              columnSpan: columnSpan,
               child: cellWidget));
           lastVisibleRowIndex = rowIndex;
         } else {
@@ -147,6 +155,8 @@ class TableContentState<DATA> extends State<TableContent<DATA>> {
               childIndex: childIndex,
               rowIndex: rowIndex,
               columnIndex: columnIndex,
+              rowSpan: 1,
+              columnSpan: 1,
               child: const Offstage()));
         }
         childIndex++;
