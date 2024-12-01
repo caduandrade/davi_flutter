@@ -5,7 +5,7 @@
 New class DaviCell
 DaviCellBuilder replaced by CellValueBuilder,CellIconBuilder and CellWidgetBuilder
 
-DaviColumn.cellBuilder raplced by DaviColumn.value, DaviColumn.icon, DaviColumn.widget 
+DaviColumn.cellBuilder raplced by DaviColumn.cellValue, DaviColumn.cellIcon, DaviColumn.cellWidget 
 
 CellThemeData.overflow removed
 
@@ -20,6 +20,8 @@ DaviDoubleValueMapper
 DaviStringValueMapper
 DaviObjectValueMapper
 DaviIconValueMapper
+
+add SpanProvider<DATA>
 
 EdgeThemeData new
 - DaviThemeData.topCornerBorderColor to EdgeThemeData.headerColor

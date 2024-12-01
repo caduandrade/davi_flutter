@@ -130,7 +130,7 @@ class TableContentState<DATA> extends State<TableContent<DATA>> {
           final DaviColumn<DATA> column =
               widget.daviContext.model.columnAt(columnIndex);
 
-          Widget? cellWidget = TableCellWidget<DATA>(
+          Widget? cellWidget = CellWidget<DATA>(
               daviContext: widget.daviContext,
               painterCache: _painterCache,
               data: data,

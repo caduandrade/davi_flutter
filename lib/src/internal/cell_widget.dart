@@ -1,4 +1,4 @@
-import 'package:davi/src/cell.dart';
+import 'package:davi/src/cell_icon.dart';
 import 'package:davi/src/column.dart';
 import 'package:davi/src/internal/new/cell_painter.dart';
 import 'package:davi/src/internal/new/painter_cache.dart';
@@ -9,8 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
 @internal
-class TableCellWidget<DATA> extends StatelessWidget {
-  const TableCellWidget(
+class CellWidget<DATA> extends StatelessWidget {
+  const CellWidget(
       {Key? key,
       required this.data,
       required this.rowIndex,
@@ -43,23 +43,22 @@ class TableCellWidget<DATA> extends StatelessWidget {
     bool hasCustomWidget = false;
 
     if(column.cellValue!=null){
-      CellValue cellValue =column.cellValue!(data, rowIndex);
-      value=cellValue.value;
+      value =column.cellValue!(data, rowIndex);
     } else if(column.cellIcon!=null) {
-      CellIcon cellIcon = column.cellIcon!(data, rowIndex);
-      IconData? icon = cellIcon.icon;
-      if(icon!=null) {
-        value = String.fromCharCode(icon.codePoint);
+      CellIcon? cellIcon = column.cellIcon!(data, rowIndex);
+      if(cellIcon!=null) {
+        value = String.fromCharCode(cellIcon.icon.codePoint);
         textStyle = TextStyle(
             fontSize: cellIcon.size,
-            fontFamily: icon.fontFamily,
-            package: icon.fontPackage,
+            fontFamily: cellIcon.icon.fontFamily,
+            package: cellIcon.icon.fontPackage,
             color: cellIcon.color);
       }
     }  else if(column.cellWidget!=null){
-      CellWidget cellWidget =column.cellWidget!(context,data,rowIndex);
-      hasCustomWidget = true;
-      child = cellWidget.widget;
+      child =column.cellWidget!(context,data,rowIndex);
+      if(child!=null) {
+        hasCustomWidget = true;
+      }
     }
 
     if (child == null && value != null) {

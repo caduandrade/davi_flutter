@@ -75,7 +75,7 @@ class _HomePageState extends State<HomePage> {
         leading: const Icon(Icons.person, size: 16),
         name: 'Name',
         width: 100,
-        cellValue: (row, rowIndex) => CellValue(row.name)));
+        cellValue: (row, rowIndex) => row.name));
     list.add(DaviColumn(
         pinStatus: _leftPinned ? PinStatus.left : PinStatus.none,
         name: 'Gender',
@@ -86,47 +86,47 @@ class _HomePageState extends State<HomePage> {
             : CellIcon(Icons.female, color: Colors.pink[600]!)));
     list.add(
         DaviColumn(name: 'Race', width: 100,
-    cellValue: (row, rowIndex)=> CellValue(row.race)));
+    cellValue: (row, rowIndex)=> row.race));
     list.add(
         DaviColumn(name: 'Class', width: 110,
-    cellValue: (row,rowIndex)=>CellValue(row.cls)));
+    cellValue: (row,rowIndex)=>row.cls));
     list.add(
         DaviColumn(name: 'Level', width: 70,
-    cellValue: (row,rowIndex)=>CellValue(row.level.toString())));
+    cellValue: (row,rowIndex)=>row.level.toString()));
     if (_columnsWithCustomWidget) {
       list.add(DaviColumn(
           name: 'Skills',
           width: 100,
           cellClip: true,
-          cellWidget: (context, data, rowIndex)=>CellWidget(SkillsWidget(skills: data.skills))));
+          cellWidget: (context, data, rowIndex)=>SkillsWidget(skills: data.skills)));
     }
     if(_growColumns){
       list.add(DaviColumn(
           name: 'Grow 1', grow: 1, width: 80,
-          cellValue: (row,rowIndex) => CellValue(row.strength.toString())));
+          cellValue: (row,rowIndex) => row.strength.toString()));
     }
     list.add(DaviColumn(
         name: 'Strength', width: 80,
-        cellValue: (row,rowIndex) => CellValue(row.strength.toString())));
+        cellValue: (row,rowIndex) => row.strength.toString()));
     list.add(DaviColumn(
         name: 'Dexterity',
         width: 80,
-        cellValue: (row,rowIndex) => CellValue(row.dexterity.toString()),
+        cellValue: (row,rowIndex) => row.dexterity.toString(),
         summary: _summaryEnabled ? (context) => const Text('summary') : null));
     list.add(DaviColumn(
         name: 'Intelligence', width: 90,
-      cellValue: (row,rowIndex) => CellValue(row.intelligence.toString())
-    ));
+      cellValue: (row,rowIndex) => row.intelligence.toString())
+    );
     if(_growColumns){
       list.add(DaviColumn(
-          name: 'Grow2', grow: 2, width: 80,cellValue: (row,rowIndex) => CellValue(row.dexterity.toString())));
+          name: 'Grow2', grow: 2, width: 80,cellValue: (row,rowIndex) => row.dexterity.toString()));
     }
-    list.add(DaviColumn(name: 'Life', width: 70, cellValue: (row,rowIndex) => CellValue(row.life.toString())));
-    list.add(DaviColumn(name: 'Mana', width: 70, cellValue: (row,rowIndex) => CellValue(row.mana.toString())));
+    list.add(DaviColumn(name: 'Life', width: 70, cellValue: (row,rowIndex) => row.life.toString()));
+    list.add(DaviColumn(name: 'Mana', width: 70, cellValue: (row,rowIndex) => row.mana.toString()));
     list.add(DaviColumn(
         name: 'Gold',
         width: 110,
-        cellValue: (row,rowIndex) => CellValue(row.gold?.toStringAsFixed(2)),
+        cellValue: (row,rowIndex) => row.gold?.toStringAsFixed(2),
         fractionDigits: 2));
     return list;
   }

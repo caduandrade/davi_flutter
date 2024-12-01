@@ -73,28 +73,30 @@ class _HomePageState extends State<HomePage> {
         columns: [
           DaviColumn(
               name: 'Name',
-              cellValue: (data,rowIndex)=>CellValue(data.name),
+              cellValue: (data,rowIndex)=>data.name,
+              rowSpan: (data, rowIndex)=>1,
+              columnSpan: (data, rowIndex)=>1,
               pinStatus: PinStatus.left),
           DaviColumn(
               name: 'Age',
-              cellValue: (data,rowIndex)=>CellValue(data.age.toString()),
+              cellValue: (data,rowIndex)=>data.age.toString(),
               pinStatus: PinStatus.left,
               summary: (context) => const Text('test')),
           DaviColumn(
               name: 'Value',
-              cellValue: (data,rowIndex)=>CellValue(data.value?.toString()),
+              cellValue: (data,rowIndex)=>data.value?.toString(),
               pinStatus: PinStatus.left),
           DaviColumn(
               name: 'Value 2',
-              cellValue: (data,rowIndex)=>CellValue(data.value?.toString()),
+              cellValue: (data,rowIndex)=>data.value?.toString(),
               cellTextStyle: const TextStyle(fontWeight: FontWeight.bold),
               cellBackground: (data, index, hovered) =>
                   data.value == 12 ? Colors.green : null),
-          DaviColumn(name: 'Value 3', cellValue: (data,rowIndex)=>CellValue(data.value?.toString())),
-          DaviColumn(name: 'Value 4', cellValue: (data,rowIndex)=>CellValue(data.value?.toString())),
-          DaviColumn(name: 'Value 5', cellValue: (data,rowIndex)=>CellValue(data.value?.toString())),
-          DaviColumn(name: 'Value 6',cellValue: (data,rowIndex)=>CellValue(data.value?.toString())),
-          DaviColumn(name: 'Value 7', cellValue: (data,rowIndex)=>CellValue(data.value?.toString())),
+          DaviColumn(name: 'Value 3', cellValue: (data,rowIndex)=>data.value?.toString()),
+          DaviColumn(name: 'Value 4', cellValue: (data,rowIndex)=>data.value?.toString()),
+          DaviColumn(name: 'Value 5', cellValue: (data,rowIndex)=>data.value?.toString()),
+          DaviColumn(name: 'Value 6',cellValue: (data,rowIndex)=>data.value?.toString()),
+          DaviColumn(name: 'Value 7', cellValue: (data,rowIndex)=>data.value?.toString()),
 
           /*  DaviColumn(
               name: 'Editable',

@@ -1,11 +1,12 @@
 import 'dart:math' as math;
 
 import 'package:davi/src/cell_background.dart';
-import 'package:davi/src/cell_builder.dart';
+import 'package:davi/src/cell_value_mapper.dart';
 import 'package:davi/src/cell_semantics_builder.dart';
 import 'package:davi/src/column_id.dart';
 import 'package:davi/src/pin_status.dart';
 import 'package:davi/src/sort.dart';
+import 'package:davi/src/span_provider.dart';
 import 'package:davi/src/summary_builder.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter/widgets.dart';
@@ -31,9 +32,11 @@ class DaviColumn<DATA> extends ChangeNotifier {
       this.cellTextStyle,
       this.cellOverflow,
       this.fractionDigits,
-        this.cellValue,
+      this.cellValue,
       this.cellIcon,
-        this.cellWidget,
+      this.cellWidget,
+      this.rowSpan = _defaultSpanProvider,
+      this.columnSpan = _defaultSpanProvider,
       this.leading,
       DaviDataComparator<DATA>? dataComparator,
       this.pinStatus = PinStatus.none,
@@ -74,14 +77,18 @@ class DaviColumn<DATA> extends ChangeNotifier {
 
   final PinStatus pinStatus;
 
-  /// Cell value builder for each row in that column.
-  final CellValueBuilder<DATA>? cellValue;
+  /// Cell value mapper for each row in that column.
+  final CellValueMapper<DATA>? cellValue;
 
-  /// Cell icon builder for each row in that column.
-  final CellIconBuilder<DATA>? cellIcon;
+  /// Cell icon mapper for each row in that column.
+  final CellIconMapper<DATA>? cellIcon;
 
-  /// Cell widget builder for each row in that column.
-  final CellWidgetBuilder<DATA>? cellWidget;
+  /// Cell widget mapper for each row in that column.
+  final CellWidgetMapper<DATA>? cellWidget;
+
+  final SpanProvider<DATA>? rowSpan;
+
+  final SpanProvider<DATA>? columnSpan;
 
   /// Function used to sort the column. If not defined, it can be created
   /// according to value mappings.
@@ -180,6 +187,8 @@ class DaviColumn<DATA> extends ChangeNotifier {
 
   @override
   int get hashCode => id.hashCode;
+
+  static int _defaultSpanProvider(dynamic data, rowIndex) => 1;
 
   /// Builds a default sort
   static DaviDataComparator _buildDataComparator<DATA>() {
