@@ -57,7 +57,6 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _buildModel();
-
   }
 
   void _buildModel() {
@@ -66,8 +65,8 @@ class _HomePageState extends State<HomePage> {
     Random random = Random();
     for (int i = 1; i < 215; i++) {
       String name = 'User $i';
-      if(i==4){
-        name+=' 12345678901234567890';
+      if (i == 4) {
+        name += ' 12345678901234567890';
       }
       rows.add(Person(name, 20 + random.nextInt(50), i == 1 ? null : i));
     }
@@ -78,42 +77,45 @@ class _HomePageState extends State<HomePage> {
         columns: [
           DaviColumn(
               name: 'Name',
-              cellValue: (data,rowIndex)=>rowIndex==0?'SPAN 1234567890123456789':data.name,
-              rowSpan: (data, rowIndex)=>1,
-              columnSpan: (data, rowIndex)=>rowIndex==0?2:1,
-              pinStatus: PinStatus.left
-          ),
+              cellValue: (data, rowIndex) =>
+                  rowIndex == 0 ? 'SPAN 1234567890123456789' : data.name,
+              rowSpan: (data, rowIndex) => 1,
+              columnSpan: (data, rowIndex) => rowIndex == 0 ? 2 : 1,
+              pinStatus: PinStatus.left),
           DaviColumn(
               name: 'Age',
-              cellValue: (data,rowIndex)=>data.age.toString(),
+              cellValue: (data, rowIndex) => data.age.toString(),
               pinStatus: PinStatus.left,
               summary: (context) => const Text('test')),
           DaviColumn(
               name: 'Value',
-              cellValue: (data,rowIndex)=>data.value?.toString(),
-              pinStatus: PinStatus.left
-    ),
-          DaviColumn(name: 'Value 2', cellValue: (data,rowIndex)=>data.value?.toString()),
-
-          DaviColumn(name: 'Value 3', cellValue: (data,rowIndex)=>rowIndex==4?'SPAN R4C4':data.value?.toString(),
-              rowSpan: (data, rowIndex)=>rowIndex==4?2:1),
-
-
-
+              cellValue: (data, rowIndex) => data.value?.toString(),
+              pinStatus: PinStatus.left),
+          DaviColumn(
+              name: 'Value 2',
+              cellValue: (data, rowIndex) => data.value?.toString()),
+          DaviColumn(
+              name: 'Value 3',
+              cellValue: (data, rowIndex) =>
+                  rowIndex == 4 ? 'SPAN R4C4' : data.value?.toString(),
+              rowSpan: (data, rowIndex) => rowIndex == 4 ? 2 : 1),
           DaviColumn(
               name: 'Value 4',
-              cellValue: (data,rowIndex)=>rowIndex==2?'SPANNNNNNNNNNNN':data.value?.toString(),
+              cellValue: (data, rowIndex) =>
+                  rowIndex == 2 ? 'SPANNNNNNNNNNNN' : data.value?.toString(),
               cellTextStyle: const TextStyle(fontWeight: FontWeight.bold),
-              columnSpan: (data, rowIndex)=>rowIndex==2?2:1,
+              columnSpan: (data, rowIndex) => rowIndex == 2 ? 2 : 1,
               cellBackground: (data, index, hovered) =>
-              data.value == 12 ? Colors.green : null),
-
-
-          DaviColumn(name: 'Value 5', cellValue: (data,rowIndex)=>data.value?.toString()),
-          DaviColumn(name: 'Value 6',cellValue: (data,rowIndex)=>data.value?.toString()),
-          DaviColumn(name: 'Value 7', cellValue: (data,rowIndex)=>data.value?.toString()),
-
-
+                  data.value == 12 ? Colors.green : null),
+          DaviColumn(
+              name: 'Value 5',
+              cellValue: (data, rowIndex) => data.value?.toString()),
+          DaviColumn(
+              name: 'Value 6',
+              cellValue: (data, rowIndex) => data.value?.toString()),
+          DaviColumn(
+              name: 'Value 7',
+              cellValue: (data, rowIndex) => data.value?.toString()),
 
           /*  DaviColumn(
               name: 'Editable',

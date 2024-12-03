@@ -16,21 +16,28 @@ import 'package:meta/meta.dart';
 /// the grid's structure while accounting for merged cells.
 @internal
 class DividerPaintManager {
-  DividerPaintManager({required int rows, required int columns}) {
-    List<int> rowIndices = List.generate(rows, (index) => index);
-    List<int> columnIndices = List.generate(columns, (index) => index);
+  final Map<int, _DividerNodes> _horizontalNodes = {};
+  final Map<int, _DividerNodes> _verticalNodes = {};
 
-    for (int row = 0; row < rows; row++) {
+  void setup(
+      {required int firstRowIndex,
+      required int lastRowIndex,
+      required int columnsLength}) {
+    List<int> rowIndices = List.generate(
+        lastRowIndex - firstRowIndex + 1, (index) => firstRowIndex + index);
+    List<int> columnIndices = List.generate(columnsLength, (index) => index);
+
+    _horizontalNodes.clear();
+    _verticalNodes.clear();
+
+    for (int row = firstRowIndex; row <= lastRowIndex; row++) {
       _horizontalNodes[row] = _DividerNodes(index: row, indices: columnIndices);
     }
-    for (int column = 0; column < columns; column++) {
+    for (int column = 0; column < columnsLength; column++) {
       _verticalNodes[column] =
           _DividerNodes(index: column, indices: rowIndices);
     }
   }
-
-  final Map<int, _DividerNodes> _horizontalNodes = {};
-  final Map<int, _DividerNodes> _verticalNodes = {};
 
   Iterable<DividerSegment> verticalSegments({required int column}) sync* {
     _DividerNodes nodes = _verticalNodes[column]!;
@@ -38,7 +45,10 @@ class DividerPaintManager {
   }
 
   Iterable<DividerSegment> horizontalSegments({required int row}) sync* {
-    _DividerNodes nodes = _horizontalNodes[row]!;
+    _DividerNodes? nodes = _horizontalNodes[row];
+    if (nodes == null) {
+      throw StateError('No horizontal segments for row $row');
+    }
     yield* nodes.segments();
   }
 

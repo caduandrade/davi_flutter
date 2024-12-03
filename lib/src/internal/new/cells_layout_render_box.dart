@@ -330,8 +330,15 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
       return;
     }
 
-    DividerPaintManager dividerPaintManager = DividerPaintManager(
-        rows: _rowRegionCache.length, columns: _columnsMetrics.length);
+    DividerPaintManager dividerPaintManager = DividerPaintManager();
+
+    if (_rowRegionCache.firstIndex != null &&
+        _rowRegionCache.lastIndex != null) {
+      dividerPaintManager.setup(
+          firstRowIndex: _rowRegionCache.firstIndex!,
+          lastRowIndex: _rowRegionCache.lastIndex!,
+          columnsLength: _columnsMetrics.length);
+    }
 
     Paint paint = Paint()..style = PaintingStyle.fill;
     // backgrounds
@@ -467,7 +474,7 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
     }
 
     // column divider
-    if (_columnDividerThickness > 0 && _columnDividerColor != null) {
+    if (false && _columnDividerThickness > 0 && _columnDividerColor != null) {
       paint.color = _columnDividerColor!;
 
       double height = 0;
