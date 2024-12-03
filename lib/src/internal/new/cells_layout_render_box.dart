@@ -11,6 +11,8 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 
+import 'divider_paint_manager.dart';
+
 @internal
 class CellsLayoutRenderBox<DATA> extends RenderBox
     with
@@ -328,7 +330,8 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
       return;
     }
 
-    final _DivisorPaintingStops divisorPaintingStops = _DivisorPaintingStops();
+    DividerPaintManager dividerPaintManager = DividerPaintManager(
+        rows: _rowRegionCache.length, columns: _columnsMetrics.length);
 
     Paint paint = Paint()..style = PaintingStyle.fill;
     // backgrounds
@@ -369,7 +372,7 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
       final int rowIndex = childParentData.rowIndex!;
       final int columnIndex = childParentData.columnIndex!;
 
-      divisorPaintingStops.add(childParentData);
+      dividerPaintManager.add(childParentData);
 
       final ColumnMetrics columnMetrics = _columnsMetrics[columnIndex];
       final PinStatus pinStatus = columnMetrics.pinStatus;
@@ -415,76 +418,50 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
     if (_dividerColor != null) {
       paint.color = _dividerColor!;
       for (RowRegion rowRegion in _rowRegionCache.values) {
-        if (_fillHeight || rowRegion.hasData || rowRegion.trailing) {
-          int currentColumnIndex = 0;
-          List<int>? stopColumns = divisorPaintingStops
-              .stopColumnsForRowPainting(rowIndex: rowRegion.index);
-          if (stopColumns != null) {
-            while (stopColumns.isNotEmpty) {
-              int stopColumnIndex = stopColumns.removeAt(0);
-              if (currentColumnIndex < stopColumnIndex) {
-                // paint row divisor from initial current column
-                // to initial stop column
-                ColumnMetrics stopColumn = _columnsMetrics[stopColumnIndex];
-                ColumnMetrics currentColumn =
-                    _columnsMetrics[currentColumnIndex];
-                double scrollOffset =
-                    _horizontalScrollOffsets.getOffset(stopColumn.pinStatus);
-                final double beforePinLeftLimit = math.max(
-                    0,
-                    _areaBounds[PinStatus.left]!.width +
-                        scrollOffset -
-                        stopColumn.offset);
-                context.canvas.drawRect(
-                    Rect.fromLTWH(
-                        offset.dx + currentColumn.offset - scrollOffset,
-                        offset.dy + rowRegion.y + _cellHeight,
-                        stopColumn.offset -
-                            currentColumn.offset +
-                            beforePinLeftLimit,
-                        _dividerThickness),
-                    paint);
-              }
-              currentColumnIndex = stopColumnIndex + 1;
+        for (DividerSegment dividerSegment
+            in dividerPaintManager.horizontalSegments(row: rowRegion.index)) {
+          final DividerNode start = dividerSegment.start;
+          ColumnMetrics? startColumn;
+          final DividerNode end = dividerSegment.end;
+          double left = offset.dx;
+          if (!start.edge) {
+            startColumn = _columnsMetrics[start.index];
+            double scrollOffset =
+                _horizontalScrollOffsets.getOffset(startColumn.pinStatus);
+            left += startColumn.offset +
+                startColumn.width +
+                _columnDividerThickness -
+                scrollOffset;
+            if (startColumn.pinStatus == PinStatus.none) {
+              left = math.max(
+                  left,
+                  offset.dx +
+                      _areaBounds[PinStatus.left]!.right +
+                      _columnDividerThickness);
             }
           }
-
-          if (currentColumnIndex < _columnsMetrics.length) {
-            // Paint row divisor from initial current column
-            // to the end screen limit.
-            ColumnMetrics currentColumn = _columnsMetrics[currentColumnIndex];
-            double scrollOffset =
-                _horizontalScrollOffsets.getOffset(currentColumn.pinStatus);
-            context.canvas.drawRect(
-                Rect.fromLTWH(
-                    offset.dx + currentColumn.offset - scrollOffset,
-                    offset.dy + rowRegion.y + _cellHeight,
-                    constraints.maxWidth - currentColumn.offset + scrollOffset,
-                    _dividerThickness),
-                paint);
-          } else if (_columnsMetrics.isNotEmpty) {
-            // Last stop column is the last column.
-            // Paint the end of last column to the end screen limit.
-            ColumnMetrics currentColumn = _columnsMetrics.last;
-            double scrollOffset =
-                _horizontalScrollOffsets.getOffset(currentColumn.pinStatus);
-            context.canvas.drawRect(
-                Rect.fromLTWH(
-                    offset.dx +
-                        currentColumn.offset -
-                        scrollOffset +
-                        currentColumn.width,
-                    offset.dy + rowRegion.y + _cellHeight,
-                    constraints.maxWidth - currentColumn.offset + scrollOffset,
-                    _dividerThickness),
-                paint);
+          double right = offset.dx;
+          if (end.edge) {
+            right += constraints.maxWidth;
           } else {
-            // No column. Paint from initial to the end screen
-            context.canvas.drawRect(
-                Rect.fromLTWH(offset.dx, offset.dy + rowRegion.y + _cellHeight,
-                    constraints.maxWidth, _dividerThickness),
-                paint);
+            ColumnMetrics endColumn = _columnsMetrics[end.index];
+            double scrollOffset =
+                _horizontalScrollOffsets.getOffset(endColumn.pinStatus);
+            right += endColumn.offset +
+                endColumn.width +
+                _columnDividerThickness -
+                scrollOffset;
+            bool hasPinLeft = (startColumn != null &&
+                    startColumn.pinStatus == PinStatus.left) ||
+                (startColumn == null && _areaBounds[PinStatus.left]!.width > 0);
+            if (hasPinLeft && endColumn.pinStatus == PinStatus.none) {
+              right = math.max(
+                  right, offset.dx + _areaBounds[PinStatus.left]!.right);
+            }
           }
+          double top = offset.dy + rowRegion.y + _cellHeight;
+          context.canvas.drawRect(
+              Rect.fromLTRB(left, top, right, top + _dividerThickness), paint);
         }
       }
     }
@@ -623,64 +600,5 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
 extension _ParentDataGetter on RenderObject {
   CellsLayoutParentData _parentData() {
     return parentData as CellsLayoutParentData;
-  }
-}
-
-class _DivisorPaintingStops {
-  final Map<int, Set<int>> _stopColumnsForRowPainting = {};
-  final Map<int, Set<int>> _stopRowsForColumnPainting = {};
-
-  List<int>? stopColumnsForRowPainting({required int rowIndex}) {
-    Set<int>? stops = _stopColumnsForRowPainting[rowIndex];
-    if (stops != null) {
-      List<int> list = stops.toList();
-      list.sort();
-      return list;
-    }
-    return null;
-  }
-
-  List<int>? stopRowsForColumnPainting({required int columnIndex}) {
-    Set<int>? stops = _stopRowsForColumnPainting[columnIndex];
-    if (stops != null) {
-      List<int> list = stops.toList();
-      list.sort();
-      return list;
-    }
-    return null;
-  }
-
-  void add(CellsLayoutParentData parentData) {
-    final int rowIndex = parentData.rowIndex!;
-    final int columnIndex = parentData.columnIndex!;
-    final int rowSpan = parentData.rowSpan!;
-    final int columnSpan = parentData.columnSpan!;
-
-    if (!parentData.isCell) {
-      //TODO add trailing in _stopRowsForColumnPainting?
-      return;
-    }
-
-    for (int ri = rowIndex; ri < rowIndex + rowSpan - 1; ri++) {
-      for (int ci = columnIndex; ci < columnIndex + columnSpan; ci++) {
-        Set<int>? stops = _stopColumnsForRowPainting[ri];
-        if (stops == null) {
-          stops = {};
-          _stopColumnsForRowPainting[ri] = stops;
-        }
-        stops.add(ci);
-      }
-    }
-
-    for (int ci = columnIndex; ci < columnIndex + columnSpan - 1; ci++) {
-      for (int ri = rowIndex; ri < rowIndex + rowSpan; ri++) {
-        Set<int>? stops = _stopRowsForColumnPainting[ci];
-        if (stops == null) {
-          stops = {};
-          _stopRowsForColumnPainting[ci] = stops;
-        }
-        stops.add(ri);
-      }
-    }
   }
 }
