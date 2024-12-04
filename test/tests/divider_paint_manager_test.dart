@@ -1,4 +1,3 @@
-import 'package:davi/davi.dart';
 import 'package:davi/src/internal/new/divider_paint_manager.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -23,7 +22,8 @@ void main() {
       DividerPaintManager manager = DividerPaintManager();
       manager.setup(firstRowIndex: 0, lastRowIndex: 2, columnsLength: 3);
 
-      manager.add(rowIndex: 0, columnIndex: 0, rowSpan: 1, columnSpan: 2);
+      manager.addStopsForCell(
+          rowIndex: 0, columnIndex: 0, rowSpan: 1, columnSpan: 2);
 
       List<DividerVertex> vertices = manager.allVerticalVerticesFrom(column: 0);
       expect(vertices.length, 5);
@@ -56,7 +56,8 @@ void main() {
       DividerPaintManager manager = DividerPaintManager();
       manager.setup(firstRowIndex: 0, lastRowIndex: 3, columnsLength: 4);
 
-      manager.add(rowIndex: 2, columnIndex: 1, rowSpan: 1, columnSpan: 2);
+      manager.addStopsForCell(
+          rowIndex: 2, columnIndex: 1, rowSpan: 1, columnSpan: 2);
 
       List<DividerVertex> vertices = manager.allVerticalVerticesFrom(column: 0);
       expect(vertices.length, 6);
@@ -108,7 +109,8 @@ void main() {
       DividerPaintManager manager = DividerPaintManager();
       manager.setup(firstRowIndex: 2, lastRowIndex: 3, columnsLength: 3);
 
-      manager.add(rowIndex: 2, columnIndex: 0, rowSpan: 2, columnSpan: 1);
+      manager.addStopsForCell(
+          rowIndex: 2, columnIndex: 0, rowSpan: 2, columnSpan: 1);
 
       List<DividerVertex> vertices = manager.allHorizontalVerticesFrom(row: 2);
       expect(vertices.length, 5);
@@ -133,7 +135,8 @@ void main() {
       DividerPaintManager manager = DividerPaintManager();
       manager.setup(firstRowIndex: 0, lastRowIndex: 2, columnsLength: 3);
 
-      manager.add(rowIndex: 0, columnIndex: 0, rowSpan: 2, columnSpan: 1);
+      manager.addStopsForCell(
+          rowIndex: 0, columnIndex: 0, rowSpan: 2, columnSpan: 1);
 
       List<DividerVertex> vertices = manager.allHorizontalVerticesFrom(row: 0);
       expect(vertices.length, 5);
@@ -166,7 +169,8 @@ void main() {
       DividerPaintManager manager = DividerPaintManager();
       manager.setup(firstRowIndex: 0, lastRowIndex: 2, columnsLength: 3);
 
-      manager.add(rowIndex: 0, columnIndex: 1, rowSpan: 2, columnSpan: 1);
+      manager.addStopsForCell(
+          rowIndex: 0, columnIndex: 1, rowSpan: 2, columnSpan: 1);
 
       List<DividerVertex> vertices = manager.allHorizontalVerticesFrom(row: 0);
       expect(vertices.length, 5);

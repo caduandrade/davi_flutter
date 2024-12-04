@@ -338,6 +338,21 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
           firstRowIndex: _rowRegionCache.firstIndex!,
           lastRowIndex: _rowRegionCache.lastIndex!,
           columnsLength: _columnsMetrics.length);
+      if (_rowRegionCache.trailingRegion != null &&
+          _rowRegionCache.trailingRegion!.index >=
+              _rowRegionCache.firstIndex! &&
+          _rowRegionCache.trailingRegion!.index <= _rowRegionCache.lastIndex!) {
+        dividerPaintManager.addStopsForEntireRow(
+            rowIndex: _rowRegionCache.trailingRegion!.index, horizontal: false);
+      }
+      if (!_fillHeight) {
+        for (RowRegion rowRegion in _rowRegionCache.values) {
+          if (!rowRegion.hasData && !rowRegion.trailing) {
+            dividerPaintManager.addStopsForEntireRow(
+                rowIndex: rowRegion.index, horizontal: true);
+          }
+        }
+      }
     }
 
     Paint paint = Paint()..style = PaintingStyle.fill;
@@ -381,7 +396,7 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
       final int rowSpan = childParentData.rowSpan!;
       final int columnSpan = childParentData.columnSpan!;
 
-      dividerPaintManager.add(
+      dividerPaintManager.addStopsForCell(
           rowIndex: rowIndex,
           columnIndex: columnIndex,
           rowSpan: rowSpan,
@@ -423,6 +438,53 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
             context.canvas.drawRect(
                 rowRegion.bounds.translate(offset.dx, offset.dy), paint);
           }
+        }
+      }
+    }
+
+    // column dividers
+    if (_columnDividerThickness > 0 && _columnDividerColor != null) {
+      paint.color = _columnDividerColor!;
+      for (int columnIndex = 0;
+          columnIndex < _columnsMetrics.length;
+          columnIndex++) {
+        final ColumnMetrics columnMetrics = _columnsMetrics[columnIndex];
+        double scroll = 0;
+        if (columnMetrics.pinStatus == PinStatus.none) {
+          scroll = _horizontalScrollOffsets.unpinned;
+          context.canvas.save();
+          context.canvas.clipRect(
+              _areaBounds[PinStatus.none]!.translate(offset.dx, offset.dy));
+        } else {
+          scroll = _horizontalScrollOffsets.leftPinned;
+        }
+
+        double left =
+            offset.dx + columnMetrics.offset + columnMetrics.width - scroll;
+
+        double right = left + _columnDividerThickness;
+        for (DividerSegment dividerSegment
+            in dividerPaintManager.verticalSegments(column: columnIndex)) {
+          final DividerVertex start = dividerSegment.start;
+          final DividerVertex end = dividerSegment.end;
+          double top = offset.dy;
+          double bottom = offset.dy;
+          if (!start.edge) {
+            RowRegion startRow = _rowRegionCache.get(start.index);
+            top += startRow.y + _cellHeight;
+          }
+          if (end.edge) {
+            bottom += constraints.maxHeight;
+          } else {
+            RowRegion endRow = _rowRegionCache.get(end.index);
+            bottom += endRow.y + _cellHeight;
+          }
+          context.canvas
+              .drawRect(Rect.fromLTRB(left, top, right, bottom), paint);
+        }
+
+        if (columnMetrics.pinStatus == PinStatus.none) {
+          context.canvas.restore();
         }
       }
     }
@@ -476,114 +538,6 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
           context.canvas.drawRect(
               Rect.fromLTRB(left, top, right, top + _dividerThickness), paint);
         }
-      }
-    }
-
-    // column dividers
-    if (_columnDividerThickness > 0 && _columnDividerColor != null) {
-      paint.color = _columnDividerColor!;
-      for (int columnIndex = 0;
-          columnIndex < _columnsMetrics.length;
-          columnIndex++) {
-        final ColumnMetrics columnMetrics = _columnsMetrics[columnIndex];
-        double scroll = 0;
-        if (columnMetrics.pinStatus == PinStatus.none) {
-          scroll = _horizontalScrollOffsets.unpinned;
-          context.canvas.save();
-          context.canvas.clipRect(
-              _areaBounds[PinStatus.none]!.translate(offset.dx, offset.dy));
-        } else {
-          scroll = _horizontalScrollOffsets.leftPinned;
-        }
-
-        double left =
-            offset.dx + columnMetrics.offset + columnMetrics.width - scroll;
-
-        double right = left + _columnDividerThickness;
-        for (DividerSegment dividerSegment
-            in dividerPaintManager.verticalSegments(column: columnIndex)) {
-          final DividerVertex start = dividerSegment.start;
-          final DividerVertex end = dividerSegment.end;
-          double top = offset.dy;
-          double bottom = offset.dy;
-          if (!start.edge) {
-            RowRegion startRow = _rowRegionCache.get(start.index);
-            top += startRow.y + _cellHeight;
-          }
-          if (end.edge) {
-            bottom += constraints.maxHeight;
-          } else {
-            RowRegion endRow = _rowRegionCache.get(end.index);
-            bottom += endRow.y + _cellHeight;
-          }
-          context.canvas
-              .drawRect(Rect.fromLTRB(left, top, right, bottom), paint);
-        }
-
-        if (columnMetrics.pinStatus == PinStatus.none) {
-          context.canvas.restore();
-        }
-      }
-    }
-
-    // column divider
-    if (false && _columnDividerThickness > 0 && _columnDividerColor != null) {
-      paint.color = _columnDividerColor!;
-
-      double height = 0;
-      if (_trailing != null && _rowRegionCache.trailingRegion != null) {
-        height = _rowRegionCache.trailingRegion!.y;
-      } else if (_columnDividerFillHeight) {
-        height = constraints.maxHeight;
-      } else {
-        height = _rowRegionCache.lastWithData!.y + _rowHeight;
-      }
-
-      _paintColumns(
-          context: context, paint: paint, offset: offset, y: 0, height: height);
-
-      if (_trailing != null &&
-          _rowRegionCache.trailingRegion != null &&
-          _columnDividerFillHeight) {
-        final double y = _rowRegionCache.trailingRegion!.y + _rowHeight;
-        height = constraints.maxHeight - y;
-        if (height > 0) {
-          _paintColumns(
-              context: context,
-              paint: paint,
-              offset: offset,
-              y: y,
-              height: height);
-        }
-      }
-    }
-  }
-
-  void _paintColumns(
-      {required PaintingContext context,
-      required Paint paint,
-      required Offset offset,
-      required double y,
-      required double height}) {
-    for (ColumnMetrics columnMetrics in _columnsMetrics) {
-      double scroll = 0;
-      if (columnMetrics.pinStatus == PinStatus.none) {
-        scroll = _horizontalScrollOffsets.unpinned;
-        context.canvas.save();
-        context.canvas.clipRect(
-            _areaBounds[PinStatus.none]!.translate(offset.dx, offset.dy));
-      } else {
-        scroll = _horizontalScrollOffsets.leftPinned;
-      }
-      context.canvas.drawRect(
-          Rect.fromLTWH(
-              offset.dx + columnMetrics.offset + columnMetrics.width - scroll,
-              offset.dy + y,
-              _columnDividerThickness,
-              height),
-          paint);
-      if (columnMetrics.pinStatus == PinStatus.none) {
-        context.canvas.restore();
       }
     }
   }

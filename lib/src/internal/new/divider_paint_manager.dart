@@ -85,7 +85,24 @@ class DividerPaintManager {
     yield* vertices.segments();
   }
 
-  void add(
+  void addStopsForEntireRow({required int rowIndex, required bool horizontal}) {
+    // Updating vertical vertices stop
+    for (_DividerVertices verticalVertices in _verticalVertices.values) {
+      if (rowIndex == _firstRowIndex) {
+        verticalVertices.start._stop = true;
+      } else {
+        verticalVertices.middle(rowIndex - 1)._stop = true;
+      }
+    }
+
+    // Updating horizontal vertices stop
+    if (horizontal) {
+      _DividerVertices horizontalVertices = _horizontalVertices[rowIndex]!;
+      horizontalVertices.stopAll();
+    }
+  }
+
+  void addStopsForCell(
       {required int rowIndex,
       required int columnIndex,
       required int rowSpan,
@@ -168,6 +185,14 @@ class _DividerVertices {
   final DividerVertex start = DividerVertex.edge();
   final DividerVertex end = DividerVertex.edge();
   final Map<int, DividerVertex> _middles = {};
+
+  void stopAll() {
+    start._stop = true;
+    end._stop = true;
+    for (DividerVertex vertex in _middles.values) {
+      vertex._stop = true;
+    }
+  }
 
   DividerVertex middle(int index) {
     DividerVertex? vertex = _middles[index];

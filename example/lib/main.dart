@@ -63,7 +63,7 @@ class _HomePageState extends State<HomePage> {
     List<Person> rows = [];
 
     Random random = Random();
-    for (int i = 1; i < 215; i++) {
+    for (int i = 1; i < 209; i++) {
       String name = 'User $i';
       if (i == 4) {
         name += ' 12345678901234567890';
@@ -179,7 +179,7 @@ class _HomePageState extends State<HomePage> {
           onRowTap: _onRowTap,
           //  onLastVisibleRow: (index)=>print('last visible row: $index ${DateTime.now()}'),
           //  onTrailingWidget: (visible)=>print('trailing widget: $visible ${DateTime.now()}'),
-          // trailingWidget: const Center(child: Text('last widget'))
+           trailingWidget: const Center(child: Text('trailing widget'))
         ));
 
     return Scaffold(
