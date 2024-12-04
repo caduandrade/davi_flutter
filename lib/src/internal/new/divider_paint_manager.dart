@@ -19,7 +19,6 @@ class DividerPaintManager {
   final Map<int, _DividerVertices> _verticalVertices = {};
 
   int? _firstRowIndex;
-  int? _lastRowIndex;
 
   void setup(
       {required int firstRowIndex,
@@ -32,7 +31,6 @@ class DividerPaintManager {
     _horizontalVertices.clear();
     _verticalVertices.clear();
     _firstRowIndex = firstRowIndex;
-    _lastRowIndex = lastRowIndex;
 
     for (int row = firstRowIndex; row <= lastRowIndex; row++) {
       _horizontalVertices[row] =

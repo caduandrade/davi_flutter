@@ -30,5 +30,5 @@ enum CellCollisionBehavior {
   /// This strict behavior ensures that any collision is treated as a critical error,
   /// forcing the developer to resolve it immediately. Use with caution, as it may
   /// disrupt the rendering process.
-  strict,
+  throwException,
 }

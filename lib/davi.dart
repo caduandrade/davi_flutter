@@ -11,6 +11,7 @@ export 'src/davi.dart';
 export 'src/last_visible_row_listener.dart';
 export 'src/model.dart';
 export 'src/cell_collision_behavior.dart';
+export 'src/max_span_behavior.dart';
 export 'src/pin_status.dart';
 export 'src/sort_callback_typedef.dart';
 export 'src/row_callback_typedefs.dart';

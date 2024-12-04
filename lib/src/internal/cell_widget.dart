@@ -128,7 +128,7 @@ class CellWidget<DATA> extends StatelessWidget {
         debugPrint(
             'Collision detected at cell rowIndex: $rowIndex columnIndex: $columnIndex.');
       } else if (daviContext.collisionBehavior ==
-          CellCollisionBehavior.strict) {
+          CellCollisionBehavior.throwException) {
         throw StateError(
             'Collision detected at cell rowIndex: $rowIndex columnIndex: $columnIndex.');
       }

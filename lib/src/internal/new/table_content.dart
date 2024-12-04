@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'package:davi/davi.dart';
 import 'package:davi/src/internal/cell_widget.dart';
 import 'package:davi/src/internal/new/painter_cache.dart';
@@ -133,8 +134,33 @@ class TableContentState<DATA> extends State<TableContent<DATA>> {
           final DaviColumn<DATA> column =
               widget.daviContext.model.columnAt(columnIndex);
 
-          final int rowSpan = column.rowSpan(data, rowIndex);
-          final int columnSpan = column.columnSpan(data, rowIndex);
+          int rowSpan = math.max(column.rowSpan(data, rowIndex), 1);
+          if (rowSpan > widget.daviContext.model.maxRowSpan) {
+            if (widget.daviContext.model.maxSpanBehavior ==
+                MaxSpanBehavior.throwException) {
+              throw StateError(
+                  'rowSpan exceeds the maximum allowed of ${widget.daviContext.model.maxRowSpan} rows');
+            } else if (widget.daviContext.model.maxSpanBehavior ==
+                MaxSpanBehavior.truncateWithWarning) {
+              rowSpan = widget.daviContext.model.maxRowSpan;
+              debugPrint(
+                  'Span too large at row $rowIndex: Truncated to $rowSpan rows');
+            }
+          }
+
+          int columnSpan = math.max(column.columnSpan(data, rowIndex), 1);
+          if (columnSpan > widget.daviContext.model.maxColumnSpan) {
+            if (widget.daviContext.model.maxSpanBehavior ==
+                MaxSpanBehavior.throwException) {
+              throw StateError(
+                  'columnSpan exceeds the maximum allowed of ${widget.daviContext.model.maxColumnSpan} columns');
+            } else if (widget.daviContext.model.maxSpanBehavior ==
+                MaxSpanBehavior.truncateWithWarning) {
+              columnSpan = widget.daviContext.model.maxColumnSpan;
+              debugPrint(
+                  'Span too large at rowIndex $rowIndex column $columnIndex: Truncated to $columnSpan columns');
+            }
+          }
 
           Widget? cellWidget = CellWidget<DATA>(
               daviContext: widget.daviContext,

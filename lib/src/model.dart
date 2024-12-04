@@ -1,7 +1,8 @@
 import 'dart:collection';
-
+import 'dart:math' as math;
 import 'package:collection/collection.dart';
 import 'package:davi/src/column.dart';
+import 'package:davi/src/max_span_behavior.dart';
 import 'package:davi/src/sort.dart';
 import 'package:davi/src/sort_callback_typedef.dart';
 import 'package:davi/src/sort_direction.dart';
@@ -17,7 +18,12 @@ class DaviModel<DATA> extends ChangeNotifier {
       this.ignoreDataComparators = false,
       this.alwaysSorted = false,
       this.multiSortEnabled = false,
-      this.onSort}) {
+      this.onSort,
+      int maxColumnSpan = 10,
+      int maxRowSpan = 15,
+      this.maxSpanBehavior = MaxSpanBehavior.throwException})
+      : maxRowSpan = math.max(maxRowSpan, 1),
+        maxColumnSpan = math.max(maxColumnSpan, 1) {
     _originalRows = List.from(rows);
     addColumns(columns);
     _updateRows(notify: false);
@@ -83,6 +89,27 @@ class DaviModel<DATA> extends ChangeNotifier {
   bool get isColumnsEmpty => _columns.isEmpty;
 
   bool get isColumnsNotEmpty => _columns.isNotEmpty;
+
+  /// The maximum number of rows a single cell can span.
+  ///
+  /// If a cell's `rowSpan` exceeds this value, the behavior will depend on
+  /// [maxSpanBehavior]. See [MaxSpanBehavior] for available options and details.
+  ///
+  /// Adjust this value to control the performance and usability of the grid.
+  final int maxRowSpan;
+
+  /// The maximum number of columns a single cell can span.
+  ///
+  /// If a cell's `columnSpan` exceeds this value, the behavior will depend on
+  /// [maxSpanBehavior]. See [MaxSpanBehavior] for available options and details.
+  ///
+  /// Adjust this value to accommodate wider spans when necessary.
+  final int maxColumnSpan;
+
+  /// Determines how to handle spans that exceed [maxRowSpan] or [maxColumnSpan].
+  ///
+  /// Refer to [MaxSpanBehavior] for details on the available policies.
+  final MaxSpanBehavior maxSpanBehavior;
 
   /// Indicates whether the model is sorted.
   ///
