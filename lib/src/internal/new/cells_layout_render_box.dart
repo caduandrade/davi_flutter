@@ -361,6 +361,9 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
         _hoverBackground != null ||
         _rowColor != null) {
       for (RowRegion rowRegion in _rowRegionCache.values) {
+        if (!rowRegion.visible) {
+          continue;
+        }
         if (rowRegion.trailing) {
           continue;
         }
@@ -428,6 +431,9 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
     // foreground
     if (_hoverForeground != null) {
       for (RowRegion rowRegion in _rowRegionCache.values) {
+        if (!rowRegion.visible) {
+          continue;
+        }
         if (!rowRegion.hasData) {
           continue;
         }
@@ -493,6 +499,9 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
     if (_dividerColor != null) {
       paint.color = _dividerColor!;
       for (RowRegion rowRegion in _rowRegionCache.values) {
+        if (!rowRegion.visible) {
+          continue;
+        }
         for (DividerSegment dividerSegment
             in dividerPaintManager.horizontalSegments(row: rowRegion.index)) {
           final DividerVertex start = dividerSegment.start;

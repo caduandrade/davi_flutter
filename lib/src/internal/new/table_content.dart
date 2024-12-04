@@ -72,7 +72,7 @@ class TableContentState<DATA> extends State<TableContent<DATA>> {
         ? widget.verticalScrollController.offset
         : 0;
 
-    final int firstRowIndex =
+    final int firstVisibleRowIndex =
         (verticalOffset / widget.layoutSettings.themeMetrics.row.height)
             .floor();
 
@@ -91,6 +91,8 @@ class TableContentState<DATA> extends State<TableContent<DATA>> {
             widget.layoutSettings.themeMetrics.row.height)
         .ceil();
 
+    final int firstRowIndex = math.max(0, firstVisibleRowIndex - 10);
+
     double rowY =
         (firstRowIndex * widget.layoutSettings.themeMetrics.row.height) -
             verticalOffset;
@@ -100,7 +102,7 @@ class TableContentState<DATA> extends State<TableContent<DATA>> {
     final CellSpanCache cellSpanCache = CellSpanCache();
 
     for (int rowIndex = firstRowIndex;
-        rowIndex < firstRowIndex + maxVisualRows;
+        rowIndex < firstVisibleRowIndex + maxVisualRows;
         rowIndex++) {
       final Rect bounds = Rect.fromLTWH(0, rowY, constraints.maxWidth,
           widget.layoutSettings.themeMetrics.cell.height);
@@ -125,7 +127,8 @@ class TableContentState<DATA> extends State<TableContent<DATA>> {
           bounds: bounds,
           hasData: data != null,
           y: rowY,
-          trailing: trailingRegion));
+          trailing: trailingRegion,
+          visible: rowIndex >= firstVisibleRowIndex));
 
       for (int columnIndex = 0;
           columnIndex < widget.layoutSettings.columnsMetrics.length;
@@ -162,24 +165,26 @@ class TableContentState<DATA> extends State<TableContent<DATA>> {
             }
           }
 
-          Widget? cellWidget = CellWidget<DATA>(
-              daviContext: widget.daviContext,
-              painterCache: _painterCache,
-              cellSpanCache: cellSpanCache,
-              data: data,
-              column: column,
-              rowIndex: rowIndex,
-              rowSpan: rowSpan,
-              columnIndex: columnIndex,
-              columnSpan: columnSpan);
+          if (rowIndex >= firstVisibleRowIndex || rowSpan > 1) {
+            Widget? cellWidget = CellWidget<DATA>(
+                daviContext: widget.daviContext,
+                painterCache: _painterCache,
+                cellSpanCache: cellSpanCache,
+                data: data,
+                column: column,
+                rowIndex: rowIndex,
+                rowSpan: rowSpan,
+                columnIndex: columnIndex,
+                columnSpan: columnSpan);
 
-          children.add(CellsLayoutChild.cell(
-              childIndex: childIndex,
-              rowIndex: rowIndex,
-              columnIndex: columnIndex,
-              rowSpan: rowSpan,
-              columnSpan: columnSpan,
-              child: cellWidget));
+            children.add(CellsLayoutChild.cell(
+                childIndex: childIndex,
+                rowIndex: rowIndex,
+                columnIndex: columnIndex,
+                rowSpan: rowSpan,
+                columnSpan: columnSpan,
+                child: cellWidget));
+          }
           lastVisibleRowIndex = rowIndex;
         } else {
           children.add(CellsLayoutChild.cell(

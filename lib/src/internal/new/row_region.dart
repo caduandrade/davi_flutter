@@ -9,13 +9,15 @@ class RowRegion implements Comparable<RowRegion> {
       required this.bounds,
       required this.hasData,
       required this.y,
-      required this.trailing});
+      required this.trailing,
+      required this.visible});
 
   final int index;
   final double y;
   final Rect bounds;
   final bool hasData;
   final bool trailing;
+  final bool visible;
 
   @override
   int compareTo(RowRegion other) => index.compareTo(other.index);
@@ -33,8 +35,6 @@ class RowRegionCache {
   int? _lastIndex;
 
   int? get lastIndex => _lastIndex;
-
-  int get length => _list.length;
 
   RowRegion? get lastWithData {
     for (RowRegion rowRegion in _list.reversed) {
@@ -71,10 +71,6 @@ class RowRegionCache {
       throw StateError('Non-existent row region for index $index');
     }
     return region;
-  }
-
-  void sort() {
-    _list.sort();
   }
 
   int? boundsIndex(Offset position) {
