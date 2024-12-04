@@ -2,7 +2,7 @@ import 'package:davi/davi.dart';
 import 'package:davi/src/internal/new/cell_painter.dart';
 import 'package:davi/src/internal/new/painter_cache.dart';
 import 'package:davi/src/internal/new/davi_context.dart';
-import 'package:davi/src/internal/new/span_usage_cache.dart';
+import 'package:davi/src/internal/new/cell_span_cache.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
@@ -18,7 +18,7 @@ class CellWidget<DATA> extends StatelessWidget {
       required this.column,
       required this.daviContext,
       required this.painterCache,
-      required this.spanUsageCache})
+      required this.cellSpanCache})
       : super(key: key);
 
   final DATA data;
@@ -29,7 +29,7 @@ class CellWidget<DATA> extends StatelessWidget {
   final DaviColumn<DATA> column;
   final DaviContext daviContext;
   final PainterCache<DATA> painterCache;
-  final SpanUsageCache spanUsageCache;
+  final CellSpanCache cellSpanCache;
 
   @override
   Widget build(BuildContext context) {
@@ -110,7 +110,7 @@ class CellWidget<DATA> extends StatelessWidget {
     }
 
     bool offstage = false;
-    final bool intercepts = spanUsageCache.intercepts(
+    final bool intercepts = cellSpanCache.intersects(
         rowIndex: rowIndex,
         columnIndex: columnIndex,
         rowSpan: rowSpan,
@@ -133,7 +133,7 @@ class CellWidget<DATA> extends StatelessWidget {
             'Collision detected at cell rowIndex: $rowIndex columnIndex: $columnIndex.');
       }
     } else {
-      spanUsageCache.add(
+      cellSpanCache.add(
           rowIndex: rowIndex,
           columnIndex: columnIndex,
           rowSpan: rowSpan,
