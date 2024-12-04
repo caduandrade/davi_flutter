@@ -302,7 +302,7 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
         double height = 0;
         for (int i = rowIndex; i < rowIndex + rowSpan; i++) {
           height += _cellHeight;
-          if (i < columnIndex + columnSpan - 1) {
+          if (i < rowIndex + rowSpan - 1) {
             height += _dividerThickness;
           }
         }
