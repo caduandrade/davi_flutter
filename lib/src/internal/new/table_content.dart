@@ -5,6 +5,7 @@ import 'package:davi/src/internal/new/cells_layout.dart';
 import 'package:davi/src/internal/new/cells_layout_child.dart';
 import 'package:davi/src/internal/new/davi_context.dart';
 import 'package:davi/src/internal/new/row_region.dart';
+import 'package:davi/src/internal/new/span_usage_cache.dart';
 import 'package:davi/src/internal/new/table_events.dart';
 import 'package:davi/src/internal/scroll_offsets.dart';
 import 'package:davi/src/internal/table_layout_settings.dart';
@@ -95,6 +96,8 @@ class TableContentState<DATA> extends State<TableContent<DATA>> {
 
     int childIndex = 0;
 
+    final SpanUsageCache spanUsageCache = SpanUsageCache();
+
     for (int rowIndex = firstRowIndex;
         rowIndex < firstRowIndex + maxVisualRows;
         rowIndex++) {
@@ -136,10 +139,12 @@ class TableContentState<DATA> extends State<TableContent<DATA>> {
           Widget? cellWidget = CellWidget<DATA>(
               daviContext: widget.daviContext,
               painterCache: _painterCache,
+              spanUsageCache: spanUsageCache,
               data: data,
               column: column,
               rowIndex: rowIndex,
               rowSpan: rowSpan,
+              columnIndex: columnIndex,
               columnSpan: columnSpan);
 
           children.add(CellsLayoutChild.cell(

@@ -96,8 +96,8 @@ class _HomePageState extends State<HomePage> {
               cellValue: (data, rowIndex) => data.value?.toString()),
           DaviColumn(
               name: 'Value 3',
-              cellValue: (data, rowIndex) =>
-                  rowIndex == 4 ? 'SPAN R4C4' : data.value?.toString(),
+              cellWidget: (w,c,i)=>i==4?Placeholder():null,
+              //cellValue: (data, rowIndex) =>  rowIndex == 4 ? 'SPAN R4C4' : data.value?.toString(),
               rowSpan: (data, rowIndex) => rowIndex == 4 ? 2 : 1
     ),
 

@@ -1,10 +1,8 @@
-import 'package:davi/src/cell_icon.dart';
-import 'package:davi/src/column.dart';
+import 'package:davi/davi.dart';
 import 'package:davi/src/internal/new/cell_painter.dart';
 import 'package:davi/src/internal/new/painter_cache.dart';
 import 'package:davi/src/internal/new/davi_context.dart';
-import 'package:davi/src/theme/theme.dart';
-import 'package:davi/src/theme/theme_data.dart';
+import 'package:davi/src/internal/new/span_usage_cache.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
@@ -15,19 +13,23 @@ class CellWidget<DATA> extends StatelessWidget {
       required this.data,
       required this.rowIndex,
       required this.rowSpan,
+      required this.columnIndex,
       required this.columnSpan,
       required this.column,
       required this.daviContext,
-      required this.painterCache})
+      required this.painterCache,
+      required this.spanUsageCache})
       : super(key: key);
 
   final DATA data;
   final int rowIndex;
   final int rowSpan;
+  final int columnIndex;
   final int columnSpan;
   final DaviColumn<DATA> column;
   final DaviContext daviContext;
   final PainterCache<DATA> painterCache;
+  final SpanUsageCache spanUsageCache;
 
   @override
   Widget build(BuildContext context) {
@@ -102,6 +104,41 @@ class CellWidget<DATA> extends StatelessWidget {
     if (column.cellClip) {
       child = ClipRect(child: child);
     }
-    return child;
+
+    if (daviContext.collisionBehavior == CellCollisionBehavior.overlap) {
+      return child;
+    }
+
+    bool offstage = false;
+    final bool intercepts = spanUsageCache.intercepts(
+        rowIndex: rowIndex,
+        columnIndex: columnIndex,
+        rowSpan: rowSpan,
+        columnSpan: columnSpan);
+    if (intercepts) {
+      if (daviContext.collisionBehavior == CellCollisionBehavior.ignore) {
+        offstage = true;
+      } else if (daviContext.collisionBehavior ==
+          CellCollisionBehavior.ignoreAndWarn) {
+        offstage = true;
+        debugPrint(
+            'Collision detected at cell rowIndex: $rowIndex columnIndex: $columnIndex.');
+      } else if (daviContext.collisionBehavior ==
+          CellCollisionBehavior.overlapAndWarn) {
+        debugPrint(
+            'Collision detected at cell rowIndex: $rowIndex columnIndex: $columnIndex.');
+      } else if (daviContext.collisionBehavior ==
+          CellCollisionBehavior.strict) {
+        throw StateError(
+            'Collision detected at cell rowIndex: $rowIndex columnIndex: $columnIndex.');
+      }
+    } else {
+      spanUsageCache.add(
+          rowIndex: rowIndex,
+          columnIndex: columnIndex,
+          rowSpan: rowSpan,
+          columnSpan: columnSpan);
+    }
+    return Offstage(offstage: offstage, child: child);
   }
 }
