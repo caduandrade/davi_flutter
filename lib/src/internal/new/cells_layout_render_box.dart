@@ -378,8 +378,14 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
       final CellsLayoutParentData childParentData = child._parentData();
       final int rowIndex = childParentData.rowIndex!;
       final int columnIndex = childParentData.columnIndex!;
+      final int rowSpan = childParentData.rowSpan!;
+      final int columnSpan = childParentData.columnSpan!;
 
-      dividerPaintManager.add(childParentData);
+      dividerPaintManager.add(
+          rowIndex: rowIndex,
+          columnIndex: columnIndex,
+          rowSpan: rowSpan,
+          columnSpan: columnSpan);
 
       final ColumnMetrics columnMetrics = _columnsMetrics[columnIndex];
       final PinStatus pinStatus = columnMetrics.pinStatus;
@@ -421,15 +427,15 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
       }
     }
 
-    // row divider
+    // row dividers
     if (_dividerColor != null) {
       paint.color = _dividerColor!;
       for (RowRegion rowRegion in _rowRegionCache.values) {
         for (DividerSegment dividerSegment
             in dividerPaintManager.horizontalSegments(row: rowRegion.index)) {
-          final DividerNode start = dividerSegment.start;
+          final DividerVertex start = dividerSegment.start;
           ColumnMetrics? startColumn;
-          final DividerNode end = dividerSegment.end;
+          final DividerVertex end = dividerSegment.end;
           double left = offset.dx;
           if (!start.edge) {
             startColumn = _columnsMetrics[start.index];
@@ -469,6 +475,53 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
           double top = offset.dy + rowRegion.y + _cellHeight;
           context.canvas.drawRect(
               Rect.fromLTRB(left, top, right, top + _dividerThickness), paint);
+        }
+      }
+    }
+
+    // column dividers
+    if (_columnDividerThickness > 0 && _columnDividerColor != null) {
+      paint.color = _columnDividerColor!;
+      for (int columnIndex = 0;
+          columnIndex < _columnsMetrics.length;
+          columnIndex++) {
+        final ColumnMetrics columnMetrics = _columnsMetrics[columnIndex];
+        double scroll = 0;
+        if (columnMetrics.pinStatus == PinStatus.none) {
+          scroll = _horizontalScrollOffsets.unpinned;
+          context.canvas.save();
+          context.canvas.clipRect(
+              _areaBounds[PinStatus.none]!.translate(offset.dx, offset.dy));
+        } else {
+          scroll = _horizontalScrollOffsets.leftPinned;
+        }
+
+        double left =
+            offset.dx + columnMetrics.offset + columnMetrics.width - scroll;
+
+        double right = left + _columnDividerThickness;
+        for (DividerSegment dividerSegment
+            in dividerPaintManager.verticalSegments(column: columnIndex)) {
+          final DividerVertex start = dividerSegment.start;
+          final DividerVertex end = dividerSegment.end;
+          double top = offset.dy;
+          double bottom = offset.dy;
+          if (!start.edge) {
+            RowRegion startRow = _rowRegionCache.get(start.index);
+            top += startRow.y + _cellHeight;
+          }
+          if (end.edge) {
+            bottom += constraints.maxHeight;
+          } else {
+            RowRegion endRow = _rowRegionCache.get(end.index);
+            bottom += endRow.y + _cellHeight;
+          }
+          context.canvas
+              .drawRect(Rect.fromLTRB(left, top, right, bottom), paint);
+        }
+
+        if (columnMetrics.pinStatus == PinStatus.none) {
+          context.canvas.restore();
         }
       }
     }

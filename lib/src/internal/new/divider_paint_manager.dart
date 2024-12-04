@@ -1,4 +1,3 @@
-import 'package:davi/src/internal/new/cells_layout_parent_data.dart';
 import 'package:meta/meta.dart';
 
 /// Designed to manage and determine the grid dividers that need to be painted.
@@ -16,8 +15,11 @@ import 'package:meta/meta.dart';
 /// the grid's structure while accounting for merged cells.
 @internal
 class DividerPaintManager {
-  final Map<int, _DividerNodes> _horizontalNodes = {};
-  final Map<int, _DividerNodes> _verticalNodes = {};
+  final Map<int, _DividerVertices> _horizontalVertices = {};
+  final Map<int, _DividerVertices> _verticalVertices = {};
+
+  int? _firstRowIndex;
+  int? _lastRowIndex;
 
   void setup(
       {required int firstRowIndex,
@@ -27,65 +29,88 @@ class DividerPaintManager {
         lastRowIndex - firstRowIndex + 1, (index) => firstRowIndex + index);
     List<int> columnIndices = List.generate(columnsLength, (index) => index);
 
-    _horizontalNodes.clear();
-    _verticalNodes.clear();
+    _horizontalVertices.clear();
+    _verticalVertices.clear();
+    _firstRowIndex = firstRowIndex;
+    _lastRowIndex = lastRowIndex;
 
     for (int row = firstRowIndex; row <= lastRowIndex; row++) {
-      _horizontalNodes[row] = _DividerNodes(index: row, indices: columnIndices);
+      _horizontalVertices[row] =
+          _DividerVertices(index: row, indices: columnIndices);
     }
     for (int column = 0; column < columnsLength; column++) {
-      _verticalNodes[column] =
-          _DividerNodes(index: column, indices: rowIndices);
+      _verticalVertices[column] =
+          _DividerVertices(index: column, indices: rowIndices);
     }
+  }
+
+  List<DividerVertex> allHorizontalVerticesFrom({required int row}) {
+    _DividerVertices? dividerVertices = _horizontalVertices[row];
+    if (dividerVertices != null) {
+      return _collectVertices(dividerVertices.start);
+    }
+    return [];
+  }
+
+  List<DividerVertex> allVerticalVerticesFrom({required int column}) {
+    _DividerVertices? dividerVertices = _verticalVertices[column];
+    if (dividerVertices != null) {
+      return _collectVertices(dividerVertices.start);
+    }
+    return [];
+  }
+
+  List<DividerVertex> _collectVertices(DividerVertex start) {
+    List<DividerVertex> vertices = [];
+    DividerVertex? current = start;
+
+    while (current != null) {
+      vertices.add(current);
+      current = current.next;
+    }
+
+    return vertices;
   }
 
   Iterable<DividerSegment> verticalSegments({required int column}) sync* {
-    _DividerNodes nodes = _verticalNodes[column]!;
-    yield* nodes.segments();
+    _DividerVertices vertices = _verticalVertices[column]!;
+    yield* vertices.segments();
   }
 
   Iterable<DividerSegment> horizontalSegments({required int row}) sync* {
-    _DividerNodes? nodes = _horizontalNodes[row];
-    if (nodes == null) {
+    _DividerVertices? vertices = _horizontalVertices[row];
+    if (vertices == null) {
       throw StateError('No horizontal segments for row $row');
     }
-    yield* nodes.segments();
+    yield* vertices.segments();
   }
 
-  void add(CellsLayoutParentData parentData) {
-    final int rowIndex = parentData.rowIndex!;
-    final int columnIndex = parentData.columnIndex!;
-    final int rowSpan = parentData.rowSpan!;
-    final int columnSpan = parentData.columnSpan!;
-
-    if (!parentData.isCell) {
-      //TODO add trailing?
-      return;
-    }
-
-    // horizontal nodes
-    for (int ri = rowIndex; ri < rowIndex + rowSpan - 1; ri++) {
-      _DividerNodes horizontalNodes = _horizontalNodes[ri]!;
-      for (int ci = columnIndex; ci < columnIndex + columnSpan; ci++) {
-        if (ci == 0) {
-          horizontalNodes.start.lock();
+  void add(
+      {required int rowIndex,
+      required int columnIndex,
+      required int rowSpan,
+      required int columnSpan}) {
+    // Updating vertical vertices stop
+    for (int ci = columnIndex; ci < columnIndex + columnSpan - 1; ci++) {
+      _DividerVertices verticalVertices = _verticalVertices[ci]!;
+      for (int ri = rowIndex; ri < rowIndex + rowSpan; ri++) {
+        if (ri == _firstRowIndex) {
+          verticalVertices.start._stop = true;
         } else {
-          horizontalNodes.middle(ci - 1).lock();
+          verticalVertices.middle(ri - 1)._stop = true;
         }
-        horizontalNodes.middle(ci).lock();
       }
     }
 
-    // vertical nodes
-    for (int ci = columnIndex; ci < columnIndex + columnSpan - 1; ci++) {
-      _DividerNodes verticalNodes = _verticalNodes[ci]!;
-      for (int ri = rowIndex; ri < rowIndex + rowSpan; ri++) {
-        if (ri == 0) {
-          verticalNodes.start.lock();
+    // Updating horizontal vertices stop
+    for (int ri = rowIndex; ri < rowIndex + rowSpan - 1; ri++) {
+      _DividerVertices horizontalVertices = _horizontalVertices[ri]!;
+      for (int ci = columnIndex; ci < columnIndex + columnSpan; ci++) {
+        if (ci == 0) {
+          horizontalVertices.start._stop = true;
         } else {
-          verticalNodes.middle(ri - 1).lock();
+          horizontalVertices.middle(ci - 1)._stop = true;
         }
-        verticalNodes.middle(ri).lock();
       }
     }
   }
@@ -93,34 +118,32 @@ class DividerPaintManager {
 
 /// Represents each point between row or column dividers in the grid,
 /// including special edge points at the start or end of a line.
-class DividerNode {
-  DividerNode.edge()
+class DividerVertex {
+  DividerVertex.edge()
       : edge = true,
         index = -1;
-  DividerNode.middle(this.index) : edge = false;
+  DividerVertex.middle(this.index) : edge = false;
 
   final bool edge;
   final int index;
-  bool _locked = false;
-  bool get locked => _locked;
-  void lock() {
-    _locked = true;
-  }
+  bool _stop = false;
+  bool get stop => _stop;
 
-  DividerNode? _next;
-  DividerNode? get next => _next;
+  DividerVertex? _next;
+  DividerVertex? get next => _next;
 
   @override
   String toString() {
-    return 'DividerNode{edge: $edge, index: $index}';
+    return 'DividerVertex{edge: $edge, index: $index}';
   }
 }
 
+@internal
 class DividerSegment {
   DividerSegment({required this.start, required this.end});
 
-  final DividerNode start;
-  final DividerNode end;
+  final DividerVertex start;
+  final DividerVertex end;
 
   @override
   String toString() {
@@ -128,40 +151,45 @@ class DividerSegment {
   }
 }
 
-class _DividerNodes {
-  _DividerNodes({required this.index, required List<int> indices}) {
-    start = DividerNode.edge();
-    DividerNode current = start;
+class _DividerVertices {
+  _DividerVertices({required this.index, required List<int> indices}) {
+    DividerVertex current = start;
     for (var index in indices) {
-      DividerNode nextNode = DividerNode.middle(index);
-      _middles[index] = nextNode;
-      current._next = nextNode;
-      current = nextNode;
+      DividerVertex next = DividerVertex.middle(index);
+      _middles[index] = next;
+      current._next = next;
+      current = next;
     }
-    end = DividerNode.edge();
     current._next = end;
   }
 
   final int index;
 
-  late final DividerNode start;
-  late final DividerNode end;
-  final Map<int, DividerNode> _middles = {};
+  final DividerVertex start = DividerVertex.edge();
+  final DividerVertex end = DividerVertex.edge();
+  final Map<int, DividerVertex> _middles = {};
 
-  DividerNode middle(int index) => _middles[index]!;
+  DividerVertex middle(int index) {
+    DividerVertex? vertex = _middles[index];
+    if (vertex == null) {
+      throw StateError(
+          "No middle vertex for index $index. Current indices: ${_middles.keys}");
+    }
+    return vertex;
+  }
 
   Iterable<DividerSegment> segments() sync* {
-    DividerNode current = start;
+    DividerVertex current = start;
 
     while (current.next != null) {
-      DividerNode next = current.next!;
+      DividerVertex next = current.next!;
 
-      if (current.locked && next.locked) {
+      if (current.stop) {
         current = next;
         continue;
       }
 
-      while (!next.locked && next.next != null) {
+      while (!next.stop && next.next != null) {
         next = next.next!;
       }
       yield DividerSegment(start: current, end: next);

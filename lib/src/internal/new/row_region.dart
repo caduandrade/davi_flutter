@@ -65,8 +65,12 @@ class RowRegionCache {
     _indexMap[region.index] = region;
   }
 
-  RowRegion? get(int index) {
-    return _indexMap[index];
+  RowRegion get(int index) {
+    RowRegion? region = _indexMap[index];
+    if (region == null) {
+      throw StateError('Non-existent row region for index $index');
+    }
+    return region;
   }
 
   void sort() {

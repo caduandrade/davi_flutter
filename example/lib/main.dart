@@ -98,13 +98,15 @@ class _HomePageState extends State<HomePage> {
               name: 'Value 3',
               cellValue: (data, rowIndex) =>
                   rowIndex == 4 ? 'SPAN R4C4' : data.value?.toString(),
-              rowSpan: (data, rowIndex) => rowIndex == 4 ? 2 : 1),
+              rowSpan: (data, rowIndex) => rowIndex == 4 ? 2 : 1
+    ),
+
           DaviColumn(
               name: 'Value 4',
               cellValue: (data, rowIndex) =>
-                  rowIndex == 2 ? 'SPANNNNNNNNNNNN' : data.value?.toString(),
+                  rowIndex == 2 ? 'SPANNNNNNN R2C5' : data.value?.toString(),
               cellTextStyle: const TextStyle(fontWeight: FontWeight.bold),
-              columnSpan: (data, rowIndex) => rowIndex == 2 ? 2 : 1,
+              columnSpan: (data, rowIndex) => rowIndex == 2 ?2 : 1,
               cellBackground: (data, index, hovered) =>
                   data.value == 12 ? Colors.green : null),
           DaviColumn(
