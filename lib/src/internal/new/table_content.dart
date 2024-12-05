@@ -86,12 +86,16 @@ class TableContentState<DATA> extends State<TableContent<DATA>> {
     // This is used to determine if an extra row might become partially
     // visible during scrolling, allowing preemptive
     // caching to improve performance.
-    final maxVisualRows = ((constraints.maxHeight +
+    final int maxVisualRows = ((constraints.maxHeight +
                 widget.layoutSettings.themeMetrics.cell.height) /
             widget.layoutSettings.themeMetrics.row.height)
         .ceil();
+    final int maxVisibleRowIndex = firstVisibleRowIndex + maxVisualRows;
+    final int maxRowIndex =
+        maxVisibleRowIndex + widget.daviContext.model.maxRowSpan;
 
-    final int firstRowIndex = math.max(0, firstVisibleRowIndex - 10);
+    final int firstRowIndex =
+        math.max(0, firstVisibleRowIndex - widget.daviContext.model.maxRowSpan);
 
     double rowY =
         (firstRowIndex * widget.layoutSettings.themeMetrics.row.height) -
@@ -101,9 +105,7 @@ class TableContentState<DATA> extends State<TableContent<DATA>> {
 
     final CellSpanCache cellSpanCache = CellSpanCache();
 
-    for (int rowIndex = firstRowIndex;
-        rowIndex < firstVisibleRowIndex + maxVisualRows;
-        rowIndex++) {
+    for (int rowIndex = firstRowIndex; rowIndex < maxRowIndex; rowIndex++) {
       final Rect bounds = Rect.fromLTWH(0, rowY, constraints.maxWidth,
           widget.layoutSettings.themeMetrics.cell.height);
 
@@ -128,7 +130,8 @@ class TableContentState<DATA> extends State<TableContent<DATA>> {
           hasData: data != null,
           y: rowY,
           trailing: trailingRegion,
-          visible: rowIndex >= firstVisibleRowIndex));
+          visible: rowIndex >= firstVisibleRowIndex &&
+              rowIndex <= maxVisibleRowIndex));
 
       for (int columnIndex = 0;
           columnIndex < widget.layoutSettings.columnsMetrics.length;
@@ -165,7 +168,9 @@ class TableContentState<DATA> extends State<TableContent<DATA>> {
             }
           }
 
-          if (rowIndex >= firstVisibleRowIndex || rowSpan > 1) {
+          if ((rowIndex >= firstVisibleRowIndex &&
+                  rowIndex <= maxVisibleRowIndex) ||
+              rowSpan > 1) {
             Widget? cellWidget = CellWidget<DATA>(
                 daviContext: widget.daviContext,
                 painterCache: _painterCache,
