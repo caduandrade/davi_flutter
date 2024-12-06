@@ -1,14 +1,8 @@
 import 'dart:math' as math;
 
-import 'package:davi/src/cell_background.dart';
-import 'package:davi/src/cell_value_mapper.dart';
+import 'package:davi/davi.dart';
 import 'package:davi/src/cell_semantics_builder.dart';
-import 'package:davi/src/cell_value_stringify.dart';
-import 'package:davi/src/column_id.dart';
-import 'package:davi/src/pin_status.dart';
-import 'package:davi/src/sort.dart';
 import 'package:davi/src/span_provider.dart';
-import 'package:davi/src/summary_builder.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
@@ -36,6 +30,7 @@ class DaviColumn<DATA> extends ChangeNotifier {
       this.cellValue,
       this.cellIcon,
       this.cellWidget,
+      this.cellPainter,
       this.rowSpan = _defaultSpanProvider,
       this.columnSpan = _defaultSpanProvider,
       this.cellValueStringify = _defaultCellValueStringify,
@@ -91,6 +86,11 @@ class DaviColumn<DATA> extends ChangeNotifier {
 
   /// Cell icon mapper for each row in that column.
   final CellIconMapper<DATA>? cellIcon;
+
+  /// Custom painting function for rendering cell content.
+  ///
+  /// Allows drawing custom visuals for cells in this column using a Canvas.
+  final CellPainter<DATA>? cellPainter;
 
   /// Cell widget mapper for each row in that column.
   final CellWidgetMapper<DATA>? cellWidget;

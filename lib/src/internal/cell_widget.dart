@@ -1,5 +1,5 @@
 import 'package:davi/davi.dart';
-import 'package:davi/src/internal/new/cell_painter.dart';
+import 'package:davi/src/internal/new/text_cell_painter.dart';
 import 'package:davi/src/internal/new/painter_cache.dart';
 import 'package:davi/src/internal/new/davi_context.dart';
 import 'package:davi/src/internal/new/cell_span_cache.dart';
@@ -46,7 +46,7 @@ class CellWidget<DATA> extends StatelessWidget {
 
     Widget? child;
     dynamic value;
-    bool hasCustomWidget = false;
+    bool isNonText = false;
 
     if (column.cellValue != null) {
       value = column.cellValue!(data, rowIndex);
@@ -60,15 +60,21 @@ class CellWidget<DATA> extends StatelessWidget {
             package: cellIcon.icon.fontPackage,
             color: cellIcon.color);
       }
+    } else if (column.cellPainter != null) {
+      child = CustomPaint(
+          size: Size(column.width, theme.cell.contentHeight),
+          painter: _CustomPainter<DATA>(
+              data: data, cellPainting: column.cellPainter!));
+      isNonText = true;
     } else if (column.cellWidget != null) {
       child = column.cellWidget!(context, data, rowIndex);
       if (child != null) {
-        hasCustomWidget = true;
+        isNonText = true;
       }
     }
 
     if (child == null && value != null) {
-      child = CellPainter(
+      child = TextCellPainter(
           text: column.cellValueStringify(value),
           rowSpan: rowSpan,
           columnSpan: columnSpan,
@@ -88,9 +94,7 @@ class CellWidget<DATA> extends StatelessWidget {
 
     // Always keep some color to avoid parent markNeedsLayout
     Color background = Colors.transparent;
-    if (!hasCustomWidget &&
-        value == null &&
-        theme.cell.nullValueColor != null) {
+    if (!isNonText && value == null && theme.cell.nullValueColor != null) {
       background = theme.cell.nullValueColor!(
               rowIndex, rowIndex == daviContext.hoverNotifier.index) ??
           background;
@@ -141,4 +145,19 @@ class CellWidget<DATA> extends StatelessWidget {
     }
     return Offstage(offstage: offstage, child: child);
   }
+}
+
+class _CustomPainter<DATA> extends CustomPainter {
+  _CustomPainter({required this.data, required this.cellPainting});
+
+  final DATA data;
+  final CellPainter<DATA> cellPainting;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    cellPainting(canvas, size, data);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
