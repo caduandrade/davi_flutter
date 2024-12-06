@@ -63,7 +63,7 @@ class _HomePageState extends State<HomePage> {
     List<Person> rows = [];
 
     Random random = Random();
-    for (int i = 1; i < 209; i++) {
+    for (int i = 1; i < 200; i++) {
       String name = 'User $i';
       if (i == 4) {
         name += ' 12345678901234567890';
@@ -79,21 +79,21 @@ class _HomePageState extends State<HomePage> {
               name: 'Name',
               cellValue: (data, rowIndex) =>
                   rowIndex == 0 ? 'SPAN 1234567890123456789' : data.name,
-              rowSpan: (data, rowIndex) => 1,
+             //rowSpan: (data, rowIndex) => rowIndex==1?2:1,
               columnSpan: (data, rowIndex) => rowIndex == 0 ? 2 : 1,
               pinStatus: PinStatus.left),
           DaviColumn(
               name: 'Age',
-              cellValue: (data, rowIndex) => data.age.toString(),
+              cellValue: (data, rowIndex) => data.age,
               pinStatus: PinStatus.left,
               summary: (context) => const Text('test')),
           DaviColumn(
               name: 'Value',
-              cellValue: (data, rowIndex) => data.value?.toString(),
+              cellValue: (data, rowIndex) => data.value,
               pinStatus: PinStatus.left),
           DaviColumn(
               name: 'Value 2',
-              cellValue: (data, rowIndex) => data.value?.toString()),
+              cellValue: (data, rowIndex) => data.value),
           DaviColumn(
               name: 'Value 3',
               cellWidget: (w,c,i)=>i==10?Placeholder():null,
@@ -104,20 +104,21 @@ class _HomePageState extends State<HomePage> {
           DaviColumn(
               name: 'Value 4',
               cellValue: (data, rowIndex) =>
-                  rowIndex == 2 ? 'SPANNNNNNN R2C5' : data.value?.toString(),
+                  rowIndex == 2 ? 'SPANNNNNNN R2C5' : data.value,
               cellTextStyle: const TextStyle(fontWeight: FontWeight.bold),
               columnSpan: (data, rowIndex) => rowIndex == 2 ?2 : 1,
               cellBackground: (data, index, hovered) =>
                   data.value == 12 ? Colors.green : null),
           DaviColumn(
               name: 'Value 5',
-              cellValue: (data, rowIndex) => data.value?.toString()),
+              cellValue: (data, rowIndex) => data.value),
           DaviColumn(
               name: 'Value 6',
-              cellValue: (data, rowIndex) => data.value?.toString()),
+              cellValue: (data, rowIndex) => data.value),
           DaviColumn(
               name: 'Value 7',
-              cellValue: (data, rowIndex) => data.value?.toString()),
+              cellValue: (data, rowIndex) => data.value
+          ),
 
           /*  DaviColumn(
               name: 'Editable',
@@ -125,8 +126,9 @@ class _HomePageState extends State<HomePage> {
               cellBuilder: _buildField,
               cellBackground: (row) => row.data.valid ? null : Colors.red[800])*/
         ],
-        alwaysSorted: true,
-        multiSortEnabled: true);
+      //  alwaysSorted: true,
+       // multiSortEnabled: true
+    );
   }
 
   Widget _buildField(

@@ -45,7 +45,7 @@ class CellWidget<DATA> extends StatelessWidget {
     textStyle = column.cellTextStyle ?? textStyle;
 
     Widget? child;
-    String? value;
+    dynamic value;
     bool hasCustomWidget = false;
 
     if (column.cellValue != null) {
@@ -69,7 +69,7 @@ class CellWidget<DATA> extends StatelessWidget {
 
     if (child == null && value != null) {
       child = CellPainter(
-          text: value,
+          text: column.cellValueStringify(value),
           rowSpan: rowSpan,
           columnSpan: columnSpan,
           painterCache: painterCache,

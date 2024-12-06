@@ -27,7 +27,7 @@ import 'package:flutter/widgets.dart';
 ///   return data.name; // Assumes the data model has a 'name' field
 /// };
 /// ```
-typedef CellValueMapper<DATA> = String? Function(
+typedef CellValueMapper<DATA> = dynamic Function(
   DATA data,
   int rowIndex,
 );

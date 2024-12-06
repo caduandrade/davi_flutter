@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:davi/src/cell_background.dart';
 import 'package:davi/src/cell_value_mapper.dart';
 import 'package:davi/src/cell_semantics_builder.dart';
+import 'package:davi/src/cell_value_stringify.dart';
 import 'package:davi/src/column_id.dart';
 import 'package:davi/src/pin_status.dart';
 import 'package:davi/src/sort.dart';
@@ -37,6 +38,7 @@ class DaviColumn<DATA> extends ChangeNotifier {
       this.cellWidget,
       this.rowSpan = _defaultSpanProvider,
       this.columnSpan = _defaultSpanProvider,
+      this.cellValueStringify = _defaultCellValueStringify,
       this.leading,
       DaviDataComparator<DATA>? dataComparator,
       this.pinStatus = PinStatus.none,
@@ -79,6 +81,13 @@ class DaviColumn<DATA> extends ChangeNotifier {
 
   /// Cell value mapper for each row in that column.
   final CellValueMapper<DATA>? cellValue;
+
+  /// A function to convert the cell value into a String representation.
+  ///
+  /// This function is used to customize how the value of a cell is converted
+  /// to a String. It will receive the dynamic value of the
+  /// cell (as returned by `cellValue`) and return its string representation.
+  final CellValueStringify cellValueStringify;
 
   /// Cell icon mapper for each row in that column.
   final CellIconMapper<DATA>? cellIcon;
@@ -261,6 +270,8 @@ class DaviColumn<DATA> extends ChangeNotifier {
      */
     return _defaultDataComparator;
   }
+
+  static String _defaultCellValueStringify(dynamic value) => value.toString();
 }
 
 SemanticsProperties defaultSemanticsBuilder(
