@@ -1,17 +1,15 @@
 import 'dart:math' as math;
 import 'package:davi/davi.dart';
+import 'package:davi/src/internal/new/divider_paint_manager.dart';
 import 'package:davi/src/internal/new/hover_notifier.dart';
 import 'package:davi/src/internal/new/row_region.dart';
-import 'package:flutter/foundation.dart';
 import 'package:davi/src/internal/column_metrics.dart';
 import 'package:davi/src/internal/new/cells_layout_parent_data.dart';
 import 'package:davi/src/internal/scroll_offsets.dart';
-
+import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
-
-import 'divider_paint_manager.dart';
 
 @internal
 class CellsLayoutRenderBox<DATA> extends RenderBox
@@ -259,6 +257,8 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
   final List<RenderBox> _cells = [];
   RenderBox? _trailing;
 
+  bool _hasLayoutErrors = false;
+
   @override
   void markNeedsLayout() {
     //TODO remove
@@ -280,15 +280,33 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
 
   @override
   void performLayout() {
+    size = computeDryLayout(constraints);
+    _hasLayoutErrors = false;
     _cells.clear();
     _trailing = null;
     visitChildren((child) {
       final RenderBox renderBox = child as RenderBox;
       final CellsLayoutParentData childParentData = child._parentData();
-      final int? columnIndex = childParentData.columnIndex;
-      if (columnIndex != null && columnIndex >= 0) {
+
+      if (childParentData.isCell) {
         // cell
+        final int rowIndex = childParentData.rowIndex!;
+        final RowRegion rowRegion = _rowRegionCache.get(rowIndex);
+        final int columnIndex = childParentData.columnIndex!;
+        final int rowSpan = childParentData.rowSpan!;
         final int columnSpan = childParentData.columnSpan!;
+
+        if (columnIndex + columnSpan > _columnsMetrics.length) {
+          _hasLayoutErrors = true;
+          throw StateError(
+              'The column span exceeds the table\'s column limit at row $rowIndex, starting from column $columnIndex.');
+        } else if (rowRegion.hasData &&
+            rowIndex + rowSpan > _model.rowsLength) {
+          _hasLayoutErrors = true;
+          throw StateError(
+              'The row span exceeds the table\'s row limit at row $rowIndex and column $columnIndex.');
+        }
+
         double width = 0;
         for (int i = columnIndex; i < columnIndex + columnSpan; i++) {
           final ColumnMetrics columnMetrics = _columnsMetrics[i];
@@ -297,8 +315,7 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
             width += _columnDividerThickness;
           }
         }
-        final int rowIndex = childParentData.rowIndex!;
-        final int rowSpan = childParentData.rowSpan!;
+
         double height = 0;
         for (int i = rowIndex; i < rowIndex + rowSpan; i++) {
           height += _cellHeight;
@@ -320,13 +337,13 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
       }
       renderBox._parentData().offset = const Offset(0, 0);
     });
-
-    size = computeDryLayout(constraints);
   }
 
   @override
   void paint(PaintingContext context, Offset offset) {
-    if (constraints.maxWidth == 0 || constraints.maxHeight == 0) {
+    if (_hasLayoutErrors ||
+        constraints.maxWidth == 0 ||
+        constraints.maxHeight == 0) {
       return;
     }
 
