@@ -169,6 +169,17 @@ class TableContentState<DATA> extends State<TableContent<DATA>> {
             }
           }
 
+          // Check all columns spanned by the columnSpan
+          for (int i = columnIndex + 1; i < columnIndex + columnSpan; i++) {
+            if (widget.layoutSettings.columnsMetrics[i].pinStatus !=
+                widget.layoutSettings.columnsMetrics[columnIndex].pinStatus) {
+              throw StateError(
+                "Invalid columnSpan: Columns spanned from index $columnIndex to ${columnIndex + columnSpan - 1} "
+                "at rowIndex $rowIndex, have mixed pin status.",
+              );
+            }
+          }
+
           if ((rowIndex >= firstVisibleRowIndex &&
                   rowIndex <= maxVisibleRowIndex) ||
               rowSpan > 1) {
