@@ -574,8 +574,14 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
   bool hitTestChildren(BoxHitTestResult result, {required Offset position}) {
     final int firstRowIndex = (_verticalOffset / _rowHeight).floor();
 
-    if (_trailing != null) {
-      //TODO trailing hit
+    if (_trailing != null && _rowRegionCache.trailingRegion != null) {
+      final Offset renderedTrailingOffset =
+          Offset(0, _rowRegionCache.trailingRegion!.y);
+      // Adjusts the offset to the position relative to the hit within the trailing.
+      final Offset localOffset = position - renderedTrailingOffset;
+      if (_trailing!.hitTest(result, position: localOffset)) {
+        return true;
+      }
     }
 
     for (RenderBox child in _cells) {

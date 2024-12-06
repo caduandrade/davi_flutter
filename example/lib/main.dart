@@ -181,14 +181,14 @@ class _HomePageState extends State<HomePage> {
           onRowTap: _onRowTap,
           //  onLastVisibleRow: (index)=>print('last visible row: $index ${DateTime.now()}'),
           //  onTrailingWidget: (visible)=>print('trailing widget: $visible ${DateTime.now()}'),
-           trailingWidget: const Center(child: Text('trailing widget'))
+           trailingWidget: MouseRegion(onHover: (h)=>print('hover on trailing ${DateTime.now()}'), child: const Center(child: Text('trailing widget')))
         ));
 
     return Scaffold(
-        body: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        body: Row(children: [SizedBox(width: 50),Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       TextButton(onPressed: _onclick, child: Text('ok')),
       Expanded(child: theme)
-    ]));
+    ]))]));
   }
 
   void _onHover(int? index) {
@@ -202,52 +202,6 @@ class _HomePageState extends State<HomePage> {
   void _onclick() {
     setState(() {
       _buildModel();
-    });
-  }
-}
-
-class MM extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() => St();
-}
-
-class St extends State<MM> {
-  Color color = Colors.white;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-        padding: EdgeInsets.all(50),
-        child: MouseRegion(
-            cursor: SystemMouseCursors.click,
-            onEnter: _onEnter,
-            onExit: _onExit,
-            child: GestureDetector(
-                onTap: _onTap,
-                child: Container(
-                    color: color,
-                    child: Column(children: [
-                      TextField(),
-                      Expanded(child: Container())
-                    ])))));
-    //return Stack(children: [Positioned.fill(child: MouseRegion(onEnter: _onEnter, onExit: _onExit, child: Container(color:color))), TextField()]);
-  }
-
-  void _onEnter(e) {
-    print('onenter');
-    setState(() {
-      color = Colors.blue;
-    });
-  }
-
-  void _onTap() {
-    print('tap');
-  }
-
-  void _onExit(e) {
-    print('onExit');
-    setState(() {
-      color = Colors.white;
     });
   }
 }
