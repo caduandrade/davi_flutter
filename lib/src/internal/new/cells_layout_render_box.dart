@@ -38,6 +38,7 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
       required Color? columnDividerColor,
       required Color? dividerColor,
       required DaviRowColor<DATA>? rowColor,
+      required DividerPaintManager dividerPaintManager,
       required DaviModel<DATA> model})
       : _model = model,
         _cellHeight = cellHeight,
@@ -51,6 +52,7 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
         _rowColor = rowColor,
         _rowsLength = rowsLength,
         _dividerThickness = dividerThickness,
+        _dividerPaintManager = dividerPaintManager,
         _rowRegionCache = rowRegionCache,
         _hoverBackground = hoverBackground,
         _hoverForeground = hoverForeground,
@@ -259,6 +261,11 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
 
   bool _hasLayoutErrors = false;
 
+  DividerPaintManager _dividerPaintManager;
+  set dividerPaintManager(DividerPaintManager value) {
+    _dividerPaintManager = value;
+  }
+
   @override
   void markNeedsLayout() {
     //TODO remove
@@ -347,31 +354,6 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
       return;
     }
 
-    DividerPaintManager dividerPaintManager = DividerPaintManager();
-
-    if (_rowRegionCache.firstIndex != null &&
-        _rowRegionCache.lastIndex != null) {
-      dividerPaintManager.setup(
-          firstRowIndex: _rowRegionCache.firstIndex!,
-          lastRowIndex: _rowRegionCache.lastIndex!,
-          columnsLength: _columnsMetrics.length);
-      if (_rowRegionCache.trailingRegion != null &&
-          _rowRegionCache.trailingRegion!.index >=
-              _rowRegionCache.firstIndex! &&
-          _rowRegionCache.trailingRegion!.index <= _rowRegionCache.lastIndex!) {
-        dividerPaintManager.addStopsForEntireRow(
-            rowIndex: _rowRegionCache.trailingRegion!.index, horizontal: false);
-      }
-      if (!_fillHeight) {
-        for (RowRegion rowRegion in _rowRegionCache.values) {
-          if (!rowRegion.hasData && !rowRegion.trailing) {
-            dividerPaintManager.addStopsForEntireRow(
-                rowIndex: rowRegion.index, horizontal: true);
-          }
-        }
-      }
-    }
-
     Paint paint = Paint()..style = PaintingStyle.fill;
     // backgrounds
     if (_themeRowColor != null ||
@@ -416,7 +398,7 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
       final int rowSpan = childParentData.rowSpan!;
       final int columnSpan = childParentData.columnSpan!;
 
-      dividerPaintManager.addStopsForCell(
+      _dividerPaintManager.addStopsForCell(
           rowIndex: rowIndex,
           columnIndex: columnIndex,
           rowSpan: rowSpan,
@@ -487,7 +469,7 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
 
         double right = left + _columnDividerThickness;
         for (DividerSegment dividerSegment
-            in dividerPaintManager.verticalSegments(column: columnIndex)) {
+            in _dividerPaintManager.verticalSegments(column: columnIndex)) {
           final DividerVertex start = dividerSegment.start;
           final DividerVertex end = dividerSegment.end;
           double top = offset.dy;
@@ -520,7 +502,7 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
           continue;
         }
         for (DividerSegment dividerSegment
-            in dividerPaintManager.horizontalSegments(row: rowRegion.index)) {
+            in _dividerPaintManager.horizontalSegments(row: rowRegion.index)) {
           final DividerVertex start = dividerSegment.start;
           ColumnMetrics? startColumn;
           final DividerVertex end = dividerSegment.end;

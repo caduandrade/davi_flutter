@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'package:davi/davi.dart';
 import 'package:davi/src/internal/cell_widget.dart';
+import 'package:davi/src/internal/new/divider_paint_manager.dart';
 import 'package:davi/src/internal/new/painter_cache.dart';
 import 'package:davi/src/internal/new/cells_layout.dart';
 import 'package:davi/src/internal/new/cells_layout_child.dart';
@@ -208,6 +209,28 @@ class TableContentState<DATA> extends State<TableContent<DATA>> {
     widget.daviContext.onTrailingWidget(trailingWidgetBuilt);
     widget.daviContext.onLastVisibleRow(lastVisibleRowIndex);
 
+    DividerPaintManager dividerPaintManager = DividerPaintManager();
+    if (rowRegionCache.firstIndex != null && rowRegionCache.lastIndex != null) {
+      dividerPaintManager.setup(
+          firstRowIndex: rowRegionCache.firstIndex!,
+          lastRowIndex: rowRegionCache.lastIndex!,
+          columnsLength: widget.layoutSettings.columnsMetrics.length);
+      if (rowRegionCache.trailingRegion != null &&
+          rowRegionCache.trailingRegion!.index >= rowRegionCache.firstIndex! &&
+          rowRegionCache.trailingRegion!.index <= rowRegionCache.lastIndex!) {
+        dividerPaintManager.addStopsForEntireRow(
+            rowIndex: rowRegionCache.trailingRegion!.index, horizontal: false);
+      }
+      if (!theme.row.fillHeight) {
+        for (RowRegion rowRegion in rowRegionCache.values) {
+          if (!rowRegion.hasData && !rowRegion.trailing) {
+            dividerPaintManager.addStopsForEntireRow(
+                rowIndex: rowRegion.index, horizontal: true);
+          }
+        }
+      }
+    }
+
     CellsLayout<DATA> cellsLayout = CellsLayout(
         daviContext: widget.daviContext,
         layoutSettings: widget.layoutSettings,
@@ -218,6 +241,7 @@ class TableContentState<DATA> extends State<TableContent<DATA>> {
         unpinnedAreaBounds: widget.layoutSettings.getAreaBounds(PinStatus.none),
         rowsLength: widget.layoutSettings.rowsLength,
         rowRegionCache: rowRegionCache,
+        dividerPaintManager: dividerPaintManager,
         children: children);
 
     return ClipRect(
