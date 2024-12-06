@@ -1,7 +1,8 @@
 import 'dart:collection';
-
+import 'dart:math' as math;
 import 'package:collection/collection.dart';
 import 'package:davi/src/column.dart';
+import 'package:davi/src/max_span_behavior.dart';
 import 'package:davi/src/sort.dart';
 import 'package:davi/src/sort_callback_typedef.dart';
 import 'package:davi/src/sort_direction.dart';
@@ -17,7 +18,12 @@ class DaviModel<DATA> extends ChangeNotifier {
       this.ignoreDataComparators = false,
       this.alwaysSorted = false,
       this.multiSortEnabled = false,
-      this.onSort}) {
+      this.onSort,
+      int maxColumnSpan = 10,
+      int maxRowSpan = 15,
+      this.maxSpanBehavior = MaxSpanBehavior.throwException})
+      : maxRowSpan = math.max(maxRowSpan, 1),
+        maxColumnSpan = math.max(maxColumnSpan, 1) {
     _originalRows = List.from(rows);
     addColumns(columns);
     _updateRows(notify: false);
@@ -83,6 +89,27 @@ class DaviModel<DATA> extends ChangeNotifier {
   bool get isColumnsEmpty => _columns.isEmpty;
 
   bool get isColumnsNotEmpty => _columns.isNotEmpty;
+
+  /// The maximum number of rows a single cell can span.
+  ///
+  /// If a cell's `rowSpan` exceeds this value, the behavior will depend on
+  /// [maxSpanBehavior]. See [MaxSpanBehavior] for available options and details.
+  ///
+  /// Adjust this value to control the performance and usability of the grid.
+  final int maxRowSpan;
+
+  /// The maximum number of columns a single cell can span.
+  ///
+  /// If a cell's `columnSpan` exceeds this value, the behavior will depend on
+  /// [maxSpanBehavior]. See [MaxSpanBehavior] for available options and details.
+  ///
+  /// Adjust this value to accommodate wider spans when necessary.
+  final int maxColumnSpan;
+
+  /// Determines how to handle spans that exceed [maxRowSpan] or [maxColumnSpan].
+  ///
+  /// Refer to [MaxSpanBehavior] for details on the available policies.
+  final MaxSpanBehavior maxSpanBehavior;
 
   /// Indicates whether the model is sorted.
   ///
@@ -308,8 +335,21 @@ class DaviModel<DATA> extends ChangeNotifier {
   void _updateRows({required bool notify}) {
     if (isSorted && !ignoreDataComparators) {
       List<DATA> list = List.from(_originalRows);
-      list.sort(_compoundSort);
-      _rows = list;
+
+      // Create a list of pairs (index, value),
+      // where each element is a MapEntry
+      // The key of MapEntry is the index,
+      // and the value is the corresponding element
+      List<MapEntry<int, DATA>> indexedList = List.generate(
+        list.length,
+        (index) => MapEntry(index, list[index]),
+      );
+
+      indexedList.sort((a, b) => _compoundSort(a.value, a.key, b.value, b.key));
+
+      // Convert the sorted indexedList back into a normal list of values
+      // This gives us the sorted list of values without the indices
+      _rows = indexedList.map((entry) => entry.value).toList();
     } else {
       _rows = UnmodifiableListView(_originalRows);
     }
@@ -319,12 +359,18 @@ class DaviModel<DATA> extends ChangeNotifier {
   }
 
   /// Function to realize the multi sort.
-  int _compoundSort(DATA a, DATA b) {
+  int _compoundSort(DATA dataA, int indexA, DATA dataB, int indexB) {
     int r = 0;
     for (final DaviColumn<DATA> column in sortedColumns) {
       if (column.sort != null) {
         final DaviDataComparator<DATA> dataComparator = column.dataComparator;
         final DaviSortDirection direction = column.sort!.direction;
+
+        dynamic a, b;
+        if (column.cellValue != null) {
+          a = column.cellValue!(dataA, indexA);
+          b = column.cellValue!(dataB, indexB);
+        }
 
         if (direction == DaviSortDirection.descending) {
           r = dataComparator(b, a, column);

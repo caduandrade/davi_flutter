@@ -3,6 +3,7 @@ import 'package:davi/src/internal/new/cells_layout_child.dart';
 import 'package:davi/src/internal/new/cells_layout_element.dart';
 import 'package:davi/src/internal/new/cells_layout_render_box.dart';
 import 'package:davi/src/internal/new/davi_context.dart';
+import 'package:davi/src/internal/new/divider_paint_manager.dart';
 import 'package:davi/src/internal/new/row_region.dart';
 import 'package:davi/src/internal/scroll_offsets.dart';
 import 'package:davi/src/internal/table_layout_settings.dart';
@@ -22,6 +23,7 @@ class CellsLayout<DATA> extends MultiChildRenderObjectWidget {
       required this.unpinnedAreaBounds,
       required this.rowsLength,
       required this.rowRegionCache,
+      required this.dividerPaintManager,
       required List<CellsLayoutChild> children})
       : super(key: key, children: children);
 
@@ -33,6 +35,7 @@ class CellsLayout<DATA> extends MultiChildRenderObjectWidget {
   final Rect unpinnedAreaBounds;
   final RowRegionCache rowRegionCache;
   final int rowsLength;
+  final DividerPaintManager dividerPaintManager;
 
   @override
   RenderObject createRenderObject(BuildContext context) {
@@ -58,7 +61,8 @@ class CellsLayout<DATA> extends MultiChildRenderObjectWidget {
         columnDividerThickness: theme.columnDividerThickness,
         fillHeight: theme.row.fillHeight,
         columnDividerFillHeight: theme.columnDividerFillHeight,
-        dividerThickness: theme.row.dividerThickness);
+        dividerThickness: theme.row.dividerThickness,
+        dividerPaintManager: dividerPaintManager);
   }
 
   @override
@@ -92,6 +96,7 @@ class CellsLayout<DATA> extends MultiChildRenderObjectWidget {
       ..columnDividerThickness = theme.columnDividerThickness
       ..themeRowColor = theme.row.color
       ..rowColor = daviContext.rowColor
+      ..dividerPaintManager = dividerPaintManager
       ..model = daviContext.model;
   }
 }

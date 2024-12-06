@@ -1,7 +1,27 @@
 ## 4.0.0
 
+*DRAFT*
+
+New class DaviCell
+DaviCellBuilder replaced by CellValueBuilder,CellIconBuilder and CellWidgetBuilder
+
+DaviColumn.cellBuilder raplced by DaviColumn.cellValue, DaviColumn.cellIcon, DaviColumn.cellWidget 
 
 CellThemeData.overflow removed
+
+removed:
+DaviColumn.intValue;
+DaviColumn.doubleValue;
+DaviColumn.stringValue;
+DaviColumn.objectValue;
+DaviColumn.iconValue;
+DaviIntValueMapper
+DaviDoubleValueMapper
+DaviStringValueMapper
+DaviObjectValueMapper
+DaviIconValueMapper
+
+add SpanProvider<DATA>
 
 EdgeThemeData new
 - DaviThemeData.topCornerBorderColor to EdgeThemeData.headerColor

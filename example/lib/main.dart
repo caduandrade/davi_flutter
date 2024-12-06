@@ -63,8 +63,12 @@ class _HomePageState extends State<HomePage> {
     List<Person> rows = [];
 
     Random random = Random();
-    for (int i = 1; i < 215; i++) {
-      rows.add(Person('User $i', 20 + random.nextInt(50), i == 1 ? null : i));
+    for (int i = 1; i < 200; i++) {
+      String name = 'User $i';
+      if (i == 4) {
+        name += ' 12345678901234567890';
+      }
+      rows.add(Person(name, 20 + random.nextInt(50), i == 1 ? null : i));
     }
     // rows.shuffle();
 
@@ -73,28 +77,48 @@ class _HomePageState extends State<HomePage> {
         columns: [
           DaviColumn(
               name: 'Name',
-              stringValue: (data) => data.name,
+              cellValue: (data, rowIndex) =>
+                  rowIndex == 0 ? 'SPAN 1234567890123456789' : data.name,
+             //rowSpan: (data, rowIndex) => rowIndex==1?2:1,
+              columnSpan: (data, rowIndex) => rowIndex == 0 ? 2 : 1,
               pinStatus: PinStatus.left),
           DaviColumn(
               name: 'Age',
-              intValue: (data) => data.age,
+              cellValue: (data, rowIndex) => data.age,
               pinStatus: PinStatus.left,
               summary: (context) => const Text('test')),
           DaviColumn(
               name: 'Value',
-              intValue: (data) => data.value,
+              cellValue: (data, rowIndex) => data.value,
               pinStatus: PinStatus.left),
           DaviColumn(
               name: 'Value 2',
-              intValue: (data) => data.value,
+              cellValue: (data, rowIndex) => data.value),
+          DaviColumn(
+              name: 'Value 3',
+              cellWidget: (w,c,i)=>i==10?Placeholder():null,
+              //cellValue: (data, rowIndex) =>  rowIndex == 4 ? 'SPAN R4C4' : data.value?.toString(),
+              rowSpan: (data, rowIndex) => rowIndex == 10 ? 6 : 1
+    ),
+
+          DaviColumn(
+              name: 'Value 4',
+              cellValue: (data, rowIndex) =>
+                  rowIndex == 2 ? 'SPANNNNNNN R2C5' : data.value,
               cellTextStyle: const TextStyle(fontWeight: FontWeight.bold),
+              columnSpan: (data, rowIndex) => rowIndex == 2 ?2 : 1,
               cellBackground: (data, index, hovered) =>
                   data.value == 12 ? Colors.green : null),
-          DaviColumn(name: 'Value 3', intValue: (data) => data.value),
-          DaviColumn(name: 'Value 4', intValue: (data) => data.value),
-          DaviColumn(name: 'Value 5', intValue: (data) => data.value),
-          DaviColumn(name: 'Value 6', intValue: (data) => data.value),
-          DaviColumn(name: 'Value 7', intValue: (data) => data.value),
+          DaviColumn(
+              name: 'Value 5',
+              cellValue: (data, rowIndex) => data.value),
+          DaviColumn(
+              name: 'Value 6',
+              cellValue: (data, rowIndex) => data.value),
+          DaviColumn(
+              name: 'Value 7',
+              cellValue: (data, rowIndex) => data.value
+          ),
 
           /*  DaviColumn(
               name: 'Editable',
@@ -102,8 +126,9 @@ class _HomePageState extends State<HomePage> {
               cellBuilder: _buildField,
               cellBackground: (row) => row.data.valid ? null : Colors.red[800])*/
         ],
-        alwaysSorted: true,
-        multiSortEnabled: true);
+      //  alwaysSorted: true,
+        multiSortEnabled: true
+    );
   }
 
   Widget _buildField(
@@ -156,14 +181,14 @@ class _HomePageState extends State<HomePage> {
           onRowTap: _onRowTap,
           //  onLastVisibleRow: (index)=>print('last visible row: $index ${DateTime.now()}'),
           //  onTrailingWidget: (visible)=>print('trailing widget: $visible ${DateTime.now()}'),
-          // trailingWidget: const Center(child: Text('last widget'))
+           trailingWidget: MouseRegion(onHover: (h)=>print('hover on trailing ${DateTime.now()}'), child: const Center(child: Text('trailing widget')))
         ));
 
     return Scaffold(
-        body: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        body: Row(children: [SizedBox(width: 50),Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       TextButton(onPressed: _onclick, child: Text('ok')),
       Expanded(child: theme)
-    ]));
+    ]))]));
   }
 
   void _onHover(int? index) {
@@ -177,52 +202,6 @@ class _HomePageState extends State<HomePage> {
   void _onclick() {
     setState(() {
       _buildModel();
-    });
-  }
-}
-
-class MM extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() => St();
-}
-
-class St extends State<MM> {
-  Color color = Colors.white;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-        padding: EdgeInsets.all(50),
-        child: MouseRegion(
-            cursor: SystemMouseCursors.click,
-            onEnter: _onEnter,
-            onExit: _onExit,
-            child: GestureDetector(
-                onTap: _onTap,
-                child: Container(
-                    color: color,
-                    child: Column(children: [
-                      TextField(),
-                      Expanded(child: Container())
-                    ])))));
-    //return Stack(children: [Positioned.fill(child: MouseRegion(onEnter: _onEnter, onExit: _onExit, child: Container(color:color))), TextField()]);
-  }
-
-  void _onEnter(e) {
-    print('onenter');
-    setState(() {
-      color = Colors.blue;
-    });
-  }
-
-  void _onTap() {
-    print('tap');
-  }
-
-  void _onExit(e) {
-    print('onExit');
-    setState(() {
-      color = Colors.white;
     });
   }
 }

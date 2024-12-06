@@ -1,10 +1,8 @@
-import 'package:davi/src/cell_icon.dart';
-import 'package:davi/src/column.dart';
+import 'package:davi/davi.dart';
 import 'package:davi/src/internal/new/cell_painter.dart';
 import 'package:davi/src/internal/new/painter_cache.dart';
 import 'package:davi/src/internal/new/davi_context.dart';
-import 'package:davi/src/theme/theme.dart';
-import 'package:davi/src/theme/theme_data.dart';
+import 'package:davi/src/internal/new/cell_span_cache.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
@@ -14,16 +12,24 @@ class CellWidget<DATA> extends StatelessWidget {
       {Key? key,
       required this.data,
       required this.rowIndex,
+      required this.rowSpan,
+      required this.columnIndex,
+      required this.columnSpan,
       required this.column,
       required this.daviContext,
-      required this.painterCache})
+      required this.painterCache,
+      required this.cellSpanCache})
       : super(key: key);
 
   final DATA data;
   final int rowIndex;
+  final int rowSpan;
+  final int columnIndex;
+  final int columnSpan;
   final DaviColumn<DATA> column;
   final DaviContext daviContext;
   final PainterCache<DATA> painterCache;
+  final CellSpanCache cellSpanCache;
 
   @override
   Widget build(BuildContext context) {
@@ -39,15 +45,13 @@ class CellWidget<DATA> extends StatelessWidget {
     textStyle = column.cellTextStyle ?? textStyle;
 
     Widget? child;
-    String? value;
-
+    dynamic value;
     bool hasCustomWidget = false;
-    if (column.cellBuilder != null) {
-      hasCustomWidget = true;
-      child = column.cellBuilder!(
-          context, data, rowIndex, rowIndex == daviContext.hoverNotifier.index);
-    } else if (column.iconValue != null) {
-      CellIcon? cellIcon = column.iconValue!(data);
+
+    if (column.cellValue != null) {
+      value = column.cellValue!(data, rowIndex);
+    } else if (column.cellIcon != null) {
+      CellIcon? cellIcon = column.cellIcon!(data, rowIndex);
       if (cellIcon != null) {
         value = String.fromCharCode(cellIcon.icon.codePoint);
         textStyle = TextStyle(
@@ -56,13 +60,20 @@ class CellWidget<DATA> extends StatelessWidget {
             package: cellIcon.icon.fontPackage,
             color: cellIcon.color);
       }
-    } else {
-      value = _stringValue(column: column, data: data);
+    } else if (column.cellWidget != null) {
+      child = column.cellWidget!(context, data, rowIndex);
+      if (child != null) {
+        hasCustomWidget = true;
+      }
     }
 
     if (child == null && value != null) {
       child = CellPainter(
-          text: value, painterCache: painterCache, textStyle: textStyle);
+          text: column.cellValueStringify(value),
+          rowSpan: rowSpan,
+          columnSpan: columnSpan,
+          painterCache: painterCache,
+          textStyle: textStyle);
     }
 
     if (daviContext.semanticsEnabled && column.semanticsBuilder != null) {
@@ -75,41 +86,59 @@ class CellWidget<DATA> extends StatelessWidget {
     child = Padding(padding: padding ?? EdgeInsets.zero, child: child);
     child = Align(alignment: alignment, child: child);
 
-    Color? background;
+    // Always keep some color to avoid parent markNeedsLayout
+    Color background = Colors.transparent;
     if (!hasCustomWidget &&
         value == null &&
         theme.cell.nullValueColor != null) {
       background = theme.cell.nullValueColor!(
-          rowIndex, rowIndex == daviContext.hoverNotifier.index);
+              rowIndex, rowIndex == daviContext.hoverNotifier.index) ??
+          background;
     } else if (column.cellBackground != null) {
       background = column.cellBackground!(
-          data, rowIndex, rowIndex == daviContext.hoverNotifier.index);
+              data, rowIndex, rowIndex == daviContext.hoverNotifier.index) ??
+          background;
     }
     child = Container(color: background, child: child);
 
     if (column.cellClip) {
       child = ClipRect(child: child);
     }
-    return child;
-  }
 
-  String? _stringValue({required DaviColumn<DATA> column, required DATA data}) {
-    if (column.stringValue != null) {
-      return column.stringValue!(data);
-    } else if (column.intValue != null) {
-      return column.intValue!(data)?.toString();
-    } else if (column.doubleValue != null) {
-      final double? doubleValue = column.doubleValue!(data);
-      if (doubleValue != null) {
-        if (column.fractionDigits != null) {
-          return doubleValue.toStringAsFixed(column.fractionDigits!);
-        } else {
-          return doubleValue.toString();
-        }
-      }
-    } else if (column.objectValue != null) {
-      return column.objectValue!(data)?.toString();
+    if (daviContext.collisionBehavior == CellCollisionBehavior.overlap) {
+      return child;
     }
-    return null;
+
+    bool offstage = false;
+    final bool intercepts = cellSpanCache.intersects(
+        rowIndex: rowIndex,
+        columnIndex: columnIndex,
+        rowSpan: rowSpan,
+        columnSpan: columnSpan);
+    if (intercepts) {
+      if (daviContext.collisionBehavior == CellCollisionBehavior.ignore) {
+        offstage = true;
+      } else if (daviContext.collisionBehavior ==
+          CellCollisionBehavior.ignoreAndWarn) {
+        offstage = true;
+        debugPrint(
+            'Collision detected at cell rowIndex: $rowIndex columnIndex: $columnIndex.');
+      } else if (daviContext.collisionBehavior ==
+          CellCollisionBehavior.overlapAndWarn) {
+        debugPrint(
+            'Collision detected at cell rowIndex: $rowIndex columnIndex: $columnIndex.');
+      } else if (daviContext.collisionBehavior ==
+          CellCollisionBehavior.throwException) {
+        throw StateError(
+            'Collision detected at cell rowIndex: $rowIndex columnIndex: $columnIndex.');
+      }
+    } else {
+      cellSpanCache.add(
+          rowIndex: rowIndex,
+          columnIndex: columnIndex,
+          rowSpan: rowSpan,
+          columnSpan: columnSpan);
+    }
+    return Offstage(offstage: offstage, child: child);
   }
 }

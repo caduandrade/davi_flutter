@@ -1,3 +1,4 @@
+import 'package:davi/src/cell_collision_behavior.dart';
 import 'package:davi/src/column_width_behavior.dart';
 import 'package:davi/src/internal/new/column_notifier.dart';
 import 'package:davi/src/internal/new/davi_context.dart';
@@ -41,6 +42,7 @@ class Davi<DATA> extends StatefulWidget {
       this.rowColor,
       this.rowCursor,
       this.semanticsEnabled = false,
+      this.collisionBehavior = CellCollisionBehavior.ignore,
       this.onTrailingWidget})
       : visibleRowsCount = visibleRowsCount == null || visibleRowsCount > 0
             ? visibleRowsCount
@@ -62,6 +64,13 @@ class Davi<DATA> extends StatefulWidget {
   final int? visibleRowsCount;
   final LastVisibleRowListener? onLastVisibleRow;
   final bool focusable;
+
+  /// Determines the behavior when a cell collision occurs in the grid.
+  ///
+  /// This property uses [CellCollisionBehavior] to define how collisions
+  /// are handled, such as ignoring the colliding cell, logging a warning,
+  /// allowing overlap, or throwing an exception.
+  final CellCollisionBehavior collisionBehavior;
 
   /// An optional widget displayed at the end of the table's content.
   final Widget? trailingWidget;
@@ -204,6 +213,7 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
         scrolling: _scrolling,
         visibleRowsCount: widget.visibleRowsCount,
         columnWidthBehavior: widget.columnWidthBehavior,
+        collisionBehavior: widget.collisionBehavior,
         themeMetrics: themeMetrics);
 
     return FocusTraversalGroup(

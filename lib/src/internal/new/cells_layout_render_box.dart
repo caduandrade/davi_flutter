@@ -1,11 +1,12 @@
+import 'dart:math' as math;
 import 'package:davi/davi.dart';
+import 'package:davi/src/internal/new/divider_paint_manager.dart';
 import 'package:davi/src/internal/new/hover_notifier.dart';
 import 'package:davi/src/internal/new/row_region.dart';
-import 'package:flutter/foundation.dart';
 import 'package:davi/src/internal/column_metrics.dart';
 import 'package:davi/src/internal/new/cells_layout_parent_data.dart';
 import 'package:davi/src/internal/scroll_offsets.dart';
-
+import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
@@ -37,6 +38,7 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
       required Color? columnDividerColor,
       required Color? dividerColor,
       required DaviRowColor<DATA>? rowColor,
+      required DividerPaintManager dividerPaintManager,
       required DaviModel<DATA> model})
       : _model = model,
         _cellHeight = cellHeight,
@@ -50,6 +52,7 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
         _rowColor = rowColor,
         _rowsLength = rowsLength,
         _dividerThickness = dividerThickness,
+        _dividerPaintManager = dividerPaintManager,
         _rowRegionCache = rowRegionCache,
         _hoverBackground = hoverBackground,
         _hoverForeground = hoverForeground,
@@ -256,6 +259,13 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
   final List<RenderBox> _cells = [];
   RenderBox? _trailing;
 
+  bool _hasLayoutErrors = false;
+
+  DividerPaintManager _dividerPaintManager;
+  set dividerPaintManager(DividerPaintManager value) {
+    _dividerPaintManager = value;
+  }
+
   @override
   void markNeedsLayout() {
     //TODO remove
@@ -277,18 +287,51 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
 
   @override
   void performLayout() {
+    size = computeDryLayout(constraints);
+    _hasLayoutErrors = false;
     _cells.clear();
     _trailing = null;
     visitChildren((child) {
       final RenderBox renderBox = child as RenderBox;
       final CellsLayoutParentData childParentData = child._parentData();
-      final int? columnIndex = childParentData.columnIndex;
-      if (columnIndex != null && columnIndex >= 0) {
+
+      if (childParentData.isCell) {
         // cell
-        final ColumnMetrics columnMetrics = _columnsMetrics[columnIndex];
-        renderBox.layout(
-            BoxConstraints.tightFor(
-                width: columnMetrics.width, height: _cellHeight),
+        final int rowIndex = childParentData.rowIndex!;
+        final RowRegion rowRegion = _rowRegionCache.get(rowIndex);
+        final int columnIndex = childParentData.columnIndex!;
+        final int rowSpan = childParentData.rowSpan!;
+        final int columnSpan = childParentData.columnSpan!;
+
+        if (columnIndex + columnSpan > _columnsMetrics.length) {
+          _hasLayoutErrors = true;
+          throw StateError(
+              'The column span exceeds the table\'s column limit at row $rowIndex, starting from column $columnIndex.');
+        } else if (rowRegion.hasData &&
+            rowIndex + rowSpan > _model.rowsLength) {
+          _hasLayoutErrors = true;
+          throw StateError(
+              'The row span exceeds the table\'s row limit at row $rowIndex and column $columnIndex.');
+        }
+
+        double width = 0;
+        for (int i = columnIndex; i < columnIndex + columnSpan; i++) {
+          final ColumnMetrics columnMetrics = _columnsMetrics[i];
+          width += columnMetrics.width;
+          if (i < columnIndex + columnSpan - 1) {
+            width += _columnDividerThickness;
+          }
+        }
+
+        double height = 0;
+        for (int i = rowIndex; i < rowIndex + rowSpan; i++) {
+          height += _cellHeight;
+          if (i < rowIndex + rowSpan - 1) {
+            height += _dividerThickness;
+          }
+        }
+
+        renderBox.layout(BoxConstraints.tightFor(width: width, height: height),
             parentUsesSize: false);
         _cells.add(renderBox);
       } else {
@@ -301,13 +344,13 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
       }
       renderBox._parentData().offset = const Offset(0, 0);
     });
-
-    size = computeDryLayout(constraints);
   }
 
   @override
   void paint(PaintingContext context, Offset offset) {
-    if (constraints.maxWidth == 0 || constraints.maxHeight == 0) {
+    if (_hasLayoutErrors ||
+        constraints.maxWidth == 0 ||
+        constraints.maxHeight == 0) {
       return;
     }
 
@@ -317,6 +360,9 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
         _hoverBackground != null ||
         _rowColor != null) {
       for (RowRegion rowRegion in _rowRegionCache.values) {
+        if (!rowRegion.visible) {
+          continue;
+        }
         if (rowRegion.trailing) {
           continue;
         }
@@ -349,6 +395,14 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
       final CellsLayoutParentData childParentData = child._parentData();
       final int rowIndex = childParentData.rowIndex!;
       final int columnIndex = childParentData.columnIndex!;
+      final int rowSpan = childParentData.rowSpan!;
+      final int columnSpan = childParentData.columnSpan!;
+
+      _dividerPaintManager.addStopsForCell(
+          rowIndex: rowIndex,
+          columnIndex: columnIndex,
+          rowSpan: rowSpan,
+          columnSpan: columnSpan);
 
       final ColumnMetrics columnMetrics = _columnsMetrics[columnIndex];
       final PinStatus pinStatus = columnMetrics.pinStatus;
@@ -376,6 +430,9 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
     // foreground
     if (_hoverForeground != null) {
       for (RowRegion rowRegion in _rowRegionCache.values) {
+        if (!rowRegion.visible) {
+          continue;
+        }
         if (!rowRegion.hasData) {
           continue;
         }
@@ -390,77 +447,105 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
       }
     }
 
-    // row divider
+    // column dividers
+    if (_columnDividerThickness > 0 && _columnDividerColor != null) {
+      paint.color = _columnDividerColor!;
+      for (int columnIndex = 0;
+          columnIndex < _columnsMetrics.length;
+          columnIndex++) {
+        final ColumnMetrics columnMetrics = _columnsMetrics[columnIndex];
+        double scroll = 0;
+        if (columnMetrics.pinStatus == PinStatus.none) {
+          scroll = _horizontalScrollOffsets.unpinned;
+          context.canvas.save();
+          context.canvas.clipRect(
+              _areaBounds[PinStatus.none]!.translate(offset.dx, offset.dy));
+        } else {
+          scroll = _horizontalScrollOffsets.leftPinned;
+        }
+
+        double left =
+            offset.dx + columnMetrics.offset + columnMetrics.width - scroll;
+
+        double right = left + _columnDividerThickness;
+        for (DividerSegment dividerSegment
+            in _dividerPaintManager.verticalSegments(column: columnIndex)) {
+          final DividerVertex start = dividerSegment.start;
+          final DividerVertex end = dividerSegment.end;
+          double top = offset.dy;
+          double bottom = offset.dy;
+          if (!start.edge) {
+            RowRegion startRow = _rowRegionCache.get(start.index);
+            top += startRow.y + _cellHeight;
+          }
+          if (end.edge) {
+            bottom += constraints.maxHeight;
+          } else {
+            RowRegion endRow = _rowRegionCache.get(end.index);
+            bottom += endRow.y + _cellHeight;
+          }
+          context.canvas
+              .drawRect(Rect.fromLTRB(left, top, right, bottom), paint);
+        }
+
+        if (columnMetrics.pinStatus == PinStatus.none) {
+          context.canvas.restore();
+        }
+      }
+    }
+
+    // row dividers
     if (_dividerColor != null) {
       paint.color = _dividerColor!;
       for (RowRegion rowRegion in _rowRegionCache.values) {
-        if (_fillHeight || rowRegion.hasData || rowRegion.trailing) {
+        if (!rowRegion.visible) {
+          continue;
+        }
+        for (DividerSegment dividerSegment
+            in _dividerPaintManager.horizontalSegments(row: rowRegion.index)) {
+          final DividerVertex start = dividerSegment.start;
+          ColumnMetrics? startColumn;
+          final DividerVertex end = dividerSegment.end;
+          double left = offset.dx;
+          if (!start.edge) {
+            startColumn = _columnsMetrics[start.index];
+            double scrollOffset =
+                _horizontalScrollOffsets.getOffset(startColumn.pinStatus);
+            left += startColumn.offset +
+                startColumn.width +
+                _columnDividerThickness -
+                scrollOffset;
+            if (startColumn.pinStatus == PinStatus.none) {
+              left = math.max(
+                  left,
+                  offset.dx +
+                      _areaBounds[PinStatus.left]!.right +
+                      _columnDividerThickness);
+            }
+          }
+          double right = offset.dx;
+          if (end.edge) {
+            right += constraints.maxWidth;
+          } else {
+            ColumnMetrics endColumn = _columnsMetrics[end.index];
+            double scrollOffset =
+                _horizontalScrollOffsets.getOffset(endColumn.pinStatus);
+            right += endColumn.offset +
+                endColumn.width +
+                _columnDividerThickness -
+                scrollOffset;
+            bool hasPinLeft = (startColumn != null &&
+                    startColumn.pinStatus == PinStatus.left) ||
+                (startColumn == null && _areaBounds[PinStatus.left]!.width > 0);
+            if (hasPinLeft && endColumn.pinStatus == PinStatus.none) {
+              right = math.max(
+                  right, offset.dx + _areaBounds[PinStatus.left]!.right);
+            }
+          }
+          double top = offset.dy + rowRegion.y + _cellHeight;
           context.canvas.drawRect(
-              Rect.fromLTWH(offset.dx, offset.dy + rowRegion.y + _cellHeight,
-                  constraints.maxWidth, _dividerThickness),
-              paint);
+              Rect.fromLTRB(left, top, right, top + _dividerThickness), paint);
         }
-      }
-    }
-
-    // column divider
-    if (_columnDividerThickness > 0 && _columnDividerColor != null) {
-      paint.color = _columnDividerColor!;
-
-      double height = 0;
-      if (_trailing != null && _rowRegionCache.trailingRegion != null) {
-        height = _rowRegionCache.trailingRegion!.y;
-      } else if (_columnDividerFillHeight) {
-        height = constraints.maxHeight;
-      } else {
-        height = _rowRegionCache.lastWithData!.y + _rowHeight;
-      }
-
-      _paintColumns(
-          context: context, paint: paint, offset: offset, y: 0, height: height);
-
-      if (_trailing != null &&
-          _rowRegionCache.trailingRegion != null &&
-          _columnDividerFillHeight) {
-        final double y = _rowRegionCache.trailingRegion!.y + _rowHeight;
-        height = constraints.maxHeight - y;
-        if (height > 0) {
-          _paintColumns(
-              context: context,
-              paint: paint,
-              offset: offset,
-              y: y,
-              height: height);
-        }
-      }
-    }
-  }
-
-  void _paintColumns(
-      {required PaintingContext context,
-      required Paint paint,
-      required Offset offset,
-      required double y,
-      required double height}) {
-    for (ColumnMetrics columnMetrics in _columnsMetrics) {
-      double scroll = 0;
-      if (columnMetrics.pinStatus == PinStatus.none) {
-        scroll = _horizontalScrollOffsets.unpinned;
-        context.canvas.save();
-        context.canvas.clipRect(
-            _areaBounds[PinStatus.none]!.translate(offset.dx, offset.dy));
-      } else {
-        scroll = _horizontalScrollOffsets.leftPinned;
-      }
-      context.canvas.drawRect(
-          Rect.fromLTWH(
-              offset.dx + columnMetrics.offset + columnMetrics.width - scroll,
-              offset.dy + y,
-              _columnDividerThickness,
-              height),
-          paint);
-      if (columnMetrics.pinStatus == PinStatus.none) {
-        context.canvas.restore();
       }
     }
   }
@@ -489,8 +574,14 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
   bool hitTestChildren(BoxHitTestResult result, {required Offset position}) {
     final int firstRowIndex = (_verticalOffset / _rowHeight).floor();
 
-    if (_trailing != null) {
-      //TODO trailing hit
+    if (_trailing != null && _rowRegionCache.trailingRegion != null) {
+      final Offset renderedTrailingOffset =
+          Offset(0, _rowRegionCache.trailingRegion!.y);
+      // Adjusts the offset to the position relative to the hit within the trailing.
+      final Offset localOffset = position - renderedTrailingOffset;
+      if (_trailing!.hitTest(result, position: localOffset)) {
+        return true;
+      }
     }
 
     for (RenderBox child in _cells) {

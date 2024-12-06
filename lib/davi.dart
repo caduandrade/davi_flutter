@@ -1,7 +1,7 @@
 library davi;
 
 export 'src/cell_background.dart';
-export 'src/cell_builder.dart';
+export 'src/cell_value_mapper.dart';
 export 'src/cell_icon.dart';
 export 'src/column.dart' hide DaviColumnHelper;
 export 'src/column_id.dart';
@@ -10,6 +10,9 @@ export 'src/column_width_behavior.dart';
 export 'src/davi.dart';
 export 'src/last_visible_row_listener.dart';
 export 'src/model.dart';
+export 'src/cell_collision_behavior.dart';
+export 'src/max_span_behavior.dart';
+export 'src/cell_value_stringify.dart';
 export 'src/pin_status.dart';
 export 'src/sort_callback_typedef.dart';
 export 'src/row_callback_typedefs.dart';
@@ -33,4 +36,3 @@ export 'src/theme/scrollbar_theme_data.dart';
 export 'src/theme/theme.dart';
 export 'src/theme/theme_data.dart';
 export 'src/theme/theme_row_color.dart';
-export 'src/value_mapper.dart';
