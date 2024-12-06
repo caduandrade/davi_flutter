@@ -244,7 +244,7 @@ int _defaultDataComparator<DATA>(
     if (a < b) return -1;
   }
 
-  return 0;
+  return a.compareTo(b);
 }
 
 @internal
