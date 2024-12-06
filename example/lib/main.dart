@@ -92,8 +92,8 @@ class _HomePageState extends State<HomePage> {
               cellValue: (data, rowIndex) => data.value,
               pinStatus: PinStatus.left),
           DaviColumn(
-              name: 'Value 2',
-              cellValue: (data, rowIndex) => data.value),
+              name: 'Painter',
+              cellPainter: _cellPainter),
           DaviColumn(
               name: 'Value 3',
               cellWidget: (w,c,i)=>i==10?Placeholder():null,
@@ -199,9 +199,18 @@ class _HomePageState extends State<HomePage> {
     print('tap: ${p.value}');
   }
 
+  void _cellPainter(Canvas canvas, Size size, Person person) {
+    final Paint paint = Paint()..color = Colors.blue;
+      canvas.drawLine(Offset.zero, Offset(size.width, size.height),
+         paint,
+      );
+  }
+
   void _onclick() {
     setState(() {
       _buildModel();
     });
   }
 }
+
+

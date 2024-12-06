@@ -3,8 +3,8 @@ import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
 
 @internal
-class CellPainter extends LeafRenderObjectWidget {
-  const CellPainter(
+class TextCellPainter extends LeafRenderObjectWidget {
+  const TextCellPainter(
       {Key? key,
       required this.text,
       required this.rowSpan,
