@@ -26,7 +26,6 @@ class DaviColumn<DATA> extends ChangeNotifier {
       this.headerTextStyle,
       this.cellTextStyle,
       this.cellOverflow,
-      this.fractionDigits,
       this.cellValue,
       this.cellIcon,
       this.cellWidget,
@@ -67,10 +66,6 @@ class DaviColumn<DATA> extends ChangeNotifier {
   final CellBackgroundBuilder<DATA>? cellBackground;
   final TextStyle? cellTextStyle;
   final TextStyle? headerTextStyle;
-
-  /// The optional decimal-point string-representation used by the
-  /// default cell width when the [doubleValue] is set.
-  final int? fractionDigits;
 
   final PinStatus pinStatus;
 

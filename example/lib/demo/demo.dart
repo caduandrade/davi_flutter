@@ -126,8 +126,8 @@ class _HomePageState extends State<HomePage> {
     list.add(DaviColumn(
         name: 'Gold',
         width: 110,
-        cellValue: (row,rowIndex) => row.gold?.toStringAsFixed(2),
-        fractionDigits: 2));
+        cellValue: (row,rowIndex) => row.gold,
+    cellValueStringify: (value)=>(value as double).toStringAsFixed(2)));
     return list;
   }
 

@@ -30,7 +30,7 @@ EdgeThemeData new
   DaviThemeData.bottomCornerColor to EdgeThemeData.scrollbarColor
 - 
 
-
+DaviColumn.fractionDigits removed
 
 HeaderThemeData.bottomBorderHeight  to HeaderThemeData.bottomBorderThickness
 Davi.model cant be null
