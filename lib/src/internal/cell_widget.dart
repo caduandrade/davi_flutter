@@ -46,11 +46,12 @@ class CellWidget<DATA> extends StatelessWidget {
 
     Widget? child;
     dynamic value;
-    bool isNonText = false;
-
+    bool textCell = false;
     if (column.cellValue != null) {
+      textCell = true;
       value = column.cellValue!(data, rowIndex);
     } else if (column.cellIcon != null) {
+      textCell = true;
       CellIcon? cellIcon = column.cellIcon!(data, rowIndex);
       if (cellIcon != null) {
         value = String.fromCharCode(cellIcon.icon.codePoint);
@@ -65,15 +66,21 @@ class CellWidget<DATA> extends StatelessWidget {
           size: Size(column.width, theme.cell.contentHeight),
           painter: _CustomPainter<DATA>(
               data: data, cellPainting: column.cellPainter!));
-      isNonText = true;
+    } else if (column.cellBarValue != null) {
+      double? barValue = column.cellBarValue!(data, rowIndex);
+      if (barValue != null) {
+        child = CustomPaint(
+            size: Size(column.width, theme.cell.contentHeight),
+            painter: _BarPainter(
+                value: barValue,
+                painterCache: painterCache,
+                barStyle: column.cellBarStyle ?? theme.cell.barStyle));
+      }
     } else if (column.cellWidget != null) {
       child = column.cellWidget!(context, data, rowIndex);
-      if (child != null) {
-        isNonText = true;
-      }
     }
 
-    if (child == null && value != null) {
+    if (textCell && value != null) {
       child = TextCellPainter(
           text: column.cellValueStringify(value),
           rowSpan: rowSpan,
@@ -94,7 +101,7 @@ class CellWidget<DATA> extends StatelessWidget {
 
     // Always keep some color to avoid parent markNeedsLayout
     Color background = Colors.transparent;
-    if (!isNonText && value == null && theme.cell.nullValueColor != null) {
+    if (textCell && value == null && theme.cell.nullValueColor != null) {
       background = theme.cell.nullValueColor!(
               rowIndex, rowIndex == daviContext.hoverNotifier.index) ??
           background;
@@ -156,6 +163,43 @@ class _CustomPainter<DATA> extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     cellPainting(canvas, size, data);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class _BarPainter extends CustomPainter {
+  _BarPainter(
+      {required this.value,
+      required this.painterCache,
+      required this.barStyle});
+
+  final double value;
+  final CellBarStyle barStyle;
+  final PainterCache painterCache;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    Paint paint = Paint()..color = barStyle.barBackground;
+    canvas.drawRect(Rect.fromLTRB(0, 0, size.width, size.height), paint);
+    paint.color = barStyle.barForeground(value);
+    double width = value * size.width;
+
+    canvas.drawRect(Rect.fromLTRB(0, 0, width, size.height), paint);
+
+    TextPainter textPainter = painterCache.getTextPainter(
+        width: size.width,
+        textStyle: TextStyle(
+            fontSize: barStyle.textSize, color: barStyle.textColor(value)),
+        value: '${(value * 100).truncate()}%',
+        rowSpan: 1,
+        columnSpan: 1);
+    final Offset textOffset = Offset(
+      (size.width - textPainter.width) / 2,
+      (size.height - textPainter.height) / 2,
+    );
+    textPainter.paint(canvas, textOffset);
   }
 
   @override

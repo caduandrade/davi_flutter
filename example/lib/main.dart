@@ -8,11 +8,13 @@ void main() {
 }
 
 class Person {
-  Person(this.name, this.age, this.value);
+  Person(this.name, this.age, this.value, this.bar);
 
   final String name;
   final int age;
   final int? value;
+
+  final double? bar;
 
   bool _valid = true;
 
@@ -68,7 +70,7 @@ class _HomePageState extends State<HomePage> {
       if (i == 4) {
         name += ' 12345678901234567890';
       }
-      rows.add(Person(name, 20 + random.nextInt(50), i == 1 ? null : i));
+      rows.add(Person(name, 20 + random.nextInt(50), i == 1 ? null : i, random.nextDouble()));
     }
     // rows.shuffle();
 
@@ -110,8 +112,8 @@ class _HomePageState extends State<HomePage> {
               cellBackground: (data, index, hovered) =>
                   data.value == 12 ? Colors.green : null),
           DaviColumn(
-              name: 'Value 5',
-              cellValue: (data, rowIndex) => data.value),
+              name: 'Bar',
+              cellBarValue: (data, rowIndex) => data.bar),
           DaviColumn(
               name: 'Value 6',
               cellValue: (data, rowIndex) => data.value),

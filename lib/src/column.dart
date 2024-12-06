@@ -30,6 +30,8 @@ class DaviColumn<DATA> extends ChangeNotifier {
       this.cellIcon,
       this.cellWidget,
       this.cellPainter,
+      this.cellBarStyle,
+      this.cellBarValue,
       this.rowSpan = _defaultSpanProvider,
       this.columnSpan = _defaultSpanProvider,
       this.cellValueStringify = _defaultCellValueStringify,
@@ -71,6 +73,19 @@ class DaviColumn<DATA> extends ChangeNotifier {
 
   /// Cell value mapper for each row in that column.
   final CellValueMapper<DATA>? cellValue;
+
+  /// Represents the function that calculates the value for the cell's bar.
+  ///
+  /// The function must return a value between 0.0 (0%) and 1.0 (100%),
+  /// or `null` if no progress bar should be displayed.
+  final CellBarValue<DATA>? cellBarValue;
+
+  /// The style configuration for the cell's progress bar.
+  ///
+  /// This defines how the progress bar will appear, including the background color,
+  /// foreground color (based on progress), text color, and text size. If `null`,
+  /// the default style will be used.
+  final CellBarStyle? cellBarStyle;
 
   /// A function to convert the cell value into a String representation.
   ///
@@ -229,7 +244,7 @@ int _defaultDataComparator<DATA>(
     if (a < b) return -1;
   }
 
-  return 0;
+  return a.compareTo(b);
 }
 
 @internal

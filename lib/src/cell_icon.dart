@@ -16,7 +16,7 @@ import 'package:flutter/material.dart';
 ///   color: Colors.yellow, // Optional: custom color
 /// );
 /// ```
-class CellIcon {
+class CellIcon implements Comparable<CellIcon> {
   const CellIcon(
     this.icon, {
     this.size = 24.0,
@@ -37,4 +37,8 @@ class CellIcon {
   ///
   /// This is an optional parameter. The default value is `Colors.black`.
   final Color color;
+
+  @override
+  int compareTo(CellIcon other) =>
+      icon.codePoint.compareTo(other.icon.codePoint);
 }

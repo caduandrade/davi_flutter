@@ -1,5 +1,6 @@
 import 'dart:collection';
 import 'dart:math' as math;
+
 import 'package:collection/collection.dart';
 import 'package:davi/src/column.dart';
 import 'package:davi/src/max_span_behavior.dart';
@@ -39,6 +40,7 @@ class DaviModel<DATA> extends ChangeNotifier {
   final bool multiSortEnabled;
 
   bool _hasSummary = false;
+
   bool get hasSummary => _hasSummary;
 
   /// Gets the sorted columns.
@@ -370,6 +372,12 @@ class DaviModel<DATA> extends ChangeNotifier {
         if (column.cellValue != null) {
           a = column.cellValue!(dataA, indexA);
           b = column.cellValue!(dataB, indexB);
+        } else if (column.cellBarValue != null) {
+          a = column.cellBarValue!(dataA, indexA);
+          b = column.cellBarValue!(dataB, indexB);
+        }else if (column.cellIcon != null) {
+          a = column.cellIcon!(dataA, indexA);
+          b = column.cellIcon!(dataB, indexB);
         }
 
         if (direction == DaviSortDirection.descending) {
