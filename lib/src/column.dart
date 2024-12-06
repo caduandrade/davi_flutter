@@ -46,11 +46,11 @@ class DaviColumn<DATA> extends ChangeNotifier {
       this.resizable = true,
       this.cellClip = false,
       this.sortable = true,
-      this.semanticsBuilder = defaultSemanticsBuilder})
+      this.semanticsBuilder = _defaultSemanticsBuilder})
       : id = id ?? DaviColumnId(),
         _width = width,
         _grow = grow != null ? math.max(1, grow) : null,
-        dataComparator = dataComparator ?? _buildDataComparator();
+        dataComparator = dataComparator ?? _defaultDataComparator;
 
   /// Identifier that can be assigned to this column.
   ///
@@ -196,94 +196,46 @@ class DaviColumn<DATA> extends ChangeNotifier {
 
   @override
   int get hashCode => id.hashCode;
-
-  static int _defaultSpanProvider(dynamic data, rowIndex) => 1;
-
-  /// Builds a default sort
-  static DaviDataComparator _buildDataComparator<DATA>() {
-    /*
-    if (intValue != null) {
-      return (a, b, column) {
-        int? v1 = intValue(a);
-        int? v2 = intValue(b);
-        if (v1 == null && v2 == null) {
-          return 0;
-        }
-        if (v1 == null) {
-          return -1;
-        }
-        if (v2 == null) {
-          return 1;
-        }
-        return v1.compareTo(v2);
-      };
-    } else if (doubleValue != null) {
-      return (a, b, column) {
-        double? v1 = doubleValue(a);
-        double? v2 = doubleValue(b);
-        if (v1 == null && v2 == null) {
-          return 0;
-        }
-        if (v1 == null) {
-          return -1;
-        }
-        if (v2 == null) {
-          return 1;
-        }
-        return v1.compareTo(v2);
-      };
-    } else if (stringValue != null) {
-      return (a, b, column) {
-        String? v1 = stringValue(a);
-        String? v2 = stringValue(b);
-        if (v1 == null && v2 == null) {
-          return 0;
-        }
-        if (v1 == null) {
-          return -1;
-        }
-        if (v2 == null) {
-          return 1;
-        }
-        return v1.compareTo(v2);
-      };
-    } else if (objectValue != null) {
-      return (a, b, column) {
-        Object? v1 = objectValue(a);
-        Object? v2 = objectValue(b);
-        if (v1 == null && v2 == null) {
-          return 0;
-        }
-        if (v1 == null) {
-          return -1;
-        }
-        if (v2 == null) {
-          return 1;
-        }
-        if (a is Comparable && b is Comparable) {
-          return a.compareTo(b);
-        }
-        return 0;
-      };
-    }
-
-     */
-    return _defaultDataComparator;
-  }
-
-  static String _defaultCellValueStringify(dynamic value) => value.toString();
 }
 
-SemanticsProperties defaultSemanticsBuilder(
+SemanticsProperties _defaultSemanticsBuilder(
     BuildContext context, dynamic data, int index, bool hovered) {
   return const SemanticsProperties(enabled: true, label: 'cell');
 }
 
 /// Signature for sort column function.
 typedef DaviDataComparator<DATA> = int Function(
-    DATA a, DATA b, DaviColumn<DATA> column);
+    dynamic a, dynamic b, DaviColumn<DATA> column);
 
-int _defaultDataComparator<DATA>(DATA a, DATA b, DaviColumn<DATA> column) => 0;
+int _defaultSpanProvider(dynamic data, rowIndex) => 1;
+
+String _defaultCellValueStringify(dynamic value) => value.toString();
+
+int _defaultDataComparator<DATA>(
+    dynamic a, dynamic b, DaviColumn<DATA> column) {
+  // Check if both values are null
+  if (a == null && b == null) return 0; // They are equal
+  if (a == null) return -1; // 'a' is null, so 'b' is considered greater
+  if (b == null) return 1; // 'b' is null, so 'a' is considered greater
+
+  if (a is String && b is String) {
+    if (a == b) return 0;
+    return a.compareTo(b); // String comparison is lexicographic
+  }
+
+  // Comparison when both values are not null
+  if (a is int && b is int) {
+    if (a > b) return 1;
+    if (a < b) return -1;
+  }
+
+  if (a is double && b is double) {
+    if (a > b) return 1;
+    if (a < b) return -1;
+  }
+
+  return 0;
+}
 
 @internal
 class DaviColumnHelper {

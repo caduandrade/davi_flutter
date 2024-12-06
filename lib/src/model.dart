@@ -335,8 +335,21 @@ class DaviModel<DATA> extends ChangeNotifier {
   void _updateRows({required bool notify}) {
     if (isSorted && !ignoreDataComparators) {
       List<DATA> list = List.from(_originalRows);
-      list.sort(_compoundSort);
-      _rows = list;
+
+      // Create a list of pairs (index, value),
+      // where each element is a MapEntry
+      // The key of MapEntry is the index,
+      // and the value is the corresponding element
+      List<MapEntry<int, DATA>> indexedList = List.generate(
+        list.length,
+        (index) => MapEntry(index, list[index]),
+      );
+
+      indexedList.sort((a, b) => _compoundSort(a.value, a.key, b.value, b.key));
+
+      // Convert the sorted indexedList back into a normal list of values
+      // This gives us the sorted list of values without the indices
+      _rows = indexedList.map((entry) => entry.value).toList();
     } else {
       _rows = UnmodifiableListView(_originalRows);
     }
@@ -346,12 +359,18 @@ class DaviModel<DATA> extends ChangeNotifier {
   }
 
   /// Function to realize the multi sort.
-  int _compoundSort(DATA a, DATA b) {
+  int _compoundSort(DATA dataA, int indexA, DATA dataB, int indexB) {
     int r = 0;
     for (final DaviColumn<DATA> column in sortedColumns) {
       if (column.sort != null) {
         final DaviDataComparator<DATA> dataComparator = column.dataComparator;
         final DaviSortDirection direction = column.sort!.direction;
+
+        dynamic a, b;
+        if (column.cellValue != null) {
+          a = column.cellValue!(dataA, indexA);
+          b = column.cellValue!(dataB, indexB);
+        }
 
         if (direction == DaviSortDirection.descending) {
           r = dataComparator(b, a, column);

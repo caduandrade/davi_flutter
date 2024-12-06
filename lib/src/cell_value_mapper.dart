@@ -1,32 +1,19 @@
 import 'package:davi/src/cell_icon.dart';
 import 'package:flutter/widgets.dart';
 
-/// A function type that maps a given row's data to a string value for display in a table cell.
+/// A function type that maps a given row's data to a value for display in a table cell.
 ///
 /// This typedef is used to define how a string value is derived from the row's data for display
 /// in the corresponding table cell. The function takes the row's data and index, and returns
 /// an optional string that will be shown in the cell.
-///
-/// The function signature is:
-/// ```dart
-/// String? Function(DATA data, int rowIndex)
-/// ```
 ///
 /// Parameters:
 /// - `data`: The data of the row, representing the model or structure for that row.
 /// - `rowIndex`: The index of the current row, starting from 0.
 ///
 /// Return value:
-/// - A `String` value that will be displayed in the cell. If the function returns `null`,
+/// - A value that will be displayed in the cell. If the function returns `null`,
 ///   no text will be shown in that cell.
-///
-/// Example usage:
-/// ```dart
-/// CellValueMapper<MyData> valueMapper = (data, rowIndex) {
-///   // Return the name property as a string for each row
-///   return data.name; // Assumes the data model has a 'name' field
-/// };
-/// ```
 typedef CellValueMapper<DATA> = dynamic Function(
   DATA data,
   int rowIndex,
@@ -37,11 +24,6 @@ typedef CellValueMapper<DATA> = dynamic Function(
 /// This typedef is used to define how a `CellIcon` is created for a given row of data.
 /// The function takes the row's data and index, and returns an optional `CellIcon`
 /// that will be displayed in the corresponding cell of the table.
-///
-/// The function signature is:
-/// ```dart
-/// CellIcon? Function(DATA data, int rowIndex)
-/// ```
 ///
 /// Parameters:
 /// - `data`: The data of the row, representing the model or structure for that row.
@@ -71,11 +53,6 @@ typedef CellIconMapper<DATA> = CellIcon? Function(
 /// This typedef is used to define how a `Widget` is created based on the row's data to be displayed
 /// in the corresponding table cell. The function takes the row's data, its index, and the `BuildContext`,
 /// and returns an optional `Widget` that will be displayed in the cell.
-///
-/// The function signature is:
-/// ```dart
-/// Widget? Function(BuildContext context, DATA data, int rowIndex)
-/// ```
 ///
 /// Parameters:
 /// - `context`: The `BuildContext` in which the widget will be built. This provides access to the

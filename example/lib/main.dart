@@ -127,7 +127,7 @@ class _HomePageState extends State<HomePage> {
               cellBackground: (row) => row.data.valid ? null : Colors.red[800])*/
         ],
       //  alwaysSorted: true,
-       // multiSortEnabled: true
+        multiSortEnabled: true
     );
   }
 
