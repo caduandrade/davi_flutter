@@ -1,3 +1,4 @@
+import 'package:davi/src/cell_bar.dart';
 import 'package:davi/src/theme/cell_null_color.dart';
 import 'package:flutter/material.dart';
 
@@ -12,6 +13,7 @@ class CellThemeData {
       this.contentHeight = CellThemeDataDefaults.contentHeight,
       this.alignment = CellThemeDataDefaults.alignment,
       this.padding = CellThemeDataDefaults.padding,
+      this.barStyle = CellThemeDataDefaults.cellBarStyle,
       this.overrideInputDecoration =
           CellThemeDataDefaults.overrideInputDecoration});
 
@@ -37,6 +39,8 @@ class CellThemeData {
   /// and removing the border.
   final bool overrideInputDecoration;
 
+  final CellBarStyle barStyle;
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -44,6 +48,7 @@ class CellThemeData {
           runtimeType == other.runtimeType &&
           textStyle == other.textStyle &&
           padding == other.padding &&
+          barStyle == other.barStyle &&
           contentHeight == other.contentHeight &&
           alignment == other.alignment &&
           background == other.background &&
@@ -54,6 +59,7 @@ class CellThemeData {
   int get hashCode =>
       textStyle.hashCode ^
       padding.hashCode ^
+      barStyle.hashCode ^
       contentHeight.hashCode ^
       alignment.hashCode ^
       background.hashCode ^
@@ -66,4 +72,12 @@ class CellThemeDataDefaults {
   static const EdgeInsets padding = EdgeInsets.only(left: 8, right: 8);
   static const Alignment alignment = Alignment.centerLeft;
   static const bool overrideInputDecoration = true;
+  static const CellBarStyle cellBarStyle = CellBarStyle(
+      barBackground: Color(0xFFE0E0E0),
+      barForeground: _barForeground,
+      textSize: 14,
+      textColor: _textColor);
+
+  static Color _barForeground(double value) => Colors.grey;
+  static Color _textColor(double value) => Colors.black;
 }

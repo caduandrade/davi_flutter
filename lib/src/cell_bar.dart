@@ -24,7 +24,7 @@ class CellBarStyle {
   final CellBarColor textColor;
 
   /// The size of the text displayed.
-  final int textSize;
+  final double textSize;
 
   /// Creates a [CellBarStyle] object with the given properties.
   ///
@@ -32,12 +32,29 @@ class CellBarStyle {
   /// [barForeground] defines the color of the foreground based on the value.
   /// [textColor] determines the color of the text based on the value.
   /// [textSize] defines the size of the text.
-  CellBarStyle({
+  const CellBarStyle({
     required this.barBackground,
     required this.barForeground,
     required this.textColor,
     required this.textSize,
   });
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is CellBarStyle &&
+          runtimeType == other.runtimeType &&
+          barBackground == other.barBackground &&
+          barForeground == other.barForeground &&
+          textColor == other.textColor &&
+          textSize == other.textSize;
+
+  @override
+  int get hashCode =>
+      barBackground.hashCode ^
+      barForeground.hashCode ^
+      textColor.hashCode ^
+      textSize.hashCode;
 }
 
 /// A function type that takes a [double] value (representing value, between 0.0 and 1.0)
@@ -46,7 +63,6 @@ class CellBarStyle {
 /// This function is used to dynamically determine the color of the foreground or text
 /// based on the current value.
 typedef CellBarColor = Color Function(double value);
-
 
 /// A typedef for a function that calculates the value for a progress bar,
 /// based on the provided data.

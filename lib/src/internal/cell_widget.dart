@@ -71,7 +71,10 @@ class CellWidget<DATA> extends StatelessWidget {
       if (barValue != null) {
         child = CustomPaint(
             size: Size(column.width, theme.cell.contentHeight),
-            painter: _BarPainter(value: barValue, painterCache: painterCache));
+            painter: _BarPainter(
+                value: barValue,
+                painterCache: painterCache,
+                barStyle: column.cellBarStyle ?? theme.cell.barStyle));
       }
     } else if (column.cellWidget != null) {
       child = column.cellWidget!(context, data, rowIndex);
@@ -167,25 +170,28 @@ class _CustomPainter<DATA> extends CustomPainter {
 }
 
 class _BarPainter extends CustomPainter {
-  _BarPainter({required this.value, required this.painterCache});
+  _BarPainter(
+      {required this.value,
+      required this.painterCache,
+      required this.barStyle});
 
   final double value;
-  final Color background = Colors.blue[200]!;
-  final Color foreground = Colors.blue;
+  final CellBarStyle barStyle;
   final PainterCache painterCache;
 
   @override
   void paint(Canvas canvas, Size size) {
-    Paint paint = Paint()..color = background;
+    Paint paint = Paint()..color = barStyle.barBackground;
     canvas.drawRect(Rect.fromLTRB(0, 0, size.width, size.height), paint);
-    paint.color = foreground;
+    paint.color = barStyle.barForeground(value);
     double width = value * size.width;
 
     canvas.drawRect(Rect.fromLTRB(0, 0, width, size.height), paint);
 
     TextPainter textPainter = painterCache.getTextPainter(
         width: size.width,
-        textStyle: const TextStyle(fontSize: 14, color: Colors.black),
+        textStyle: TextStyle(
+            fontSize: barStyle.textSize, color: barStyle.textColor(value)),
         value: '${(value * 100).truncate()}%',
         rowSpan: 1,
         columnSpan: 1);
