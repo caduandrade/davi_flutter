@@ -122,11 +122,12 @@ class _HomePageState extends State<HomePage> {
               cellValue: (data, rowIndex) => data.value
           ),
 
-          /*  DaviColumn(
+            DaviColumn(
               name: 'Editable',
               sortable: false,
-              cellBuilder: _buildField,
-              cellBackground: (row) => row.data.valid ? null : Colors.red[800])*/
+              cellWidget: _buildField,
+              //cellBackground: (row, index, hover) => data.valid ? null : Colors.red[800]
+            )
         ],
       //  alwaysSorted: true,
         multiSortEnabled: true
@@ -134,7 +135,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildField(
-      BuildContext context, Person data, int index, bool hovered) {
+      BuildContext context, Person data, int index) {
     if (true) {
       return TextFormField(
           controller: data.c,
@@ -171,8 +172,8 @@ class _HomePageState extends State<HomePage> {
               dividerColor: Colors.pink,
               color: RowThemeData.zebraColor(
                   evenColor: Colors.pink[100], oddColor: Colors.yellow[100]),
-              //  hoverBackground: (index) => Colors.blue[300],
-              hoverForeground: (index) => Colors.blue[300]!.withOpacity(.5),
+                //hoverBackground: (index) => Colors.blue[300],
+             // hoverForeground: (index) => Colors.blue[300]!.withOpacity(.5),
             ),
             cell: CellThemeData(
                 nullValueColor: (index, hover) =>

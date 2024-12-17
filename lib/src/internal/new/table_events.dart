@@ -36,8 +36,10 @@ class TableEvents<DATA> extends StatelessWidget {
     Widget widget = child;
 
     if (daviContext.model.isRowsNotEmpty) {
-      if (theme.row.hoverBackground != null ||
+      if (daviContext.hasCallback ||
+          theme.row.hoverBackground != null ||
           theme.row.hoverForeground != null) {
+        // Updates logical row status on hover
         widget = MouseRegion(
             onEnter: _onEnter,
             onHover: _onHover,
