@@ -1,4 +1,4 @@
-## 4.0.0
+  ## 4.0.0
 
 *DRAFT*
 
@@ -31,6 +31,9 @@ EdgeThemeData new
 - 
 
 DaviColumn.fractionDigits removed
+
+RowThemeData.cursor renamed to RowThemeData.callbackCursor
+RowThemeData.cursorOnTapGesturesOnly removed
 
 HeaderThemeData.bottomBorderHeight  to HeaderThemeData.bottomBorderThickness
 Davi.model cant be null

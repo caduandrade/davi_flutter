@@ -37,6 +37,7 @@ class TableEvents<DATA> extends StatelessWidget {
 
     if (daviContext.model.isRowsNotEmpty) {
       if (daviContext.hasCallback ||
+          daviContext.rowCursorBuilder != null ||
           theme.row.hoverBackground != null ||
           theme.row.hoverForeground != null) {
         // Updates logical row status on hover
@@ -128,14 +129,14 @@ class TableEvents<DATA> extends StatelessWidget {
 
   MouseCursor _buildCursor(
       {required DATA data, required int index, required bool hovered}) {
-    if (!rowTheme.cursorOnTapGesturesOnly || daviContext.hasCallback) {
-      MouseCursor? mouseCursor;
-      if (daviContext.rowCursorBuilder != null) {
-        mouseCursor = daviContext.rowCursorBuilder!(data, index, hovered);
-      }
-      return mouseCursor ?? rowTheme.cursor;
+    MouseCursor? mouseCursor;
+    if (daviContext.rowCursorBuilder != null) {
+      mouseCursor = daviContext.rowCursorBuilder!(data, index, hovered);
     }
-    return MouseCursor.defer;
+    if (mouseCursor == null && daviContext.hasCallback) {
+      mouseCursor = rowTheme.callbackCursor;
+    }
+    return mouseCursor ?? MouseCursor.defer;
   }
 
   DATA? get _hoverData {

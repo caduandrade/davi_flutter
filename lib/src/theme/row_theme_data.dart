@@ -12,9 +12,7 @@ class RowThemeData {
       this.dividerThickness = RowThemeDataDefaults.dividerThickness,
       this.dividerColor = RowThemeDataDefaults.dividerColor,
       this.fillHeight = RowThemeDataDefaults.fillHeight,
-      this.cursor = RowThemeDataDefaults.cursor,
-      this.cursorOnTapGesturesOnly =
-          RowThemeDataDefaults.cursorOnTapGesturesOnly});
+      this.callbackCursor = RowThemeDataDefaults.callbackCursor});
 
   /// The bottom row color.
   ///
@@ -39,10 +37,7 @@ class RowThemeData {
   /// the color of the rows.
   final bool fillHeight;
 
-  final MouseCursor cursor;
-
-  /// Allow cursor without tap gestures.
-  final bool cursorOnTapGesturesOnly;
+  final MouseCursor callbackCursor;
 
   @override
   bool operator ==(Object other) =>
@@ -55,8 +50,7 @@ class RowThemeData {
           dividerThickness == other.dividerThickness &&
           dividerColor == other.dividerColor &&
           fillHeight == other.fillHeight &&
-          cursor == other.cursor &&
-          cursorOnTapGesturesOnly == other.cursorOnTapGesturesOnly;
+          callbackCursor == other.callbackCursor;
 
   @override
   int get hashCode =>
@@ -66,8 +60,7 @@ class RowThemeData {
       dividerThickness.hashCode ^
       dividerColor.hashCode ^
       fillHeight.hashCode ^
-      cursor.hashCode ^
-      cursorOnTapGesturesOnly.hashCode;
+      callbackCursor.hashCode;
 
   static ThemeRowColor zebraColor(
       {Color? evenColor = const Color(0xFFF5F5F5),
@@ -83,6 +76,5 @@ class RowThemeDataDefaults {
   static const bool fillHeight = false;
   static const Color dividerColor = Colors.grey;
   static const double dividerThickness = 1;
-  static const MouseCursor cursor = SystemMouseCursors.click;
-  static const bool cursorOnTapGesturesOnly = true;
+  static const MouseCursor callbackCursor = SystemMouseCursors.click;
 }
