@@ -37,6 +37,7 @@ class TableEvents<DATA> extends StatelessWidget {
 
     if (daviContext.model.isRowsNotEmpty) {
       if (daviContext.hasCallback ||
+          daviContext.hasHoverListener ||
           daviContext.rowCursorBuilder != null ||
           theme.row.hoverBackground != null ||
           theme.row.hoverForeground != null) {

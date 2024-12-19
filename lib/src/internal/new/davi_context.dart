@@ -16,6 +16,7 @@ import 'package:meta/meta.dart';
 class DaviContext<DATA> {
   DaviContext(
       {required this.hoverNotifier,
+      required this.hasHoverListener,
       required this.columnNotifier,
       required this.semanticsEnabled,
       required this.model,
@@ -38,6 +39,7 @@ class DaviContext<DATA> {
       required this.collisionBehavior});
 
   final HoverNotifier hoverNotifier;
+  final bool hasHoverListener;
   final ColumnNotifier columnNotifier;
   final bool semanticsEnabled;
   final DaviModel<DATA> model;

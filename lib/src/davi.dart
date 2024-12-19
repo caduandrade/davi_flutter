@@ -195,6 +195,7 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
 
     final DaviContext<DATA> daviContext = DaviContext(
         hoverNotifier: _hoverNotifier,
+        hasHoverListener: widget.onHover != null,
         columnNotifier: _columnNotifier,
         semanticsEnabled: widget.semanticsEnabled,
         model: widget.model,
