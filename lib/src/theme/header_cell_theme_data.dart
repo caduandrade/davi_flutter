@@ -76,7 +76,7 @@ class HeaderCellThemeData {
 }
 
 class HeaderCellThemeDataDefaults {
-  static const double height = 28;
+  static const double height = 32;
   static const TextStyle textStyle = TextStyle(fontWeight: FontWeight.bold);
   static const EdgeInsets padding = EdgeInsets.fromLTRB(8, 4, 8, 4);
   static const Alignment alignment = Alignment.centerLeft;
