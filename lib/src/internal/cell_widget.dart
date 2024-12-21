@@ -1,4 +1,5 @@
 import 'package:davi/davi.dart';
+import 'package:davi/src/internal/new/hover_listenable_builder.dart';
 import 'package:davi/src/internal/new/text_cell_painter.dart';
 import 'package:davi/src/internal/new/painter_cache.dart';
 import 'package:davi/src/internal/new/davi_context.dart';
@@ -33,6 +34,49 @@ class CellWidget<DATA> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Widget child = HoverListenableBuilder(
+        rowIndex: rowIndex,
+        hoverNotifier: daviContext.hoverNotifier,
+        builder: _builder);
+
+    if (daviContext.collisionBehavior == CellCollisionBehavior.overlap) {
+      return child;
+    }
+
+    bool offstage = false;
+    final bool intercepts = cellSpanCache.intersects(
+        rowIndex: rowIndex,
+        columnIndex: columnIndex,
+        rowSpan: rowSpan,
+        columnSpan: columnSpan);
+    if (intercepts) {
+      if (daviContext.collisionBehavior == CellCollisionBehavior.ignore) {
+        offstage = true;
+      } else if (daviContext.collisionBehavior ==
+          CellCollisionBehavior.ignoreAndWarn) {
+        offstage = true;
+        debugPrint(
+            'Collision detected at cell rowIndex: $rowIndex columnIndex: $columnIndex.');
+      } else if (daviContext.collisionBehavior ==
+          CellCollisionBehavior.overlapAndWarn) {
+        debugPrint(
+            'Collision detected at cell rowIndex: $rowIndex columnIndex: $columnIndex.');
+      } else if (daviContext.collisionBehavior ==
+          CellCollisionBehavior.throwException) {
+        throw StateError(
+            'Collision detected at cell rowIndex: $rowIndex columnIndex: $columnIndex.');
+      }
+    } else {
+      cellSpanCache.add(
+          rowIndex: rowIndex,
+          columnIndex: columnIndex,
+          rowSpan: rowSpan,
+          columnSpan: columnSpan);
+    }
+    return Offstage(offstage: offstage, child: child);
+  }
+
+  Widget _builder(BuildContext context) {
     DaviThemeData theme = DaviTheme.of(context);
 
     // Theme
@@ -116,41 +160,7 @@ class CellWidget<DATA> extends StatelessWidget {
       child = ClipRect(child: child);
     }
 
-    if (daviContext.collisionBehavior == CellCollisionBehavior.overlap) {
-      return child;
-    }
-
-    bool offstage = false;
-    final bool intercepts = cellSpanCache.intersects(
-        rowIndex: rowIndex,
-        columnIndex: columnIndex,
-        rowSpan: rowSpan,
-        columnSpan: columnSpan);
-    if (intercepts) {
-      if (daviContext.collisionBehavior == CellCollisionBehavior.ignore) {
-        offstage = true;
-      } else if (daviContext.collisionBehavior ==
-          CellCollisionBehavior.ignoreAndWarn) {
-        offstage = true;
-        debugPrint(
-            'Collision detected at cell rowIndex: $rowIndex columnIndex: $columnIndex.');
-      } else if (daviContext.collisionBehavior ==
-          CellCollisionBehavior.overlapAndWarn) {
-        debugPrint(
-            'Collision detected at cell rowIndex: $rowIndex columnIndex: $columnIndex.');
-      } else if (daviContext.collisionBehavior ==
-          CellCollisionBehavior.throwException) {
-        throw StateError(
-            'Collision detected at cell rowIndex: $rowIndex columnIndex: $columnIndex.');
-      }
-    } else {
-      cellSpanCache.add(
-          rowIndex: rowIndex,
-          columnIndex: columnIndex,
-          rowSpan: rowSpan,
-          columnSpan: columnSpan);
-    }
-    return Offstage(offstage: offstage, child: child);
+    return child;
   }
 }
 

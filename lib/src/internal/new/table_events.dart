@@ -36,18 +36,9 @@ class TableEvents<DATA> extends StatelessWidget {
     Widget widget = child;
 
     if (daviContext.model.isRowsNotEmpty) {
-      if (daviContext.hasCallback ||
-          daviContext.hasHoverListener ||
-          daviContext.rowCursorBuilder != null ||
-          theme.row.hoverBackground != null ||
-          theme.row.hoverForeground != null) {
-        // Updates logical row status on hover
-        widget = MouseRegion(
-            onEnter: _onEnter,
-            onHover: _onHover,
-            onExit: _onExit,
-            child: widget);
-      }
+      // Updates logical row status on hover
+      widget = MouseRegion(
+          onEnter: _onEnter, onHover: _onHover, onExit: _onExit, child: widget);
 
       if (daviContext.hasCallback) {
         widget = GestureDetector(
