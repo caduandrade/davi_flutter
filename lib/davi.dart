@@ -1,6 +1,7 @@
 library davi;
 
 export 'src/cell_background.dart';
+export 'src/cell_text_style.dart';
 export 'src/cell_value_mapper.dart';
 export 'src/cell_icon.dart';
 export 'src/column.dart' hide DaviColumnHelper;

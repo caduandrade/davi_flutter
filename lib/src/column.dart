@@ -66,7 +66,7 @@ class DaviColumn<DATA> extends ChangeNotifier {
   final Alignment? cellAlignment;
   final TextOverflow? cellOverflow;
   final CellBackgroundBuilder<DATA>? cellBackground;
-  final TextStyle? cellTextStyle;
+  final CellTextStyleBuilder<DATA>? cellTextStyle;
   final TextStyle? headerTextStyle;
 
   final PinStatus pinStatus;

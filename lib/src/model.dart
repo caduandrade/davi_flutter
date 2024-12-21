@@ -375,7 +375,7 @@ class DaviModel<DATA> extends ChangeNotifier {
         } else if (column.cellBarValue != null) {
           a = column.cellBarValue!(dataA, indexA);
           b = column.cellBarValue!(dataB, indexB);
-        }else if (column.cellIcon != null) {
+        } else if (column.cellIcon != null) {
           a = column.cellIcon!(dataA, indexA);
           b = column.cellIcon!(dataB, indexB);
         }

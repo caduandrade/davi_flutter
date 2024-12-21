@@ -4,7 +4,7 @@ import 'dart:ui';
 ///
 /// This typedef allows developers to provide a custom rendering function
 /// for a cell in the DataGrid. The function receives a [Canvas], [Size],
-/// and the row data of type [DATA], enabling full control over the visual 
+/// and the row data of type [DATA], enabling full control over the visual
 /// representation of the cell.
 ///
 /// - The [Canvas] parameter provides a drawing surface for the cell.

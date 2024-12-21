@@ -79,14 +79,18 @@ class CellWidget<DATA> extends StatelessWidget {
   Widget _builder(BuildContext context) {
     DaviThemeData theme = DaviTheme.of(context);
 
-    // Theme
     EdgeInsets? padding = theme.cell.padding;
-    Alignment alignment = theme.cell.alignment;
-    TextStyle? textStyle = theme.cell.textStyle;
-    // Entire column
     padding = column.cellPadding ?? padding;
+
+    Alignment alignment = theme.cell.alignment;
     alignment = column.cellAlignment ?? alignment;
-    textStyle = column.cellTextStyle ?? textStyle;
+
+    TextStyle? textStyle;
+    if (column.cellTextStyle != null) {
+      textStyle = column.cellTextStyle!(
+          data, rowIndex, rowIndex == daviContext.hoverNotifier.index);
+    }
+    textStyle = textStyle ?? theme.cell.textStyle;
 
     Widget? child;
     dynamic value;

@@ -107,7 +107,7 @@ class _HomePageState extends State<HomePage> {
               name: 'Value 4',
               cellValue: (data, rowIndex) =>
                   rowIndex == 2 ? 'SPANNNNNNN R2C5' : data.value,
-              cellTextStyle: const TextStyle(fontWeight: FontWeight.bold),
+              cellTextStyle: (data, rowIndex, hovered)=>const TextStyle(fontWeight: FontWeight.bold),
               columnSpan: (data, rowIndex) => rowIndex == 2 ?2 : 1,
               cellBackground: (data, index, hovered) =>
                   data.value == 12 ? Colors.green : null),
