@@ -53,6 +53,8 @@ HeaderCellThemeData.copyWith removed
 HeaderThemeData.copyWith removed
 DaviThemeData.copyWith removed
 
+DaviColumn.cellClip default value changed to TRUE
+
 DaviColumn.cellTextStyle changed to builder
 
 RowThemeData.lastDividerVisible removed

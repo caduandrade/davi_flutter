@@ -40,7 +40,7 @@ class DaviColumn<DATA> extends ChangeNotifier {
       this.pinStatus = PinStatus.none,
       this.summary,
       this.resizable = true,
-      this.cellClip = false,
+      this.cellClip = true,
       this.sortable = true,
       this.semanticsBuilder = _defaultSemanticsBuilder})
       : id = id ?? DaviColumnId(),
