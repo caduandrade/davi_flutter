@@ -1,6 +1,5 @@
 import 'package:davi/davi.dart';
 import 'package:davi/src/column.dart';
-import 'package:davi/src/column_width_behavior.dart';
 import 'package:davi/src/internal/column_metrics.dart';
 import 'package:davi/src/internal/header_widget.dart';
 import 'package:davi/src/internal/layout_child_id.dart';
@@ -14,8 +13,6 @@ import 'package:davi/src/internal/table_layout.dart';
 import 'package:davi/src/internal/table_layout_child.dart';
 import 'package:davi/src/internal/table_layout_settings.dart';
 import 'package:davi/src/internal/table_scrollbar.dart';
-import 'package:davi/src/theme/theme.dart';
-import 'package:davi/src/theme/theme_data.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
@@ -125,11 +122,18 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
 
     children.add(TableLayoutChild(
         id: LayoutChildId.cells,
-        child: TableContent(
+        child:
+        LayoutBuilder(builder:(context, constraints) {
+          DaviThemeData theme = DaviTheme.of(context);
+        return TableContent(
             daviContext: daviContext,
             layoutSettings: layoutSettings,
             horizontalScrollOffsets: horizontalScrollOffsets,
-            verticalScrollController: scrollControllers.vertical)));
+        rowFillHeight: theme.row.fillHeight,
+        maxWidth: constraints.maxWidth,
+        maxHeight: constraints.maxHeight);
+        }
+    )));
 
     if (daviContext.model.hasSummary) {
       children.add(TableLayoutChild(

@@ -4,7 +4,7 @@ import 'package:davi/src/internal/new/cells_layout_element.dart';
 import 'package:davi/src/internal/new/cells_layout_render_box.dart';
 import 'package:davi/src/internal/new/davi_context.dart';
 import 'package:davi/src/internal/new/divider_paint_manager.dart';
-import 'package:davi/src/internal/new/row_region.dart';
+import 'package:davi/src/internal/new/viewport_state.dart';
 import 'package:davi/src/internal/scroll_offsets.dart';
 import 'package:davi/src/internal/table_layout_settings.dart';
 import 'package:flutter/material.dart';

@@ -126,7 +126,9 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
         unpinnedHorizontal: widget.unpinnedHorizontalScrollController,
         leftPinnedHorizontal: widget.leftPinnedHorizontalScrollController,
         vertical: widget.verticalScrollController)) {
-      _buildListenable();
+      setState(() {
+        // rebuild subtree with the new scroll controllers.
+      });
     }
     if (widget.model != oldWidget.model) {
       _buildListenable();
@@ -145,10 +147,7 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
   void _buildListenable() {
     _listenable = Listenable.merge([
       widget.model,
-      _columnNotifier,
-      _scrollControllers.vertical,
-      _scrollControllers.leftPinnedHorizontal,
-      _scrollControllers.unpinnedHorizontal
+      _columnNotifier
     ]);
   }
 
@@ -215,7 +214,8 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
         visibleRowsCount: widget.visibleRowsCount,
         columnWidthBehavior: widget.columnWidthBehavior,
         collisionBehavior: widget.collisionBehavior,
-        themeMetrics: themeMetrics);
+        themeMetrics: themeMetrics,
+    scrollControllers: _scrollControllers);
 
     return FocusTraversalGroup(
         policy: _NoTraversalPolicy(),

@@ -20,7 +20,12 @@ class DividerPaintManager {
 
   int? _firstRowIndex;
 
-  void setup(
+  void clear(){
+    _horizontalVertices.clear();
+    _verticalVertices.clear();
+  }
+
+  void reset(
       {required int firstRowIndex,
       required int lastRowIndex,
       required int columnsLength}) {
@@ -31,6 +36,9 @@ class DividerPaintManager {
     _horizontalVertices.clear();
     _verticalVertices.clear();
     _firstRowIndex = firstRowIndex;
+
+
+    //for (int ri = rowIndex; ri < rowIndex + rowSpan - 1; ri++) {
 
     for (int row = firstRowIndex; row <= lastRowIndex; row++) {
       _horizontalVertices[row] =
@@ -119,7 +127,10 @@ class DividerPaintManager {
 
     // Updating horizontal vertices stop
     for (int ri = rowIndex; ri < rowIndex + rowSpan - 1; ri++) {
-      _DividerVertices horizontalVertices = _horizontalVertices[ri]!;
+      _DividerVertices? horizontalVertices = _horizontalVertices[ri];
+      if(horizontalVertices==null) {
+        throw StateError('No horizontal vertices for rowIndex $ri');
+      }
       for (int ci = columnIndex; ci < columnIndex + columnSpan; ci++) {
         if (ci == 0) {
           horizontalVertices.start._stop = true;

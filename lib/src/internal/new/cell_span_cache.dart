@@ -9,6 +9,10 @@ import 'package:meta/meta.dart';
 class CellSpanCache {
   final Set<CellSpan> _cache = {};
 
+  void clear(){
+    _cache.clear();
+  }
+
   void add(
       {required int rowIndex,
       required int columnIndex,

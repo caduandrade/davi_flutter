@@ -1,14 +1,12 @@
-import 'dart:math' as math;
 import 'package:davi/davi.dart';
-import 'package:davi/src/internal/cell_widget.dart';
-import 'package:davi/src/internal/new/divider_paint_manager.dart';
+import 'package:davi/src/internal/new/cell_widget_builder.dart';
 import 'package:davi/src/internal/new/painter_cache.dart';
 import 'package:davi/src/internal/new/cells_layout.dart';
 import 'package:davi/src/internal/new/cells_layout_child.dart';
 import 'package:davi/src/internal/new/davi_context.dart';
-import 'package:davi/src/internal/new/row_region.dart';
 import 'package:davi/src/internal/new/cell_span_cache.dart';
 import 'package:davi/src/internal/new/table_events.dart';
+import 'package:davi/src/internal/new/viewport_state.dart';
 import 'package:davi/src/internal/scroll_offsets.dart';
 import 'package:davi/src/internal/table_layout_settings.dart';
 import 'package:flutter/material.dart';
@@ -21,14 +19,18 @@ class TableContent<DATA> extends StatefulWidget {
       {Key? key,
       required this.layoutSettings,
       required this.daviContext,
-      required this.verticalScrollController,
-      required this.horizontalScrollOffsets})
+      required this.horizontalScrollOffsets,
+      required this.maxHeight,
+      required this.maxWidth,
+      required this.rowFillHeight})
       : super(key: key);
 
   final TableLayoutSettings layoutSettings;
   final DaviContext<DATA> daviContext;
-  final ScrollController verticalScrollController;
   final HorizontalScrollOffsets horizontalScrollOffsets;
+  final double maxWidth;
+  final double maxHeight;
+  final bool rowFillHeight;
 
   @override
   State<StatefulWidget> createState() => TableContentState<DATA>();
@@ -37,17 +39,36 @@ class TableContent<DATA> extends StatefulWidget {
 @internal
 class TableContentState<DATA> extends State<TableContent<DATA>> {
   final PainterCache<DATA> _painterCache = PainterCache();
+  final CellSpanCache _cellSpanCache = CellSpanCache();
+  final ViewportState<DATA> _viewportState = ViewportState();
+  /*
+  final ViewportState<DATA> _viewportState = ViewportState();
+  final RowRegionCache<DATA> _rowRegionCache = RowRegionCache();
+  final DividerPaintManager _dividerPaintManager = DividerPaintManager();
+  */
 
   @override
   void initState() {
     super.initState();
     _updatePainterCacheSize();
+    _onVerticalScrollChange();
+    widget.daviContext.scrollControllers.vertical.addListener(_onVerticalScrollChange);
   }
 
   @override
   void didUpdateWidget(covariant TableContent<DATA> oldWidget) {
     super.didUpdateWidget(oldWidget);
     _updatePainterCacheSize();
+    _onVerticalScrollChange();
+    if (oldWidget.daviContext.scrollControllers.vertical != widget.daviContext.scrollControllers.vertical) {
+      oldWidget.daviContext.scrollControllers.vertical.removeListener(_onVerticalScrollChange);
+      widget.daviContext.scrollControllers.vertical.addListener(_onVerticalScrollChange);
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   void _updatePainterCacheSize() {
@@ -56,192 +77,58 @@ class TableContentState<DATA> extends State<TableContent<DATA>> {
         widget.layoutSettings.columnsMetrics.length;
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return ListenableBuilder(
-        listenable: widget.verticalScrollController,
-        builder: (BuildContext context, Widget? child) {
-          return LayoutBuilder(builder: _builder);
-        });
+  void _onVerticalScrollChange(){
+    final double verticalOffset = widget.daviContext.scrollControllers.vertical.hasClients
+        ? widget.daviContext.scrollControllers.vertical.offset
+        : 0;
+    _viewportState.reset(verticalOffset: verticalOffset,
+        columnsMetrics: widget.layoutSettings.columnsMetrics,
+        rowHeight: widget.layoutSettings.themeMetrics.row.height,
+        cellHeight: widget.layoutSettings.themeMetrics.cell.height,
+        maxHeight: widget.maxHeight,
+        maxWidth: widget.maxWidth,
+        model: widget.daviContext.model,
+        hasTrailing: widget.daviContext.trailingWidget!=null,
+        rowFillHeight: widget.rowFillHeight);
+    _cellSpanCache.clear();
+
+    //TODO future?
+   // widget.daviContext.onTrailingWidget(_rowRegionCache.trailingRegion!=null);
+   // widget.daviContext.onLastVisibleRow(_rowRegionCache.lastDataIndex);
+
   }
 
-  Widget _builder(BuildContext context, BoxConstraints constraints) {
+  @override
+  Widget build(BuildContext context) {   
     //TODO null hover on resizing
     DaviThemeData theme = DaviTheme.of(context);
 
-    final double verticalOffset = widget.verticalScrollController.hasClients
-        ? widget.verticalScrollController.offset
+    final double verticalOffset = widget.daviContext.scrollControllers.vertical.hasClients
+        ? widget.daviContext.scrollControllers.vertical.offset
         : 0;
-
-    final int firstVisibleRowIndex =
-        (verticalOffset / widget.layoutSettings.themeMetrics.row.height)
-            .floor();
 
     List<CellsLayoutChild> children = [];
 
-    final RowRegionCache rowRegionCache = RowRegionCache();
-
-    bool trailingWidgetBuilt = false;
-    int? lastVisibleRowIndex;
-
-    // This is used to determine if an extra row might become partially
-    // visible during scrolling, allowing preemptive
-    // caching to improve performance.
-    final int maxVisualRows = ((constraints.maxHeight +
-                widget.layoutSettings.themeMetrics.cell.height) /
-            widget.layoutSettings.themeMetrics.row.height)
-        .ceil();
-    final int maxVisibleRowIndex = firstVisibleRowIndex + maxVisualRows;
-    final int maxRowIndex =
-        maxVisibleRowIndex + widget.daviContext.model.maxRowSpan;
-
-    final int firstRowIndex =
-        math.max(0, firstVisibleRowIndex - widget.daviContext.model.maxRowSpan);
-
-    double rowY =
-        (firstRowIndex * widget.layoutSettings.themeMetrics.row.height) -
-            verticalOffset;
-
-    int childIndex = 0;
-
-    final CellSpanCache cellSpanCache = CellSpanCache();
-
-    for (int rowIndex = firstRowIndex; rowIndex < maxRowIndex; rowIndex++) {
-      final Rect bounds = Rect.fromLTWH(0, rowY, constraints.maxWidth,
-          widget.layoutSettings.themeMetrics.cell.height);
-
-      DATA? data;
-      if (rowIndex < widget.daviContext.model.rowsLength) {
-        data = widget.daviContext.model.rowAt(rowIndex);
-      }
-
-      bool trailingRegion = false;
-      if (widget.daviContext.trailingWidget != null &&
-          !trailingWidgetBuilt &&
-          data == null) {
-        trailingWidgetBuilt = true;
-        trailingRegion = true;
-        children.add(CellsLayoutChild.trailing(
-            child: widget.daviContext.trailingWidget!));
-      }
-
-      rowRegionCache.add(RowRegion(
-          index: rowIndex,
-          bounds: bounds,
-          hasData: data != null,
-          y: rowY,
-          trailing: trailingRegion,
-          visible: rowIndex >= firstVisibleRowIndex &&
-              rowIndex <= maxVisibleRowIndex));
-
-      for (int columnIndex = 0;
-          columnIndex < widget.layoutSettings.columnsMetrics.length;
-          columnIndex++) {
-        if (data != null) {
-          final DaviColumn<DATA> column =
-              widget.daviContext.model.columnAt(columnIndex);
-
-          int rowSpan = math.max(column.rowSpan(data, rowIndex), 1);
-          if (rowSpan > widget.daviContext.model.maxRowSpan) {
-            if (widget.daviContext.model.maxSpanBehavior ==
-                MaxSpanBehavior.throwException) {
-              throw StateError(
-                  'rowSpan exceeds the maximum allowed of ${widget.daviContext.model.maxRowSpan} rows');
-            } else if (widget.daviContext.model.maxSpanBehavior ==
-                MaxSpanBehavior.truncateWithWarning) {
-              rowSpan = widget.daviContext.model.maxRowSpan;
-              debugPrint(
-                  'Span too large at row $rowIndex: Truncated to $rowSpan rows');
-            }
-          }
-
-          int columnSpan = math.max(column.columnSpan(data, rowIndex), 1);
-          if (columnSpan > widget.daviContext.model.maxColumnSpan) {
-            if (widget.daviContext.model.maxSpanBehavior ==
-                MaxSpanBehavior.throwException) {
-              throw StateError(
-                  'columnSpan exceeds the maximum allowed of ${widget.daviContext.model.maxColumnSpan} columns');
-            } else if (widget.daviContext.model.maxSpanBehavior ==
-                MaxSpanBehavior.truncateWithWarning) {
-              columnSpan = widget.daviContext.model.maxColumnSpan;
-              debugPrint(
-                  'Span too large at rowIndex $rowIndex column $columnIndex: Truncated to $columnSpan columns');
-            }
-          }
-
-          // Check all columns spanned by the columnSpan
-          for (int i = columnIndex + 1; i < columnIndex + columnSpan; i++) {
-            if (widget.layoutSettings.columnsMetrics[i].pinStatus !=
-                widget.layoutSettings.columnsMetrics[columnIndex].pinStatus) {
-              throw StateError(
-                "Invalid columnSpan: Columns spanned from index $columnIndex to ${columnIndex + columnSpan - 1} "
-                "at rowIndex $rowIndex, have mixed pin status.",
-              );
-            }
-          }
-
-          if ((rowIndex >= firstVisibleRowIndex &&
-                  rowIndex <= maxVisibleRowIndex) ||
-              rowSpan > 1) {
-            Widget? cellWidget = CellWidget<DATA>(
+    //TODO se o build nao roda novamente, como vai construir o trailing
+    //TODO dinamicamente?
+    //TODO terá que adicionar entao sempre esse CellsLayoutChild.trailing
+    //TODO e ele tb ficara offstage, quando for notificado pra aparecer,
+    //TODO ele internamente tb vai se reconstruir como outras celulas
+    if (widget.daviContext.trailingWidget != null ) {
+      //TODO keep always built but markneedrepaint when visible
+      children.add(CellsLayoutChild.trailing(    child: widget.daviContext.trailingWidget!));
+    }
+      for (int cellIndex = 0; cellIndex <
+          _viewportState.maxCellCount; cellIndex++) {
+        children.add(CellsLayoutChild.cell(
+            cellIndex: cellIndex,
+            child: CellWidgetBuilder(cellIndex: cellIndex,
                 daviContext: widget.daviContext,
+                viewportState: _viewportState,
+                cellSpanCache: _cellSpanCache,
                 painterCache: _painterCache,
-                cellSpanCache: cellSpanCache,
-                data: data,
-                column: column,
-                rowIndex: rowIndex,
-                rowSpan: rowSpan,
-                columnIndex: columnIndex,
-                columnSpan: columnSpan);
-
-            children.add(CellsLayoutChild.cell(
-                childIndex: childIndex,
-                rowIndex: rowIndex,
-                columnIndex: columnIndex,
-                rowSpan: rowSpan,
-                columnSpan: columnSpan,
-                child: cellWidget));
-          }
-          lastVisibleRowIndex = rowIndex;
-        } else {
-          children.add(CellsLayoutChild.cell(
-              childIndex: childIndex,
-              rowIndex: rowIndex,
-              columnIndex: columnIndex,
-              rowSpan: 1,
-              columnSpan: 1,
-              child: const Offstage()));
-        }
-        childIndex++;
+                layoutSettings: widget.layoutSettings)));
       }
-      rowY += widget.layoutSettings.themeMetrics.row.height;
-    }
-
-    widget.daviContext.onTrailingWidget(trailingWidgetBuilt);
-    widget.daviContext.onLastVisibleRow(lastVisibleRowIndex);
-
-    DividerPaintManager dividerPaintManager = DividerPaintManager();
-    if (rowRegionCache.firstIndex != null && rowRegionCache.lastIndex != null) {
-      dividerPaintManager.setup(
-          firstRowIndex: rowRegionCache.firstIndex!,
-          lastRowIndex: rowRegionCache.lastIndex!,
-          columnsLength: widget.layoutSettings.columnsMetrics.length);
-      if (rowRegionCache.trailingRegion != null &&
-          rowRegionCache.trailingRegion!.index >= rowRegionCache.firstIndex! &&
-          rowRegionCache.trailingRegion!.index <= rowRegionCache.lastIndex!) {
-        dividerPaintManager.addStopsForEntireRow(
-            rowIndex: rowRegionCache.trailingRegion!.index, horizontal: false);
-      }
-      if (!theme.row.fillHeight) {
-        for (RowRegion rowRegion in rowRegionCache.values) {
-          if (!rowRegion.hasData && !rowRegion.trailing) {
-            dividerPaintManager.addStopsForEntireRow(
-                rowIndex: rowRegion.index, horizontal: true);
-          }
-        }
-      }
-    }
-
     CellsLayout<DATA> cellsLayout = CellsLayout(
         daviContext: widget.daviContext,
         layoutSettings: widget.layoutSettings,
@@ -251,15 +138,14 @@ class TableContentState<DATA> extends State<TableContent<DATA>> {
             widget.layoutSettings.getAreaBounds(PinStatus.left),
         unpinnedAreaBounds: widget.layoutSettings.getAreaBounds(PinStatus.none),
         rowsLength: widget.layoutSettings.rowsLength,
-        rowRegionCache: rowRegionCache,
-        dividerPaintManager: dividerPaintManager,
+        rowRegionCache: _viewportState.rowRegions,
+        dividerPaintManager: _viewportState.dividerPaintManager,
         children: children);
 
     return ClipRect(
         child: TableEvents(
             daviContext: widget.daviContext,
-            rowBoundsCache: rowRegionCache,
-            verticalScrollController: widget.verticalScrollController,
+            rowBoundsCache: _viewportState.rowRegions,
             rowTheme: theme.row,
             child: cellsLayout));
   }
