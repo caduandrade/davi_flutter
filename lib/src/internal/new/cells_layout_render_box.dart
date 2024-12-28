@@ -5,7 +5,7 @@ import 'package:davi/src/internal/new/hover_notifier.dart';
 import 'package:davi/src/internal/column_metrics.dart';
 import 'package:davi/src/internal/new/cells_layout_parent_data.dart';
 import 'package:davi/src/internal/new/viewport_state.dart';
-import 'package:davi/src/internal/scroll_offsets.dart';
+import 'package:davi/src/internal/scroll_controllers.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -21,7 +21,7 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
       {required double cellHeight,
       required double rowHeight,
       required double verticalOffset,
-      required HorizontalScrollOffsets horizontalScrollOffsets,
+      required ScrollControllers scrollControllers,
       required List<ColumnMetrics> columnsMetrics,
       required Rect leftPinnedAreaBounds,
       required Rect unpinnedAreaBounds,
@@ -44,7 +44,7 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
         _cellHeight = cellHeight,
         _rowHeight = rowHeight,
         _verticalOffset = verticalOffset,
-        _horizontalScrollOffsets = horizontalScrollOffsets,
+        _scrollControllers = scrollControllers,
         _hoverNotifier = hoverNotifier,
         _fillHeight = fillHeight,
         _columnDividerFillHeight = columnDividerFillHeight,
@@ -63,6 +63,8 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
     _areaBounds[PinStatus.left] = leftPinnedAreaBounds;
     _areaBounds[PinStatus.none] = unpinnedAreaBounds;
     _hoverNotifier.addListener(markNeedsPaint);
+    _scrollControllers.leftPinnedHorizontal.addListener(markNeedsPaint);
+    _scrollControllers.unpinnedHorizontal.addListener(markNeedsPaint);
   }
 
   DaviModel<DATA> _model;
@@ -156,13 +158,15 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
     }
   }
 
-  HorizontalScrollOffsets _horizontalScrollOffsets;
+  ScrollControllers _scrollControllers;
 
-  set horizontalScrollOffsets(HorizontalScrollOffsets value) {
-    if (_horizontalScrollOffsets != value) {
-      _horizontalScrollOffsets = value;
-
-      markNeedsPaint();
+  set scrollControllers(ScrollControllers value) {
+    if (_scrollControllers != value) {
+      _scrollControllers.leftPinnedHorizontal.removeListener(markNeedsPaint);
+      _scrollControllers.unpinnedHorizontal.removeListener(markNeedsPaint);
+      _scrollControllers = value;
+      _scrollControllers.leftPinnedHorizontal.addListener(markNeedsPaint);
+      _scrollControllers.unpinnedHorizontal.addListener(markNeedsPaint);
     }
   }
 
@@ -394,14 +398,11 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
           columnIndex < _columnsMetrics.length;
           columnIndex++) {
         final ColumnMetrics columnMetrics = _columnsMetrics[columnIndex];
-        double scroll = 0;
+        double scroll = _scrollControllers.getOffset(columnMetrics.pinStatus);
         if (columnMetrics.pinStatus == PinStatus.none) {
-          scroll = _horizontalScrollOffsets.unpinned;
           context.canvas.save();
           context.canvas.clipRect(
               _areaBounds[PinStatus.none]!.translate(offset.dx, offset.dy));
-        } else {
-          scroll = _horizontalScrollOffsets.leftPinned;
         }
 
         double left =
@@ -450,7 +451,7 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
           if (!start.edge) {
             startColumn = _columnsMetrics[start.index];
             double scrollOffset =
-                _horizontalScrollOffsets.getOffset(startColumn.pinStatus);
+            _scrollControllers.getOffset(startColumn.pinStatus);
             left += startColumn.offset +
                 startColumn.width +
                 _columnDividerThickness -
@@ -469,7 +470,7 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
           } else {
             ColumnMetrics endColumn = _columnsMetrics[end.index];
             double scrollOffset =
-                _horizontalScrollOffsets.getOffset(endColumn.pinStatus);
+                _scrollControllers.getOffset(endColumn.pinStatus);
             right += endColumn.offset +
                 endColumn.width +
                 _columnDividerThickness -
@@ -563,9 +564,12 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
 
   @override
   void dispose() {
+    _scrollControllers.leftPinnedHorizontal.removeListener(markNeedsPaint);
+    _scrollControllers.unpinnedHorizontal.removeListener(markNeedsPaint);
     _hoverNotifier.removeListener(markNeedsPaint);
     super.dispose();
   }
+  
 }
 
 /// Utility extension to facilitate obtaining parent data.

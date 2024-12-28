@@ -5,7 +5,6 @@ import 'package:davi/src/internal/new/cells_layout_render_box.dart';
 import 'package:davi/src/internal/new/davi_context.dart';
 import 'package:davi/src/internal/new/divider_paint_manager.dart';
 import 'package:davi/src/internal/new/viewport_state.dart';
-import 'package:davi/src/internal/scroll_offsets.dart';
 import 'package:davi/src/internal/table_layout_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -18,7 +17,6 @@ class CellsLayout<DATA> extends MultiChildRenderObjectWidget {
       required this.layoutSettings,
       required this.daviContext,
       required this.verticalOffset,
-      required this.horizontalScrollOffsets,
       required this.leftPinnedAreaBounds,
       required this.unpinnedAreaBounds,
       required this.rowsLength,
@@ -30,7 +28,6 @@ class CellsLayout<DATA> extends MultiChildRenderObjectWidget {
   final TableLayoutSettings layoutSettings;
   final DaviContext<DATA> daviContext;
   final double verticalOffset;
-  final HorizontalScrollOffsets horizontalScrollOffsets;
   final Rect leftPinnedAreaBounds;
   final Rect unpinnedAreaBounds;
   final RowRegionCache rowRegionCache;
@@ -48,7 +45,7 @@ class CellsLayout<DATA> extends MultiChildRenderObjectWidget {
         rowHeight: layoutSettings.themeMetrics.row.height,
         columnsMetrics: layoutSettings.columnsMetrics,
         verticalOffset: verticalOffset,
-        horizontalScrollOffsets: horizontalScrollOffsets,
+        scrollControllers: daviContext.scrollControllers,
         leftPinnedAreaBounds: leftPinnedAreaBounds,
         unpinnedAreaBounds: unpinnedAreaBounds,
         hoverNotifier: daviContext.hoverNotifier,
@@ -82,7 +79,7 @@ class CellsLayout<DATA> extends MultiChildRenderObjectWidget {
       ..rowHeight = layoutSettings.themeMetrics.row.height
       ..columnsMetrics = layoutSettings.columnsMetrics
       ..verticalOffset = verticalOffset
-      ..horizontalScrollOffsets = horizontalScrollOffsets
+      ..scrollControllers = daviContext.scrollControllers
       ..leftPinnedAreaBounds = leftPinnedAreaBounds
       ..unpinnedAreaBounds = unpinnedAreaBounds
       ..hoverNotifier = daviContext.hoverNotifier

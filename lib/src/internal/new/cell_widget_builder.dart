@@ -83,16 +83,8 @@ class CellWidgetBuilderState<DATA> extends State<CellWidgetBuilder<DATA>> {
         DaviColumn<DATA> column = widget.daviContext.model.columnAt(
             cellMapping.columnIndex);
 
-        ScrollController horizontalScrollController;
-        if(column.pinStatus==PinStatus.none) {
-          horizontalScrollController=widget.daviContext.scrollControllers.unpinnedHorizontal;
-        } else {
-          horizontalScrollController =
-              widget.daviContext.scrollControllers.leftPinnedHorizontal;
-        }
-
         return CustomSingleChildWidget(verticalScrollController: widget.daviContext.scrollControllers.vertical,
-            horizontalScrollController: horizontalScrollController,
+            horizontalScrollController: widget.daviContext.scrollControllers.getHorizontalController(column.pinStatus),
             areaBounds: widget.layoutSettings.getAreaBounds(column.pinStatus),
             columnsMetrics: widget.layoutSettings.columnsMetrics,
             cellHeight: widget.layoutSettings.themeMetrics.cell.height,

@@ -1,4 +1,3 @@
-import 'package:davi/src/internal/scroll_offsets.dart';
 import 'package:davi/src/internal/table_layout_child.dart';
 import 'package:davi/src/internal/table_layout_element.dart';
 import 'package:davi/src/internal/table_layout_render_box.dart';
@@ -15,20 +14,17 @@ class TableLayout<DATA> extends MultiChildRenderObjectWidget {
       {Key? key,
       required this.layoutSettings,
       required this.theme,
-      required this.horizontalScrollOffsets,
       required List<TableLayoutChild> children})
       : super(key: key, children: children);
 
   final TableLayoutSettings layoutSettings;
   final DaviThemeData theme;
-  final HorizontalScrollOffsets horizontalScrollOffsets;
 
   @override
   RenderObject createRenderObject(BuildContext context) {
     return TableLayoutRenderBox<DATA>(
         layoutSettings: layoutSettings,
-        theme: theme,
-        horizontalScrollOffsets: horizontalScrollOffsets);
+        theme: theme);
   }
 
   @override
@@ -42,7 +38,6 @@ class TableLayout<DATA> extends MultiChildRenderObjectWidget {
     super.updateRenderObject(context, renderObject);
     renderObject
       ..layoutSettings = layoutSettings
-      ..theme = theme
-      ..horizontalScrollOffsets = horizontalScrollOffsets;
+      ..theme = theme;
   }
 }

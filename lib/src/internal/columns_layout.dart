@@ -1,7 +1,7 @@
 import 'package:davi/src/internal/columns_layout_child.dart';
 import 'package:davi/src/internal/columns_layout_element.dart';
 import 'package:davi/src/internal/columns_layout_render_box.dart';
-import 'package:davi/src/internal/scroll_offsets.dart';
+import 'package:davi/src/internal/scroll_controllers.dart';
 import 'package:davi/src/internal/table_layout_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -12,14 +12,14 @@ class ColumnsLayout extends MultiChildRenderObjectWidget {
   const ColumnsLayout(
       {Key? key,
       required this.layoutSettings,
-      required this.horizontalScrollOffsets,
+      required this.scrollControllers,
       required this.columnDividerThickness,
       required this.columnDividerColor,
       required List<ColumnsLayoutChild> children})
       : super(key: key, children: children);
 
   final TableLayoutSettings layoutSettings;
-  final HorizontalScrollOffsets horizontalScrollOffsets;
+  final ScrollControllers scrollControllers;
   final double columnDividerThickness;
   final Color? columnDividerColor;
 
@@ -27,7 +27,7 @@ class ColumnsLayout extends MultiChildRenderObjectWidget {
   RenderObject createRenderObject(BuildContext context) {
     return ColumnsLayoutRenderBox(
         layoutSettings: layoutSettings,
-        horizontalScrollOffsets: horizontalScrollOffsets,
+        scrollControllers: scrollControllers,
         columnDividerColor: columnDividerColor,
         columnDividerThickness: columnDividerThickness);
   }
@@ -43,7 +43,7 @@ class ColumnsLayout extends MultiChildRenderObjectWidget {
     super.updateRenderObject(context, renderObject);
     renderObject
       ..layoutSettings = layoutSettings
-      ..horizontalScrollOffsets = horizontalScrollOffsets
+      ..scrollControllers = scrollControllers
       ..columnDividerColor = columnDividerColor
       ..columnDividerThickness = columnDividerThickness;
   }

@@ -7,7 +7,6 @@ import 'package:davi/src/internal/new/davi_context.dart';
 import 'package:davi/src/internal/new/cell_span_cache.dart';
 import 'package:davi/src/internal/new/table_events.dart';
 import 'package:davi/src/internal/new/viewport_state.dart';
-import 'package:davi/src/internal/scroll_offsets.dart';
 import 'package:davi/src/internal/table_layout_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -19,7 +18,6 @@ class TableContent<DATA> extends StatefulWidget {
       {Key? key,
       required this.layoutSettings,
       required this.daviContext,
-      required this.horizontalScrollOffsets,
       required this.maxHeight,
       required this.maxWidth,
       required this.rowFillHeight})
@@ -27,7 +25,6 @@ class TableContent<DATA> extends StatefulWidget {
 
   final TableLayoutSettings layoutSettings;
   final DaviContext<DATA> daviContext;
-  final HorizontalScrollOffsets horizontalScrollOffsets;
   final double maxWidth;
   final double maxHeight;
   final bool rowFillHeight;
@@ -41,11 +38,6 @@ class TableContentState<DATA> extends State<TableContent<DATA>> {
   final PainterCache<DATA> _painterCache = PainterCache();
   final CellSpanCache _cellSpanCache = CellSpanCache();
   final ViewportState<DATA> _viewportState = ViewportState();
-  /*
-  final ViewportState<DATA> _viewportState = ViewportState();
-  final RowRegionCache<DATA> _rowRegionCache = RowRegionCache();
-  final DividerPaintManager _dividerPaintManager = DividerPaintManager();
-  */
 
   @override
   void initState() {
@@ -133,7 +125,6 @@ class TableContentState<DATA> extends State<TableContent<DATA>> {
         daviContext: widget.daviContext,
         layoutSettings: widget.layoutSettings,
         verticalOffset: verticalOffset,
-        horizontalScrollOffsets: widget.horizontalScrollOffsets,
         leftPinnedAreaBounds:
             widget.layoutSettings.getAreaBounds(PinStatus.left),
         unpinnedAreaBounds: widget.layoutSettings.getAreaBounds(PinStatus.none),

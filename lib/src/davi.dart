@@ -229,7 +229,6 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
           child: ClipRect(
               child: TableLayoutBuilder(
                   daviContext: daviContext,
-                  scrollControllers: _scrollControllers,
                   onDragScroll: _onDragScroll)),
         ));
   }

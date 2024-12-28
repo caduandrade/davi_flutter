@@ -1,6 +1,6 @@
 import 'package:davi/src/internal/column_metrics.dart';
 import 'package:davi/src/internal/columns_layout_parent_data.dart';
-import 'package:davi/src/internal/scroll_offsets.dart';
+import 'package:davi/src/internal/scroll_controllers.dart';
 import 'package:davi/src/internal/table_layout_settings.dart';
 import 'package:davi/src/pin_status.dart';
 import 'package:flutter/rendering.dart';
@@ -13,13 +13,16 @@ class ColumnsLayoutRenderBox extends RenderBox
         RenderBoxContainerDefaultsMixin<RenderBox, ColumnsLayoutParentData> {
   ColumnsLayoutRenderBox(
       {required TableLayoutSettings layoutSettings,
-      required HorizontalScrollOffsets horizontalScrollOffsets,
       required Color? columnDividerColor,
-      required double columnDividerThickness})
+      required double columnDividerThickness,
+      required ScrollControllers scrollControllers})
       : _layoutSettings = layoutSettings,
-        _horizontalScrollOffsets = horizontalScrollOffsets,
         _columnDividerThickness = columnDividerThickness,
-        _columnDividerColor = columnDividerColor;
+        _columnDividerColor = columnDividerColor,
+  _scrollControllers=scrollControllers{
+    _scrollControllers.leftPinnedHorizontal.addListener(markNeedsPaint);
+    _scrollControllers.unpinnedHorizontal.addListener(markNeedsPaint);
+  }
 
   double _columnDividerThickness;
 
@@ -39,12 +42,15 @@ class ColumnsLayoutRenderBox extends RenderBox
     }
   }
 
-  HorizontalScrollOffsets _horizontalScrollOffsets;
+  ScrollControllers _scrollControllers;
 
-  set horizontalScrollOffsets(HorizontalScrollOffsets value) {
-    if (_horizontalScrollOffsets != value) {
-      _horizontalScrollOffsets = value;
-      markNeedsLayout();
+  set scrollControllers(ScrollControllers value) {
+    if (_scrollControllers != value) {
+      _scrollControllers.leftPinnedHorizontal.removeListener(markNeedsPaint);
+      _scrollControllers.unpinnedHorizontal.removeListener(markNeedsPaint);
+      _scrollControllers = value;
+      _scrollControllers.leftPinnedHorizontal.addListener(markNeedsPaint);
+      _scrollControllers.unpinnedHorizontal.addListener(markNeedsPaint);
     }
   }
 
@@ -78,7 +84,7 @@ class ColumnsLayoutRenderBox extends RenderBox
       final ColumnMetrics columnMetrics =
           _layoutSettings.columnsMetrics[columnIndex];
       final PinStatus pinStatus = columnMetrics.pinStatus;
-      final double offset = _horizontalScrollOffsets.getOffset(pinStatus);
+      final double offset = _scrollControllers.getOffset(pinStatus);
       renderBox.layout(
           BoxConstraints.tightFor(
               width: columnMetrics.width, height: constraints.maxHeight),
@@ -118,8 +124,7 @@ class ColumnsLayoutRenderBox extends RenderBox
             _layoutSettings.columnsMetrics[columnIndex];
         final PinStatus pinStatus = columnMetrics.pinStatus;
         final Rect areaBounds = _layoutSettings.getAreaBounds(pinStatus);
-        final double scrollOffset =
-            _horizontalScrollOffsets.getOffset(pinStatus);
+        final double scrollOffset =_scrollControllers.getOffset(pinStatus);
         double left = offset.dx +
             columnMetrics.offset +
             columnMetrics.width -
@@ -183,6 +188,13 @@ class ColumnsLayoutRenderBox extends RenderBox
       child = childParentData.previousSibling;
     }
     return false;
+  }
+
+  @override
+  void dispose() {
+    _scrollControllers.leftPinnedHorizontal.removeListener(markNeedsPaint);
+    _scrollControllers.unpinnedHorizontal.removeListener(markNeedsPaint);
+    super.dispose();
   }
 }
 

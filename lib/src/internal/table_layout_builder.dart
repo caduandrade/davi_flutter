@@ -6,8 +6,6 @@ import 'package:davi/src/internal/layout_child_id.dart';
 import 'package:davi/src/internal/new/davi_context.dart';
 import 'package:davi/src/internal/new/summary_widget.dart';
 import 'package:davi/src/internal/new/table_content.dart';
-import 'package:davi/src/internal/scroll_controllers.dart';
-import 'package:davi/src/internal/scroll_offsets.dart';
 import 'package:davi/src/internal/table_edge.dart';
 import 'package:davi/src/internal/table_layout.dart';
 import 'package:davi/src/internal/table_layout_child.dart';
@@ -21,12 +19,10 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
   const TableLayoutBuilder(
       {Key? key,
       required this.daviContext,
-      required this.scrollControllers,
       required this.onDragScroll})
       : super(key: key);
 
   final DaviContext<DATA> daviContext;
-  final ScrollControllers scrollControllers;
   final OnDragScroll onDragScroll;
 
   @override
@@ -36,9 +32,6 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
 
   Widget _builder(BuildContext context, BoxConstraints constraints) {
     final DaviThemeData theme = DaviTheme.of(context);
-
-    final HorizontalScrollOffsets horizontalScrollOffsets =
-        HorizontalScrollOffsets(scrollControllers);
 
     TableLayoutSettings layoutSettings = TableLayoutSettings(
         constraints: constraints,
@@ -71,7 +64,7 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
           child: TableScrollbar(
               axis: Axis.vertical,
               contentSize: layoutSettings.contentHeight,
-              scrollController: scrollControllers.vertical,
+              scrollController: daviContext.scrollControllers.vertical,
               color: theme.scrollbar.verticalColor,
               borderColor: theme.scrollbar.verticalBorderColor,
               onDragScroll: onDragScroll)));
@@ -84,8 +77,7 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
               daviContext: daviContext,
               layoutSettings: layoutSettings,
               resizable: daviContext.columnWidthBehavior ==
-                  ColumnWidthBehavior.scrollable,
-              horizontalScrollOffsets: horizontalScrollOffsets)));
+                  ColumnWidthBehavior.scrollable)));
       if (layoutSettings.hasVerticalScrollbar) {
         children.add(TableLayoutChild(
             id: LayoutChildId.headerEdge,
@@ -96,7 +88,7 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
     if (layoutSettings.hasHorizontalScrollbar) {
       Widget leftPinnedHorizontalScrollbar = TableScrollbar(
           axis: Axis.horizontal,
-          scrollController: scrollControllers.leftPinnedHorizontal,
+          scrollController: daviContext.scrollControllers.leftPinnedHorizontal,
           color: theme.scrollbar.pinnedHorizontalColor,
           borderColor: theme.scrollbar.pinnedHorizontalBorderColor,
           contentSize: layoutSettings.leftPinnedContentWidth,
@@ -108,7 +100,7 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
           id: LayoutChildId.unpinnedHorizontalScrollbar,
           child: TableScrollbar(
               axis: Axis.horizontal,
-              scrollController: scrollControllers.unpinnedHorizontal,
+              scrollController: daviContext.scrollControllers.unpinnedHorizontal,
               color: theme.scrollbar.unpinnedHorizontalColor,
               borderColor: theme.scrollbar.unpinnedHorizontalBorderColor,
               contentSize: layoutSettings.unpinnedContentWidth,
@@ -128,7 +120,6 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
         return TableContent(
             daviContext: daviContext,
             layoutSettings: layoutSettings,
-            horizontalScrollOffsets: horizontalScrollOffsets,
         rowFillHeight: theme.row.fillHeight,
         maxWidth: constraints.maxWidth,
         maxHeight: constraints.maxHeight);
@@ -140,8 +131,7 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
           id: LayoutChildId.summary,
           child: SummaryWidget(
               daviContext: daviContext,
-              layoutSettings: layoutSettings,
-              horizontalScrollOffsets: horizontalScrollOffsets)));
+              layoutSettings: layoutSettings)));
       if (layoutSettings.hasVerticalScrollbar) {
         children.add(TableLayoutChild(
             id: LayoutChildId.summaryEdge,
@@ -152,7 +142,6 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
     return TableLayout<DATA>(
         layoutSettings: layoutSettings,
         theme: theme,
-        horizontalScrollOffsets: horizontalScrollOffsets,
         children: children);
   }
 }

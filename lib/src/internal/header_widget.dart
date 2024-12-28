@@ -3,7 +3,6 @@ import 'package:davi/src/internal/columns_layout.dart';
 import 'package:davi/src/internal/columns_layout_child.dart';
 import 'package:davi/src/internal/header_cell.dart';
 import 'package:davi/src/internal/new/davi_context.dart';
-import 'package:davi/src/internal/scroll_offsets.dart';
 import 'package:davi/src/internal/table_layout_settings.dart';
 import 'package:davi/src/theme/theme.dart';
 import 'package:davi/src/theme/theme_data.dart';
@@ -16,14 +15,12 @@ class HeaderWidget<DATA> extends StatelessWidget {
       {Key? key,
       required this.daviContext,
       required this.layoutSettings,
-      required this.resizable,
-      required this.horizontalScrollOffsets})
+      required this.resizable})
       : super(key: key);
 
   final DaviContext<DATA> daviContext;
   final TableLayoutSettings layoutSettings;
   final bool resizable;
-  final HorizontalScrollOffsets horizontalScrollOffsets;
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +47,7 @@ class HeaderWidget<DATA> extends StatelessWidget {
 
     Widget header = ColumnsLayout(
         layoutSettings: layoutSettings,
-        horizontalScrollOffsets: horizontalScrollOffsets,
+        scrollControllers: daviContext.scrollControllers,
         columnDividerThickness: theme.columnDividerThickness,
         columnDividerColor: theme.header.columnDividerColor,
         children: children);
