@@ -83,13 +83,11 @@ class ColumnsLayoutRenderBox extends RenderBox
       final int columnIndex = parentData.index!;
       final ColumnMetrics columnMetrics =
           _layoutSettings.columnsMetrics[columnIndex];
-      final PinStatus pinStatus = columnMetrics.pinStatus;
-      final double offset = _scrollControllers.getOffset(pinStatus);
       renderBox.layout(
           BoxConstraints.tightFor(
               width: columnMetrics.width, height: constraints.maxHeight),
           parentUsesSize: true);
-      renderBox._parentData().offset = Offset(columnMetrics.offset - offset, 0);
+      renderBox._parentData().offset = Offset.zero;
     });
 
     size = computeDryLayout(constraints);
@@ -104,10 +102,11 @@ class ColumnsLayoutRenderBox extends RenderBox
       final ColumnMetrics columnMetrics =
           _layoutSettings.columnsMetrics[columnIndex];
       final PinStatus pinStatus = columnMetrics.pinStatus;
+      final double offsetX = _scrollControllers.getOffset(pinStatus);
       final Rect bounds = _layoutSettings.getAreaBounds(pinStatus);
       context.canvas.save();
       context.canvas.clipRect(bounds.translate(offset.dx, offset.dy));
-      context.paintChild(child, childParentData.offset + offset);
+      context.paintChild(child, Offset(columnMetrics.offset - offsetX + offset.dx, offset.dy));
       context.canvas.restore();
       child = childParentData.nextSibling;
     }
@@ -164,28 +163,25 @@ class ColumnsLayoutRenderBox extends RenderBox
 
   @override
   bool hitTestChildren(BoxHitTestResult result, {required Offset position}) {
-    RenderBox? child = lastChild;
+    RenderBox? child = firstChild;
     while (child != null) {
       final ColumnsLayoutParentData childParentData = child._parentData();
       final int columnIndex = childParentData.index!;
       final ColumnMetrics columnMetrics =
           _layoutSettings.columnsMetrics[columnIndex];
       final PinStatus pinStatus = columnMetrics.pinStatus;
-      final Rect bounds = _layoutSettings.getAreaBounds(pinStatus);
-      if (bounds.contains(position)) {
+      final Offset renderedPosition=Offset(columnMetrics.offset - _scrollControllers.getOffset(pinStatus), 0);
         final bool isHit = result.addWithPaintOffset(
-          offset: childParentData.offset,
+          offset: renderedPosition,
           position: position,
           hitTest: (BoxHitTestResult result, Offset transformed) {
-            assert(transformed == position - childParentData.offset);
             return child!.hitTest(result, position: transformed);
           },
         );
         if (isHit) {
           return true;
         }
-      }
-      child = childParentData.previousSibling;
+      child = childParentData.nextSibling;
     }
     return false;
   }
