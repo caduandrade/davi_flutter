@@ -192,8 +192,8 @@ class _HomePageState extends State<HomePage> {
           _model,
           // onHover: (index) => print('hover: $index'),
           onRowTap: _onRowTap,
-          //  onLastVisibleRow: (index)=>print('last visible row: $index ${DateTime.now()}'),
-          //  onTrailingWidget: (visible)=>print('trailing widget: $visible ${DateTime.now()}'),
+            onLastVisibleRow: (index)=>print('last visible row: $index ${DateTime.now()}'),
+            onTrailingWidget: (visible)=>print('trailing widget: $visible ${DateTime.now()}'),
            trailingWidget: MouseRegion(onHover: (h)=>print('hover on trailing ${DateTime.now()}'), child: const Center(child: Text('trailing widget')))
         ));
 
@@ -203,6 +203,7 @@ class _HomePageState extends State<HomePage> {
       Expanded(child: theme)
     ]))]));
   }
+
 
   void _onHover(int? index) {
     print('onHover: $index');

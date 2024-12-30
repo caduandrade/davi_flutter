@@ -272,13 +272,6 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
   }
 
   @override
-  void markNeedsLayout() {
-    //TODO remove
-    // print('markNeedsLayout ${DateTime.now()} - ${_rowRegionCache.values.length}');
-    super.markNeedsLayout();
-  }
-
-  @override
   void setupParentData(RenderBox child) {
     if (child.parentData is! CellsLayoutParentData) {
       child.parentData = CellsLayoutParentData();

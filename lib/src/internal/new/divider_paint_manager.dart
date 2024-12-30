@@ -37,9 +37,6 @@ class DividerPaintManager {
     _verticalVertices.clear();
     _firstRowIndex = firstRowIndex;
 
-
-    //for (int ri = rowIndex; ri < rowIndex + rowSpan - 1; ri++) {
-
     for (int row = firstRowIndex; row <= lastRowIndex; row++) {
       _horizontalVertices[row] =
           _DividerVertices(index: row, indices: columnIndices);

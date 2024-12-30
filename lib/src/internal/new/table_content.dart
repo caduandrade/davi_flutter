@@ -97,10 +97,8 @@ class TableContentState<DATA> extends State<TableContent<DATA>> {
     debugPrint('$stackTrace');
     }
 
-    //TODO future?
-   // widget.daviContext.onTrailingWidget(_rowRegionCache.trailingRegion!=null);
-   // widget.daviContext.onLastVisibleRow(_rowRegionCache.lastDataIndex);
-
+    widget.daviContext.onTrailingWidget(_viewportState.rowRegions.trailingRegion!=null);
+    widget.daviContext.onLastVisibleRow(_viewportState.lastDataRow);
   }
 
   @override
@@ -120,13 +118,7 @@ class TableContentState<DATA> extends State<TableContent<DATA>> {
 
       List<CellsLayoutChild> children = [];
 
-      //TODO se o build nao roda novamente, como vai construir o trailing
-      //TODO dinamicamente?
-      //TODO terá que adicionar entao sempre esse CellsLayoutChild.trailing
-      //TODO e ele tb ficara offstage, quando for notificado pra aparecer,
-      //TODO ele internamente tb vai se reconstruir como outras celulas
       if (widget.daviContext.trailingWidget != null) {
-        //TODO keep always built but markneedrepaint when visible
         children.add(CellsLayoutChild.trailing(
             child: widget.daviContext.trailingWidget!));
       }
