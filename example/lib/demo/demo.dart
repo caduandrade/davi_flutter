@@ -64,6 +64,7 @@ class _HomePageState extends State<HomePage> {
     }
     return DaviModel(
         rows: characters,
+
         columns: _buildColumns(),
         multiSortEnabled: _multipleSort);
   }
@@ -143,6 +144,7 @@ class _HomePageState extends State<HomePage> {
 
     Widget table = DaviTheme(
         child: Davi<Character>(_model!,
+            //collisionBehavior: CellCollisionBehavior.throwException,
             columnWidthBehavior: _columnsFit?ColumnWidthBehavior.fit:ColumnWidthBehavior.scrollable,
             rowColor: _rowColor
                 ? (data, rowIndex, hovered) =>

@@ -4,10 +4,10 @@ import 'package:davi/src/internal/new/painter_cache.dart';
 import 'package:davi/src/internal/new/cells_layout.dart';
 import 'package:davi/src/internal/new/cells_layout_child.dart';
 import 'package:davi/src/internal/new/davi_context.dart';
-import 'package:davi/src/internal/new/cell_span_cache.dart';
 import 'package:davi/src/internal/new/table_events.dart';
 import 'package:davi/src/internal/new/viewport_state.dart';
 import 'package:davi/src/internal/table_layout_settings.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
@@ -36,8 +36,8 @@ class TableContent<DATA> extends StatefulWidget {
 @internal
 class TableContentState<DATA> extends State<TableContent<DATA>> {
   final PainterCache<DATA> _painterCache = PainterCache();
-  final CellSpanCache _cellSpanCache = CellSpanCache();
   final ViewportState<DATA> _viewportState = ViewportState();
+  Object? _error;
 
   @override
   void initState() {
@@ -73,16 +73,29 @@ class TableContentState<DATA> extends State<TableContent<DATA>> {
     final double verticalOffset = widget.daviContext.scrollControllers.vertical.hasClients
         ? widget.daviContext.scrollControllers.vertical.offset
         : 0;
-    _viewportState.reset(verticalOffset: verticalOffset,
-        columnsMetrics: widget.layoutSettings.columnsMetrics,
-        rowHeight: widget.layoutSettings.themeMetrics.row.height,
-        cellHeight: widget.layoutSettings.themeMetrics.cell.height,
-        maxHeight: widget.maxHeight,
-        maxWidth: widget.maxWidth,
-        model: widget.daviContext.model,
-        hasTrailing: widget.daviContext.trailingWidget!=null,
-        rowFillHeight: widget.rowFillHeight);
-    _cellSpanCache.clear();
+
+    if(_error!=null) {
+      setState(() {
+        _error=null;
+      });
+    }
+    try {
+      _viewportState.reset(verticalOffset: verticalOffset,
+          columnsMetrics: widget.layoutSettings.columnsMetrics,
+          rowHeight: widget.layoutSettings.themeMetrics.row.height,
+          cellHeight: widget.layoutSettings.themeMetrics.cell.height,
+          maxHeight: widget.maxHeight,
+          maxWidth: widget.maxWidth,
+          model: widget.daviContext.model,
+          hasTrailing: widget.daviContext.trailingWidget != null,
+          rowFillHeight: widget.rowFillHeight);
+    }catch (e, stackTrace) {
+    setState(() {
+      _error=e;
+    });
+    debugPrint('$e');
+    debugPrint('$stackTrace');
+    }
 
     //TODO future?
    // widget.daviContext.onTrailingWidget(_rowRegionCache.trailingRegion!=null);
@@ -95,21 +108,28 @@ class TableContentState<DATA> extends State<TableContent<DATA>> {
     //TODO null hover on resizing
     DaviThemeData theme = DaviTheme.of(context);
 
-    final double verticalOffset = widget.daviContext.scrollControllers.vertical.hasClients
-        ? widget.daviContext.scrollControllers.vertical.offset
-        : 0;
+    late Widget cells;
 
-    List<CellsLayoutChild> children = [];
+    if(kDebugMode && _error!=null) {
+      cells=ErrorWidget(_error!);
+    } else {
+      final double verticalOffset = widget.daviContext.scrollControllers
+          .vertical.hasClients
+          ? widget.daviContext.scrollControllers.vertical.offset
+          : 0;
 
-    //TODO se o build nao roda novamente, como vai construir o trailing
-    //TODO dinamicamente?
-    //TODO terá que adicionar entao sempre esse CellsLayoutChild.trailing
-    //TODO e ele tb ficara offstage, quando for notificado pra aparecer,
-    //TODO ele internamente tb vai se reconstruir como outras celulas
-    if (widget.daviContext.trailingWidget != null ) {
-      //TODO keep always built but markneedrepaint when visible
-      children.add(CellsLayoutChild.trailing(    child: widget.daviContext.trailingWidget!));
-    }
+      List<CellsLayoutChild> children = [];
+
+      //TODO se o build nao roda novamente, como vai construir o trailing
+      //TODO dinamicamente?
+      //TODO terá que adicionar entao sempre esse CellsLayoutChild.trailing
+      //TODO e ele tb ficara offstage, quando for notificado pra aparecer,
+      //TODO ele internamente tb vai se reconstruir como outras celulas
+      if (widget.daviContext.trailingWidget != null) {
+        //TODO keep always built but markneedrepaint when visible
+        children.add(CellsLayoutChild.trailing(
+            child: widget.daviContext.trailingWidget!));
+      }
       for (int cellIndex = 0; cellIndex <
           _viewportState.maxCellCount; cellIndex++) {
         children.add(CellsLayoutChild.cell(
@@ -117,27 +137,28 @@ class TableContentState<DATA> extends State<TableContent<DATA>> {
             child: CellWidgetBuilder(cellIndex: cellIndex,
                 daviContext: widget.daviContext,
                 viewportState: _viewportState,
-                cellSpanCache: _cellSpanCache,
                 painterCache: _painterCache,
                 layoutSettings: widget.layoutSettings)));
       }
-    CellsLayout<DATA> cellsLayout = CellsLayout(
-        daviContext: widget.daviContext,
-        layoutSettings: widget.layoutSettings,
-        verticalOffset: verticalOffset,
-        leftPinnedAreaBounds:
-            widget.layoutSettings.getAreaBounds(PinStatus.left),
-        unpinnedAreaBounds: widget.layoutSettings.getAreaBounds(PinStatus.none),
-        rowsLength: widget.layoutSettings.rowsLength,
-        rowRegionCache: _viewportState.rowRegions,
-        dividerPaintManager: _viewportState.dividerPaintManager,
-        children: children);
+      cells = CellsLayout(
+          daviContext: widget.daviContext,
+          layoutSettings: widget.layoutSettings,
+          verticalOffset: verticalOffset,
+          leftPinnedAreaBounds:
+          widget.layoutSettings.getAreaBounds(PinStatus.left),
+          unpinnedAreaBounds: widget.layoutSettings.getAreaBounds(
+              PinStatus.none),
+          rowsLength: widget.layoutSettings.rowsLength,
+          rowRegionCache: _viewportState.rowRegions,
+          dividerPaintManager: _viewportState.dividerPaintManager,
+          children: children);
+    }
 
     return ClipRect(
         child: TableEvents(
             daviContext: widget.daviContext,
-            rowBoundsCache: _viewportState.rowRegions,
+            rowRegions: _viewportState.rowRegions,
             rowTheme: theme.row,
-            child: cellsLayout));
+            child: cells));
   }
 }

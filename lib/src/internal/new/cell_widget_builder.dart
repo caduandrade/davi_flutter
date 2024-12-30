@@ -1,7 +1,6 @@
 import 'package:davi/davi.dart';
 import 'package:davi/src/internal/cell_widget.dart';
 import 'package:davi/src/internal/column_metrics.dart';
-import 'package:davi/src/internal/new/cell_span_cache.dart';
 import 'package:davi/src/internal/new/davi_context.dart';
 import 'package:davi/src/internal/new/painter_cache.dart';
 import 'package:davi/src/internal/new/viewport_state.dart';
@@ -17,7 +16,6 @@ class CellWidgetBuilder<DATA> extends StatefulWidget{
   const CellWidgetBuilder({Key? key, required this.cellIndex,
     required this.daviContext,
     required this.painterCache,
-    required this.cellSpanCache,
   required this.viewportState,
   required this.layoutSettings}) : super(key: key);
 
@@ -25,7 +23,6 @@ class CellWidgetBuilder<DATA> extends StatefulWidget{
   final DaviContext<DATA> daviContext;
   final ViewportState<DATA> viewportState;
   final PainterCache<DATA> painterCache;
-  final CellSpanCache cellSpanCache;
   final TableLayoutSettings layoutSettings;
 
 
@@ -98,7 +95,7 @@ class CellWidgetBuilderState<DATA> extends State<CellWidgetBuilder<DATA>> {
                 column: column,
                 daviContext: widget.daviContext,
                 painterCache: widget.painterCache,
-                cellSpanCache: widget.cellSpanCache));
+                collisionDetector: widget.viewportState.collisionDetector));
       }
     }
     return Container();

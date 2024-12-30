@@ -15,14 +15,14 @@ class TableEvents<DATA> extends StatelessWidget {
       {Key? key,
       required this.daviContext,
       required this.child,
-      required this.rowBoundsCache,
+      required this.rowRegions,
       required this.rowTheme})
       : super(key: key);
 
   final Widget child;
   final DaviContext<DATA> daviContext;
 
-  final RowRegionCache rowBoundsCache;
+  final RowRegionCache rowRegions;
 
 
   final RowThemeData rowTheme;
@@ -101,7 +101,7 @@ class TableEvents<DATA> extends StatelessWidget {
     if (daviContext.model.isRowsNotEmpty) {
       int? rowIndex;
       if (position != null) {
-        rowIndex = rowBoundsCache.boundsIndex(position);
+        rowIndex = rowRegions.boundsIndex(position);
       }
       DATA? data;
       if (rowIndex != null && rowIndex < daviContext.model.rowsLength) {

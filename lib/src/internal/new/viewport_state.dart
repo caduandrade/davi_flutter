@@ -2,6 +2,7 @@ import 'dart:collection';
 import 'dart:math' as math;
 import 'package:davi/src/column.dart';
 import 'package:davi/src/internal/column_metrics.dart';
+import 'package:davi/src/internal/new/collision_detector.dart';
 import 'package:davi/src/internal/new/divider_paint_manager.dart';
 import 'package:davi/src/max_span_behavior.dart';
 import 'package:davi/src/model.dart';
@@ -101,6 +102,7 @@ class ViewportState<DATA> extends ChangeNotifier {
   final Map<int, CellMapping> _cellMappings = {};
   final RowRegionCache rowRegions = RowRegionCache();
   final DividerPaintManager dividerPaintManager = DividerPaintManager();
+  final CollisionDetector collisionDetector = CollisionDetector();
 
   int _firstDataRow = -1;
   int get firstDataRow => _firstDataRow;
@@ -147,6 +149,7 @@ class ViewportState<DATA> extends ChangeNotifier {
     _verticalOffset = verticalOffset;
     _cellMappings.clear();
     rowRegions._clear();
+    collisionDetector.clear();
 
     _lastDataRow = -1;
 
@@ -222,8 +225,7 @@ class ViewportState<DATA> extends ChangeNotifier {
           int rowSpan = math.max(column.rowSpan(data, rowIndex), 1);
           if (rowSpan > model.maxRowSpan) {
             if (model.maxSpanBehavior == MaxSpanBehavior.throwException) {
-              throw StateError(
-                  'rowSpan exceeds the maximum allowed of ${model.maxRowSpan} rows');
+              throw StateError('rowSpan exceeds the maximum allowed of ${model.maxRowSpan} rows');
             } else if (model.maxSpanBehavior ==
                 MaxSpanBehavior.truncateWithWarning) {
               rowSpan = model.maxRowSpan;
@@ -233,15 +235,13 @@ class ViewportState<DATA> extends ChangeNotifier {
           }
 
           if (rowIndex + rowSpan > model.rowsLength) {
-            throw StateError(
-                'The row span exceeds the table\'s row limit at row $rowIndex and column $columnIndex.');
+            throw StateError('The row span exceeds the table\'s row limit at row $rowIndex and column $columnIndex.');
           }
 
           int columnSpan = math.max(column.columnSpan(data, rowIndex), 1);
           if (columnSpan > model.maxColumnSpan) {
             if (model.maxSpanBehavior == MaxSpanBehavior.throwException) {
-              throw StateError(
-                  'columnSpan exceeds the maximum allowed of ${model.maxColumnSpan} columns');
+              throw StateError('columnSpan exceeds the maximum allowed of ${model.maxColumnSpan} columns');
             } else if (model.maxSpanBehavior ==
                 MaxSpanBehavior.truncateWithWarning) {
               columnSpan = model.maxColumnSpan;
@@ -251,8 +251,7 @@ class ViewportState<DATA> extends ChangeNotifier {
           }
 
           if (columnIndex + columnSpan > columnsMetrics.length) {
-            throw StateError(
-                'The column span exceeds the table\'s column limit at row $rowIndex, starting from column $columnIndex.');
+            throw StateError('The column span exceeds the table\'s column limit at row $rowIndex, starting from column $columnIndex.');
           }
 
           // Check all columns spanned by the columnSpan
@@ -261,8 +260,7 @@ class ViewportState<DATA> extends ChangeNotifier {
                 columnsMetrics[columnIndex].pinStatus) {
               throw StateError(
                 "Invalid columnSpan: Columns spanned from index $columnIndex to ${columnIndex + columnSpan - 1} "
-                "at rowIndex $rowIndex, have mixed pin status.",
-              );
+                "at rowIndex $rowIndex, have mixed pin status.");
             }
           }
 
