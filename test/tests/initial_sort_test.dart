@@ -162,7 +162,7 @@ void oneColumn(
     required bool alwaysSorted,
     required bool isColumnSortable,
     required bool expectSortedModel}) {
-  DaviModel model = DaviModel(
+  DaviModel<int> model = DaviModel(
       rows: _rows,
       columns: [
         DaviColumn<int>(id: 'id', name: 'name', sortable: isColumnSortable)
@@ -191,7 +191,7 @@ void twoColumns(
     required bool isColumn1Sortable,
     required bool isColumn2Sortable,
     required int? expectSortedColumn}) {
-  DaviModel model = DaviModel(
+  DaviModel<int> model = DaviModel(
       rows: _rows,
       columns: [
         DaviColumn<int>(id: 'id1', name: 'name1', sortable: isColumn1Sortable),

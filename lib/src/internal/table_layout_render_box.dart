@@ -2,7 +2,6 @@ import 'dart:math' as math;
 
 import 'package:davi/src/internal/layout_child_id.dart';
 import 'package:davi/src/internal/layout_utils.dart';
-import 'package:davi/src/internal/scroll_offsets.dart';
 import 'package:davi/src/internal/table_layout_parent_data.dart';
 import 'package:davi/src/internal/table_layout_settings.dart';
 import 'package:davi/src/theme/theme_data.dart';
@@ -16,11 +15,9 @@ class TableLayoutRenderBox<DATA> extends RenderBox
         RenderBoxContainerDefaultsMixin<RenderBox, TableLayoutParentData> {
   TableLayoutRenderBox(
       {required TableLayoutSettings layoutSettings,
-      required DaviThemeData theme,
-      required HorizontalScrollOffsets horizontalScrollOffsets})
+      required DaviThemeData theme})
       : _layoutSettings = layoutSettings,
-        _theme = theme,
-        _horizontalScrollOffsets = horizontalScrollOffsets;
+        _theme = theme;
 
   RenderBox? _header;
   RenderBox? _rows;
@@ -31,15 +28,6 @@ class TableLayoutRenderBox<DATA> extends RenderBox
   RenderBox? _scrollbarEdge;
   RenderBox? _summaryEdge;
   RenderBox? _summary;
-
-  HorizontalScrollOffsets _horizontalScrollOffsets;
-
-  set horizontalScrollOffsets(HorizontalScrollOffsets value) {
-    if (_horizontalScrollOffsets != value) {
-      _horizontalScrollOffsets = value;
-      markNeedsPaint();
-    }
-  }
 
   DaviThemeData _theme;
 

@@ -2,7 +2,7 @@ import 'dart:math' as math;
 
 import 'package:davi/davi.dart';
 import 'package:davi/src/internal/new/davi_context.dart';
-import 'package:davi/src/internal/new/row_region.dart';
+import 'package:davi/src/internal/new/viewport_state.dart';
 import 'package:davi/src/internal/theme_metrics/theme_metrics.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -15,17 +15,15 @@ class TableEvents<DATA> extends StatelessWidget {
       {Key? key,
       required this.daviContext,
       required this.child,
-      required this.verticalScrollController,
-      required this.rowBoundsCache,
+      required this.rowRegions,
       required this.rowTheme})
       : super(key: key);
 
   final Widget child;
   final DaviContext<DATA> daviContext;
 
-  final RowRegionCache rowBoundsCache;
+  final RowRegionCache rowRegions;
 
-  final ScrollController verticalScrollController;
 
   final RowThemeData rowTheme;
 
@@ -68,6 +66,9 @@ class TableEvents<DATA> extends StatelessWidget {
     }
     return widget;
   }
+  
+  ScrollController get verticalScroll => daviContext.scrollControllers.vertical;
+  
 
   void _onEnter(PointerEnterEvent event) {
     _updateHover(event.localPosition);
@@ -83,16 +84,16 @@ class TableEvents<DATA> extends StatelessWidget {
 
   void _onPointerSignal(PointerSignalEvent event) {
     if (event is PointerScrollEvent &&
-        verticalScrollController.hasClients &&
+        verticalScroll.hasClients &&
         event.scrollDelta.dy != 0) {
-      verticalScrollController.position.pointerScroll(event.scrollDelta.dy);
+      verticalScroll.position.pointerScroll(event.scrollDelta.dy);
     }
   }
 
   void _onPointerPanZoomUpdate(PointerPanZoomUpdateEvent event) {
     // trackpad on macOS
-    if (verticalScrollController.hasClients && event.panDelta.dy != 0) {
-      verticalScrollController.position.pointerScroll(-event.panDelta.dy);
+    if (verticalScroll.hasClients && event.panDelta.dy != 0) {
+      verticalScroll.position.pointerScroll(-event.panDelta.dy);
     }
   }
 
@@ -100,7 +101,7 @@ class TableEvents<DATA> extends StatelessWidget {
     if (daviContext.model.isRowsNotEmpty) {
       int? rowIndex;
       if (position != null) {
-        rowIndex = rowBoundsCache.boundsIndex(position);
+        rowIndex = rowRegions.boundsIndex(position);
       }
       DATA? data;
       if (rowIndex != null && rowIndex < daviContext.model.rowsLength) {
@@ -192,34 +193,34 @@ class TableEvents<DATA> extends StatelessWidget {
   KeyEventResult _handleKeyPress(
       FocusNode node, KeyEvent event, double rowHeight) {
     if (event is KeyUpEvent) {
-      if (verticalScrollController.hasClients) {
+      if (verticalScroll.hasClients) {
         if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
           double target = math.min(
-              verticalScrollController.position.pixels + rowHeight,
-              verticalScrollController.position.maxScrollExtent);
-          verticalScrollController.animateTo(target,
+              verticalScroll.position.pixels + rowHeight,
+              verticalScroll.position.maxScrollExtent);
+          verticalScroll.animateTo(target,
               duration: const Duration(milliseconds: 30), curve: Curves.ease);
           return KeyEventResult.handled;
         } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
           double target =
-              math.max(verticalScrollController.position.pixels - rowHeight, 0);
-          verticalScrollController.animateTo(target,
+              math.max(verticalScroll.position.pixels - rowHeight, 0);
+          verticalScroll.animateTo(target,
               duration: const Duration(milliseconds: 30), curve: Curves.ease);
           return KeyEventResult.handled;
         } else if (event.logicalKey == LogicalKeyboardKey.pageDown) {
           double target = math.min(
-              verticalScrollController.position.pixels +
-                  verticalScrollController.position.viewportDimension,
-              verticalScrollController.position.maxScrollExtent);
-          verticalScrollController.animateTo(target,
+              verticalScroll.position.pixels +
+                  verticalScroll.position.viewportDimension,
+              verticalScroll.position.maxScrollExtent);
+          verticalScroll.animateTo(target,
               duration: const Duration(milliseconds: 30), curve: Curves.ease);
           return KeyEventResult.handled;
         } else if (event.logicalKey == LogicalKeyboardKey.pageUp) {
           double target = math.max(
-              verticalScrollController.position.pixels -
-                  verticalScrollController.position.viewportDimension,
+              verticalScroll.position.pixels -
+                  verticalScroll.position.viewportDimension,
               0);
-          verticalScrollController.animateTo(target,
+          verticalScroll.animateTo(target,
               duration: const Duration(milliseconds: 30), curve: Curves.ease);
           return KeyEventResult.handled;
         }

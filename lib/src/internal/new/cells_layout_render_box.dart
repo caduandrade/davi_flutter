@@ -2,10 +2,10 @@ import 'dart:math' as math;
 import 'package:davi/davi.dart';
 import 'package:davi/src/internal/new/divider_paint_manager.dart';
 import 'package:davi/src/internal/new/hover_notifier.dart';
-import 'package:davi/src/internal/new/row_region.dart';
 import 'package:davi/src/internal/column_metrics.dart';
 import 'package:davi/src/internal/new/cells_layout_parent_data.dart';
-import 'package:davi/src/internal/scroll_offsets.dart';
+import 'package:davi/src/internal/new/viewport_state.dart';
+import 'package:davi/src/internal/scroll_controllers.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -21,7 +21,7 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
       {required double cellHeight,
       required double rowHeight,
       required double verticalOffset,
-      required HorizontalScrollOffsets horizontalScrollOffsets,
+      required ScrollControllers scrollControllers,
       required List<ColumnMetrics> columnsMetrics,
       required Rect leftPinnedAreaBounds,
       required Rect unpinnedAreaBounds,
@@ -44,7 +44,7 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
         _cellHeight = cellHeight,
         _rowHeight = rowHeight,
         _verticalOffset = verticalOffset,
-        _horizontalScrollOffsets = horizontalScrollOffsets,
+        _scrollControllers = scrollControllers,
         _hoverNotifier = hoverNotifier,
         _fillHeight = fillHeight,
         _columnDividerFillHeight = columnDividerFillHeight,
@@ -63,6 +63,8 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
     _areaBounds[PinStatus.left] = leftPinnedAreaBounds;
     _areaBounds[PinStatus.none] = unpinnedAreaBounds;
     _hoverNotifier.addListener(markNeedsPaint);
+    _scrollControllers.leftPinnedHorizontal.addListener(markNeedsPaint);
+    _scrollControllers.unpinnedHorizontal.addListener(markNeedsPaint);
   }
 
   DaviModel<DATA> _model;
@@ -156,12 +158,15 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
     }
   }
 
-  HorizontalScrollOffsets _horizontalScrollOffsets;
+  ScrollControllers _scrollControllers;
 
-  set horizontalScrollOffsets(HorizontalScrollOffsets value) {
-    if (_horizontalScrollOffsets != value) {
-      _horizontalScrollOffsets = value;
-      markNeedsPaint();
+  set scrollControllers(ScrollControllers value) {
+    if (_scrollControllers != value) {
+      _scrollControllers.leftPinnedHorizontal.removeListener(markNeedsPaint);
+      _scrollControllers.unpinnedHorizontal.removeListener(markNeedsPaint);
+      _scrollControllers = value;
+      _scrollControllers.leftPinnedHorizontal.addListener(markNeedsPaint);
+      _scrollControllers.unpinnedHorizontal.addListener(markNeedsPaint);
     }
   }
 
@@ -267,13 +272,6 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
   }
 
   @override
-  void markNeedsLayout() {
-    //TODO remove
-    // print('markNeedsLayout ${DateTime.now()} - ${_rowRegionCache.values.length}');
-    super.markNeedsLayout();
-  }
-
-  @override
   void setupParentData(RenderBox child) {
     if (child.parentData is! CellsLayoutParentData) {
       child.parentData = CellsLayoutParentData();
@@ -294,46 +292,11 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
     visitChildren((child) {
       final RenderBox renderBox = child as RenderBox;
       final CellsLayoutParentData childParentData = child._parentData();
-
+      childParentData.offset = const Offset(0, 0);
       if (childParentData.isCell) {
-        // cell
-        final int rowIndex = childParentData.rowIndex!;
-        final RowRegion rowRegion = _rowRegionCache.get(rowIndex);
-        final int columnIndex = childParentData.columnIndex!;
-        final int rowSpan = childParentData.rowSpan!;
-        final int columnSpan = childParentData.columnSpan!;
-
-        if (columnIndex + columnSpan > _columnsMetrics.length) {
-          _hasLayoutErrors = true;
-          throw StateError(
-              'The column span exceeds the table\'s column limit at row $rowIndex, starting from column $columnIndex.');
-        } else if (rowRegion.hasData &&
-            rowIndex + rowSpan > _model.rowsLength) {
-          _hasLayoutErrors = true;
-          throw StateError(
-              'The row span exceeds the table\'s row limit at row $rowIndex and column $columnIndex.');
-        }
-
-        double width = 0;
-        for (int i = columnIndex; i < columnIndex + columnSpan; i++) {
-          final ColumnMetrics columnMetrics = _columnsMetrics[i];
-          width += columnMetrics.width;
-          if (i < columnIndex + columnSpan - 1) {
-            width += _columnDividerThickness;
-          }
-        }
-
-        double height = 0;
-        for (int i = rowIndex; i < rowIndex + rowSpan; i++) {
-          height += _cellHeight;
-          if (i < rowIndex + rowSpan - 1) {
-            height += _dividerThickness;
-          }
-        }
-
-        renderBox.layout(BoxConstraints.tightFor(width: width, height: height),
-            parentUsesSize: false);
-        _cells.add(renderBox);
+          renderBox.layout(BoxConstraints.tightFor(width: size.width, height: size.height),
+              parentUsesSize: false);
+          _cells.add(renderBox);
       } else {
         // trailing
         renderBox.layout(
@@ -342,7 +305,7 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
             parentUsesSize: false);
         _trailing = renderBox;
       }
-      renderBox._parentData().offset = const Offset(0, 0);
+
     });
   }
 
@@ -392,39 +355,13 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
 
     // cell widgets
     for (RenderBox child in _cells) {
-      final CellsLayoutParentData childParentData = child._parentData();
-      final int rowIndex = childParentData.rowIndex!;
-      final int columnIndex = childParentData.columnIndex!;
-      final int rowSpan = childParentData.rowSpan!;
-      final int columnSpan = childParentData.columnSpan!;
-
-      _dividerPaintManager.addStopsForCell(
-          rowIndex: rowIndex,
-          columnIndex: columnIndex,
-          rowSpan: rowSpan,
-          columnSpan: columnSpan);
-
-      final ColumnMetrics columnMetrics = _columnsMetrics[columnIndex];
-      final PinStatus pinStatus = columnMetrics.pinStatus;
-      final double horizontalOffset =
-          _horizontalScrollOffsets.getOffset(pinStatus);
-
-      context.canvas.save();
-      final Rect bounds = _areaBounds[pinStatus]!;
-      context.canvas.clipRect(bounds.translate(offset.dx, offset.dy));
-
-      final double top = (rowIndex * _rowHeight) - _verticalOffset;
-      final Offset childOffset =
-          offset.translate(columnMetrics.offset - horizontalOffset, top);
-
-      context.paintChild(child, childOffset);
-      context.canvas.restore();
+        context.paintChild(child, offset);
     }
 
     // trailing
     if (_trailing != null && _rowRegionCache.trailingRegion != null) {
       context.paintChild(
-          _trailing!, offset.translate(0, _rowRegionCache.trailingRegion!.y));
+          _trailing!, offset.translate(0, _rowRegionCache.trailingRegion!.bounds.top));
     }
 
     // foreground
@@ -454,14 +391,11 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
           columnIndex < _columnsMetrics.length;
           columnIndex++) {
         final ColumnMetrics columnMetrics = _columnsMetrics[columnIndex];
-        double scroll = 0;
+        double scroll = _scrollControllers.getOffset(columnMetrics.pinStatus);
         if (columnMetrics.pinStatus == PinStatus.none) {
-          scroll = _horizontalScrollOffsets.unpinned;
           context.canvas.save();
           context.canvas.clipRect(
               _areaBounds[PinStatus.none]!.translate(offset.dx, offset.dy));
-        } else {
-          scroll = _horizontalScrollOffsets.leftPinned;
         }
 
         double left =
@@ -476,13 +410,13 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
           double bottom = offset.dy;
           if (!start.edge) {
             RowRegion startRow = _rowRegionCache.get(start.index);
-            top += startRow.y + _cellHeight;
+            top += startRow.bounds.top + _cellHeight;
           }
           if (end.edge) {
             bottom += constraints.maxHeight;
           } else {
             RowRegion endRow = _rowRegionCache.get(end.index);
-            bottom += endRow.y + _cellHeight;
+            bottom += endRow.bounds.top + _cellHeight;
           }
           context.canvas
               .drawRect(Rect.fromLTRB(left, top, right, bottom), paint);
@@ -510,7 +444,7 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
           if (!start.edge) {
             startColumn = _columnsMetrics[start.index];
             double scrollOffset =
-                _horizontalScrollOffsets.getOffset(startColumn.pinStatus);
+            _scrollControllers.getOffset(startColumn.pinStatus);
             left += startColumn.offset +
                 startColumn.width +
                 _columnDividerThickness -
@@ -529,7 +463,7 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
           } else {
             ColumnMetrics endColumn = _columnsMetrics[end.index];
             double scrollOffset =
-                _horizontalScrollOffsets.getOffset(endColumn.pinStatus);
+                _scrollControllers.getOffset(endColumn.pinStatus);
             right += endColumn.offset +
                 endColumn.width +
                 _columnDividerThickness -
@@ -542,7 +476,7 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
                   right, offset.dx + _areaBounds[PinStatus.left]!.right);
             }
           }
-          double top = offset.dy + rowRegion.y + _cellHeight;
+          double top = offset.dy + rowRegion.bounds.top + _cellHeight;
           context.canvas.drawRect(
               Rect.fromLTRB(left, top, right, top + _dividerThickness), paint);
         }
@@ -572,11 +506,9 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
 
   @override
   bool hitTestChildren(BoxHitTestResult result, {required Offset position}) {
-    final int firstRowIndex = (_verticalOffset / _rowHeight).floor();
-
     if (_trailing != null && _rowRegionCache.trailingRegion != null) {
       final Offset renderedTrailingOffset =
-          Offset(0, _rowRegionCache.trailingRegion!.y);
+          Offset(0, _rowRegionCache.trailingRegion!.bounds.top);
       // Adjusts the offset to the position relative to the hit within the trailing.
       final Offset localOffset = position - renderedTrailingOffset;
       if (_trailing!.hitTest(result, position: localOffset)) {
@@ -585,33 +517,8 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
     }
 
     for (RenderBox child in _cells) {
-      final CellsLayoutParentData childParentData = child._parentData();
-      final int rowIndex = childParentData.rowIndex!;
-      final int columnIndex = childParentData.columnIndex!;
-
-      final ColumnMetrics columnMetrics = _columnsMetrics[columnIndex];
-      final PinStatus pinStatus = columnMetrics.pinStatus;
-
-      final double horizontalOffset =
-          _horizontalScrollOffsets.getOffset(pinStatus);
-
-      final int visualRowIndex = rowIndex - firstRowIndex;
-
-      // Calculates the offset where the cell is rendered.
-      final Offset renderedCellOffset = Offset(
-          columnMetrics.offset - horizontalOffset, visualRowIndex * _rowHeight);
-
-      // Calculates the rendering area of the cell.
-      final Rect renderedCellBounds =
-          renderedCellOffset & Size(columnMetrics.width, _cellHeight);
-
-      // Check if the hit position is within the cell rendering area.
-      if (renderedCellBounds.contains(position)) {
-        // Adjusts the offset to the position relative to the hit within the cell.
-        final Offset localOffset = position - renderedCellOffset;
-        if (child.hitTest(result, position: localOffset)) {
-          return true;
-        }
+      if(child.hitTest(result, position: position)){
+        return true;
       }
     }
     return _hoverNotifier.index != null;
@@ -619,9 +526,12 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
 
   @override
   void dispose() {
+    _scrollControllers.leftPinnedHorizontal.removeListener(markNeedsPaint);
+    _scrollControllers.unpinnedHorizontal.removeListener(markNeedsPaint);
     _hoverNotifier.removeListener(markNeedsPaint);
     super.dispose();
   }
+  
 }
 
 /// Utility extension to facilitate obtaining parent data.

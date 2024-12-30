@@ -2,6 +2,7 @@ import 'package:davi/src/cell_collision_behavior.dart';
 import 'package:davi/src/column_width_behavior.dart';
 import 'package:davi/src/internal/new/column_notifier.dart';
 import 'package:davi/src/internal/new/hover_notifier.dart';
+import 'package:davi/src/internal/scroll_controllers.dart';
 import 'package:davi/src/internal/theme_metrics/theme_metrics.dart';
 import 'package:davi/src/last_visible_row_listener.dart';
 import 'package:davi/src/model.dart';
@@ -36,7 +37,8 @@ class DaviContext<DATA> {
       required this.visibleRowsCount,
       required this.columnWidthBehavior,
       required this.themeMetrics,
-      required this.collisionBehavior});
+      required this.collisionBehavior,
+      required this.scrollControllers});
 
   final HoverNotifier hoverNotifier;
   final bool hasHoverListener;
@@ -60,6 +62,7 @@ class DaviContext<DATA> {
   final ColumnWidthBehavior columnWidthBehavior;
   final TableThemeMetrics themeMetrics;
   final CellCollisionBehavior collisionBehavior;
+  final ScrollControllers scrollControllers;
 
   bool get hasCallback =>
       onRowDoubleTap != null ||

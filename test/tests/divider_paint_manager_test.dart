@@ -5,7 +5,7 @@ void main() {
   group('DividerPaintManager', () {
     test('setup', () {
       DividerPaintManager manager = DividerPaintManager();
-      manager.setup(firstRowIndex: 0, lastRowIndex: 2, columnsLength: 3);
+      manager.reset(firstRowIndex: 0, lastRowIndex: 2, columnsLength: 3);
 
       List<DividerVertex> vertices = manager.allVerticalVerticesFrom(column: 0);
       expect(vertices.length, 5);
@@ -20,7 +20,7 @@ void main() {
         'verticalSegments - rowIndex: 0, columnIndex: 0, rowSpan: 1, columnSpan: 2',
         () {
       DividerPaintManager manager = DividerPaintManager();
-      manager.setup(firstRowIndex: 0, lastRowIndex: 2, columnsLength: 3);
+      manager.reset(firstRowIndex: 0, lastRowIndex: 2, columnsLength: 3);
 
       manager.addStopsForCell(
           rowIndex: 0, columnIndex: 0, rowSpan: 1, columnSpan: 2);
@@ -54,7 +54,7 @@ void main() {
         'verticalSegments - 4x4 rowIndex: 2, columnIndex: 1, rowSpan: 1, columnSpan: 2',
         () {
       DividerPaintManager manager = DividerPaintManager();
-      manager.setup(firstRowIndex: 0, lastRowIndex: 3, columnsLength: 4);
+      manager.reset(firstRowIndex: 0, lastRowIndex: 3, columnsLength: 4);
 
       manager.addStopsForCell(
           rowIndex: 2, columnIndex: 1, rowSpan: 1, columnSpan: 2);
@@ -107,7 +107,7 @@ void main() {
         'horizontalSegments - 3x3 rowIndex: 2, columnIndex: 0, rowSpan: 2, columnSpan: 1',
         () {
       DividerPaintManager manager = DividerPaintManager();
-      manager.setup(firstRowIndex: 2, lastRowIndex: 3, columnsLength: 3);
+      manager.reset(firstRowIndex: 2, lastRowIndex: 3, columnsLength: 3);
 
       manager.addStopsForCell(
           rowIndex: 2, columnIndex: 0, rowSpan: 2, columnSpan: 1);
@@ -133,7 +133,7 @@ void main() {
         'horizontalSegments - rowIndex: 0, columnIndex: 0, rowSpan: 2, columnSpan: 1',
         () {
       DividerPaintManager manager = DividerPaintManager();
-      manager.setup(firstRowIndex: 0, lastRowIndex: 2, columnsLength: 3);
+      manager.reset(firstRowIndex: 0, lastRowIndex: 2, columnsLength: 3);
 
       manager.addStopsForCell(
           rowIndex: 0, columnIndex: 0, rowSpan: 2, columnSpan: 1);
@@ -167,7 +167,7 @@ void main() {
         'horizontalSegments - rowIndex: 0, columnIndex: 1, rowSpan: 2, columnSpan: 1',
         () {
       DividerPaintManager manager = DividerPaintManager();
-      manager.setup(firstRowIndex: 0, lastRowIndex: 2, columnsLength: 3);
+      manager.reset(firstRowIndex: 0, lastRowIndex: 2, columnsLength: 3);
 
       manager.addStopsForCell(
           rowIndex: 0, columnIndex: 1, rowSpan: 2, columnSpan: 1);

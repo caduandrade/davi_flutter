@@ -3,7 +3,7 @@ import 'package:davi/src/internal/new/hover_listenable_builder.dart';
 import 'package:davi/src/internal/new/text_cell_painter.dart';
 import 'package:davi/src/internal/new/painter_cache.dart';
 import 'package:davi/src/internal/new/davi_context.dart';
-import 'package:davi/src/internal/new/cell_span_cache.dart';
+import 'package:davi/src/internal/new/collision_detector.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
@@ -19,7 +19,7 @@ class CellWidget<DATA> extends StatelessWidget {
       required this.column,
       required this.daviContext,
       required this.painterCache,
-      required this.cellSpanCache})
+      required this.collisionDetector})
       : super(key: key);
 
   final DATA data;
@@ -30,7 +30,7 @@ class CellWidget<DATA> extends StatelessWidget {
   final DaviColumn<DATA> column;
   final DaviContext daviContext;
   final PainterCache<DATA> painterCache;
-  final CellSpanCache cellSpanCache;
+  final CollisionDetector collisionDetector;
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +44,7 @@ class CellWidget<DATA> extends StatelessWidget {
     }
 
     bool offstage = false;
-    final bool intercepts = cellSpanCache.intersects(
+    final bool intercepts = collisionDetector.intersects(
         rowIndex: rowIndex,
         columnIndex: columnIndex,
         rowSpan: rowSpan,
@@ -67,7 +67,7 @@ class CellWidget<DATA> extends StatelessWidget {
             'Collision detected at cell rowIndex: $rowIndex columnIndex: $columnIndex.');
       }
     } else {
-      cellSpanCache.add(
+      collisionDetector.add(
           rowIndex: rowIndex,
           columnIndex: columnIndex,
           rowSpan: rowSpan,

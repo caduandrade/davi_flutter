@@ -77,6 +77,13 @@ class _HomePageState extends State<HomePage> {
     _model = DaviModel<Person>(
         rows: rows,
         columns: [
+/*
+        DaviColumn(
+        name: 'Name',
+        rowSpan: (d,r)=>r==10?5:1,
+        cellValue: (data, rowIndex) =>data.name
+        ),*/
+
           DaviColumn(
               name: 'Name',
               cellValue: (data, rowIndex) =>
@@ -84,11 +91,13 @@ class _HomePageState extends State<HomePage> {
              //rowSpan: (data, rowIndex) => rowIndex==1?2:1,
               columnSpan: (data, rowIndex) => rowIndex == 0 ? 2 : 1,
               pinStatus: PinStatus.left),
+
           DaviColumn(
               name: 'Age',
               cellValue: (data, rowIndex) => data.age,
               pinStatus: PinStatus.left,
               summary: (context) => const Text('test')),
+
           DaviColumn(
               name: 'Value',
               cellValue: (data, rowIndex) => data.value,
@@ -121,13 +130,14 @@ class _HomePageState extends State<HomePage> {
               name: 'Value 7',
               cellValue: (data, rowIndex) => data.value
           ),
-
+/*
             DaviColumn(
               name: 'Editable',
               sortable: false,
               cellWidget: _buildField,
               //cellBackground: (row, index, hover) => data.valid ? null : Colors.red[800]
             )
+*/
         ],
       //  alwaysSorted: true,
         multiSortEnabled: true
@@ -182,8 +192,8 @@ class _HomePageState extends State<HomePage> {
           _model,
           // onHover: (index) => print('hover: $index'),
           onRowTap: _onRowTap,
-          //  onLastVisibleRow: (index)=>print('last visible row: $index ${DateTime.now()}'),
-          //  onTrailingWidget: (visible)=>print('trailing widget: $visible ${DateTime.now()}'),
+           // onLastVisibleRow: (index)=>print('last visible row: $index ${DateTime.now()}'),
+           // onTrailingWidget: (visible)=>print('trailing widget: $visible ${DateTime.now()}'),
            trailingWidget: MouseRegion(onHover: (h)=>print('hover on trailing ${DateTime.now()}'), child: const Center(child: Text('trailing widget')))
         ));
 
@@ -193,6 +203,7 @@ class _HomePageState extends State<HomePage> {
       Expanded(child: theme)
     ]))]));
   }
+
 
   void _onHover(int? index) {
     print('onHover: $index');
