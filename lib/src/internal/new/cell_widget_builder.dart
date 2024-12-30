@@ -300,19 +300,6 @@ class RenderCustomSingleChild extends RenderBox with RenderObjectWithChildMixin<
     size = constraints.biggest;
 
     if (child != null) {
-      if (_cellMapping.columnIndex + _cellMapping.columnSpan > _columnsMetrics.length) {
-        _hasLayoutErrors = true;
-        throw StateError(
-            'The column span exceeds the table\'s column limit at row ${_cellMapping.rowIndex}, starting from column ${_cellMapping.columnIndex}.');
-      }
-      /*
-      else if (rowRegion.hasData &&
-          rowIndex + rowSpan > _model.rowsLength) {
-        _hasLayoutErrors = true;
-        throw StateError(
-            'The row span exceeds the table\'s row limit at row $rowIndex and column $columnIndex.');
-      }*/
-
       double width = 0;
       for (int i = _cellMapping.columnIndex; i < _cellMapping.columnIndex + _cellMapping.columnSpan; i++) {
         final ColumnMetrics columnMetrics = _columnsMetrics[i];

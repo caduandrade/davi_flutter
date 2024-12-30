@@ -75,6 +75,7 @@ class _HomePageState extends State<HomePage> {
         leading: const Icon(Icons.person, size: 16),
         name: 'Name',
         width: 100,
+        rowSpan: (c,index)=>index==_model!.rowsLength-2?2:1,
         cellValue: (row, rowIndex) => row.name)
     );
     list.add(DaviColumn(

@@ -234,6 +234,11 @@ class ViewportState<DATA> extends ChangeNotifier {
             }
           }
 
+          if (rowIndex + rowSpan > model.rowsLength) {
+            throw StateError(
+                'The row span exceeds the table\'s row limit at row $rowIndex and column $columnIndex.');
+          }
+
           int columnSpan = math.max(column.columnSpan(data, rowIndex), 1);
           if (columnSpan > model.maxColumnSpan) {
             if (model.maxSpanBehavior == MaxSpanBehavior.throwException) {
@@ -245,6 +250,11 @@ class ViewportState<DATA> extends ChangeNotifier {
               debugPrint(
                   'Span too large at rowIndex $rowIndex column $columnIndex: Truncated to $columnSpan columns');
             }
+          }
+
+          if (columnIndex + columnSpan > columnsMetrics.length) {
+            throw StateError(
+                'The column span exceeds the table\'s column limit at row $rowIndex, starting from column $columnIndex.');
           }
 
           // Check all columns spanned by the columnSpan
