@@ -1,6 +1,5 @@
 import 'dart:collection';
 import 'dart:math' as math;
-import 'package:collection/collection.dart';
 import 'package:davi/src/column.dart';
 import 'package:davi/src/internal/column_metrics.dart';
 import 'package:davi/src/internal/new/divider_paint_manager.dart';
@@ -126,8 +125,8 @@ class ViewportState<DATA> extends ChangeNotifier {
   int _maxCellCount = 0;
   int get maxCellCount => _maxCellCount;
 
-  double _verticalOffset=0;
-  double get verticalOffset=>_verticalOffset;
+  double _verticalOffset = 0;
+  double get verticalOffset => _verticalOffset;
 
   /// rowHeight (cell content height + cell padding + dividerThickness)
   void reset(
@@ -140,13 +139,12 @@ class ViewportState<DATA> extends ChangeNotifier {
       required DaviModel<DATA> model,
       required bool hasTrailing,
       required bool rowFillHeight}) {
-
     final Map<CellMapping, int> oldCellMappings = {
       for (var entry in _cellMappings.entries) entry.value: entry.key,
     };
     List<CellMapping> newCellMappings = [];
 
-    _verticalOffset=verticalOffset;
+    _verticalOffset = verticalOffset;
     _cellMappings.clear();
     rowRegions._clear();
 
@@ -183,8 +181,8 @@ class ViewportState<DATA> extends ChangeNotifier {
     HashSet<int> indices = HashSet();
     for (int rowIndex = _firstRow; rowIndex <= _maxDataRowIndex; rowIndex++) {
       for (int columnIndex = 0;
-      columnIndex < columnsMetrics.length;
-      columnIndex++) {
+          columnIndex < columnsMetrics.length;
+          columnIndex++) {
         indices.add(indices.length);
       }
     }
@@ -207,8 +205,8 @@ class ViewportState<DATA> extends ChangeNotifier {
           bounds: rowBounds,
           hasData: data != null,
           trailing: trailingRegion,
-          visible: (rowBounds.top > 0 && rowBounds.top < maxHeight) || (rowBounds.bottom
-              > 0 && rowBounds.bottom < maxHeight)));
+          visible: (rowBounds.top > 0 && rowBounds.top < maxHeight) ||
+              (rowBounds.bottom > 0 && rowBounds.bottom < maxHeight)));
 
       if (data != null && rowBounds.top < maxHeight) {
         _lastDataRow = rowIndex;
@@ -269,12 +267,13 @@ class ViewportState<DATA> extends ChangeNotifier {
           }
 
           CellMapping cellMapping = CellMapping(
-              rowIndex: rowIndex, columnIndex: columnIndex,
-              rowSpan: rowSpan, columnSpan: columnSpan);
-
+              rowIndex: rowIndex,
+              columnIndex: columnIndex,
+              rowSpan: rowSpan,
+              columnSpan: columnSpan);
 
           int? oldCellIndex = oldCellMappings.remove(cellMapping);
-          if(oldCellIndex!=null) {
+          if (oldCellIndex != null) {
             _cellMappings[oldCellIndex] = cellMapping;
             indices.remove(oldCellIndex);
           } else {
@@ -284,69 +283,40 @@ class ViewportState<DATA> extends ChangeNotifier {
       }
     }
 
-    for(int cellIndex in indices ){
-      if(newCellMappings.isEmpty) {
+    for (int cellIndex in indices) {
+      if (newCellMappings.isEmpty) {
         break;
       }
       CellMapping cellMapping = newCellMappings.removeAt(0);
       _cellMappings[cellIndex] = cellMapping;
     }
-    
-    ////////////
-    ////////////
-    /////////////
 
-    for (int rowIndex = _firstRow; rowIndex <= _maxDataRowIndex; rowIndex++) {
-
+    dividerPaintManager.reset(
+        firstRowIndex: _firstRow,
+        lastRowIndex: _maxDataRowIndex + model.maxRowSpan - 1,
+        columnsLength: columnsMetrics.length);
+    if (rowRegions.trailingRegion != null &&
+        rowRegions.trailingRegion!.index >= _firstDataRow &&
+        rowRegions.trailingRegion!.index <= _maxDataRowIndex) {
+      dividerPaintManager.addStopsForEntireRow(
+          rowIndex: rowRegions.trailingRegion!.index, horizontal: false);
     }
-
-
-
-   // if (rowRegions.firstRowIndex != null && rowRegions.lastRowIndex != null) {
-      dividerPaintManager.reset(
-          //firstRowIndex: rowRegions.firstRowIndex!,
-          firstRowIndex: _firstRow,
-          //lastRowIndex: rowRegions.lastRowIndex!,
-          lastRowIndex: _maxDataRowIndex+model.maxRowSpan-1,
-          columnsLength: columnsMetrics.length);
-      if (rowRegions.trailingRegion != null &&
-          //rowRegions.trailingRegion!.index >= rowRegions.firstRowIndex! &&
-          rowRegions.trailingRegion!.index >= _firstDataRow &&
-          //rowRegions.trailingRegion!.index <= rowRegions.lastRowIndex!) {
-          rowRegions.trailingRegion!.index <= _maxDataRowIndex) {
-        dividerPaintManager.addStopsForEntireRow(
-            rowIndex: rowRegions.trailingRegion!.index, horizontal: false);
-      }
-      if (!rowFillHeight) {
-        for (RowRegion rowRegion in rowRegions.values) {
-          if (!rowRegion.hasData && !rowRegion.trailing) {
-            dividerPaintManager.addStopsForEntireRow(
-                rowIndex: rowRegion.index, horizontal: true);
-          }
+    if (!rowFillHeight) {
+      for (RowRegion rowRegion in rowRegions.values) {
+        if (!rowRegion.hasData && !rowRegion.trailing) {
+          dividerPaintManager.addStopsForEntireRow(
+              rowIndex: rowRegion.index, horizontal: true);
         }
       }
-     
-    //  for(int cellIndex =0; cellIndex<maxCellCount;cellIndex++) {
-     //    CellMapping2? cellMapping = getCellMapping(cellIndex: cellIndex);
-      //    if(cellMapping!=null) {
-      for(CellMapping cellMapping in _cellMappings.values) {
-        dividerPaintManager.addStopsForCell(
-            rowIndex: cellMapping.rowIndex,
-            columnIndex: cellMapping.columnIndex,
-            rowSpan: cellMapping.rowSpan,
-            columnSpan: cellMapping.columnSpan);
-     // }
-      //    }
-       }
-  //  } else {
-  //    dividerPaintManager.clear();
-  //  }
+    }
 
-    // cm -> index
-    // 1 > cm 2
-    // 2 > cm 3
-
-    // cm 2
+    for (CellMapping cellMapping in _cellMappings.values) {
+      dividerPaintManager.addStopsForCell(
+          rowIndex: cellMapping.rowIndex,
+          columnIndex: cellMapping.columnIndex,
+          rowSpan: cellMapping.rowSpan,
+          columnSpan: cellMapping.columnSpan);
+    }
 
     notifyListeners();
   }
@@ -369,7 +339,7 @@ class CellMapping {
 
   /// The row index of the model cell to be displayed.
   final int rowIndex;
-  
+
   final int columnIndex;
 
   /// Number of rows spanned by the model cell in the view.
