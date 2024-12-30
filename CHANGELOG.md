@@ -1,48 +1,45 @@
 ## 4.0.0
 
-* Significant performance improvements.
-  * Internal tests show Flutter frame rates during scrolling increasing from 5 FPS to over 30 FPS.
+* Significant performance improvements
+  * Internal tests show Flutter frame rates during scrolling increasing from 5 FPS to over 30 FPS
+* Cell merging
+* Column summary (Footer)
+* New cell types
+  * Custom rendering using Canvas
+  * Bar progress
+
+* Changes
+  * `DaviModel` is now non-nullable in `Davi`
+  * `DaviColumn`
+    * `stringValue`, `intValue`, `objectValue` and `doubleValue` has been replaced by `cellValue`
+    * `cellBuilder` has been replaced by `cellWidget`
+    * `iconValueMapper` has been replaced by `cellIcon`
+    * `fractionDigits` has been removed
+    * `cellStyleBuilder` has been removed
+  * `CellThemeData`
+    * `overflow` has been removed
+  * `DaviThemeData`
+    * `topCornerBorderColor` migrated to `EdgeThemeData.headerColor`
+    * `topCornerColor` to `EdgeThemeData`: `headerBottomBorderColor` and `headerLeftBorderColor`
+    * `bottomCornerBorderColor` to `EdgeThemeData`: `scrollbarLeftBorderColor` and `scrollbarTopBorderColor`
+    * `bottomCornerColor` to `EdgeThemeData.scrollbarColor`
+  * `RowThemeData` 
+    * `cursor` has been renamed to `callbackCursor`
+    * `cursorOnTapGesturesOnly` has been removed
+  * `HeaderThemeData`
+    * `bottomBorderHeight` has been renamed to `bottomBorderThickness`
+  * Renamed typedefs
+    * `DaviRowCursor` to `RowCursorBuilder`
+  * Removed classes and typedefs
+    * `DaviIntValueMapper`
+    * `DaviDoubleValueMapper`
+    * `DaviStringValueMapper`
+    * `DaviObjectValueMapper`
+    * `DaviIconValueMapper`
+    * `CellStyleBuilder`
 
 *DRAFT*
 
-New class DaviCell
-DaviCellBuilder replaced by CellValueBuilder,CellIconBuilder and CellWidgetBuilder
-
-DaviColumn.cellBuilder raplced by DaviColumn.cellValue, DaviColumn.cellIcon, DaviColumn.cellWidget 
-
-CellThemeData.overflow removed
-
-removed:
-DaviColumn.intValue;
-DaviColumn.doubleValue;
-DaviColumn.stringValue;
-DaviColumn.objectValue;
-DaviColumn.iconValue;
-DaviIntValueMapper
-DaviDoubleValueMapper
-DaviStringValueMapper
-DaviObjectValueMapper
-DaviIconValueMapper
-
-add SpanProvider<DATA>
-
-EdgeThemeData new
-- DaviThemeData.topCornerBorderColor to EdgeThemeData.headerColor
-  DaviThemeData.topCornerColor to EdgeThemeData.headerBottomBorderColor and headerLeftBorderColor
-  DaviThemeData.bottomCornerBorderColor to EdgeThemeData.scrollbarLeftBorderColor and scrollbarTopBorderColor
-  DaviThemeData.bottomCornerColor to EdgeThemeData.scrollbarColor
-- 
-
-DaviColumn.fractionDigits removed
-
-RowThemeData.cursor renamed to RowThemeData.callbackCursor
-RowThemeData.cursorOnTapGesturesOnly removed
-
-HeaderThemeData.bottomBorderHeight  to HeaderThemeData.bottomBorderThickness
-Davi.model cant be null
-DaviRowCursor => RowCursorBuilder
-CellStyleBuilder removed
-Column.cellStyleBuilder => Column.style
 
 CellThemeData.background added
 CellThemeData.copyWith removed
