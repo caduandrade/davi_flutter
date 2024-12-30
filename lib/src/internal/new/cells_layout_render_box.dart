@@ -513,8 +513,6 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
 
   @override
   bool hitTestChildren(BoxHitTestResult result, {required Offset position}) {
-    final int firstRowIndex = (_verticalOffset / _rowHeight).floor();
-
     if (_trailing != null && _rowRegionCache.trailingRegion != null) {
       final Offset renderedTrailingOffset =
           Offset(0, _rowRegionCache.trailingRegion!.bounds.top);
@@ -526,38 +524,9 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
     }
 
     for (RenderBox child in _cells) {
-      break;
-      /*
-      final CellsLayoutParentData childParentData = child._parentData();
-      final int rowIndex = childParentData.rowIndex!;
-      final int columnIndex = childParentData.columnIndex!;
-
-      final ColumnMetrics columnMetrics = _columnsMetrics[columnIndex];
-      final PinStatus pinStatus = columnMetrics.pinStatus;
-
-      final double horizontalOffset =
-          _horizontalScrollOffsets.getOffset(pinStatus);
-
-      final int visualRowIndex = rowIndex - firstRowIndex;
-
-      // Calculates the offset where the cell is rendered.
-      final Offset renderedCellOffset = Offset(
-          columnMetrics.offset - horizontalOffset, visualRowIndex * _rowHeight);
-
-      // Calculates the rendering area of the cell.
-      final Rect renderedCellBounds =
-          renderedCellOffset & Size(columnMetrics.width, _cellHeight);
-
-      // Check if the hit position is within the cell rendering area.
-      if (renderedCellBounds.contains(position)) {
-        // Adjusts the offset to the position relative to the hit within the cell.
-        final Offset localOffset = position - renderedCellOffset;
-        if (child.hitTest(result, position: localOffset)) {
-          return true;
-        }
+      if(child.hitTest(result, position: position)){
+        return true;
       }
-
-       */
     }
     return _hoverNotifier.index != null;
   }

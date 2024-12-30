@@ -75,7 +75,8 @@ class _HomePageState extends State<HomePage> {
         leading: const Icon(Icons.person, size: 16),
         name: 'Name',
         width: 100,
-        cellValue: (row, rowIndex) => row.name));
+        cellValue: (row, rowIndex) => row.name)
+    );
     list.add(DaviColumn(
         pinStatus: _leftPinned ? PinStatus.left : PinStatus.none,
         name: 'Gender',
@@ -86,7 +87,9 @@ class _HomePageState extends State<HomePage> {
             : CellIcon(Icons.female, color: Colors.pink[600]!)));
     list.add(
         DaviColumn(name: 'Race', width: 100,
-    cellValue: (row, rowIndex)=> row.race));
+    //cellValue: (row, rowIndex)=> row.race)
+            cellWidget: (d,qd,t)=>TextButton(onPressed: ()=>print('a'), child: Text('a')))
+    );
     list.add(
         DaviColumn(name: 'Class', width: 110,
     cellValue: (row,rowIndex)=>row.cls));

@@ -313,7 +313,6 @@ class RenderCustomSingleChild extends RenderBox with RenderObjectWithChildMixin<
             'The row span exceeds the table\'s row limit at row $rowIndex and column $columnIndex.');
       }*/
 
-
       double width = 0;
       for (int i = _cellMapping.columnIndex; i < _cellMapping.columnIndex + _cellMapping.columnSpan; i++) {
         final ColumnMetrics columnMetrics = _columnsMetrics[i];
@@ -331,14 +330,12 @@ class RenderCustomSingleChild extends RenderBox with RenderObjectWithChildMixin<
         }
       }
       
-      child!.layout(BoxConstraints.tightFor(width: width,height: height), parentUsesSize: true);
+      child!.layout(BoxConstraints.tightFor(width: width,height: height), parentUsesSize: false);
 
       final CustomParentData childParentData = child!.parentData as CustomParentData;
       childParentData.offset =Offset.zero;
     }
   }
-
-
 
   @override
   void paint(PaintingContext context, Offset offset) {
@@ -367,14 +364,15 @@ class RenderCustomSingleChild extends RenderBox with RenderObjectWithChildMixin<
   @override
   bool hitTest(BoxHitTestResult result, {required Offset position}) {
     if (child != null) {
-      //TODO
-      final CustomParentData childParentData = child!.parentData as CustomParentData;
-      final Offset childOffset = childParentData.offset;
-      if (position.dx >= childOffset.dx &&
-          position.dx <= childOffset.dx + child!.size.width &&
-          position.dy >= childOffset.dy &&
-          position.dy <= childOffset.dy + child!.size.height) {
-        return child!.hitTest(result, position: position - childOffset);
+      final int rowIndex = _cellMapping.rowIndex;
+      final ColumnMetrics columnMetrics = _columnsMetrics[_cellMapping.columnIndex];
+      final double top = (rowIndex * _rowHeight) - verticalOffset;
+      final Offset renderedChildOffset =Offset(columnMetrics.offset - horizontalOffset, top);
+
+      // Adjusts the offset to the position relative to the hit within the child.
+      final Offset localOffset = position - renderedChildOffset;
+      if (child!.hitTest(result, position: localOffset)) {
+        return true;
       }
     }
     return false;
