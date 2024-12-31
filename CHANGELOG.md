@@ -7,29 +7,45 @@
 * New cell types
   * Custom rendering using Canvas
   * Bar progress
-
 * Changes
-  * `DaviModel` is now non-nullable in `Davi`
+  * `Davi`
+    * The `lastRowWidget` attribute has been renamed to `onLastVisibleRow`.
+    * The `onLastRowWidget` attribute has been renamed to `onTrailingWidget`.
+    * The `pinnedHorizontalScrollController` attribute has been renamed to `leftPinnedHorizontalScrollController`.
+    * The `model` attribute is now non-nullable.
   * `DaviColumn`
-    * `stringValue`, `intValue`, `objectValue` and `doubleValue` has been replaced by `cellValue`
-    * `cellBuilder` has been replaced by `cellWidget`
-    * `iconValueMapper` has been replaced by `cellIcon`
-    * `fractionDigits` has been removed
-    * `cellStyleBuilder` has been removed
+    * The `stringValue`, `intValue`, `objectValue` and `doubleValue` attributes has been replaced by `cellValue`.
+    * The `cellBuilder` attribute has been replaced by `cellWidget`.
+    * The `iconValueMapper` attribute has been replaced by `cellIcon`.
+    * The `fractionDigits` attribute has been removed.
+    * The `cellStyleBuilder` attribute has been removed.
+    * The `cellTextStyle` attribute has been updated from a `TextStyle` type to a builder of type `CellTextStyleBuilder`
+    * The default `cellClip` value has been changed to `TRUE`.
+    * The `grow` attribute is now applied only during the initial layout for columns when `ColumnWidthBehavior` is set to `scrollable`.
   * `CellThemeData`
-    * `overflow` has been removed
+    * The `overflow` attribute has been removed.
   * `DaviThemeData`
-    * `topCornerBorderColor` migrated to `EdgeThemeData.headerColor`
-    * `topCornerColor` to `EdgeThemeData`: `headerBottomBorderColor` and `headerLeftBorderColor`
-    * `bottomCornerBorderColor` to `EdgeThemeData`: `scrollbarLeftBorderColor` and `scrollbarTopBorderColor`
-    * `bottomCornerColor` to `EdgeThemeData.scrollbarColor`
+    * The `topCornerBorderColor` attribute has been moved to `EdgeThemeData.headerColor`.
+    * The `topCornerColor` attribute has been changed to `EdgeThemeData` attributes: `headerBottomBorderColor` and `headerLeftBorderColor`.
+    * The `bottomCornerBorderColor` attribute has been changed to `EdgeThemeData` attribute: `scrollbarLeftBorderColor` and `scrollbarTopBorderColor`.
+    * The `bottomCornerColor` attribute has been moved to `EdgeThemeData.scrollbarColor`.
+    * The `copyWith` method has been removed.
   * `RowThemeData` 
-    * `cursor` has been renamed to `callbackCursor`
-    * `cursorOnTapGesturesOnly` has been removed
+    * The `cursor` attribute has been renamed to `callbackCursor`.
+    * The `cursorOnTapGesturesOnly` attribute has been removed.
+    * The `copyWith` method has been removed.
+    * The `lastDividerVisible` attribute has been removed.
   * `HeaderThemeData`
-    * `bottomBorderHeight` has been renamed to `bottomBorderThickness`
+    * The `bottomBorderHeight` attribute has been renamed to `bottomBorderThickness`.
+    * The `copyWith` method has been removed.
+  * `CellThemeData`
+    * The `copyWith` method has been removed.
+  * `HeaderCellThemeData`
+    * The `copyWith` method has been removed.
   * Renamed typedefs
     * `DaviRowCursor` to `RowCursorBuilder`
+    * `OnLastRowWidgetListener` to `TrailingWidgetListener`
+    * `LastVisibleRowListener` to `LastVisibleRowListener`
   * Removed classes and typedefs
     * `DaviIntValueMapper`
     * `DaviDoubleValueMapper`
@@ -37,43 +53,19 @@
     * `DaviObjectValueMapper`
     * `DaviIconValueMapper`
     * `CellStyleBuilder`
+    * `DaviRow`
+* BugFixes 
+  * Focus problem between instances (or simply another focus widget)
+  * Scroll is moving in opposite direction on Android.
+
 
 *DRAFT*
 
-
-CellThemeData.background added
-CellThemeData.copyWith removed
-
-Davi.lastRowWidget renamed Davi.trailingWidget
-Davi.onLastRowWidget renamed Davi.onTrailingWidget
-Davi.pinnedHorizontalScrollController renamed Davi.leftPinnedHorizontalScrollController
-
-RowThemeData.copyWith removed
-HeaderCellThemeData.copyWith removed
-HeaderThemeData.copyWith removed
-DaviThemeData.copyWith removed
-
-DaviColumn.cellClip default value changed to TRUE
-
-DaviColumn.cellTextStyle changed to builder
-
-RowThemeData.lastDividerVisible removed
-
-DaviRow removed
-RowCursorBuilder parameter : DaviRow to DATA data, int index, bool hovered
-CellBackgroundBuilder parameter : DaviRow to DATA data, int index, bool hovered
-DaviRowColor parameter : DaviRow to DATA data, int index, bool hovered
-DaviCellBuilder parameter : BuildContext, DaviRow to BuildContext, DATA data, int index, bool hovered
-DaviCellSemanticsBuilder parameter : BuildContext, DaviRow to BuildContext, DATA data, int index, bool hovered
-
-- typedef
- - OnLastRowWidgetListener  renamed LastRowWidgetListener  
- - OnLastRowWidgetListener renamed LastRowWidgetListener
- - LastRowWidgetListener renamed 
-
-
-DaviColumn.grow attribute is now applied only during the initial layout for columns when ColumnWidthBehavior is set to scrollable
-
+RowCursorBuilder attribute : DaviRow to DATA data, int index, bool hovered
+CellBackgroundBuilder attribute : DaviRow to DATA data, int index, bool hovered
+DaviRowColor attribute : DaviRow to DATA data, int index, bool hovered
+DaviCellBuilder attribute : BuildContext, DaviRow to BuildContext, DATA data, int index, bool hovered
+DaviCellSemanticsBuilder attribute : BuildContext, DaviRow to BuildContext, DATA data, int index, bool hovered
 
 bug
 - resizing column outside
@@ -152,11 +144,11 @@ final bool sortable;
 * Refactor
   * The `sortable` attribute of the `DaviColumn` can be `TRUE` even without a `sort` function.
   * Typedef `DaviColumnSort`
-    * New parameter: `DaviColumn<DATA> column`
+    * New attribute: `DaviColumn<DATA> column`
 
 ## 3.0.0
 
-* Renaming classes and parameters
+* Renaming classes and attributes
   * `EasyTable<ROW>` to `Davi<DATA>`
   * `EasyTableColumn<ROW>` to `DaviColumn<DATA>`
   * `EasyTableTheme` to `DaviTheme`
