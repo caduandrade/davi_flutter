@@ -9,7 +9,7 @@
   * Bar progress
 * Changes
   * `Davi`
-    * The `lastRowWidget` attribute has been renamed to `onLastVisibleRow`.
+    * The `lastRowWidget` attribute has been renamed to `trailingWidget`.
     * The `onLastRowWidget` attribute has been renamed to `onTrailingWidget`.
     * The `pinnedHorizontalScrollController` attribute has been renamed to `leftPinnedHorizontalScrollController`.
     * The `model` attribute is now non-nullable.
@@ -42,10 +42,14 @@
     * The `copyWith` method has been removed.
   * `HeaderCellThemeData`
     * The `copyWith` method has been removed.
-  * Renamed typedefs
-    * `DaviRowCursor` to `RowCursorBuilder`
+  * Typedefs
+    * `DaviRowCursor`
+      * Has been renamed to `RowCursorBuilder`.
+      * Its signature has been changed to accept `DATA data`, `int index`, and `bool hovered` instead of `DaviRow<DATA>`
     * `OnLastRowWidgetListener` to `TrailingWidgetListener`
-    * `LastVisibleRowListener` to `LastVisibleRowListener`
+    * `OnLastVisibleRowListener` to `LastVisibleRowListener`
+    * `DaviCellSemanticsBuilder` and `CellBackgroundBuilder`
+      * Its signature has been changed to accept `DATA data`, `int index`, and `bool hovered` instead of `DaviRow<DATA>` 
   * Removed classes and typedefs
     * `DaviIntValueMapper`
     * `DaviDoubleValueMapper`
@@ -57,21 +61,6 @@
 * BugFixes 
   * Focus problem between instances (or simply another focus widget)
   * Scroll is moving in opposite direction on Android.
-
-
-*DRAFT*
-
-RowCursorBuilder attribute : DaviRow to DATA data, int index, bool hovered
-CellBackgroundBuilder attribute : DaviRow to DATA data, int index, bool hovered
-DaviRowColor attribute : DaviRow to DATA data, int index, bool hovered
-DaviCellBuilder attribute : BuildContext, DaviRow to BuildContext, DATA data, int index, bool hovered
-DaviCellSemanticsBuilder attribute : BuildContext, DaviRow to BuildContext, DATA data, int index, bool hovered
-
-bug
-- resizing column outside
-  - lost icon?
-
-
 
 ## 3.5.0
 
