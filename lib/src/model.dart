@@ -30,9 +30,12 @@ class DaviModel<DATA> extends ChangeNotifier {
     _updateRows(notify: false);
   }
 
-  late List<DATA> _rows;
   final List<DaviColumn<DATA>> _columns = [];
+
   late final List<DATA> _originalRows;
+  late List<DATA> _sortableRows;
+  late UnmodifiableListView<DATA> _rowsView;
+  UnmodifiableListView<DATA> get rows => _rowsView;
 
   /// The event that will be triggered at each sorting.
   OnSortCallback<DATA>? onSort;
@@ -72,7 +75,7 @@ class DaviModel<DATA> extends ChangeNotifier {
   /// The column must be sortable.
   final bool alwaysSorted;
 
-  bool get _isRowsModifiable => _rows is! UnmodifiableListView;
+  bool get _isRowsModifiable => _sortableRows is! UnmodifiableListView;
 
   int get originalRowsLength => _originalRows.length;
 
@@ -80,11 +83,11 @@ class DaviModel<DATA> extends ChangeNotifier {
 
   bool get isOriginalRowsNotEmpty => _originalRows.isNotEmpty;
 
-  int get rowsLength => _rows.length;
+  int get rowsLength => _sortableRows.length;
 
-  bool get isRowsEmpty => _rows.isEmpty;
+  bool get isRowsEmpty => _sortableRows.isEmpty;
 
-  bool get isRowsNotEmpty => _rows.isNotEmpty;
+  bool get isRowsNotEmpty => _sortableRows.isNotEmpty;
 
   int get columnsLength => _columns.length;
 
@@ -135,7 +138,7 @@ class DaviModel<DATA> extends ChangeNotifier {
     return false;
   }
 
-  DATA rowAt(int index) => _rows[index];
+  DATA rowAt(int index) => _sortableRows[index];
 
   void addRow(DATA row) {
     _originalRows.add(row);
@@ -161,7 +164,7 @@ class DaviModel<DATA> extends ChangeNotifier {
 
   void removeRowAt(int index) {
     if (_isRowsModifiable) {
-      DATA row = _rows.removeAt(index);
+      DATA row = _sortableRows.removeAt(index);
       _originalRows.remove(row);
     } else {
       _originalRows.removeAt(index);
@@ -172,7 +175,7 @@ class DaviModel<DATA> extends ChangeNotifier {
   void removeRow(DATA row) {
     _originalRows.remove(row);
     if (_isRowsModifiable) {
-      _rows.remove(row);
+      _sortableRows.remove(row);
     }
     notifyListeners();
   }
@@ -351,10 +354,11 @@ class DaviModel<DATA> extends ChangeNotifier {
 
       // Convert the sorted indexedList back into a normal list of values
       // This gives us the sorted list of values without the indices
-      _rows = indexedList.map((entry) => entry.value).toList();
+      _sortableRows = indexedList.map((entry) => entry.value).toList();
     } else {
-      _rows = UnmodifiableListView(_originalRows);
+      _sortableRows = UnmodifiableListView(_originalRows);
     }
+    _rowsView = UnmodifiableListView(_sortableRows);
     if (notify) {
       notifyListeners();
     }
