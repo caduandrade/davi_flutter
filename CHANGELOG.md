@@ -6,7 +6,7 @@
 * Column summary (Footer)
 * New cell types
   * Custom rendering using Canvas
-  * Bar progress
+  * Percentage bar
 * Changes
   * `Davi`
     * The `lastRowWidget` attribute has been renamed to `trailingWidget`.

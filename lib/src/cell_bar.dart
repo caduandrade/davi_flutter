@@ -9,22 +9,22 @@ class CellBarStyle {
   ///
   /// This color represents the portion of the bar that is not filled, indicating
   /// the remaining progress.
-  final Color barBackground;
+  final Color? barBackground;
 
   /// A function that returns a color for the bar's foreground based on
   /// the current progress value (ranging from 0.0 to 1.0).
   ///
   /// This determines the color of the filled portion of the bar, reflecting the value.
-  final CellBarColor barForeground;
+  final CellBarColor? barForeground;
 
   /// A function that returns the color for the text displayed on the progress bar
   /// based on the current progress value.
   ///
   /// This allows for dynamic text color changes as the progress changes.
-  final CellBarColor textColor;
+  final CellBarColor? textColor;
 
   /// The size of the text displayed.
-  final double textSize;
+  final double? textSize;
 
   /// Creates a [CellBarStyle] object with the given properties.
   ///
@@ -33,10 +33,10 @@ class CellBarStyle {
   /// [textColor] determines the color of the text based on the value.
   /// [textSize] defines the size of the text.
   const CellBarStyle({
-    required this.barBackground,
-    required this.barForeground,
-    required this.textColor,
-    required this.textSize,
+    this.barBackground,
+    this.barForeground,
+    this.textColor,
+    this.textSize,
   });
 
   @override

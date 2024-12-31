@@ -119,10 +119,14 @@ class CellWidget<DATA> extends StatelessWidget {
       if (barValue != null) {
         child = CustomPaint(
             size: Size(column.width, theme.cell.contentHeight),
+
             painter: _BarPainter(
                 value: barValue,
                 painterCache: painterCache,
-                barStyle: column.cellBarStyle ?? theme.cell.barStyle));
+                barBackground: column.cellBarStyle?.barBackground??theme.cell.barStyle.barBackground,
+                barForeground: column.cellBarStyle?.barForeground??theme.cell.barStyle.barForeground,
+                textSize: column.cellBarStyle?.textSize??theme.cell.barStyle.textSize,
+                textColor: column.cellBarStyle?.textColor??theme.cell.barStyle.textColor));
       }
     } else if (column.cellWidget != null) {
       child = column.cellWidget!(context, data, rowIndex);
@@ -187,33 +191,46 @@ class _BarPainter extends CustomPainter {
   _BarPainter(
       {required this.value,
       required this.painterCache,
-      required this.barStyle});
+      required this.barForeground,
+      required this.barBackground,
+      required this.textColor,
+      required this.textSize});
 
   final double value;
-  final CellBarStyle barStyle;
+  final Color? barBackground;
+  final CellBarColor? barForeground;
+  final CellBarColor? textColor;
+  final double? textSize;
   final PainterCache painterCache;
 
   @override
   void paint(Canvas canvas, Size size) {
-    Paint paint = Paint()..color = barStyle.barBackground;
-    canvas.drawRect(Rect.fromLTRB(0, 0, size.width, size.height), paint);
-    paint.color = barStyle.barForeground(value);
-    double width = value * size.width;
+    Paint paint = Paint();
+    if(barBackground!=null) {
+      paint.color=barBackground!;
+      canvas.drawRect(Rect.fromLTRB(0, 0, size.width, size.height), paint);
+    }
 
-    canvas.drawRect(Rect.fromLTRB(0, 0, width, size.height), paint);
+    if(barBackground!=null) {
+      paint.color = barForeground!(value);
+      double width = value * size.width;
+      canvas.drawRect(Rect.fromLTRB(0, 0, width, size.height), paint);
+    }
 
-    TextPainter textPainter = painterCache.getTextPainter(
-        width: size.width,
-        textStyle: TextStyle(
-            fontSize: barStyle.textSize, color: barStyle.textColor(value)),
-        value: '${(value * 100).truncate()}%',
-        rowSpan: 1,
-        columnSpan: 1);
-    final Offset textOffset = Offset(
-      (size.width - textPainter.width) / 2,
-      (size.height - textPainter.height) / 2,
-    );
-    textPainter.paint(canvas, textOffset);
+    if(textColor!=null) {
+      TextPainter textPainter = painterCache.getTextPainter(
+          width: size.width,
+          textStyle: TextStyle(
+              fontSize: textSize, color: textColor!(value)),
+          value: '${(value * 100).truncate()}%',
+          rowSpan: 1,
+          columnSpan: 1);
+      final Offset textOffset = Offset(
+        (size.width - textPainter.width) / 2,
+        (size.height - textPainter.height) / 2,
+      );
+      textPainter.paint(canvas, textOffset);
+    }
   }
 
   @override
