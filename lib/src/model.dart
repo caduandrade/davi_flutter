@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import 'package:collection/collection.dart';
 import 'package:davi/src/column.dart';
 import 'package:davi/src/max_span_behavior.dart';
+import 'package:davi/src/row_span_overflow_behavior.dart';
 import 'package:davi/src/sort.dart';
 import 'package:davi/src/sort_callback_typedef.dart';
 import 'package:davi/src/sort_direction.dart';
@@ -22,6 +23,7 @@ class DaviModel<DATA> extends ChangeNotifier {
       this.onSort,
       int maxColumnSpan = 10,
       int maxRowSpan = 15,
+      this.rowSpanOverflowBehavior = RowSpanOverflowBehavior.cap,
       this.maxSpanBehavior = MaxSpanBehavior.throwException})
       : maxRowSpan = math.max(maxRowSpan, 1),
         maxColumnSpan = math.max(maxColumnSpan, 1) {
@@ -115,6 +117,9 @@ class DaviModel<DATA> extends ChangeNotifier {
   ///
   /// Refer to [MaxSpanBehavior] for details on the available policies.
   final MaxSpanBehavior maxSpanBehavior;
+
+  /// Defines the behavior when a cell's rowSpan exceeds the available number of rows in the table.
+  final RowSpanOverflowBehavior rowSpanOverflowBehavior;
 
   /// Indicates whether the model is sorted.
   ///

@@ -1,5 +1,6 @@
 import 'dart:collection';
 import 'dart:math' as math;
+import 'package:davi/davi.dart';
 import 'package:davi/src/column.dart';
 import 'package:davi/src/internal/column_metrics.dart';
 import 'package:davi/src/internal/new/collision_detector.dart';
@@ -236,8 +237,15 @@ class ViewportState<DATA> extends ChangeNotifier {
           }
 
           if (rowIndex + rowSpan > model.rowsLength) {
-            throw StateError(
-                'The row span exceeds the table\'s row limit at row $rowIndex and column $columnIndex.');
+            if (model.rowSpanOverflowBehavior ==
+                RowSpanOverflowBehavior.error) {
+              throw StateError(
+                  'The row span exceeds the table\'s row limit at row $rowIndex and column $columnIndex.');
+            } else if (model.rowSpanOverflowBehavior ==
+                RowSpanOverflowBehavior.cap) {
+              // Adjust rowSpan to fit within the available rows
+              rowSpan = model.rowsLength - rowIndex;
+            }
           }
 
           int columnSpan = math.max(column.columnSpan(data, rowIndex), 1);
