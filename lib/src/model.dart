@@ -2,6 +2,7 @@ import 'dart:collection';
 import 'dart:math' as math;
 
 import 'package:collection/collection.dart';
+import 'package:davi/src/cell_collision_behavior.dart';
 import 'package:davi/src/column.dart';
 import 'package:davi/src/max_span_behavior.dart';
 import 'package:davi/src/row_span_overflow_behavior.dart';
@@ -23,6 +24,7 @@ class DaviModel<DATA> extends ChangeNotifier {
       this.onSort,
       int maxColumnSpan = 10,
       int maxRowSpan = 15,
+      this.collisionBehavior = CellCollisionBehavior.ignore,
       this.rowSpanOverflowBehavior = RowSpanOverflowBehavior.cap,
       this.maxSpanBehavior = MaxSpanBehavior.throwException})
       : maxRowSpan = math.max(maxRowSpan, 1),
@@ -47,6 +49,13 @@ class DaviModel<DATA> extends ChangeNotifier {
   bool _hasSummary = false;
 
   bool get hasSummary => _hasSummary;
+
+  /// Determines the behavior when a cell collision occurs in the grid.
+  ///
+  /// This property uses [CellCollisionBehavior] to define how collisions
+  /// are handled, such as ignoring the colliding cell, logging a warning,
+  /// allowing overlap, or throwing an exception.
+  final CellCollisionBehavior collisionBehavior;
 
   /// Gets the sorted columns.
   List<DaviColumn<DATA>> get sortedColumns {
@@ -168,6 +177,7 @@ class DaviModel<DATA> extends ChangeNotifier {
     _updateRows(notify: true);
   }
 
+  /// Removes a row from a given index.
   void removeRowAt(int index) {
     if (_isRowsModifiable) {
       DATA row = _sortableRows.removeAt(index);
@@ -178,6 +188,7 @@ class DaviModel<DATA> extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Removes a row.
   void removeRow(DATA row) {
     _originalRows.remove(row);
     if (_isRowsModifiable) {
@@ -233,6 +244,7 @@ class DaviModel<DATA> extends ChangeNotifier {
     }
   }
 
+  /// Adds new columns to the model.
   void addColumns(Iterable<DaviColumn<DATA>> columns) {
     _addColumns(columns, true);
   }
@@ -262,11 +274,13 @@ class DaviModel<DATA> extends ChangeNotifier {
     _updateRows(notify: true);
   }
 
+  /// Removes a column from a given index.
   void removeColumnAt(int index) {
     DaviColumn<DATA> column = _columns[index];
     removeColumn(column);
   }
 
+  /// Removes a column.
   void removeColumn(DaviColumn<DATA> column) {
     if (_columns.remove(column)) {
       column.removeListener(notifyListeners);

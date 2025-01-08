@@ -39,7 +39,7 @@ class CellWidget<DATA> extends StatelessWidget {
         hoverNotifier: daviContext.hoverNotifier,
         builder: _builder);
 
-    if (daviContext.collisionBehavior == CellCollisionBehavior.overlap) {
+    if (daviContext.model.collisionBehavior == CellCollisionBehavior.overlap) {
       return child;
     }
 
@@ -50,18 +50,18 @@ class CellWidget<DATA> extends StatelessWidget {
         rowSpan: rowSpan,
         columnSpan: columnSpan);
     if (intercepts) {
-      if (daviContext.collisionBehavior == CellCollisionBehavior.ignore) {
+      if (daviContext.model.collisionBehavior == CellCollisionBehavior.ignore) {
         offstage = true;
-      } else if (daviContext.collisionBehavior ==
+      } else if (daviContext.model.collisionBehavior ==
           CellCollisionBehavior.ignoreAndWarn) {
         offstage = true;
         debugPrint(
             'Collision detected at cell rowIndex: $rowIndex columnIndex: $columnIndex.');
-      } else if (daviContext.collisionBehavior ==
+      } else if (daviContext.model.collisionBehavior ==
           CellCollisionBehavior.overlapAndWarn) {
         debugPrint(
             'Collision detected at cell rowIndex: $rowIndex columnIndex: $columnIndex.');
-      } else if (daviContext.collisionBehavior ==
+      } else if (daviContext.model.collisionBehavior ==
           CellCollisionBehavior.throwException) {
         throw StateError(
             'Collision detected at cell rowIndex: $rowIndex columnIndex: $columnIndex.');
