@@ -166,34 +166,6 @@ class DaviColumn<DATA> extends ChangeNotifier {
 
   final DaviCellSemanticsBuilder<DATA>? semanticsBuilder;
 
-  @internal
-  void setSort(DaviSort sort, int priority) {
-    if (sort.columnId != id) {
-      throw ArgumentError.value(sort.columnId, null,
-          'The columnId does not have the same value as the column identifier.');
-    }
-    if (!sortable) {
-      throw ArgumentError('Column is not sortable.');
-    }
-    _sort = sort;
-    _sortPriority = priority;
-  }
-
-  @internal
-  bool setSortPriority(int value) {
-    if (_sort != null) {
-      _sortPriority = value;
-      return true;
-    }
-    return false;
-  }
-
-  @internal
-  void clearSort() {
-    _sort = null;
-    _sortPriority = null;
-  }
-
   @override
   String toString() {
     return 'DaviColumn{name: $name}';
@@ -279,4 +251,36 @@ class DaviColumnHelper {
 
   static bool isLayoutPerformed({required DaviColumn column}) =>
       column._layoutPerformed;
+
+  @internal
+  static void setSort(
+      {required DaviColumn column,
+      required DaviSort sort,
+      required int priority}) {
+    if (sort.columnId != column.id) {
+      throw ArgumentError.value(sort.columnId, null,
+          'The columnId does not have the same value as the column identifier.');
+    }
+    if (!column.sortable) {
+      throw ArgumentError('Column is not sortable.');
+    }
+    column._sort = sort;
+    column._sortPriority = priority;
+  }
+
+  @internal
+  static bool setSortPriority(
+      {required DaviColumn column, required int value}) {
+    if (column._sort != null) {
+      column._sortPriority = value;
+      return true;
+    }
+    return false;
+  }
+
+  @internal
+  static void clearSort({required DaviColumn column}) {
+    column._sort = null;
+    column._sortPriority = null;
+  }
 }

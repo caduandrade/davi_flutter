@@ -200,7 +200,7 @@ class DaviModel<DATA> extends ChangeNotifier {
   }
 
   void addColumn(DaviColumn<DATA> column) {
-    column.clearSort();
+    DaviColumnHelper.clearSort(column: column);
     _columns.add(column);
     _checkColumnIdCollision();
     _checkSummary();
@@ -211,7 +211,7 @@ class DaviModel<DATA> extends ChangeNotifier {
 
   void addColumns(Iterable<DaviColumn<DATA>> columns) {
     for (DaviColumn<DATA> column in columns) {
-      column.clearSort();
+      DaviColumnHelper.clearSort(column: column);
       _columns.add(column);
       column.addListener(notifyListeners);
     }
@@ -246,10 +246,11 @@ class DaviModel<DATA> extends ChangeNotifier {
     if (_columns.remove(column)) {
       column.removeListener(notifyListeners);
       if (column.sort != null) {
-        column.clearSort();
+        DaviColumnHelper.clearSort(column: column);
         int priority = 1;
         for (DaviColumn<DATA> otherColumn in _columns) {
-          if (otherColumn.setSortPriority(priority)) {
+          if (DaviColumnHelper.setSortPriority(
+              column: otherColumn, value: priority)) {
             priority++;
           }
         }
@@ -280,7 +281,7 @@ class DaviModel<DATA> extends ChangeNotifier {
 
   void _clearColumnsSortData() {
     for (DaviColumn<DATA> column in _columns) {
-      column.clearSort();
+      DaviColumnHelper.clearSort(column: column);
     }
   }
 
@@ -304,7 +305,8 @@ class DaviModel<DATA> extends ChangeNotifier {
       }
       DaviColumn<DATA>? column = getColumn(sort.columnId);
       if (column != null && column.sortable) {
-        column.setSort(sort, priority++);
+        DaviColumnHelper.setSort(
+            column: column, sort: sort, priority: priority++);
         if (!multiSortEnabled) {
           // only the first one
           break;
@@ -330,8 +332,10 @@ class DaviModel<DATA> extends ChangeNotifier {
       }
       // No sorted columns. Let's order the first one available.
       if (firstNonSortedColumn != null) {
-        firstNonSortedColumn.setSort(
-            DaviSort(firstNonSortedColumn.id, DaviSortDirection.ascending), 1);
+        DaviSort sort =
+            DaviSort(firstNonSortedColumn.id, DaviSortDirection.ascending);
+        DaviColumnHelper.setSort(
+            column: firstNonSortedColumn, sort: sort, priority: 1);
       }
     }
   }
