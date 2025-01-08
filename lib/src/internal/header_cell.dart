@@ -70,7 +70,7 @@ class _DaviHeaderCellState extends State<DaviHeaderCell> {
         }
         children.add(Align(
             alignment: widget.column.headerAlignment ?? theme.alignment,
-            child: Text(widget.column.sortPriority!.toString(),
+            child: Text(widget.column.sortPriority.toString(),
                 style: TextStyle(
                     color: theme.sortPriorityColor,
                     fontSize: theme.sortPrioritySize))));

@@ -160,9 +160,9 @@ class DaviColumn<DATA> extends ChangeNotifier {
   DaviSort? _sort;
 
   DaviSort? get sort => _sort;
-  int? _sortPriority;
+  int _sortPriority = 1;
 
-  int? get sortPriority => _sortPriority;
+  int get sortPriority => _sortPriority;
 
   final DaviCellSemanticsBuilder<DATA>? semanticsBuilder;
 
@@ -252,7 +252,6 @@ class DaviColumnHelper {
   static bool isLayoutPerformed({required DaviColumn column}) =>
       column._layoutPerformed;
 
-  @internal
   static void setSort(
       {required DaviColumn column,
       required DaviSort sort,
@@ -265,22 +264,20 @@ class DaviColumnHelper {
       throw ArgumentError('Column is not sortable.');
     }
     column._sort = sort;
-    column._sortPriority = priority;
+    column._sortPriority = math.max(priority,1);
   }
 
-  @internal
   static bool setSortPriority(
       {required DaviColumn column, required int value}) {
     if (column._sort != null) {
-      column._sortPriority = value;
+      column._sortPriority = math.max(value,1);
       return true;
     }
     return false;
   }
 
-  @internal
   static void clearSort({required DaviColumn column}) {
     column._sort = null;
-    column._sortPriority = null;
+    column._sortPriority = 1;
   }
 }

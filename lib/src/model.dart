@@ -52,7 +52,7 @@ class DaviModel<DATA> extends ChangeNotifier {
   List<DaviColumn<DATA>> get sortedColumns {
     List<DaviColumn<DATA>> list =
         _columns.where((column) => column.sort != null).toList();
-    list.sort((a, b) => a.sortPriority!.compareTo(b.sortPriority!));
+    list.sort((a, b) => a.sortPriority.compareTo(b.sortPriority));
     return list;
   }
 
