@@ -8,7 +8,7 @@ import 'package:meta/meta.dart';
 class CollisionDetector {
   final Set<_CellSpan> _cache = {};
 
-  void clear(){
+  void clear() {
     _cache.clear();
   }
 
@@ -79,12 +79,12 @@ class _CellSpan {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-          other is _CellSpan &&
-              runtimeType == other.runtimeType &&
-              rowIndex == other.rowIndex &&
-              columnIndex == other.columnIndex &&
-              rowSpan == other.rowSpan &&
-              columnSpan == other.columnSpan;
+      other is _CellSpan &&
+          runtimeType == other.runtimeType &&
+          rowIndex == other.rowIndex &&
+          columnIndex == other.columnIndex &&
+          rowSpan == other.rowSpan &&
+          columnSpan == other.columnSpan;
 
   @override
   int get hashCode =>

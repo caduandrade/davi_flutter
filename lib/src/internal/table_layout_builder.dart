@@ -17,9 +17,7 @@ import 'package:meta/meta.dart';
 @internal
 class TableLayoutBuilder<DATA> extends StatelessWidget {
   const TableLayoutBuilder(
-      {Key? key,
-      required this.daviContext,
-      required this.onDragScroll})
+      {Key? key, required this.daviContext, required this.onDragScroll})
       : super(key: key);
 
   final DaviContext<DATA> daviContext;
@@ -100,7 +98,8 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
           id: LayoutChildId.unpinnedHorizontalScrollbar,
           child: TableScrollbar(
               axis: Axis.horizontal,
-              scrollController: daviContext.scrollControllers.unpinnedHorizontal,
+              scrollController:
+                  daviContext.scrollControllers.unpinnedHorizontal,
               color: theme.scrollbar.unpinnedHorizontalColor,
               borderColor: theme.scrollbar.unpinnedHorizontalBorderColor,
               contentSize: layoutSettings.unpinnedContentWidth,
@@ -114,24 +113,21 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
 
     children.add(TableLayoutChild(
         id: LayoutChildId.cells,
-        child:
-        LayoutBuilder(builder:(context, constraints) {
+        child: LayoutBuilder(builder: (context, constraints) {
           DaviThemeData theme = DaviTheme.of(context);
-        return TableContent(
-            daviContext: daviContext,
-            layoutSettings: layoutSettings,
-        rowFillHeight: theme.row.fillHeight,
-        maxWidth: constraints.maxWidth,
-        maxHeight: constraints.maxHeight);
-        }
-    )));
+          return TableContent(
+              daviContext: daviContext,
+              layoutSettings: layoutSettings,
+              rowFillHeight: theme.row.fillHeight,
+              maxWidth: constraints.maxWidth,
+              maxHeight: constraints.maxHeight);
+        })));
 
     if (daviContext.model.hasSummary) {
       children.add(TableLayoutChild(
           id: LayoutChildId.summary,
           child: SummaryWidget(
-              daviContext: daviContext,
-              layoutSettings: layoutSettings)));
+              daviContext: daviContext, layoutSettings: layoutSettings)));
       if (layoutSettings.hasVerticalScrollbar) {
         children.add(TableLayoutChild(
             id: LayoutChildId.summaryEdge,
@@ -140,8 +136,6 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
     }
 
     return TableLayout<DATA>(
-        layoutSettings: layoutSettings,
-        theme: theme,
-        children: children);
+        layoutSettings: layoutSettings, theme: theme, children: children);
   }
 }

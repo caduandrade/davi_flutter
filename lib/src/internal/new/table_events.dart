@@ -24,7 +24,6 @@ class TableEvents<DATA> extends StatelessWidget {
 
   final RowRegionCache rowRegions;
 
-
   final RowThemeData rowTheme;
 
   @override
@@ -66,9 +65,8 @@ class TableEvents<DATA> extends StatelessWidget {
     }
     return widget;
   }
-  
+
   ScrollController get verticalScroll => daviContext.scrollControllers.vertical;
-  
 
   void _onEnter(PointerEnterEvent event) {
     _updateHover(event.localPosition);
@@ -195,8 +193,7 @@ class TableEvents<DATA> extends StatelessWidget {
     if (event is KeyUpEvent) {
       if (verticalScroll.hasClients) {
         if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-          double target = math.min(
-              verticalScroll.position.pixels + rowHeight,
+          double target = math.min(verticalScroll.position.pixels + rowHeight,
               verticalScroll.position.maxScrollExtent);
           verticalScroll.animateTo(target,
               duration: const Duration(milliseconds: 30), curve: Curves.ease);

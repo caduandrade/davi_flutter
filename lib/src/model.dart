@@ -365,29 +365,29 @@ class DaviModel<DATA> extends ChangeNotifier {
   }
 
   /// Function to realize the multi sort.
-  int _compoundSort(DATA dataA, int indexA, DATA dataB, int indexB) {
+  int _compoundSort(DATA rowA, int indexA, DATA rowB, int indexB) {
     int r = 0;
     for (final DaviColumn<DATA> column in sortedColumns) {
       if (column.sort != null) {
-        final DaviDataComparator<DATA> dataComparator = column.dataComparator;
+        final DaviComparator<DATA> dataComparator = column.dataComparator;
         final DaviSortDirection direction = column.sort!.direction;
 
-        dynamic a, b;
+        dynamic cellValueA, cellValueB;
         if (column.cellValue != null) {
-          a = column.cellValue!(dataA, indexA);
-          b = column.cellValue!(dataB, indexB);
+          cellValueA = column.cellValue!(rowA, indexA);
+          cellValueB = column.cellValue!(rowB, indexB);
         } else if (column.cellBarValue != null) {
-          a = column.cellBarValue!(dataA, indexA);
-          b = column.cellBarValue!(dataB, indexB);
+          cellValueA = column.cellBarValue!(rowA, indexA);
+          cellValueB = column.cellBarValue!(rowB, indexB);
         } else if (column.cellIcon != null) {
-          a = column.cellIcon!(dataA, indexA);
-          b = column.cellIcon!(dataB, indexB);
+          cellValueA = column.cellIcon!(rowA, indexA);
+          cellValueB = column.cellIcon!(rowB, indexB);
         }
 
         if (direction == DaviSortDirection.descending) {
-          r = dataComparator(b, a, column);
+          r = dataComparator(cellValueB, cellValueA, rowB, rowA);
         } else {
-          r = dataComparator(a, b, column);
+          r = dataComparator(cellValueA, cellValueB, rowA, rowB);
         }
         if (r != 0) {
           break;

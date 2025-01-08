@@ -36,7 +36,7 @@ class DaviColumn<DATA> extends ChangeNotifier {
       this.columnSpan = _defaultSpanProvider,
       this.cellValueStringify = _defaultCellValueStringify,
       this.leading,
-      DaviDataComparator<DATA>? dataComparator,
+      DaviComparator<DATA>? dataComparator,
       this.pinStatus = PinStatus.none,
       this.summary,
       this.resizable = true,
@@ -111,7 +111,7 @@ class DaviColumn<DATA> extends ChangeNotifier {
 
   /// Function used to sort the column. If not defined, it can be created
   /// according to value mappings.
-  final DaviDataComparator<DATA> dataComparator;
+  final DaviComparator<DATA> dataComparator;
 
   final SummaryBuilder? summary;
 
@@ -214,37 +214,57 @@ SemanticsProperties _defaultSemanticsBuilder(
 }
 
 /// Signature for sort column function.
-typedef DaviDataComparator<DATA> = int Function(
-    dynamic a, dynamic b, DaviColumn<DATA> column);
+typedef DaviComparator<DATA> = int Function(
+    dynamic cellValueA, dynamic cellValueB, DATA rowA, DATA rowB);
 
 int _defaultSpanProvider(dynamic data, rowIndex) => 1;
 
 String _defaultCellValueStringify(dynamic value) => value.toString();
 
 int _defaultDataComparator<DATA>(
-    dynamic a, dynamic b, DaviColumn<DATA> column) {
+    dynamic cellValueA, dynamic cellValueB, DATA rowA, DATA rowB) {
   // Check if both values are null
-  if (a == null && b == null) return 0; // They are equal
-  if (a == null) return -1; // 'a' is null, so 'b' is considered greater
-  if (b == null) return 1; // 'b' is null, so 'a' is considered greater
+  if (cellValueA == null && cellValueB == null) {
+    // They are equal
+    return 0;
+  }
+  if (cellValueA == null) {
+    // 'a' is null, so 'b' is considered greater
+    return -1;
+  }
+  if (cellValueB == null) {
+    // 'b' is null, so 'a' is considered greater
+    return 1;
+  }
 
-  if (a is String && b is String) {
-    if (a == b) return 0;
-    return a.compareTo(b); // String comparison is lexicographic
+  if (cellValueA is String && cellValueB is String) {
+    if (cellValueA == cellValueB) {
+      return 0;
+    }
+    // String comparison is lexicographic
+    return cellValueA.compareTo(cellValueB);
   }
 
   // Comparison when both values are not null
-  if (a is int && b is int) {
-    if (a > b) return 1;
-    if (a < b) return -1;
+  if (cellValueA is int && cellValueB is int) {
+    if (cellValueA > cellValueB) {
+      return 1;
+    }
+    if (cellValueA < cellValueB) {
+      return -1;
+    }
   }
 
-  if (a is double && b is double) {
-    if (a > b) return 1;
-    if (a < b) return -1;
+  if (cellValueA is double && cellValueB is double) {
+    if (cellValueA > cellValueB) {
+      return 1;
+    }
+    if (cellValueA < cellValueB) {
+      return -1;
+    }
   }
 
-  return a.compareTo(b);
+  return cellValueA.compareTo(cellValueB);
 }
 
 @internal

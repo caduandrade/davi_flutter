@@ -43,6 +43,9 @@
   * `HeaderCellThemeData`
     * The `copyWith` method has been removed.
   * Typedefs
+    * `DaviDataComparator`
+      * Has been renamed to `DaviComparator`
+      * Updated the signature to include `rowA` and `rowB` parameters, and removed the `column` parameter
     * `DaviRowCursor`
       * Has been renamed to `RowCursorBuilder`.
       * Its signature has been changed to accept `DATA data`, `int index`, and `bool hovered` instead of `DaviRow<DATA>`

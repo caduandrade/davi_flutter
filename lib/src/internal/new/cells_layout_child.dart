@@ -6,22 +6,15 @@ import 'package:meta/meta.dart';
 
 @internal
 class CellsLayoutChild<DATA> extends ParentDataWidget<CellsLayoutParentData> {
-
   factory CellsLayoutChild.cell(
-      {
-      required int cellIndex,
-      required Widget child}) {
+      {required int cellIndex, required Widget child}) {
     return CellsLayoutChild._(
-        key: ValueKey<int>(cellIndex),
-        cellIndex: cellIndex,
-        child: child);
+        key: ValueKey<int>(cellIndex), cellIndex: cellIndex, child: child);
   }
 
   factory CellsLayoutChild.trailing({required Widget child}) {
     return CellsLayoutChild._(
-        key: const ValueKey<int>(-1),
-        cellIndex: -1,
-        child: child);
+        key: const ValueKey<int>(-1), cellIndex: -1, child: child);
   }
 
   const CellsLayoutChild._({
@@ -38,7 +31,7 @@ class CellsLayoutChild<DATA> extends ParentDataWidget<CellsLayoutParentData> {
     final CellsLayoutParentData parentData =
         renderObject.parentData! as CellsLayoutParentData;
     if (cellIndex != parentData.cellIndex) {
-      parentData.cellIndex= cellIndex;
+      parentData.cellIndex = cellIndex;
       renderObject.parent?.markNeedsPaint();
     }
   }
@@ -52,5 +45,3 @@ class CellsLayoutChild<DATA> extends ParentDataWidget<CellsLayoutParentData> {
     properties.add(DiagnosticsProperty<Object>('cellIndex', cellIndex));
   }
 }
-
-

@@ -23,8 +23,7 @@ class TableLayout<DATA> extends MultiChildRenderObjectWidget {
   @override
   RenderObject createRenderObject(BuildContext context) {
     return TableLayoutRenderBox<DATA>(
-        layoutSettings: layoutSettings,
-        theme: theme);
+        layoutSettings: layoutSettings, theme: theme);
   }
 
   @override

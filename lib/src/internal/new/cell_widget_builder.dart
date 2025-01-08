@@ -11,13 +11,15 @@ import 'package:flutter/rendering.dart';
 import 'package:meta/meta.dart';
 
 @internal
-class CellWidgetBuilder<DATA> extends StatefulWidget{
-
-  const CellWidgetBuilder({Key? key, required this.cellIndex,
-    required this.daviContext,
-    required this.painterCache,
-  required this.viewportState,
-  required this.layoutSettings}) : super(key: key);
+class CellWidgetBuilder<DATA> extends StatefulWidget {
+  const CellWidgetBuilder(
+      {Key? key,
+      required this.cellIndex,
+      required this.daviContext,
+      required this.painterCache,
+      required this.viewportState,
+      required this.layoutSettings})
+      : super(key: key);
 
   final int cellIndex;
   final DaviContext<DATA> daviContext;
@@ -25,21 +27,19 @@ class CellWidgetBuilder<DATA> extends StatefulWidget{
   final PainterCache<DATA> painterCache;
   final TableLayoutSettings layoutSettings;
 
-
   @override
-  State<StatefulWidget> createState()=>CellWidgetBuilderState<DATA>();
-
+  State<StatefulWidget> createState() => CellWidgetBuilderState<DATA>();
 }
 
 @internal
 class CellWidgetBuilderState<DATA> extends State<CellWidgetBuilder<DATA>> {
-
   late CellMapping? _cellMapping;
 
   @override
   void initState() {
     super.initState();
-    _cellMapping= widget.viewportState.getCellMapping(cellIndex: widget.cellIndex);
+    _cellMapping =
+        widget.viewportState.getCellMapping(cellIndex: widget.cellIndex);
     widget.viewportState.addListener(_valueChanged);
   }
 
@@ -48,7 +48,8 @@ class CellWidgetBuilderState<DATA> extends State<CellWidgetBuilder<DATA>> {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.viewportState != widget.viewportState) {
       oldWidget.viewportState.removeListener(_valueChanged);
-      _cellMapping= widget.viewportState.getCellMapping(cellIndex: widget.cellIndex);
+      _cellMapping =
+          widget.viewportState.getCellMapping(cellIndex: widget.cellIndex);
       widget.viewportState.addListener(_valueChanged);
     }
   }
@@ -59,11 +60,12 @@ class CellWidgetBuilderState<DATA> extends State<CellWidgetBuilder<DATA>> {
     super.dispose();
   }
 
-  void _valueChanged(){
-    CellMapping? newCellModelMapping= widget.viewportState.getCellMapping(cellIndex: widget.cellIndex);
-    if(_cellMapping!=newCellModelMapping) {
+  void _valueChanged() {
+    CellMapping? newCellModelMapping =
+        widget.viewportState.getCellMapping(cellIndex: widget.cellIndex);
+    if (_cellMapping != newCellModelMapping) {
       setState(() {
-        _cellMapping=newCellModelMapping;
+        _cellMapping = newCellModelMapping;
       });
     }
   }
@@ -71,23 +73,27 @@ class CellWidgetBuilderState<DATA> extends State<CellWidgetBuilder<DATA>> {
   @override
   Widget build(BuildContext context) {
     final CellMapping? cellMapping = _cellMapping;
-    if(cellMapping!=null) {
+    if (cellMapping != null) {
       DATA? data;
       if (cellMapping.rowIndex < widget.daviContext.model.rowsLength) {
         data = widget.daviContext.model.rowAt(cellMapping.rowIndex);
       }
       if (data != null) {
-        DaviColumn<DATA> column = widget.daviContext.model.columnAt(
-            cellMapping.columnIndex);
+        DaviColumn<DATA> column =
+            widget.daviContext.model.columnAt(cellMapping.columnIndex);
 
-        return CustomSingleChildWidget(verticalScrollController: widget.daviContext.scrollControllers.vertical,
-            horizontalScrollController: widget.daviContext.scrollControllers.getHorizontalController(column.pinStatus),
+        return CustomSingleChildWidget(
+            verticalScrollController:
+                widget.daviContext.scrollControllers.vertical,
+            horizontalScrollController: widget.daviContext.scrollControllers
+                .getHorizontalController(column.pinStatus),
             areaBounds: widget.layoutSettings.getAreaBounds(column.pinStatus),
             columnsMetrics: widget.layoutSettings.columnsMetrics,
             cellHeight: widget.layoutSettings.themeMetrics.cell.height,
             rowHeight: widget.layoutSettings.themeMetrics.row.height,
             cellMapping: cellMapping,
-            child: CellWidget(data: data,
+            child: CellWidget(
+                data: data,
                 rowIndex: cellMapping.rowIndex,
                 rowSpan: cellMapping.rowSpan,
                 columnIndex: cellMapping.columnIndex,
@@ -100,10 +106,9 @@ class CellWidgetBuilderState<DATA> extends State<CellWidgetBuilder<DATA>> {
     }
     return Container();
   }
-
 }
-class CustomSingleChildWidget extends SingleChildRenderObjectWidget {
 
+class CustomSingleChildWidget extends SingleChildRenderObjectWidget {
   const CustomSingleChildWidget({
     Key? key,
     required this.verticalScrollController,
@@ -121,59 +126,64 @@ class CustomSingleChildWidget extends SingleChildRenderObjectWidget {
   final List<ColumnMetrics> columnsMetrics;
   final double cellHeight;
   final double rowHeight;
-  final CellMapping  cellMapping;
+  final CellMapping cellMapping;
   final Rect areaBounds;
 
   @override
   RenderCustomSingleChild createRenderObject(BuildContext context) {
     DaviThemeData theme = DaviTheme.of(context);
-    return RenderCustomSingleChild(verticalScrollController: verticalScrollController,
-        horizontalScrollController:horizontalScrollController,columnsMetrics: columnsMetrics,
-    cellHeight: cellHeight,
-        rowHeight:rowHeight,
-    cellMapping: cellMapping,
-    areaBounds: areaBounds,
-    dividerThickness: theme.row.dividerThickness,
-    columnDividerThickness: theme.columnDividerThickness);
+    return RenderCustomSingleChild(
+        verticalScrollController: verticalScrollController,
+        horizontalScrollController: horizontalScrollController,
+        columnsMetrics: columnsMetrics,
+        cellHeight: cellHeight,
+        rowHeight: rowHeight,
+        cellMapping: cellMapping,
+        areaBounds: areaBounds,
+        dividerThickness: theme.row.dividerThickness,
+        columnDividerThickness: theme.columnDividerThickness);
   }
 
   @override
-  void updateRenderObject(BuildContext context, RenderCustomSingleChild renderObject) {
+  void updateRenderObject(
+      BuildContext context, RenderCustomSingleChild renderObject) {
     DaviThemeData theme = DaviTheme.of(context);
-    renderObject..verticalScrollController = verticalScrollController
-      ..horizontalScrollController=horizontalScrollController
-    ..columnsMetrics=columnsMetrics
-        ..cellHeight=cellHeight
-      ..rowHeight=rowHeight
-      ..areaBounds=areaBounds
-    ..dividerThickness= theme.row.dividerThickness
-    ..cellMapping=cellMapping
-    ..columnDividerThickness=theme.columnDividerThickness;
+    renderObject
+      ..verticalScrollController = verticalScrollController
+      ..horizontalScrollController = horizontalScrollController
+      ..columnsMetrics = columnsMetrics
+      ..cellHeight = cellHeight
+      ..rowHeight = rowHeight
+      ..areaBounds = areaBounds
+      ..dividerThickness = theme.row.dividerThickness
+      ..cellMapping = cellMapping
+      ..columnDividerThickness = theme.columnDividerThickness;
   }
 }
 
 class CustomParentData extends ContainerBoxParentData<RenderBox> {}
 
-class RenderCustomSingleChild extends RenderBox with RenderObjectWithChildMixin<RenderBox> {
-
-
-  RenderCustomSingleChild({required ScrollController verticalScrollController,
-    required ScrollController horizontalScrollController,
-  required List<ColumnMetrics> columnsMetrics,
-  required double cellHeight,
-    required double rowHeight,
-    required double columnDividerThickness,
-    required double dividerThickness,
-    required Rect areaBounds,
-  required CellMapping cellMapping}) : _verticalScrollController = verticalScrollController,
-         _horizontalScrollController=horizontalScrollController,
-  _areaBounds=areaBounds,
-        _columnsMetrics=columnsMetrics,
-  _rowHeight=rowHeight,
-  _cellHeight=cellHeight,
-  _columnDividerThickness=columnDividerThickness,
-  _dividerThickness=dividerThickness,
-  _cellMapping=cellMapping{
+class RenderCustomSingleChild extends RenderBox
+    with RenderObjectWithChildMixin<RenderBox> {
+  RenderCustomSingleChild(
+      {required ScrollController verticalScrollController,
+      required ScrollController horizontalScrollController,
+      required List<ColumnMetrics> columnsMetrics,
+      required double cellHeight,
+      required double rowHeight,
+      required double columnDividerThickness,
+      required double dividerThickness,
+      required Rect areaBounds,
+      required CellMapping cellMapping})
+      : _verticalScrollController = verticalScrollController,
+        _horizontalScrollController = horizontalScrollController,
+        _areaBounds = areaBounds,
+        _columnsMetrics = columnsMetrics,
+        _rowHeight = rowHeight,
+        _cellHeight = cellHeight,
+        _columnDividerThickness = columnDividerThickness,
+        _dividerThickness = dividerThickness,
+        _cellMapping = cellMapping {
     _verticalScrollController.addListener(markNeedsPaint);
     _horizontalScrollController.addListener(markNeedsPaint);
   }
@@ -188,8 +198,8 @@ class RenderCustomSingleChild extends RenderBox with RenderObjectWithChildMixin<
   Rect _areaBounds;
 
   set areaBounds(Rect value) {
-    if(_areaBounds!=value){
-      _areaBounds=value;
+    if (_areaBounds != value) {
+      _areaBounds = value;
       markNeedsPaint();
     }
   }
@@ -275,9 +285,9 @@ class RenderCustomSingleChild extends RenderBox with RenderObjectWithChildMixin<
 
   CellMapping _cellMapping;
 
-  set cellMapping(CellMapping value){
-    if(_cellMapping!=value) {
-      _cellMapping=value;
+  set cellMapping(CellMapping value) {
+    if (_cellMapping != value) {
+      _cellMapping = value;
       markNeedsLayout();
     }
   }
@@ -298,7 +308,9 @@ class RenderCustomSingleChild extends RenderBox with RenderObjectWithChildMixin<
 
     if (child != null) {
       double width = 0;
-      for (int i = _cellMapping.columnIndex; i < _cellMapping.columnIndex + _cellMapping.columnSpan; i++) {
+      for (int i = _cellMapping.columnIndex;
+          i < _cellMapping.columnIndex + _cellMapping.columnSpan;
+          i++) {
         final ColumnMetrics columnMetrics = _columnsMetrics[i];
         width += columnMetrics.width;
         if (i < _cellMapping.columnIndex + _cellMapping.columnSpan - 1) {
@@ -307,17 +319,21 @@ class RenderCustomSingleChild extends RenderBox with RenderObjectWithChildMixin<
       }
 
       double height = 0;
-      for (int i = _cellMapping.rowIndex; i < _cellMapping.rowIndex + _cellMapping.rowSpan; i++) {
+      for (int i = _cellMapping.rowIndex;
+          i < _cellMapping.rowIndex + _cellMapping.rowSpan;
+          i++) {
         height += _cellHeight;
         if (i < _cellMapping.rowIndex + _cellMapping.rowSpan - 1) {
           height += _dividerThickness;
         }
       }
-      
-      child!.layout(BoxConstraints.tightFor(width: width,height: height), parentUsesSize: false);
 
-      final CustomParentData childParentData = child!.parentData as CustomParentData;
-      childParentData.offset =Offset.zero;
+      child!.layout(BoxConstraints.tightFor(width: width, height: height),
+          parentUsesSize: false);
+
+      final CustomParentData childParentData =
+          child!.parentData as CustomParentData;
+      childParentData.offset = Offset.zero;
     }
   }
 
@@ -331,14 +347,15 @@ class RenderCustomSingleChild extends RenderBox with RenderObjectWithChildMixin<
 
     if (child != null) {
       final int rowIndex = _cellMapping.rowIndex;
-      final ColumnMetrics columnMetrics = _columnsMetrics[_cellMapping.columnIndex];
+      final ColumnMetrics columnMetrics =
+          _columnsMetrics[_cellMapping.columnIndex];
 
       context.canvas.save();
       context.canvas.clipRect(_areaBounds.translate(offset.dx, offset.dy));
 
       final double top = (rowIndex * _rowHeight) - verticalOffset;
       final Offset childOffset =
-      offset.translate(columnMetrics.offset - horizontalOffset, top);
+          offset.translate(columnMetrics.offset - horizontalOffset, top);
 
       context.paintChild(child!, childOffset);
       context.canvas.restore();
@@ -349,9 +366,11 @@ class RenderCustomSingleChild extends RenderBox with RenderObjectWithChildMixin<
   bool hitTest(BoxHitTestResult result, {required Offset position}) {
     if (child != null) {
       final int rowIndex = _cellMapping.rowIndex;
-      final ColumnMetrics columnMetrics = _columnsMetrics[_cellMapping.columnIndex];
+      final ColumnMetrics columnMetrics =
+          _columnsMetrics[_cellMapping.columnIndex];
       final double top = (rowIndex * _rowHeight) - verticalOffset;
-      final Offset renderedChildOffset =Offset(columnMetrics.offset - horizontalOffset, top);
+      final Offset renderedChildOffset =
+          Offset(columnMetrics.offset - horizontalOffset, top);
 
       // Adjusts the offset to the position relative to the hit within the child.
       final Offset localOffset = position - renderedChildOffset;

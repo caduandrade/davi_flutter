@@ -25,10 +25,10 @@ class ScrollControllers {
 
   ScrollController get vertical => _vertical;
 
-  ScrollController getHorizontalController(PinStatus pinStatus){
-    if(pinStatus==PinStatus.none) {
+  ScrollController getHorizontalController(PinStatus pinStatus) {
+    if (pinStatus == PinStatus.none) {
       return unpinnedHorizontal;
-    } else if(pinStatus==PinStatus.left) {
+    } else if (pinStatus == PinStatus.left) {
       return leftPinnedHorizontal;
     }
     throw ArgumentError('Unknown pin status: ${pinStatus.name}');
@@ -36,13 +36,9 @@ class ScrollControllers {
 
   double getOffset(PinStatus pinStatus) {
     if (pinStatus == PinStatus.none) {
-      return unpinnedHorizontal.hasClients
-          ? unpinnedHorizontal.offset
-          : 0;
+      return unpinnedHorizontal.hasClients ? unpinnedHorizontal.offset : 0;
     } else if (pinStatus == PinStatus.left) {
-      return leftPinnedHorizontal.hasClients
-          ? leftPinnedHorizontal.offset
-          : 0;
+      return leftPinnedHorizontal.hasClients ? leftPinnedHorizontal.offset : 0;
     }
     throw ArgumentError('Unknown pin status: ${pinStatus.name}');
   }

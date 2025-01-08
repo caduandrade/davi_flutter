@@ -44,7 +44,8 @@ class TableContentState<DATA> extends State<TableContent<DATA>> {
     super.initState();
     _updatePainterCacheSize();
     _onVerticalScrollChange();
-    widget.daviContext.scrollControllers.vertical.addListener(_onVerticalScrollChange);
+    widget.daviContext.scrollControllers.vertical
+        .addListener(_onVerticalScrollChange);
   }
 
   @override
@@ -52,9 +53,12 @@ class TableContentState<DATA> extends State<TableContent<DATA>> {
     super.didUpdateWidget(oldWidget);
     _updatePainterCacheSize();
     _onVerticalScrollChange();
-    if (oldWidget.daviContext.scrollControllers.vertical != widget.daviContext.scrollControllers.vertical) {
-      oldWidget.daviContext.scrollControllers.vertical.removeListener(_onVerticalScrollChange);
-      widget.daviContext.scrollControllers.vertical.addListener(_onVerticalScrollChange);
+    if (oldWidget.daviContext.scrollControllers.vertical !=
+        widget.daviContext.scrollControllers.vertical) {
+      oldWidget.daviContext.scrollControllers.vertical
+          .removeListener(_onVerticalScrollChange);
+      widget.daviContext.scrollControllers.vertical
+          .addListener(_onVerticalScrollChange);
     }
   }
 
@@ -69,18 +73,20 @@ class TableContentState<DATA> extends State<TableContent<DATA>> {
         widget.layoutSettings.columnsMetrics.length;
   }
 
-  void _onVerticalScrollChange(){
-    final double verticalOffset = widget.daviContext.scrollControllers.vertical.hasClients
-        ? widget.daviContext.scrollControllers.vertical.offset
-        : 0;
+  void _onVerticalScrollChange() {
+    final double verticalOffset =
+        widget.daviContext.scrollControllers.vertical.hasClients
+            ? widget.daviContext.scrollControllers.vertical.offset
+            : 0;
 
-    if(_error!=null) {
+    if (_error != null) {
       setState(() {
-        _error=null;
+        _error = null;
       });
     }
     try {
-      _viewportState.reset(verticalOffset: verticalOffset,
+      _viewportState.reset(
+          verticalOffset: verticalOffset,
           columnsMetrics: widget.layoutSettings.columnsMetrics,
           rowHeight: widget.layoutSettings.themeMetrics.row.height,
           cellHeight: widget.layoutSettings.themeMetrics.cell.height,
@@ -89,32 +95,33 @@ class TableContentState<DATA> extends State<TableContent<DATA>> {
           model: widget.daviContext.model,
           hasTrailing: widget.daviContext.trailingWidget != null,
           rowFillHeight: widget.rowFillHeight);
-    }catch (e, stackTrace) {
-    setState(() {
-      _error=e;
-    });
-    debugPrint('$e');
-    debugPrint('$stackTrace');
+    } catch (e, stackTrace) {
+      setState(() {
+        _error = e;
+      });
+      debugPrint('$e');
+      debugPrint('$stackTrace');
     }
 
-    widget.daviContext.onTrailingWidget(_viewportState.rowRegions.trailingRegion!=null);
+    widget.daviContext
+        .onTrailingWidget(_viewportState.rowRegions.trailingRegion != null);
     widget.daviContext.onLastVisibleRow(_viewportState.lastDataRow);
   }
 
   @override
-  Widget build(BuildContext context) {   
+  Widget build(BuildContext context) {
     //TODO null hover on resizing
     DaviThemeData theme = DaviTheme.of(context);
 
     late Widget cells;
 
-    if(kDebugMode && _error!=null) {
-      cells=ErrorWidget(_error!);
+    if (kDebugMode && _error != null) {
+      cells = ErrorWidget(_error!);
     } else {
-      final double verticalOffset = widget.daviContext.scrollControllers
-          .vertical.hasClients
-          ? widget.daviContext.scrollControllers.vertical.offset
-          : 0;
+      final double verticalOffset =
+          widget.daviContext.scrollControllers.vertical.hasClients
+              ? widget.daviContext.scrollControllers.vertical.offset
+              : 0;
 
       List<CellsLayoutChild> children = [];
 
@@ -122,11 +129,13 @@ class TableContentState<DATA> extends State<TableContent<DATA>> {
         children.add(CellsLayoutChild.trailing(
             child: widget.daviContext.trailingWidget!));
       }
-      for (int cellIndex = 0; cellIndex <
-          _viewportState.maxCellCount; cellIndex++) {
+      for (int cellIndex = 0;
+          cellIndex < _viewportState.maxCellCount;
+          cellIndex++) {
         children.add(CellsLayoutChild.cell(
             cellIndex: cellIndex,
-            child: CellWidgetBuilder(cellIndex: cellIndex,
+            child: CellWidgetBuilder(
+                cellIndex: cellIndex,
                 daviContext: widget.daviContext,
                 viewportState: _viewportState,
                 painterCache: _painterCache,
@@ -137,9 +146,9 @@ class TableContentState<DATA> extends State<TableContent<DATA>> {
           layoutSettings: widget.layoutSettings,
           verticalOffset: verticalOffset,
           leftPinnedAreaBounds:
-          widget.layoutSettings.getAreaBounds(PinStatus.left),
-          unpinnedAreaBounds: widget.layoutSettings.getAreaBounds(
-              PinStatus.none),
+              widget.layoutSettings.getAreaBounds(PinStatus.left),
+          unpinnedAreaBounds:
+              widget.layoutSettings.getAreaBounds(PinStatus.none),
           rowsLength: widget.layoutSettings.rowsLength,
           rowRegionCache: _viewportState.rowRegions,
           dividerPaintManager: _viewportState.dividerPaintManager,

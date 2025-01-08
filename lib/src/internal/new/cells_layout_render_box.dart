@@ -294,9 +294,10 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
       final CellsLayoutParentData childParentData = child._parentData();
       childParentData.offset = const Offset(0, 0);
       if (childParentData.isCell) {
-          renderBox.layout(BoxConstraints.tightFor(width: size.width, height: size.height),
-              parentUsesSize: false);
-          _cells.add(renderBox);
+        renderBox.layout(
+            BoxConstraints.tightFor(width: size.width, height: size.height),
+            parentUsesSize: false);
+        _cells.add(renderBox);
       } else {
         // trailing
         renderBox.layout(
@@ -305,7 +306,6 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
             parentUsesSize: false);
         _trailing = renderBox;
       }
-
     });
   }
 
@@ -355,13 +355,13 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
 
     // cell widgets
     for (RenderBox child in _cells) {
-        context.paintChild(child, offset);
+      context.paintChild(child, offset);
     }
 
     // trailing
     if (_trailing != null && _rowRegionCache.trailingRegion != null) {
-      context.paintChild(
-          _trailing!, offset.translate(0, _rowRegionCache.trailingRegion!.bounds.top));
+      context.paintChild(_trailing!,
+          offset.translate(0, _rowRegionCache.trailingRegion!.bounds.top));
     }
 
     // foreground
@@ -444,7 +444,7 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
           if (!start.edge) {
             startColumn = _columnsMetrics[start.index];
             double scrollOffset =
-            _scrollControllers.getOffset(startColumn.pinStatus);
+                _scrollControllers.getOffset(startColumn.pinStatus);
             left += startColumn.offset +
                 startColumn.width +
                 _columnDividerThickness -
@@ -517,7 +517,7 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
     }
 
     for (RenderBox child in _cells) {
-      if(child.hitTest(result, position: position)){
+      if (child.hitTest(result, position: position)) {
         return true;
       }
     }
@@ -531,7 +531,6 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
     _hoverNotifier.removeListener(markNeedsPaint);
     super.dispose();
   }
-  
 }
 
 /// Utility extension to facilitate obtaining parent data.

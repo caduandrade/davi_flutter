@@ -119,14 +119,17 @@ class CellWidget<DATA> extends StatelessWidget {
       if (barValue != null) {
         child = CustomPaint(
             size: Size(column.width, theme.cell.contentHeight),
-
             painter: _BarPainter(
                 value: barValue,
                 painterCache: painterCache,
-                barBackground: column.cellBarStyle?.barBackground??theme.cell.barStyle.barBackground,
-                barForeground: column.cellBarStyle?.barForeground??theme.cell.barStyle.barForeground,
-                textSize: column.cellBarStyle?.textSize??theme.cell.barStyle.textSize,
-                textColor: column.cellBarStyle?.textColor??theme.cell.barStyle.textColor));
+                barBackground: column.cellBarStyle?.barBackground ??
+                    theme.cell.barStyle.barBackground,
+                barForeground: column.cellBarStyle?.barForeground ??
+                    theme.cell.barStyle.barForeground,
+                textSize: column.cellBarStyle?.textSize ??
+                    theme.cell.barStyle.textSize,
+                textColor: column.cellBarStyle?.textColor ??
+                    theme.cell.barStyle.textColor));
       }
     } else if (column.cellWidget != null) {
       child = column.cellWidget!(context, data, rowIndex);
@@ -206,22 +209,21 @@ class _BarPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     Paint paint = Paint();
-    if(barBackground!=null) {
-      paint.color=barBackground!;
+    if (barBackground != null) {
+      paint.color = barBackground!;
       canvas.drawRect(Rect.fromLTRB(0, 0, size.width, size.height), paint);
     }
 
-    if(barBackground!=null) {
+    if (barBackground != null) {
       paint.color = barForeground!(value);
       double width = value * size.width;
       canvas.drawRect(Rect.fromLTRB(0, 0, width, size.height), paint);
     }
 
-    if(textColor!=null) {
+    if (textColor != null) {
       TextPainter textPainter = painterCache.getTextPainter(
           width: size.width,
-          textStyle: TextStyle(
-              fontSize: textSize, color: textColor!(value)),
+          textStyle: TextStyle(fontSize: textSize, color: textColor!(value)),
           value: '${(value * 100).truncate()}%',
           rowSpan: 1,
           columnSpan: 1);

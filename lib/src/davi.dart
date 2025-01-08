@@ -145,10 +145,7 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
   }
 
   void _buildListenable() {
-    _listenable = Listenable.merge([
-      widget.model,
-      _columnNotifier
-    ]);
+    _listenable = Listenable.merge([widget.model, _columnNotifier]);
   }
 
   @override
@@ -215,7 +212,7 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
         columnWidthBehavior: widget.columnWidthBehavior,
         collisionBehavior: widget.collisionBehavior,
         themeMetrics: themeMetrics,
-    scrollControllers: _scrollControllers);
+        scrollControllers: _scrollControllers);
 
     return FocusTraversalGroup(
         policy: _NoTraversalPolicy(),
@@ -228,8 +225,7 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
           },
           child: ClipRect(
               child: TableLayoutBuilder(
-                  daviContext: daviContext,
-                  onDragScroll: _onDragScroll)),
+                  daviContext: daviContext, onDragScroll: _onDragScroll)),
         ));
   }
 
