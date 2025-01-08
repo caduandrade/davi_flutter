@@ -24,11 +24,14 @@ class DaviModel<DATA> extends ChangeNotifier {
       this.onSort,
       int maxColumnSpan = 10,
       int maxRowSpan = 15,
-      this.collisionBehavior = CellCollisionBehavior.ignore,
-      this.rowSpanOverflowBehavior = RowSpanOverflowBehavior.cap,
+      CellCollisionBehavior collisionBehavior = CellCollisionBehavior.ignore,
+      RowSpanOverflowBehavior rowSpanOverflowBehavior =
+          RowSpanOverflowBehavior.cap,
       this.maxSpanBehavior = MaxSpanBehavior.throwException})
       : maxRowSpan = math.max(maxRowSpan, 1),
-        maxColumnSpan = math.max(maxColumnSpan, 1) {
+        maxColumnSpan = math.max(maxColumnSpan, 1),
+        _collisionBehavior = collisionBehavior,
+        _rowSpanOverflowBehavior = rowSpanOverflowBehavior {
     _originalRows = List.from(rows);
     _addColumns(columns, false);
     _updateRows(notify: false);
@@ -50,12 +53,20 @@ class DaviModel<DATA> extends ChangeNotifier {
 
   bool get hasSummary => _hasSummary;
 
+  CellCollisionBehavior _collisionBehavior;
+
   /// Determines the behavior when a cell collision occurs in the grid.
   ///
   /// This property uses [CellCollisionBehavior] to define how collisions
   /// are handled, such as ignoring the colliding cell, logging a warning,
   /// allowing overlap, or throwing an exception.
-  final CellCollisionBehavior collisionBehavior;
+  CellCollisionBehavior get collisionBehavior => _collisionBehavior;
+  set collisionBehavior(CellCollisionBehavior value) {
+    if (_collisionBehavior != value) {
+      _collisionBehavior = value;
+      notifyListeners();
+    }
+  }
 
   /// Gets the sorted columns.
   List<DaviColumn<DATA>> get sortedColumns {
@@ -128,7 +139,15 @@ class DaviModel<DATA> extends ChangeNotifier {
   final MaxSpanBehavior maxSpanBehavior;
 
   /// Defines the behavior when a cell's rowSpan exceeds the available number of rows in the table.
-  final RowSpanOverflowBehavior rowSpanOverflowBehavior;
+  RowSpanOverflowBehavior _rowSpanOverflowBehavior;
+  RowSpanOverflowBehavior get rowSpanOverflowBehavior =>
+      _rowSpanOverflowBehavior;
+  set rowSpanOverflowBehavior(RowSpanOverflowBehavior value) {
+    if (_rowSpanOverflowBehavior != value) {
+      _rowSpanOverflowBehavior = value;
+      notifyListeners();
+    }
+  }
 
   /// Indicates whether the model is sorted.
   ///
