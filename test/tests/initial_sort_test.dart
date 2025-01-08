@@ -174,11 +174,10 @@ void oneColumn(
   if (expectSortedModel) {
     expect(model.sortedColumns.length, 1);
     expect(model.sortedColumns.first.name, 'name');
-    expect(model.sortedColumns.first.sort, isNotNull);
-    expect(model.sortedColumns.first.sort?.columnId, 'id');
+    expect(model.sortedColumns.first.sortDirection, isNotNull);
     expect(model.sortedColumns.first.sortPriority, 1);
     expect(
-        model.sortedColumns.first.sort?.direction, DaviSortDirection.ascending);
+        model.sortedColumns.first.sortDirection, DaviSortDirection.ascending);
   } else {
     expect(model.sortedColumns.length, 0);
   }
@@ -206,15 +205,13 @@ void twoColumns(
   } else {
     expect(model.isSorted, true);
     expect(model.sortedColumns.length, 1);
-    expect(model.sortedColumns.first.sort, isNotNull);
+    expect(model.sortedColumns.first.sortDirection, isNotNull);
     expect(model.sortedColumns.first.sortPriority, 1);
     expect(
-        model.sortedColumns.first.sort?.direction, DaviSortDirection.ascending);
+        model.sortedColumns.first.sortDirection, DaviSortDirection.ascending);
     if (expectSortedColumn == 1) {
-      expect(model.sortedColumns.first.sort?.columnId, 'id1');
       expect(model.sortedColumns.first.name, 'name1');
     } else if (expectSortedColumn == 2) {
-      expect(model.sortedColumns.first.sort?.columnId, 'id2');
       expect(model.sortedColumns.first.name, 'name2');
     }
   }

@@ -55,10 +55,10 @@ class _DaviHeaderCellState extends State<DaviHeaderCell> {
         expand: theme.expandableName ? 1 : 0,
         child: _textWidget(context)));
 
-    final DaviSort? sort = widget.column.sort;
-    if (sort != null) {
+    final DaviSortDirection? sortDirection = widget.column.sortDirection;
+    if (sortDirection != null) {
       Widget sortIconWidget =
-          theme.sortIconBuilder(sort.direction, theme.sortIconColors);
+          theme.sortIconBuilder(sortDirection, theme.sortIconColors);
       children.add(Align(
         alignment: widget.column.headerAlignment ?? theme.alignment,
         child: sortIconWidget,

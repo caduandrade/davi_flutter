@@ -22,6 +22,8 @@
     * The `cellTextStyle` attribute has been updated from a `TextStyle` type to a builder of type `CellTextStyleBuilder`
     * The default `cellClip` value has been changed to `TRUE`.
     * The `grow` attribute is now applied only during the initial layout for columns when `ColumnWidthBehavior` is set to `scrollable`.
+    * The `sort` attribute has been renamed to `sortDirection`.
+      * The type has been changed from `DaviSort` to `DaviSortDirection`.
   * `CellThemeData`
     * The `overflow` attribute has been removed.
   * `DaviThemeData`

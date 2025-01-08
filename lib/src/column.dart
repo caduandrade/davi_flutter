@@ -38,12 +38,16 @@ class DaviColumn<DATA> extends ChangeNotifier {
       this.leading,
       DaviComparator<DATA>? dataComparator,
       this.pinStatus = PinStatus.none,
+      DaviSortDirection? sortDirection,
+      int sortPriority = 1,
       this.summary,
       this.resizable = true,
       this.cellClip = true,
       this.sortable = true,
       this.semanticsBuilder = _defaultSemanticsBuilder})
       : id = id ?? DaviColumnId(),
+        _sortDirection = sortDirection,
+        _sortPriority = math.max(1, sortPriority),
         _width = width,
         _grow = grow != null ? math.max(1, grow) : null,
         dataComparator = dataComparator ?? _defaultDataComparator;
@@ -157,11 +161,14 @@ class DaviColumn<DATA> extends ChangeNotifier {
 
   bool resizable;
 
-  DaviSort? _sort;
+  DaviSortDirection? _sortDirection;
 
-  DaviSort? get sort => _sort;
+  /// Defines the sorting order, either ascending or descending.
+  DaviSortDirection? get sortDirection => _sortDirection;
+
   int _sortPriority = 1;
 
+  /// Defines the priority for sorting when multiple columns are ordered.
   int get sortPriority => _sortPriority;
 
   final DaviCellSemanticsBuilder<DATA>? semanticsBuilder;
@@ -254,30 +261,26 @@ class DaviColumnHelper {
 
   static void setSort(
       {required DaviColumn column,
-      required DaviSort sort,
+      required DaviSortDirection direction,
       required int priority}) {
-    if (sort.columnId != column.id) {
-      throw ArgumentError.value(sort.columnId, null,
-          'The columnId does not have the same value as the column identifier.');
-    }
     if (!column.sortable) {
       throw ArgumentError('Column is not sortable.');
     }
-    column._sort = sort;
-    column._sortPriority = math.max(priority,1);
+    column._sortDirection = direction;
+    column._sortPriority = math.max(priority, 1);
   }
 
   static bool setSortPriority(
-      {required DaviColumn column, required int value}) {
-    if (column._sort != null) {
-      column._sortPriority = math.max(value,1);
+      {required DaviColumn column, required int priority}) {
+    if (column._sortDirection != null) {
+      column._sortPriority = math.max(priority, 1);
       return true;
     }
     return false;
   }
 
   static void clearSort({required DaviColumn column}) {
-    column._sort = null;
+    column._sortDirection = null;
     column._sortPriority = 1;
   }
 }

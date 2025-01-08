@@ -26,8 +26,7 @@ void main() {
       expect(lastOnSort.columns.length, 1);
       expect(lastOnSort.columns[0].id, 1);
       expect(lastOnSort.columns[0].name, 'name1');
-      expect(
-          lastOnSort.columns[0].sort?.direction, DaviSortDirection.ascending);
+      expect(lastOnSort.columns[0].sortDirection, DaviSortDirection.ascending);
 
       model.sort([DaviSort(1)]);
 
