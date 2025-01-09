@@ -36,8 +36,8 @@ class Davi<DATA> extends StatefulWidget {
       this.columnWidthBehavior = ColumnWidthBehavior.scrollable,
       int? visibleRowsCount,
       this.focusable = true,
-      this.tapToSortEnabled = true,
       this.trailingWidget,
+      this.placeholderWidget,
       this.rowColor,
       this.rowCursor,
       this.semanticsEnabled = false,
@@ -67,12 +67,15 @@ class Davi<DATA> extends StatefulWidget {
   final Widget? trailingWidget;
   final TrailingWidgetListener? onTrailingWidget;
 
-  /// Indicates whether sorting events are enabled on the header.
-  final bool tapToSortEnabled;
-
   /// Activates semantics by adding a Semantics widget internally,
   /// but it may degrade performance.
   final bool semanticsEnabled;
+
+  /// An optional widget that replaces the body of the table
+  /// with a temporary visual element. It can be used to display a custom
+  /// state or visual indication, such as during
+  /// loading or other transitional states.
+  final Widget? placeholderWidget;
 
   @override
   State<StatefulWidget> createState() => _DaviState<DATA>();
@@ -156,7 +159,14 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
     final DaviThemeData theme = DaviTheme.of(context);
     if (theme.decoration != null) {
       return Container(
-          decoration: theme.decoration, child: _cursorBugWorkaround(context));
+          decoration: theme.decoration, child: _placeholder(context));
+    }
+    return _placeholder(context);
+  }
+
+  Widget _placeholder(BuildContext context) {
+    if (widget.placeholderWidget != null) {
+      return widget.placeholderWidget!;
     }
     return _cursorBugWorkaround(context);
   }
@@ -190,7 +200,6 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
         onTrailingWidget: _onTrailingWidget,
         rowColor: widget.rowColor,
         focusable: widget.focusable,
-        tapToSortEnabled: widget.tapToSortEnabled,
         focusNode: _focusNode,
         rowCursorBuilder: widget.rowCursor,
         trailingWidget: widget.trailingWidget,

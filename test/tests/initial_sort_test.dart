@@ -150,7 +150,8 @@ void noColumn({required bool multiSortEnabled, required bool alwaysSorted}) {
       rows: _rows,
       columns: [],
       multiSortEnabled: multiSortEnabled,
-      alwaysSorted: alwaysSorted);
+      sortingMode:
+          alwaysSorted ? SortingMode.alwaysSorted : SortingMode.interactive);
   expect(model.isSorted, false);
   expect(model.isMultiSorted, false);
   expect(model.sortedColumns.length, 0);
@@ -168,7 +169,8 @@ void oneColumn(
         DaviColumn<int>(id: 'id', name: 'name', sortable: isColumnSortable)
       ],
       multiSortEnabled: multiSortEnabled,
-      alwaysSorted: alwaysSorted);
+      sortingMode:
+          alwaysSorted ? SortingMode.alwaysSorted : SortingMode.interactive);
   expect(model.isSorted, expectSortedModel);
   expect(model.isMultiSorted, false);
   if (expectSortedModel) {
@@ -197,7 +199,8 @@ void twoColumns(
         DaviColumn<int>(id: 'id2', name: 'name2', sortable: isColumn2Sortable)
       ],
       multiSortEnabled: multiSortEnabled,
-      alwaysSorted: alwaysSorted);
+      sortingMode:
+          alwaysSorted ? SortingMode.alwaysSorted : SortingMode.interactive);
   expect(model.isMultiSorted, false);
   if (expectSortedColumn == null) {
     expect(model.isSorted, false);

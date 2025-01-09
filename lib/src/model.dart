@@ -9,6 +9,7 @@ import 'package:davi/src/row_span_overflow_behavior.dart';
 import 'package:davi/src/sort.dart';
 import 'package:davi/src/sort_callback_typedef.dart';
 import 'package:davi/src/sort_direction.dart';
+import 'package:davi/src/sorting_mode.dart';
 import 'package:flutter/widgets.dart';
 
 /// The [Davi] model.
@@ -19,8 +20,8 @@ class DaviModel<DATA> extends ChangeNotifier {
       {List<DATA> rows = const [],
       List<DaviColumn<DATA>> columns = const [],
       this.ignoreDataComparators = false,
-      this.alwaysSorted = false,
       this.multiSortEnabled = false,
+      SortingMode sortingMode = SortingMode.interactive,
       this.onSort,
       int maxColumnSpan = 10,
       int maxRowSpan = 15,
@@ -30,6 +31,7 @@ class DaviModel<DATA> extends ChangeNotifier {
       this.maxSpanBehavior = MaxSpanBehavior.throwException})
       : maxRowSpan = math.max(maxRowSpan, 1),
         maxColumnSpan = math.max(maxColumnSpan, 1),
+        _sortingMode = sortingMode,
         _collisionBehavior = collisionBehavior,
         _rowSpanOverflowBehavior = rowSpanOverflowBehavior {
     _originalRows = List.from(rows);
@@ -44,7 +46,7 @@ class DaviModel<DATA> extends ChangeNotifier {
   late UnmodifiableListView<DATA> _rowsView;
   UnmodifiableListView<DATA> get rows => _rowsView;
 
-  /// The event that will be triggered at each sorting.
+  /// The event that will be triggered before each sorting.
   OnSortCallback<DATA>? onSort;
 
   final bool multiSortEnabled;
@@ -89,13 +91,19 @@ class DaviModel<DATA> extends ChangeNotifier {
     return list;
   }
 
+  /// Specifies the sorting mode for the table: interactive, always sorted, or disabled.
+  SortingMode _sortingMode;
+  SortingMode get sortingMode => _sortingMode;
+  set sortingMode(SortingMode value) {
+    if (_sortingMode != value) {
+      _sortingMode = value;
+      _ensureSort();
+      _updateRows(notify: true);
+    }
+  }
+
   /// Ignore column [dataComparator] to maintain the natural order of the data.
   final bool ignoreDataComparators;
-
-  /// Defines if there will always be some sorted column.
-  ///
-  /// The column must be sortable.
-  final bool alwaysSorted;
 
   bool get _isRowsModifiable => _sortableRows is! UnmodifiableListView;
 
@@ -245,6 +253,11 @@ class DaviModel<DATA> extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Adds new columns to the model.
+  void addColumns(Iterable<DaviColumn<DATA>> columns) {
+    _addColumns(columns, true);
+  }
+
   void _addColumns(Iterable<DaviColumn<DATA>> columns, bool notify) {
     final bool sorted = isSorted;
     for (DaviColumn<DATA> column in columns) {
@@ -261,11 +274,6 @@ class DaviModel<DATA> extends ChangeNotifier {
     if (notify) {
       notifyListeners();
     }
-  }
-
-  /// Adds new columns to the model.
-  void addColumns(Iterable<DaviColumn<DATA>> columns) {
-    _addColumns(columns, true);
   }
 
   void _fixSortPriorities() {
@@ -327,8 +335,8 @@ class DaviModel<DATA> extends ChangeNotifier {
   void clearSort() {
     _clearColumnsSortData();
     _ensureSort();
-    _updateRows(notify: true);
     _notifyOnSort();
+    _updateRows(notify: true);
   }
 
   void _clearColumnsSortData() {
@@ -342,6 +350,9 @@ class DaviModel<DATA> extends ChangeNotifier {
   /// If multi sorting is disabled, only the first one in the list will be used.
   /// Not sortable columns will be ignored.
   void sort(List<DaviSort> newSortList) {
+    if (sortingMode == SortingMode.disabled) {
+      return;
+    }
     if (const ListEquality().equals(sortList, newSortList)) {
       // same sort
       return;
@@ -366,12 +377,12 @@ class DaviModel<DATA> extends ChangeNotifier {
       }
     }
     _ensureSort();
-    _updateRows(notify: true);
     _notifyOnSort();
+    _updateRows(notify: true);
   }
 
   void _ensureSort() {
-    if (alwaysSorted) {
+    if (sortingMode == SortingMode.alwaysSorted) {
       DaviColumn? firstNonSortedColumn;
       for (DaviColumn column in _columns) {
         if (column.sortable) {

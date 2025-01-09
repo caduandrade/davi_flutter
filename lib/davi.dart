@@ -8,6 +8,7 @@ export 'src/column.dart' hide DaviColumnHelper;
 export 'src/column_id.dart';
 export 'src/sort.dart';
 export 'src/row_span_overflow_behavior.dart';
+export 'src/sorting_mode.dart';
 export 'src/column_width_behavior.dart';
 export 'src/davi.dart';
 export 'src/last_visible_row_listener.dart';

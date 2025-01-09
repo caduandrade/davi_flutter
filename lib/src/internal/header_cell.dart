@@ -35,10 +35,11 @@ class _DaviHeaderCellState extends State<DaviHeaderCell> {
   Widget build(BuildContext context) {
     HeaderCellThemeData theme = DaviTheme.of(context).headerCell;
 
-    final bool sortEnabled = widget.daviContext.tapToSortEnabled &&
-        !_resizing &&
-        !widget.daviContext.columnNotifier.resizing &&
-        !widget.daviContext.scrolling;
+    final bool sortEnabled =
+        widget.daviContext.model.sortingMode != SortingMode.disabled &&
+            !_resizing &&
+            !widget.daviContext.columnNotifier.resizing &&
+            !widget.daviContext.scrolling;
     final bool resizable = widget.resizable &&
         widget.column.resizable &&
         (sortEnabled || _resizing);
@@ -177,7 +178,7 @@ class _DaviHeaderCellState extends State<DaviHeaderCell> {
     List<DaviSort> sortList = SortUtil.newSortList(
         sortList: model.sortList,
         multiSortEnabled: model.multiSortEnabled,
-        alwaysSorted: model.alwaysSorted,
+        alwaysSorted: model.sortingMode == SortingMode.alwaysSorted,
         columnIdToSort: widget.column.id);
     model.sort(sortList);
   }

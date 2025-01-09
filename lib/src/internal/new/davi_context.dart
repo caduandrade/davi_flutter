@@ -31,7 +31,6 @@ class DaviContext<DATA> {
       required this.onRowSecondaryTap,
       required this.onRowDoubleTap,
       required this.onRowTap,
-      required this.tapToSortEnabled,
       required this.scrolling,
       required this.visibleRowsCount,
       required this.columnWidthBehavior,
@@ -46,7 +45,6 @@ class DaviContext<DATA> {
   final bool focusable;
   final FocusNode focusNode;
   final Widget? trailingWidget;
-  final bool tapToSortEnabled;
   final DaviRowColor<DATA>? rowColor;
   final TrailingWidgetListener onTrailingWidget;
   final LastVisibleRowListener onLastVisibleRow;

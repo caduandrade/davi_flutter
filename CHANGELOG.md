@@ -13,6 +13,11 @@
     * The `onLastRowWidget` attribute has been renamed to `onTrailingWidget`.
     * The `pinnedHorizontalScrollController` attribute has been renamed to `leftPinnedHorizontalScrollController`.
     * The `model` attribute is now non-nullable.
+    * The `tapToSortEnabled` attribute has been replaced by `DaviModel.sortingMode`.
+    * The `placeholderWidget` attribute has been added.
+  * `DaviModel`
+    * The `alwaysSorted` attribute has been replaced by `sortingMode`.
+    * The `onSort` has been changed to be called before sorting.
   * `DaviColumn`
     * The `stringValue`, `intValue`, `objectValue` and `doubleValue` attributes has been replaced by `cellValue`.
     * The `cellBuilder` attribute has been replaced by `cellWidget`.
