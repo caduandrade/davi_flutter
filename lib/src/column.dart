@@ -50,7 +50,21 @@ class DaviColumn<DATA> extends ChangeNotifier {
         _sortPriority = math.max(1, sortPriority),
         _width = width,
         _grow = grow != null ? math.max(1, grow) : null,
-        dataComparator = dataComparator ?? _defaultDataComparator;
+        dataComparator = dataComparator ?? _defaultDataComparator {
+    int count = 0;
+    if (cellValue != null) count++;
+    if (cellIcon != null) count++;
+    if (cellWidget != null) count++;
+    if (cellPainter != null) count++;
+    if (cellBarValue != null) count++;
+    if (count > 1) {
+      throw ArgumentError(
+        'Conflict detected: Only one of "cellValue", "cellIcon", "cellWidget", '
+        '"cellPainter", or "cellBarValue" can be used at a time. '
+        'Ensure that only one attribute is set to avoid this error.',
+      );
+    }
+  }
 
   /// Identifier that can be assigned to this column.
   ///
@@ -109,14 +123,17 @@ class DaviColumn<DATA> extends ChangeNotifier {
   /// Cell widget mapper for each row in that column.
   final CellWidgetMapper<DATA>? cellWidget;
 
+  /// Defines the row span.
   final SpanProvider<DATA> rowSpan;
 
+  /// Defines the column span.
   final SpanProvider<DATA> columnSpan;
 
   /// Function used to sort the column. If not defined, it can be created
   /// according to value mappings.
   final DaviComparator<DATA> dataComparator;
 
+  /// Defines the column summary.
   final SummaryBuilder? summary;
 
   /// Indicates whether the cell widget should be clipped.
