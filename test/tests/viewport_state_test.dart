@@ -41,7 +41,8 @@ void main() {
           maxWidth: maxWidth,
           model: model,
           hasTrailing: false,
-          rowFillHeight: false);
+          rowFillHeight: false,
+          collisionBehavior: CellCollisionBehavior.ignore);
 
       // testing attributes
 
@@ -128,7 +129,8 @@ void main() {
           maxWidth: maxWidth,
           model: model,
           hasTrailing: false,
-          rowFillHeight: false);
+          rowFillHeight: false,
+          collisionBehavior: CellCollisionBehavior.ignore);
 
       // testing view attributes
 
@@ -210,7 +212,8 @@ void main() {
         maxWidth: maxWidth,
         model: model,
         hasTrailing: false,
-        rowFillHeight: false);
+        rowFillHeight: false,
+        collisionBehavior: CellCollisionBehavior.ignore);
 
     // testing view attributes
 

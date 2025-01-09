@@ -94,7 +94,8 @@ class TableContentState<DATA> extends State<TableContent<DATA>> {
           maxWidth: widget.maxWidth,
           model: widget.daviContext.model,
           hasTrailing: widget.daviContext.trailingWidget != null,
-          rowFillHeight: widget.rowFillHeight);
+          rowFillHeight: widget.rowFillHeight,
+          collisionBehavior: widget.daviContext.model.collisionBehavior);
     } catch (e, stackTrace) {
       setState(() {
         _error = e;

@@ -100,8 +100,7 @@ class CellWidgetBuilderState<DATA> extends State<CellWidgetBuilder<DATA>> {
                 columnSpan: cellMapping.columnSpan,
                 column: column,
                 daviContext: widget.daviContext,
-                painterCache: widget.painterCache,
-                collisionDetector: widget.viewportState.collisionDetector));
+                painterCache: widget.painterCache));
       }
     }
     return Container();

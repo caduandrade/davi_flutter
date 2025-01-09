@@ -3,7 +3,6 @@ import 'package:davi/src/internal/new/hover_listenable_builder.dart';
 import 'package:davi/src/internal/new/text_cell_painter.dart';
 import 'package:davi/src/internal/new/painter_cache.dart';
 import 'package:davi/src/internal/new/davi_context.dart';
-import 'package:davi/src/internal/new/collision_detector.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
@@ -18,8 +17,7 @@ class CellWidget<DATA> extends StatelessWidget {
       required this.columnSpan,
       required this.column,
       required this.daviContext,
-      required this.painterCache,
-      required this.collisionDetector})
+      required this.painterCache})
       : super(key: key);
 
   final DATA data;
@@ -30,50 +28,13 @@ class CellWidget<DATA> extends StatelessWidget {
   final DaviColumn<DATA> column;
   final DaviContext daviContext;
   final PainterCache<DATA> painterCache;
-  final CollisionDetector collisionDetector;
 
   @override
   Widget build(BuildContext context) {
-    Widget child = HoverListenableBuilder(
+    return HoverListenableBuilder(
         rowIndex: rowIndex,
         hoverNotifier: daviContext.hoverNotifier,
         builder: _builder);
-
-    if (daviContext.model.collisionBehavior == CellCollisionBehavior.overlap) {
-      return child;
-    }
-
-    bool offstage = false;
-    final bool intercepts = collisionDetector.intersects(
-        rowIndex: rowIndex,
-        columnIndex: columnIndex,
-        rowSpan: rowSpan,
-        columnSpan: columnSpan);
-    if (intercepts) {
-      if (daviContext.model.collisionBehavior == CellCollisionBehavior.ignore) {
-        offstage = true;
-      } else if (daviContext.model.collisionBehavior ==
-          CellCollisionBehavior.ignoreAndWarn) {
-        offstage = true;
-        debugPrint(
-            'Collision detected at cell rowIndex: $rowIndex columnIndex: $columnIndex.');
-      } else if (daviContext.model.collisionBehavior ==
-          CellCollisionBehavior.overlapAndWarn) {
-        debugPrint(
-            'Collision detected at cell rowIndex: $rowIndex columnIndex: $columnIndex.');
-      } else if (daviContext.model.collisionBehavior ==
-          CellCollisionBehavior.throwException) {
-        throw StateError(
-            'Collision detected at cell rowIndex: $rowIndex columnIndex: $columnIndex.');
-      }
-    } else {
-      collisionDetector.add(
-          rowIndex: rowIndex,
-          columnIndex: columnIndex,
-          rowSpan: rowSpan,
-          columnSpan: columnSpan);
-    }
-    return Offstage(offstage: offstage, child: child);
   }
 
   Widget _builder(BuildContext context) {

@@ -6,10 +6,12 @@ import 'package:meta/meta.dart';
 /// quick access to information about span usage and value presence.
 @internal
 class CollisionDetector {
-  final Set<_CellSpan> _cache = {};
+  final Set<_CellSpan> _singleSpans = {};
+  final Set<_CellSpan> _multiSpans = {};
 
   void clear() {
-    _cache.clear();
+    _singleSpans.clear();
+    _multiSpans.clear();
   }
 
   void add(
@@ -17,12 +19,15 @@ class CollisionDetector {
       required int columnIndex,
       required int rowSpan,
       required int columnSpan}) {
+    _CellSpan span = _CellSpan(
+        rowIndex: rowIndex,
+        columnIndex: columnIndex,
+        rowSpan: rowSpan,
+        columnSpan: columnSpan);
     if (rowSpan > 1 || columnSpan > 1) {
-      _cache.add(_CellSpan(
-          rowIndex: rowIndex,
-          columnIndex: columnIndex,
-          rowSpan: rowSpan,
-          columnSpan: columnSpan));
+      _multiSpans.add(span);
+    } else {
+      _singleSpans.add(span);
     }
   }
 
@@ -31,7 +36,19 @@ class CollisionDetector {
       required int columnIndex,
       required int rowSpan,
       required int columnSpan}) {
-    for (_CellSpan cellSpan in _cache) {
+    if (rowSpan > 1 || columnSpan > 1) {
+      // single will never intersect other single
+      for (_CellSpan cellSpan in _singleSpans) {
+        if (cellSpan.intersects(
+            rowIndex: rowIndex,
+            columnIndex: columnIndex,
+            rowSpan: rowSpan,
+            columnSpan: columnSpan)) {
+          return true;
+        }
+      }
+    }
+    for (_CellSpan cellSpan in _multiSpans) {
       if (cellSpan.intersects(
           rowIndex: rowIndex,
           columnIndex: columnIndex,
@@ -70,10 +87,15 @@ class _CellSpan {
     required int rowSpan,
     required int columnSpan,
   }) {
-    return !(this.columnIndex + this.columnSpan <= columnIndex ||
-        this.columnIndex >= columnIndex + columnSpan ||
-        this.rowIndex + this.rowSpan <= rowIndex ||
-        this.rowIndex >= rowIndex + rowSpan);
+    final int thisRowEnd = this.rowIndex + this.rowSpan;
+    final int thisColEnd = this.columnIndex + this.columnSpan;
+    final int otherRowEnd = rowIndex + rowSpan;
+    final int otherColEnd = columnIndex + columnSpan;
+
+    return !(thisRowEnd <= rowIndex || // It's above
+        this.rowIndex >= otherRowEnd || // It's below
+        thisColEnd <= columnIndex || // It's on the left
+        this.columnIndex >= otherColEnd); // It's on the right
   }
 
   @override

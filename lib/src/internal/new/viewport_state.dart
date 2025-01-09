@@ -1,12 +1,9 @@
 import 'dart:collection';
 import 'dart:math' as math;
 import 'package:davi/davi.dart';
-import 'package:davi/src/column.dart';
 import 'package:davi/src/internal/column_metrics.dart';
 import 'package:davi/src/internal/new/collision_detector.dart';
 import 'package:davi/src/internal/new/divider_paint_manager.dart';
-import 'package:davi/src/max_span_behavior.dart';
-import 'package:davi/src/model.dart';
 import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
 
@@ -101,9 +98,9 @@ class RowRegionCache {
 @internal
 class ViewportState<DATA> extends ChangeNotifier {
   final Map<int, CellMapping> _cellMappings = {};
+  final CollisionDetector _collisionDetector = CollisionDetector();
   final RowRegionCache rowRegions = RowRegionCache();
   final DividerPaintManager dividerPaintManager = DividerPaintManager();
-  final CollisionDetector collisionDetector = CollisionDetector();
 
   int _firstDataRow = -1;
   int get firstDataRow => _firstDataRow;
@@ -141,7 +138,8 @@ class ViewportState<DATA> extends ChangeNotifier {
       required double maxWidth,
       required DaviModel<DATA> model,
       required bool hasTrailing,
-      required bool rowFillHeight}) {
+      required bool rowFillHeight,
+      required CellCollisionBehavior collisionBehavior}) {
     final Map<CellMapping, int> oldCellMappings = {
       for (var entry in _cellMappings.entries) entry.value: entry.key,
     };
@@ -150,7 +148,7 @@ class ViewportState<DATA> extends ChangeNotifier {
     _verticalOffset = verticalOffset;
     _cellMappings.clear();
     rowRegions._clear();
-    collisionDetector.clear();
+    _collisionDetector.clear();
 
     _lastDataRow = -1;
 
@@ -276,6 +274,37 @@ class ViewportState<DATA> extends ChangeNotifier {
             }
           }
 
+          if (collisionBehavior != CellCollisionBehavior.overlap) {
+            final bool intercepts = _collisionDetector.intersects(
+                rowIndex: rowIndex,
+                columnIndex: columnIndex,
+                rowSpan: rowSpan,
+                columnSpan: columnSpan);
+            if (intercepts) {
+              if (collisionBehavior == CellCollisionBehavior.ignore) {
+                continue;
+              } else if (collisionBehavior ==
+                  CellCollisionBehavior.ignoreAndWarn) {
+                debugPrint(
+                    'Collision detected at cell rowIndex: $rowIndex columnIndex: $columnIndex.');
+                continue;
+              } else if (collisionBehavior ==
+                  CellCollisionBehavior.overlapAndWarn) {
+                debugPrint(
+                    'Collision detected at cell rowIndex: $rowIndex columnIndex: $columnIndex.');
+              } else if (collisionBehavior ==
+                  CellCollisionBehavior.throwException) {
+                throw StateError(
+                    'Collision detected at cell rowIndex: $rowIndex columnIndex: $columnIndex.');
+              }
+            }
+            _collisionDetector.add(
+                rowIndex: rowIndex,
+                columnIndex: columnIndex,
+                rowSpan: rowSpan,
+                columnSpan: columnSpan);
+          }
+
           CellMapping cellMapping = CellMapping(
               rowIndex: rowIndex,
               columnIndex: columnIndex,
@@ -327,7 +356,6 @@ class ViewportState<DATA> extends ChangeNotifier {
           rowSpan: cellMapping.rowSpan,
           columnSpan: cellMapping.columnSpan);
     }
-
     notifyListeners();
   }
 
