@@ -243,7 +243,13 @@ int _defaultDataComparator<DATA>(
     }
   }
 
-  return cellValueA.compareTo(cellValueB);
+  if (cellValueA.runtimeType == cellValueB.runtimeType &&
+      cellValueA is Comparable &&
+      cellValueB is Comparable) {
+    return cellValueA.compareTo(cellValueB);
+  }
+
+  return 0;
 }
 
 @internal
