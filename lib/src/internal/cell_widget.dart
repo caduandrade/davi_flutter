@@ -1,5 +1,5 @@
 import 'package:davi/davi.dart';
-import 'package:davi/src/internal/new/hover_listenable_builder.dart';
+import 'package:davi/src/internal/new/cell_listenable_builder.dart';
 import 'package:davi/src/internal/new/text_cell_painter.dart';
 import 'package:davi/src/internal/new/painter_cache.dart';
 import 'package:davi/src/internal/new/davi_context.dart';
@@ -31,9 +31,13 @@ class CellWidget<DATA> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return HoverListenableBuilder(
+    Listenable? cellListenable = column.cellListenable != null
+        ? column.cellListenable!(data, rowIndex)
+        : null;
+    return CellListenableBuilder(
         rowIndex: rowIndex,
         hoverNotifier: daviContext.hoverNotifier,
+        cellListenable: cellListenable,
         builder: _builder);
   }
 
