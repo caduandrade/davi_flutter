@@ -7,7 +7,7 @@ void main() {
   runApp(const ExampleApp());
 }
 
-class Data {
+class Data extends ChangeNotifier {
   Data({required this.stringValue, required this.intValue,required this.bar});
 
   final String stringValue;
@@ -28,6 +28,7 @@ class Data {
   set editable(String value) {
     _editable = value;
     _valid = _editable.length < 6;
+    notifyListeners();
   }
 }
 
@@ -101,6 +102,7 @@ class _HomePageState extends State<HomePage> {
               name: 'Editable',
               sortable: false,
               cellWidget: _buildField,
+              cellListenable: (d,i)=>d,
               cellBackground: (data, rowIndex, hover) => data.valid ? null : Colors.red[800]
             )
         ],

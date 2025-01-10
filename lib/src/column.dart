@@ -32,6 +32,7 @@ class DaviColumn<DATA> extends ChangeNotifier {
       this.cellPainter,
       this.cellBarStyle,
       this.cellBarValue,
+      this.cellListenable,
       this.rowSpan = _defaultSpanProvider,
       this.columnSpan = _defaultSpanProvider,
       this.cellValueStringify = _defaultCellValueStringify,
@@ -122,6 +123,14 @@ class DaviColumn<DATA> extends ChangeNotifier {
 
   /// Cell widget mapper for each row in that column.
   final CellWidgetMapper<DATA>? cellWidget;
+
+  /// A builder function that provides a [Listenable] for a specific cell in this column.
+  /// When the returned [Listenable] notifies listeners, the corresponding cell will be rebuilt.
+  /// This allows dynamic updates of cell content based on external changes.
+  ///
+  /// The builder receives the row's data ([DATA]) and its index ([rowIndex]) to determine
+  /// the appropriate [Listenable] for each cell.
+  final DaviCellListenableBuilder<DATA>? cellListenable;
 
   /// Defines the row span.
   final SpanProvider<DATA> rowSpan;

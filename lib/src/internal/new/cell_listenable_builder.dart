@@ -3,50 +3,58 @@ import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
 
 @internal
-class HoverListenableBuilder extends StatefulWidget {
-  const HoverListenableBuilder(
+class CellListenableBuilder extends StatefulWidget {
+  const CellListenableBuilder(
       {Key? key,
       required this.hoverNotifier,
+      required this.cellListenable,
       required this.rowIndex,
       required this.builder})
       : super(key: key);
 
   final HoverNotifier hoverNotifier;
+  final Listenable? cellListenable;
   final int rowIndex;
   final WidgetBuilder builder;
 
   @override
-  State<StatefulWidget> createState() => HoverListenableBuilderState();
+  State<StatefulWidget> createState() => CellListenableBuilderState();
 }
 
 @internal
-class HoverListenableBuilderState extends State<HoverListenableBuilder> {
+class CellListenableBuilderState extends State<CellListenableBuilder> {
   late int? _hoverIndex;
 
   @override
   void initState() {
     super.initState();
     _hoverIndex = widget.hoverNotifier.index;
-    widget.hoverNotifier.addListener(_valueChanged);
+    widget.hoverNotifier.addListener(_hoverChanged);
+    widget.cellListenable?.addListener(_rebuild);
   }
 
   @override
-  void didUpdateWidget(HoverListenableBuilder oldWidget) {
+  void didUpdateWidget(CellListenableBuilder oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.hoverNotifier != widget.hoverNotifier) {
-      oldWidget.hoverNotifier.removeListener(_valueChanged);
+      oldWidget.hoverNotifier.removeListener(_hoverChanged);
       _hoverIndex = widget.hoverNotifier.index;
-      widget.hoverNotifier.addListener(_valueChanged);
+      widget.hoverNotifier.addListener(_hoverChanged);
+    }
+    if (oldWidget.cellListenable != widget.cellListenable) {
+      oldWidget.cellListenable?.removeListener(_rebuild);
+      widget.cellListenable?.addListener(_rebuild);
     }
   }
 
   @override
   void dispose() {
-    widget.hoverNotifier.removeListener(_valueChanged);
+    widget.hoverNotifier.removeListener(_hoverChanged);
+    widget.cellListenable?.removeListener(_rebuild);
     super.dispose();
   }
 
-  void _valueChanged() {
+  void _hoverChanged() {
     if (_hoverIndex == null && widget.hoverNotifier.index == widget.rowIndex) {
       // row enter
       setState(() {
@@ -60,6 +68,12 @@ class HoverListenableBuilderState extends State<HoverListenableBuilder> {
         _hoverIndex = null;
       });
     }
+  }
+
+  void _rebuild() {
+    setState(() {
+      // just rebuild
+    });
   }
 
   @override
