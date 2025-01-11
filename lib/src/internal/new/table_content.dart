@@ -161,6 +161,7 @@ class TableContentState<DATA> extends State<TableContent<DATA>> {
             daviContext: widget.daviContext,
             rowRegions: _viewportState.rowRegions,
             rowTheme: theme.row,
-            child: cells));
+            child: FocusTraversalGroup(
+                policy: OrderedTraversalPolicy(), child: cells)));
   }
 }

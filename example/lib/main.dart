@@ -65,7 +65,7 @@ class _HomePageState extends State<HomePage> {
     Random random = Random();
     List<Data> rows = [];    
     for (int i = 1; i < 200; i++) {    
-      String stringValue= random.nextInt(90000).toRadixString(16);
+      String stringValue= random.nextInt(0xFFFFFF).toRadixString(16).toUpperCase();
      int intValue = random.nextInt(99);
      double bar = random.nextDouble();      
       rows.add(Data(stringValue: stringValue, intValue: intValue, bar: bar));

@@ -216,7 +216,12 @@ class CellWidgetState<DATA> extends State<CellWidget<DATA>> {
       child = ClipRect(child: child);
     }
 
-    return child;
+    double focusOrder =
+        ((widget.rowIndex * widget.daviContext.model.columnsLength) +
+                widget.columnIndex)
+            .toDouble();
+    return FocusTraversalOrder(
+        order: NumericFocusOrder(focusOrder), child: child);
   }
 }
 

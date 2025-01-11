@@ -324,7 +324,7 @@ class ViewportState<DATA> extends ChangeNotifier {
         }
       }
     }
-
+    // print('newCellMappings: ${newCellMappings.length}');
     for (int cellIndex in indices) {
       if (newCellMappings.isEmpty) {
         break;
@@ -371,12 +371,11 @@ class ViewportState<DATA> extends ChangeNotifier {
 /// Represents the model indexes. These indexes will be mapped to cell indexes.
 @internal
 class CellMapping {
-  CellMapping({
-    required this.rowIndex,
-    required this.columnIndex,
-    required this.rowSpan,
-    required this.columnSpan,
-  });
+  CellMapping(
+      {required this.rowIndex,
+      required this.columnIndex,
+      required this.rowSpan,
+      required this.columnSpan});
 
   /// The row index of the model cell to be displayed.
   final int rowIndex;
