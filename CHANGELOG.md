@@ -55,11 +55,13 @@
       * Updated the signature to include `rowA` and `rowB` parameters, and removed the `column` parameter
     * `DaviRowCursor`
       * Has been renamed to `RowCursorBuilder`.
-      * Its signature has been changed to accept `DATA data`, `int index`, and `bool hovered` instead of `DaviRow<DATA>`
+      * Its signature has been changed from `DaviRow` to `CursorBuilderParams`
     * `OnLastRowWidgetListener` to `TrailingWidgetListener`
     * `OnLastVisibleRowListener` to `LastVisibleRowListener`
-    * `DaviCellSemanticsBuilder` and `CellBackgroundBuilder`
-      * Its signature has been changed to accept `DATA data`, `int index`, and `bool hovered` instead of `DaviRow<DATA>` 
+    * `DaviCellSemanticsBuilder`
+      * Its signature has been changed from `DaviRow` to `SemanticsBuilderParams`
+    * `CellBackgroundBuilder`
+      * Its signature has been changed from `DaviRow` to `BackgroundBuilderParams`
   * Removed classes and typedefs
     * `DaviIntValueMapper`
     * `DaviDoubleValueMapper`

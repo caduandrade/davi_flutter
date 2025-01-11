@@ -11,8 +11,8 @@ import 'package:flutter/rendering.dart';
 import 'package:meta/meta.dart';
 
 @internal
-class CellWidgetBuilder<DATA> extends StatefulWidget {
-  const CellWidgetBuilder(
+class DaviCellWidgetBuilder<DATA> extends StatefulWidget {
+  const DaviCellWidgetBuilder(
       {Key? key,
       required this.cellIndex,
       required this.daviContext,
@@ -28,11 +28,12 @@ class CellWidgetBuilder<DATA> extends StatefulWidget {
   final TableLayoutSettings layoutSettings;
 
   @override
-  State<StatefulWidget> createState() => CellWidgetBuilderState<DATA>();
+  State<StatefulWidget> createState() => DaviCellWidgetBuilderState<DATA>();
 }
 
 @internal
-class CellWidgetBuilderState<DATA> extends State<CellWidgetBuilder<DATA>> {
+class DaviCellWidgetBuilderState<DATA>
+    extends State<DaviCellWidgetBuilder<DATA>> {
   late CellMapping? _cellMapping;
 
   @override
@@ -44,7 +45,7 @@ class CellWidgetBuilderState<DATA> extends State<CellWidgetBuilder<DATA>> {
   }
 
   @override
-  void didUpdateWidget(CellWidgetBuilder<DATA> oldWidget) {
+  void didUpdateWidget(DaviCellWidgetBuilder<DATA> oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.viewportState != widget.viewportState) {
       oldWidget.viewportState.removeListener(_valueChanged);
@@ -96,7 +97,6 @@ class CellWidgetBuilderState<DATA> extends State<CellWidgetBuilder<DATA>> {
                 data: data,
                 rowIndex: cellMapping.rowIndex,
                 rowSpan: cellMapping.rowSpan,
-                columnIndex: cellMapping.columnIndex,
                 columnSpan: cellMapping.columnSpan,
                 column: column,
                 daviContext: widget.daviContext,

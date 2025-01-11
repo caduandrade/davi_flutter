@@ -443,19 +443,26 @@ class DaviModel<DATA> extends ChangeNotifier {
       final DaviSortDirection? direction = column.sortDirection;
       if (direction != null) {
         final DaviComparator<DATA> dataComparator = column.dataComparator;
-
+        ValueMapperParams<DATA>? valueParams;
+        BarValueMapperParams<DATA>? barValueParams;
+        IconMapperParams<DATA>? iconParams;
         dynamic cellValueA, cellValueB;
         if (column.cellValue != null) {
-          cellValueA = column.cellValue!(rowA, indexA);
-          cellValueB = column.cellValue!(rowB, indexB);
+          cellValueA = column.cellValue!(DaviColumnHelper.valueParams(
+              params: valueParams, data: rowA, rowIndex: indexA));
+          cellValueB = column.cellValue!(DaviColumnHelper.valueParams(
+              params: valueParams, data: rowB, rowIndex: indexB));
         } else if (column.cellBarValue != null) {
-          cellValueA = column.cellBarValue!(rowA, indexA);
-          cellValueB = column.cellBarValue!(rowB, indexB);
+          cellValueA = column.cellBarValue!(DaviColumnHelper.barValueParams(
+              params: barValueParams, data: rowA, rowIndex: indexA));
+          cellValueB = column.cellBarValue!(DaviColumnHelper.barValueParams(
+              params: barValueParams, data: rowB, rowIndex: indexB));
         } else if (column.cellIcon != null) {
-          cellValueA = column.cellIcon!(rowA, indexA);
-          cellValueB = column.cellIcon!(rowB, indexB);
+          cellValueA = column.cellIcon!(DaviColumnHelper.iconParams(
+              params: iconParams, data: rowA, rowIndex: indexA));
+          cellValueB = column.cellIcon!(DaviColumnHelper.iconParams(
+              params: iconParams, data: rowB, rowIndex: indexB));
         }
-
         if (direction == DaviSortDirection.descending) {
           r = dataComparator(cellValueB, cellValueA, rowB, rowA);
         } else {

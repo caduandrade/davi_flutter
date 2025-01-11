@@ -4,6 +4,7 @@ import 'package:davi/davi.dart';
 import 'package:davi/src/internal/column_metrics.dart';
 import 'package:davi/src/internal/new/collision_detector.dart';
 import 'package:davi/src/internal/new/divider_paint_manager.dart';
+import 'package:davi/src/span_provider.dart';
 import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
 
@@ -219,9 +220,11 @@ class ViewportState<DATA> extends ChangeNotifier {
           columnIndex < columnsMetrics.length;
           columnIndex++) {
         if (data != null) {
+          final SpanParams<DATA> spanParams =
+              SpanParams(data: data, rowIndex: rowIndex);
           final DaviColumn<DATA> column = model.columnAt(columnIndex);
 
-          int rowSpan = math.max(column.rowSpan(data, rowIndex), 1);
+          int rowSpan = math.max(column.rowSpan(spanParams), 1);
           if (rowSpan > model.maxRowSpan) {
             if (model.maxSpanBehavior == MaxSpanBehavior.throwException) {
               throw StateError(
@@ -246,7 +249,7 @@ class ViewportState<DATA> extends ChangeNotifier {
             }
           }
 
-          int columnSpan = math.max(column.columnSpan(data, rowIndex), 1);
+          int columnSpan = math.max(column.columnSpan(spanParams), 1);
           if (columnSpan > model.maxColumnSpan) {
             if (model.maxSpanBehavior == MaxSpanBehavior.throwException) {
               throw StateError(

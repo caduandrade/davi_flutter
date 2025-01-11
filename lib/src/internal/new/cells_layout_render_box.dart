@@ -339,8 +339,10 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
         }
         if (rowRegion.hasData && color == null && _rowColor != null) {
           final DATA data = _model.rowAt(rowRegion.index);
-          color = _rowColor!(
-              data, rowRegion.index, _hoverNotifier.index == rowRegion.index);
+          color = _rowColor!(RowColorParams(
+              data: data,
+              rowIndex: rowRegion.index,
+              hovered: _hoverNotifier.index == rowRegion.index));
         }
         if (color == null && _themeRowColor != null) {
           color = _themeRowColor!(rowRegion.index);

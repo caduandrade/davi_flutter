@@ -135,7 +135,7 @@ class TableContentState<DATA> extends State<TableContent<DATA>> {
           cellIndex++) {
         children.add(CellsLayoutChild.cell(
             cellIndex: cellIndex,
-            child: CellWidgetBuilder(
+            child: DaviCellWidgetBuilder(
                 cellIndex: cellIndex,
                 daviContext: widget.daviContext,
                 viewportState: _viewportState,

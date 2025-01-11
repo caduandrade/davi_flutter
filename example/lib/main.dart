@@ -77,67 +77,59 @@ class _HomePageState extends State<HomePage> {
         columns: [
           DaviColumn(
               name: 'String',
-              cellValue: (data, rowIndex) => data.stringValue,
+              cellValue: (params) => params.data.stringValue,
               pinStatus: PinStatus.left),
           DaviColumn(
               name: 'Int 1',
-              cellValue: (data, rowIndex) => data.intValue,
+              cellValue: (params) => params.data.intValue,
               summary: (context) => const Text('summary')),
           DaviColumn(
               name: 'Int 2',
-              cellValue: (data, rowIndex) =>
-              rowIndex == 2 ? 'SPAN' : data.intValue,
-              columnSpan: (data, rowIndex) => rowIndex == 2 ?2 : 1,
-              cellBackground: (data, index, hovered) =>
-              data.intValue == 10 ? Colors.green : null),
+              cellValue: (params) =>
+              params.rowIndex == 2 ? 'SPAN' : params.data.intValue,
+              columnSpan: (params) => params.rowIndex == 2 ?2 : 1,
+              cellBackground: (params) =>
+              params.data.intValue == 10 ? Colors.green : null),
           DaviColumn(
               name: 'Widget',
-              cellWidget: (context,data,rowIndex)=>rowIndex==10?Container(color:Colors.white, child:const Placeholder()):null,
-              rowSpan: (data, rowIndex) => rowIndex == 10 ? 6 : 1
+              cellWidget: (params)=>params.rowIndex==10?Container(color:Colors.white, child:const Placeholder()):null,
+              rowSpan: (params) => params.rowIndex == 10 ? 6 : 1
     ),
           DaviColumn(
               name: 'Bar',
-              cellBarValue: (data, rowIndex) => data.bar),   
+              cellBarValue: (params) => params.data.bar),   
             DaviColumn(
               name: 'Editable',
               sortable: false,
               cellWidget: _buildField,
-              cellListenable: (d,i)=>d,
-              cellBackground: (data, rowIndex, hover) => data.valid ? null : Colors.red[800]
+              //cellListenable: (d,i)=>d,
+              cellBackground: (params) => params.data.valid ? null : Colors.red[800]
             )
         ],
         multiSortEnabled: true
     );
   }
 
-  Widget _buildField(
-      BuildContext context, Data data, int index) {
+  Widget _buildField(WidgetBuilderParams<Data> params) {
     if (true) {
       return TextFormField(
-        validator: (s)=>'ds',
-          autovalidateMode: AutovalidateMode.onUserInteraction,
-          controller: data.c,
+          controller: params.data.c,
           //key: ValueKey(rowData.index),
           //initialValue: rowData.data.editable,
-          onChanged: (value) => _onFieldChange(value, data));
+          onChanged: (value) => _onFieldChange(value, params.data, params.rebuildCallback));
     }
     return TextFormField(
-      key: ValueKey(index),
-        initialValue: data.editable,
-        style: TextStyle(color: data.valid ? Colors.black : Colors.white),
-        onChanged: (value) => _onFieldChange(value, data));
+      key: ValueKey(params.rowIndex),
+        initialValue: params.data.editable,
+        style: TextStyle(color: params.data.valid ? Colors.black : Colors.white),
+        onChanged: (value) => _onFieldChange(value, params.data, params.rebuildCallback));
   }
 
-  void _onFieldChange(String value, Data person) {
+  void _onFieldChange(String value, Data person, VoidCallback rebuild) {
     final wasValid = person.valid;
     person.editable = value;
     if (wasValid != person.valid) {
-      /*
-      setState(() {
-        // rebuild
-      });
-
-       */
+      rebuild.call();
     }
   }
 

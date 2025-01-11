@@ -76,62 +76,62 @@ class _HomePageState extends State<HomePage> {
         leading: const Icon(Icons.person, size: 16),
         name: 'Name',
         width: 100,
-        rowSpan: (c,index)=>index==_model!.rowsLength-2?2:1,
-        cellValue: (row, rowIndex) => row.name)
+        rowSpan: (params)=>params.rowIndex==_model!.rowsLength-2?2:1,
+        cellValue: (params) => params.data.name)
     );
     list.add(DaviColumn(
         pinStatus: _leftPinned ? PinStatus.left : PinStatus.none,
         name: 'Gender',
         width: 80,
         cellClip: true,
-        cellIcon: (row,rowIndex)=> row.male
+        cellIcon: (params)=> params.data.male
             ? CellIcon(Icons.male, color: Colors.blue[700]!)
             : CellIcon(Icons.female, color: Colors.pink[600]!)));
     list.add(
         DaviColumn(name: 'Race', width: 100,
     //cellValue: (row, rowIndex)=> row.race)
-            cellWidget: (d,qd,t)=>TextButton(onPressed: ()=>print('a'), child: Text('a')))
+            cellWidget: (params)=>TextButton(onPressed: ()=>print('a'), child: Text('a')))
     );
     list.add(
         DaviColumn(name: 'Class', width: 110,
-    cellValue: (row,rowIndex)=>row.cls));
+    cellValue: (params)=>params.data.cls));
     list.add(
         DaviColumn(name: 'Level', width: 70,
-    cellValue: (row,rowIndex)=>row.level));
+    cellValue: (params)=>params.data.level));
     if (_columnsWithCustomWidget) {
       list.add(DaviColumn(
           name: 'Skills',
           width: 100,
           cellClip: true,
-          cellWidget: (context, data, rowIndex)=>SkillsWidget(skills: data.skills)));
+          cellWidget: (params)=>SkillsWidget(skills: params.data.skills)));
     }
     if(_growColumns){
       list.add(DaviColumn(
           name: 'Grow 1', grow: 1, width: 80,
-          cellValue: (row,rowIndex) => row.strength));
+          cellValue: (params) => params.data.strength));
     }
     list.add(DaviColumn(
         name: 'Strength', width: 80,
-        cellValue: (row,rowIndex) => row.strength));
+        cellValue: (params) => params.data.strength));
     list.add(DaviColumn(
         name: 'Dexterity',
         width: 80,
-        cellValue: (row,rowIndex) => row.dexterity,
+        cellValue: (params) => params.data.dexterity,
         summary: _summaryEnabled ? (context) => const Text('summary') : null));
     list.add(DaviColumn(
         name: 'Intelligence', width: 90,
-      cellValue: (row,rowIndex) => row.intelligence)
+      cellValue: (params) => params.data.intelligence)
     );
     if(_growColumns){
       list.add(DaviColumn(
-          name: 'Grow2', grow: 2, width: 80,cellValue: (row,rowIndex) => row.dexterity));
+          name: 'Grow2', grow: 2, width: 80,cellValue: (params) => params.data.dexterity));
     }
-    list.add(DaviColumn(name: 'Life', width: 70, cellValue: (row,rowIndex) => row.life));
-    list.add(DaviColumn(name: 'Mana', width: 70, cellValue: (row,rowIndex) => row.mana));
+    list.add(DaviColumn(name: 'Life', width: 70, cellValue: (params) => params.data.life));
+    list.add(DaviColumn(name: 'Mana', width: 70, cellValue: (params) => params.data.mana));
     list.add(DaviColumn(
         name: 'Gold',
         width: 110,
-        cellValue: (row,rowIndex) => row.gold,
+        cellValue: (params) => params.data.gold,
     cellValueStringify: (value)=>(value as double).toStringAsFixed(2)));
     return list;
   }
@@ -147,8 +147,8 @@ class _HomePageState extends State<HomePage> {
             //collisionBehavior: CellCollisionBehavior.throwException,
             columnWidthBehavior: _columnsFit?ColumnWidthBehavior.fit:ColumnWidthBehavior.scrollable,
             rowColor: _rowColor
-                ? (data, rowIndex, hovered) =>
-                    data.life < 1000 ? Colors.red[200] : null
+                ? (params) =>
+                    params.data.life < 1000 ? Colors.red[200] : null
                 : null,
             trailingWidget: _trailingWidget
                 ? const Center(child: Text('TRAILING WIDGET'))

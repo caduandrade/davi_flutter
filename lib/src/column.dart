@@ -97,7 +97,7 @@ class DaviColumn<DATA> extends ChangeNotifier {
   ///
   /// The function must return a value between 0.0 (0%) and 1.0 (100%),
   /// or `null` if no progress bar should be displayed.
-  final CellBarValue<DATA>? cellBarValue;
+  final CellBarValueMapper<DATA>? cellBarValue;
 
   /// The style configuration for the cell's progress bar.
   ///
@@ -122,7 +122,7 @@ class DaviColumn<DATA> extends ChangeNotifier {
   final CellPainter<DATA>? cellPainter;
 
   /// Cell widget mapper for each row in that column.
-  final CellWidgetMapper<DATA>? cellWidget;
+  final CellWidgetBuilder<DATA>? cellWidget;
 
   /// A builder function that provides a [Listenable] for a specific cell in this column.
   /// When the returned [Listenable] notifies listeners, the corresponding cell will be rebuilt.
@@ -213,8 +213,7 @@ class DaviColumn<DATA> extends ChangeNotifier {
   int get hashCode => id.hashCode;
 }
 
-SemanticsProperties _defaultSemanticsBuilder(
-    BuildContext context, dynamic data, int index, bool hovered) {
+SemanticsProperties _defaultSemanticsBuilder(SemanticsBuilderParams params) {
   return const SemanticsProperties(enabled: true, label: 'cell');
 }
 
@@ -222,7 +221,7 @@ SemanticsProperties _defaultSemanticsBuilder(
 typedef DaviComparator<DATA> = int Function(
     dynamic cellValueA, dynamic cellValueB, DATA rowA, DATA rowB);
 
-int _defaultSpanProvider(dynamic data, rowIndex) => 1;
+int _defaultSpanProvider(SpanParams params) => 1;
 
 String _defaultCellValueStringify(dynamic value) => value.toString();
 
@@ -278,6 +277,274 @@ int _defaultDataComparator<DATA>(
   return 0;
 }
 
+/// A function type that maps a row's data to a value for display or processing in a table cell.
+///
+/// This typedef is used to define how a value is derived from a row in the model to be displayed
+/// or processed in a table cell. The function takes a single parameter, `ValueMapperParams`,
+/// which encapsulates the row's data and its index.
+///
+/// Parameters:
+/// - `params`: An instance of `ValueMapperParams` containing the data for the entire row, its index,
+///   and any additional contextual information that may be added in the future.
+///
+/// Return value:
+/// - A value of any type (`dynamic`) that will be used in the table cell. The returned value
+///   can represent anything such as a string, number, or other data derived from the row's model.
+///
+/// Example usage:
+/// ```dart
+/// CellValueMapper<MyDataModel> valueMapper = (params) {
+///   return params.data.name; // Map the row's model to a specific property
+/// };
+/// ```
+typedef CellValueMapper<DATA> = dynamic Function(
+  ValueMapperParams<DATA> params,
+);
+
+/// Parameters passed to the [CellValueMapper] function.
+///
+/// This class encapsulates the necessary information to determine the value
+/// for a specific table cell. It includes the data for the entire row and its index.
+///
+/// Fields:
+/// - `data`: The row's data, representing the model or structure for the entire row.
+/// - `rowIndex`: The index of the current row, starting from 0.
+///
+/// Example:
+/// ```dart
+/// ValueMapperParams<MyDataModel> params = ValueMapperParams(
+///   data: myDataRow,
+///   rowIndex: 0,
+/// );
+/// ```
+class ValueMapperParams<DATA> extends CellBaseParams<DATA> {
+  ValueMapperParams({
+    required DATA data,
+    required int rowIndex,
+  }) : super(data: data, rowIndex: rowIndex);
+}
+
+/// A function type that maps a row's data to an icon representation for a table cell.
+///
+/// This typedef is used to define how an icon is derived from a row in the model to be displayed
+/// in a table cell. The function takes a single parameter, `IconMapperParams`,
+/// which encapsulates the row's data and its index.
+///
+/// Parameters:
+/// - `params`: An instance of `IconMapperParams` containing the data for the entire row, its index,
+///   and any additional contextual information that may be added in the future.
+///
+/// Return value:
+/// - A `CellIcon` instance that will be displayed in the cell. If the function returns `null`,
+///   no icon will be displayed in that cell.
+///
+/// Example usage:
+/// ```dart
+/// CellIconMapper<MyData> iconMapper = (params) {
+///   // Display a star icon for rows with a specific condition
+///   if (params.data.isFavorite) {
+///     return CellIcon(Icons.star, size: 30.0, color: Colors.yellow);
+///   }
+///   return null; // No icon for rows that are not marked as favorite
+/// };
+/// ```
+typedef CellIconMapper<DATA> = CellIcon? Function(
+  IconMapperParams<DATA> params,
+);
+
+/// Parameters passed to the [CellIconMapper] function.
+///
+/// This class encapsulates the necessary information to determine the icon
+/// for a specific table cell. It includes the data for the entire row and its index.
+///
+/// Fields:
+/// - `data`: The row's data, representing the model or structure for the entire row.
+/// - `rowIndex`: The index of the current row, starting from 0.
+///
+/// Example:
+/// ```dart
+/// IconMapperParams<MyDataModel> params = IconMapperParams(
+///   data: myDataRow,
+///   rowIndex: 0,
+/// );
+/// ```
+class IconMapperParams<DATA> extends CellBaseParams<DATA> {
+  IconMapperParams({
+    required DATA data,
+    required int rowIndex,
+  }) : super(data: data, rowIndex: rowIndex);
+}
+
+/// A function type that maps a given row's data to a widget for display in a table cell.
+///
+/// This typedef is used to define how a `Widget` is created based on the row's data to be displayed
+/// in the corresponding table cell.
+///
+/// Example usage:
+/// ```dart
+/// CellWidgetMapper<MyData> widgetMapper = (params) {
+///   // Return a custom widget for each row based on some condition
+///   if (params.data.isActive) {
+///     return Text('active');
+///   }
+///   return null; // No widget for inactive rows
+/// };
+/// ```
+typedef CellWidgetBuilder<DATA> = Widget? Function(
+    WidgetBuilderParams<DATA> params);
+
+/// A class that encapsulates the parameters needed to build a widget for a cell.
+class WidgetBuilderParams<DATA> extends CellBaseParams<DATA> {
+  WidgetBuilderParams(
+      {required this.buildContext,
+      required DATA data,
+      required int rowIndex,
+      required this.rebuildCallback})
+      : super(data: data, rowIndex: rowIndex);
+
+  /// The Flutter BuildContext for rendering.
+  final BuildContext buildContext;
+
+  /// Callback for triggering rebuilds.
+  final VoidCallback rebuildCallback;
+}
+
+/// Represents the style configuration for a cell bar value.
+///
+/// This class is used to customize the appearance of the bar, including
+/// the background, foreground, text color, and text size.
+class CellBarStyle {
+  /// The background color of the bar.
+  ///
+  /// This color represents the portion of the bar that is not filled, indicating
+  /// the remaining progress.
+  final Color? barBackground;
+
+  /// A function that returns a color for the bar's foreground based on
+  /// the current progress value (ranging from 0.0 to 1.0).
+  ///
+  /// This determines the color of the filled portion of the bar, reflecting the value.
+  final CellBarColor? barForeground;
+
+  /// A function that returns the color for the text displayed on the progress bar
+  /// based on the current progress value.
+  ///
+  /// This allows for dynamic text color changes as the progress changes.
+  final CellBarColor? textColor;
+
+  /// The size of the text displayed.
+  final double? textSize;
+
+  /// Creates a [CellBarStyle] object with the given properties.
+  ///
+  /// [barBackground] specifies the background color of the bar.
+  /// [barForeground] defines the color of the foreground based on the value.
+  /// [textColor] determines the color of the text based on the value.
+  /// [textSize] defines the size of the text.
+  const CellBarStyle({
+    this.barBackground,
+    this.barForeground,
+    this.textColor,
+    this.textSize,
+  });
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is CellBarStyle &&
+          runtimeType == other.runtimeType &&
+          barBackground == other.barBackground &&
+          barForeground == other.barForeground &&
+          textColor == other.textColor &&
+          textSize == other.textSize;
+
+  @override
+  int get hashCode =>
+      barBackground.hashCode ^
+      barForeground.hashCode ^
+      textColor.hashCode ^
+      textSize.hashCode;
+}
+
+/// A function type that takes a [double] value (representing value, between 0.0 and 1.0)
+/// and returns a [Color] value.
+///
+/// This function is used to dynamically determine the color of the foreground or text
+/// based on the current value.
+typedef CellBarColor = Color Function(double value);
+
+/// A function type that calculates the value for a progress bar in a table cell,
+/// based on the provided row data.
+///
+/// This typedef is used to define how a progress bar's value is derived from a row's data.
+/// The function takes a single parameter, `BarValueMapperParams`, which encapsulates
+/// the row's data and its index.
+///
+/// Parameters:
+/// - `params`: An instance of `BarValueMapperParams` containing the data for the entire row
+///   and its index.
+///
+/// Return value:
+/// - A `double` value between `0.0` and `1.0` representing the percentage of the bar's value.
+///   If the function returns `null`, no progress bar will be displayed for that cell.
+///
+/// Example usage:
+/// ```dart
+/// CellBarValueMapper<MyDataModel> barValueMapper = (params) {
+///   return params.data.progress / 100.0; // Map progress to a percentage (0.0 to 1.0)
+/// };
+/// ```
+typedef CellBarValueMapper<DATA> = double? Function(
+  BarValueMapperParams<DATA> params,
+);
+
+/// Parameters passed to the [CellBarValueMapper] function.
+///
+/// This class encapsulates the necessary information to determine the progress bar value
+/// for a specific table cell. It includes the data for the entire row and its index.
+///
+/// Fields:
+/// - `data`: The row's data, representing the model or structure for the entire row.
+/// - `rowIndex`: The index of the current row, starting from 0.
+///
+/// Example:
+/// ```dart
+/// BarValueMapperParams<MyDataModel> params = BarValueMapperParams(
+///   data: myDataRow,
+///   rowIndex: 0,
+/// );
+/// ```
+class BarValueMapperParams<DATA> extends CellBaseParams<DATA> {
+  BarValueMapperParams({
+    required DATA data,
+    required int rowIndex,
+  }) : super(data: data, rowIndex: rowIndex);
+}
+
+/// A base class that encapsulates common parameters for mappers, such as the row's data and index.
+///
+/// This class can be extended by other parameter classes like `ValueMapperParams`, `IconMapperParams`,
+/// and `BarValueMapperParams` to avoid duplication of common fields.
+///
+/// Fields:
+/// - `data`: The row's data, representing the model or structure for the entire row.
+/// - `rowIndex`: The index of the current row, starting from 0.
+class CellBaseParams<DATA> {
+  CellBaseParams({
+    required DATA data,
+    required int rowIndex,
+  })  : _data = data,
+        _rowIndex = rowIndex;
+
+  /// The model data representing the entire row.
+  DATA get data => _data;
+  DATA _data;
+
+  /// The index of the current row.
+  int get rowIndex => _rowIndex;
+  int _rowIndex;
+}
+
 @internal
 class DaviColumnHelper {
   static void performLayout(
@@ -286,6 +553,45 @@ class DaviColumnHelper {
     if (column._grow != null) {
       column._width = layoutWidth;
     }
+  }
+
+  static ValueMapperParams<DATA> valueParams<DATA>(
+      {required ValueMapperParams<DATA>? params,
+      required DATA data,
+      required int rowIndex}) {
+    if (params == null) {
+      params = ValueMapperParams(data: data, rowIndex: rowIndex);
+    } else {
+      params._data = data;
+      params._rowIndex = rowIndex;
+    }
+    return params;
+  }
+
+  static BarValueMapperParams<DATA> barValueParams<DATA>(
+      {required BarValueMapperParams<DATA>? params,
+      required DATA data,
+      required int rowIndex}) {
+    if (params == null) {
+      params = BarValueMapperParams(data: data, rowIndex: rowIndex);
+    } else {
+      params._data = data;
+      params._rowIndex = rowIndex;
+    }
+    return params;
+  }
+
+  static IconMapperParams<DATA> iconParams<DATA>(
+      {required IconMapperParams<DATA>? params,
+      required DATA data,
+      required int rowIndex}) {
+    if (params == null) {
+      params = IconMapperParams(data: data, rowIndex: rowIndex);
+    } else {
+      params._data = data;
+      params._rowIndex = rowIndex;
+    }
+    return params;
   }
 
   static bool isLayoutPerformed({required DaviColumn column}) =>

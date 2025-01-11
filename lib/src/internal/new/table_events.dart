@@ -122,7 +122,9 @@ class TableEvents<DATA> extends StatelessWidget {
       {required DATA data, required int index, required bool hovered}) {
     MouseCursor? mouseCursor;
     if (daviContext.rowCursorBuilder != null) {
-      mouseCursor = daviContext.rowCursorBuilder!(data, index, hovered);
+      CursorBuilderParams<DATA> params =
+          CursorBuilderParams(data: data, rowIndex: index, hovered: hovered);
+      mouseCursor = daviContext.rowCursorBuilder!(params);
     }
     if (mouseCursor == null && daviContext.hasCallback) {
       mouseCursor = rowTheme.callbackCursor;

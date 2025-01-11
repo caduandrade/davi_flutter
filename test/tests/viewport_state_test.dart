@@ -194,7 +194,7 @@ void main() {
 
     List<int> rows = List.generate(10, (index) => index);
     List<DaviColumn<int>> columns = [
-      DaviColumn(name: 'c1', rowSpan: (row, rowIndex) => rowIndex == 3 ? 3 : 1)
+      DaviColumn(name: 'c1', rowSpan: (params) => params.rowIndex == 3 ? 3 : 1)
     ];
     DaviModel<int> model = DaviModel(
         rows: rows, columns: columns, maxRowSpan: 3, maxColumnSpan: 1);

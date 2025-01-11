@@ -1,5 +1,6 @@
 import 'package:davi/davi.dart';
-import 'package:davi/src/internal/new/cell_listenable_builder.dart';
+import 'package:davi/src/cell_semantics_builder.dart';
+import 'package:davi/src/internal/new/hover_notifier.dart';
 import 'package:davi/src/internal/new/text_cell_painter.dart';
 import 'package:davi/src/internal/new/painter_cache.dart';
 import 'package:davi/src/internal/new/davi_context.dart';
@@ -7,65 +8,128 @@ import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
 @internal
-class CellWidget<DATA> extends StatelessWidget {
-  const CellWidget(
+class CellWidget<DATA> extends StatefulWidget {
+  CellWidget(
       {Key? key,
       required this.data,
       required this.rowIndex,
       required this.rowSpan,
-      required this.columnIndex,
       required this.columnSpan,
       required this.column,
       required this.daviContext,
       required this.painterCache})
-      : super(key: key);
+      : cellListenable = column.cellListenable != null
+            ? column.cellListenable!(
+                ListenableBuilderParams<DATA>(data: data, rowIndex: rowIndex))
+            : null,
+        super(key: key);
 
   final DATA data;
   final int rowIndex;
   final int rowSpan;
-  final int columnIndex;
   final int columnSpan;
   final DaviColumn<DATA> column;
   final DaviContext daviContext;
   final PainterCache<DATA> painterCache;
+  final Listenable? cellListenable;
+
+  bool get hovered => rowIndex == daviContext.hoverNotifier.index;
+
+  @override
+  State<StatefulWidget> createState() => CellWidgetState<DATA>();
+}
+
+@internal
+class CellWidgetState<DATA> extends State<CellWidget<DATA>> {
+  late int? _hoverIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    final HoverNotifier hoverNotifier = widget.daviContext.hoverNotifier;
+    _hoverIndex = hoverNotifier.index;
+    hoverNotifier.addListener(_hoverChanged);
+    widget.cellListenable?.addListener(_rebuild);
+  }
+
+  @override
+  void didUpdateWidget(CellWidget<DATA> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.daviContext.hoverNotifier !=
+        widget.daviContext.hoverNotifier) {
+      oldWidget.daviContext.hoverNotifier.removeListener(_hoverChanged);
+      _hoverIndex = widget.daviContext.hoverNotifier.index;
+      widget.daviContext.hoverNotifier.addListener(_hoverChanged);
+    }
+    if (oldWidget.cellListenable != widget.cellListenable) {
+      oldWidget.cellListenable?.removeListener(_rebuild);
+      widget.cellListenable?.addListener(_rebuild);
+    }
+  }
+
+  @override
+  void dispose() {
+    widget.daviContext.hoverNotifier.removeListener(_hoverChanged);
+    widget.cellListenable?.removeListener(_rebuild);
+    super.dispose();
+  }
+
+  void _hoverChanged() {
+    final HoverNotifier hoverNotifier = widget.daviContext.hoverNotifier;
+    if (_hoverIndex == null && hoverNotifier.index == widget.rowIndex) {
+      // row enter
+      setState(() {
+        _hoverIndex = hoverNotifier.index;
+      });
+    }
+    if (_hoverIndex == widget.rowIndex &&
+        hoverNotifier.index != widget.rowIndex) {
+      // row exit
+      setState(() {
+        _hoverIndex = null;
+      });
+    }
+  }
+
+  void _rebuild() {
+    setState(() {
+      // just rebuild
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    Listenable? cellListenable = column.cellListenable != null
-        ? column.cellListenable!(data, rowIndex)
-        : null;
-    return CellListenableBuilder(
-        rowIndex: rowIndex,
-        hoverNotifier: daviContext.hoverNotifier,
-        cellListenable: cellListenable,
-        builder: _builder);
-  }
-
-  Widget _builder(BuildContext context) {
     DaviThemeData theme = DaviTheme.of(context);
 
     EdgeInsets? padding = theme.cell.padding;
-    padding = column.cellPadding ?? padding;
+    padding = widget.column.cellPadding ?? padding;
 
     Alignment alignment = theme.cell.alignment;
-    alignment = column.cellAlignment ?? alignment;
+    alignment = widget.column.cellAlignment ?? alignment;
 
     TextStyle? textStyle;
-    if (column.cellTextStyle != null) {
-      textStyle = column.cellTextStyle!(
-          data, rowIndex, rowIndex == daviContext.hoverNotifier.index);
+    if (widget.column.cellTextStyle != null) {
+      TextStyleBuilderParams<DATA> params = TextStyleBuilderParams(
+          data: widget.data,
+          rowIndex: widget.rowIndex,
+          hovered: widget.hovered);
+      textStyle = widget.column.cellTextStyle!(params);
     }
     textStyle = textStyle ?? theme.cell.textStyle;
 
     Widget? child;
     dynamic value;
     bool textCell = false;
-    if (column.cellValue != null) {
+    if (widget.column.cellValue != null) {
       textCell = true;
-      value = column.cellValue!(data, rowIndex);
-    } else if (column.cellIcon != null) {
+      final ValueMapperParams<DATA> params =
+          ValueMapperParams(data: widget.data, rowIndex: widget.rowIndex);
+      value = widget.column.cellValue!(params);
+    } else if (widget.column.cellIcon != null) {
       textCell = true;
-      CellIcon? cellIcon = column.cellIcon!(data, rowIndex);
+      final IconMapperParams<DATA> params =
+          IconMapperParams(data: widget.data, rowIndex: widget.rowIndex);
+      CellIcon? cellIcon = widget.column.cellIcon!(params);
       if (cellIcon != null) {
         value = String.fromCharCode(cellIcon.icon.codePoint);
         textStyle = TextStyle(
@@ -74,46 +138,57 @@ class CellWidget<DATA> extends StatelessWidget {
             package: cellIcon.icon.fontPackage,
             color: cellIcon.color);
       }
-    } else if (column.cellPainter != null) {
+    } else if (widget.column.cellPainter != null) {
       child = CustomPaint(
-          size: Size(column.width, theme.cell.contentHeight),
+          size: Size(widget.column.width, theme.cell.contentHeight),
           painter: _CustomPainter<DATA>(
-              data: data, cellPainting: column.cellPainter!));
-    } else if (column.cellBarValue != null) {
-      double? barValue = column.cellBarValue!(data, rowIndex);
+              data: widget.data, cellPainting: widget.column.cellPainter!));
+    } else if (widget.column.cellBarValue != null) {
+      final BarValueMapperParams<DATA> params =
+          BarValueMapperParams(data: widget.data, rowIndex: widget.rowIndex);
+      double? barValue = widget.column.cellBarValue!(params);
       if (barValue != null) {
         child = CustomPaint(
-            size: Size(column.width, theme.cell.contentHeight),
+            size: Size(widget.column.width, theme.cell.contentHeight),
             painter: _BarPainter(
                 value: barValue,
-                painterCache: painterCache,
-                barBackground: column.cellBarStyle?.barBackground ??
+                painterCache: widget.painterCache,
+                barBackground: widget.column.cellBarStyle?.barBackground ??
                     theme.cell.barStyle.barBackground,
-                barForeground: column.cellBarStyle?.barForeground ??
+                barForeground: widget.column.cellBarStyle?.barForeground ??
                     theme.cell.barStyle.barForeground,
-                textSize: column.cellBarStyle?.textSize ??
+                textSize: widget.column.cellBarStyle?.textSize ??
                     theme.cell.barStyle.textSize,
-                textColor: column.cellBarStyle?.textColor ??
+                textColor: widget.column.cellBarStyle?.textColor ??
                     theme.cell.barStyle.textColor));
       }
-    } else if (column.cellWidget != null) {
-      child = column.cellWidget!(context, data, rowIndex);
+    } else if (widget.column.cellWidget != null) {
+      final WidgetBuilderParams<DATA> params = WidgetBuilderParams(
+          buildContext: context,
+          data: widget.data,
+          rowIndex: widget.rowIndex,
+          rebuildCallback: _rebuild);
+      child = widget.column.cellWidget!(params);
     }
 
     if (textCell && value != null) {
       child = TextCellPainter(
-          text: column.cellValueStringify(value),
-          rowSpan: rowSpan,
-          columnSpan: columnSpan,
-          painterCache: painterCache,
+          text: widget.column.cellValueStringify(value),
+          rowSpan: widget.rowSpan,
+          columnSpan: widget.columnSpan,
+          painterCache: widget.painterCache,
           textStyle: textStyle);
     }
 
-    if (daviContext.semanticsEnabled && column.semanticsBuilder != null) {
+    if (widget.daviContext.semanticsEnabled &&
+        widget.column.semanticsBuilder != null) {
+      SemanticsBuilderParams<DATA> params = SemanticsBuilderParams(
+          context: context,
+          data: widget.data,
+          rowIndex: widget.rowIndex,
+          hovered: widget.hovered);
       child = Semantics.fromProperties(
-          properties: column.semanticsBuilder!(context, data, rowIndex,
-              rowIndex == daviContext.hoverNotifier.index),
-          child: child);
+          properties: widget.column.semanticsBuilder!(params), child: child);
     }
 
     child = Padding(padding: padding ?? EdgeInsets.zero, child: child);
@@ -122,17 +197,19 @@ class CellWidget<DATA> extends StatelessWidget {
     // Always keep some color to avoid parent markNeedsLayout
     Color background = Colors.transparent;
     if (textCell && value == null && theme.cell.nullValueColor != null) {
-      background = theme.cell.nullValueColor!(
-              rowIndex, rowIndex == daviContext.hoverNotifier.index) ??
+      background = theme.cell.nullValueColor!(widget.rowIndex,
+              widget.rowIndex == widget.daviContext.hoverNotifier.index) ??
           background;
-    } else if (column.cellBackground != null) {
-      background = column.cellBackground!(
-              data, rowIndex, rowIndex == daviContext.hoverNotifier.index) ??
-          background;
+    } else if (widget.column.cellBackground != null) {
+      BackgroundBuilderParams<DATA> params = BackgroundBuilderParams(
+          data: widget.data,
+          rowIndex: widget.rowIndex,
+          hovered: widget.hovered);
+      background = widget.column.cellBackground!(params) ?? background;
     }
     child = Container(color: background, child: child);
 
-    if (column.cellClip) {
+    if (widget.column.cellClip) {
       child = ClipRect(child: child);
     }
 

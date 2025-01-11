@@ -1,4 +1,4 @@
-import 'package:davi/src/cell_bar.dart';
+import 'package:davi/src/column.dart';
 import 'package:davi/src/theme/cell_null_color.dart';
 import 'package:flutter/material.dart';
 
