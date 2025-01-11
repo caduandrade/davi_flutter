@@ -295,8 +295,7 @@ class ViewportState<DATA> extends ChangeNotifier {
                   CellCollisionBehavior.overlapAndWarn) {
                 debugPrint(
                     'Collision detected at cell rowIndex: $rowIndex columnIndex: $columnIndex.');
-              } else if (collisionBehavior ==
-                  CellCollisionBehavior.throwException) {
+              } else if (collisionBehavior == CellCollisionBehavior.error) {
                 throw StateError(
                     'Collision detected at cell rowIndex: $rowIndex columnIndex: $columnIndex.');
               }
