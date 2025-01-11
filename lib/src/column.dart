@@ -399,14 +399,39 @@ class WidgetBuilderParams<DATA> extends CellBaseParams<DATA> {
       {required this.buildContext,
       required DATA data,
       required int rowIndex,
-      required this.rebuildCallback})
+      required this.rebuildCallback,
+      required this.columnIndex})
       : super(data: data, rowIndex: rowIndex);
 
   /// The Flutter BuildContext for rendering.
   final BuildContext buildContext;
 
+  /// The index of the column.
+  final int columnIndex;
+
   /// Callback for triggering rebuilds.
   final VoidCallback rebuildCallback;
+
+  PositionKey get localKey =>
+      PositionKey(rowIndex: rowIndex, columnIndex: columnIndex);
+}
+
+class PositionKey extends LocalKey {
+  const PositionKey({required this.rowIndex, required this.columnIndex});
+
+  final int rowIndex;
+  final int columnIndex;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is PositionKey &&
+          runtimeType == other.runtimeType &&
+          rowIndex == other.rowIndex &&
+          columnIndex == other.columnIndex;
+
+  @override
+  int get hashCode => rowIndex.hashCode ^ columnIndex.hashCode;
 }
 
 /// Represents the style configuration for a cell bar value.

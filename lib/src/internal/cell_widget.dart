@@ -13,6 +13,7 @@ class CellWidget<DATA> extends StatefulWidget {
       {Key? key,
       required this.data,
       required this.rowIndex,
+      required this.columnIndex,
       required this.rowSpan,
       required this.columnSpan,
       required this.column,
@@ -26,6 +27,7 @@ class CellWidget<DATA> extends StatefulWidget {
 
   final DATA data;
   final int rowIndex;
+  final int columnIndex;
   final int rowSpan;
   final int columnSpan;
   final DaviColumn<DATA> column;
@@ -167,6 +169,7 @@ class CellWidgetState<DATA> extends State<CellWidget<DATA>> {
           buildContext: context,
           data: widget.data,
           rowIndex: widget.rowIndex,
+          columnIndex: widget.columnIndex,
           rebuildCallback: _rebuild);
       child = widget.column.cellWidget!(params);
     }

@@ -96,6 +96,7 @@ class DaviCellWidgetBuilderState<DATA>
             child: CellWidget(
                 data: data,
                 rowIndex: cellMapping.rowIndex,
+                columnIndex: cellMapping.columnIndex,
                 rowSpan: cellMapping.rowSpan,
                 columnSpan: cellMapping.columnSpan,
                 column: column,
