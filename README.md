@@ -2,7 +2,7 @@
 [![](https://img.shields.io/badge/Flutter-%E2%9D%A4-red)](https://flutter.dev/)
 [![](https://img.shields.io/badge/%F0%9F%91%8D%20and%20%E2%AD%90-are%20free%20and%20motivate%20me-yellow)](#)
 
-[![](logo/davi_logo_v1.png)](#)
+![](logo/davi_logo_v1.png)
 
 * Ready for a large number of data. High performance. Building cells on demand.
 * Focused on Web/Desktop Applications.
@@ -15,11 +15,14 @@
 * Pinned columns.
 * Multiple sort.
 * Infinite scroll.
+* Trailing widget.
 
 Explore and learn more by clicking [here](https://caduandrade.github.io/davi_flutter_demo/).
 
-![a](screenshots/screenshot1.png)
+![](screenshots/screenshot1.png)
 
 ![](screenshots/screenshot2.png)
 
 ![](screenshots/screenshot3.png)
+
+![](screenshots/screenshot4.png)
