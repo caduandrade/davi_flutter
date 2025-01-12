@@ -102,7 +102,7 @@ class DaviModel<DATA> extends ChangeNotifier {
     }
   }
 
-  /// Ignore column [dataComparator] to maintain the natural order of the data.
+  /// Ignore column [DaviColumn.dataComparator] to maintain the natural order of the data.
   final bool ignoreDataComparators;
 
   bool get _isRowsModifiable => _sortableRows is! UnmodifiableListView;
@@ -226,7 +226,7 @@ class DaviModel<DATA> extends ChangeNotifier {
 
   DaviColumn<DATA> columnAt(int index) => _columns[index];
 
-  /// Gets a column given an [id]. If [id] is [NULL], no columns are returned.
+  /// Gets a column given an [id]. If [id] is `NULL`, no columns are returned.
   DaviColumn<DATA>? getColumn(dynamic id) {
     if (id != null) {
       for (DaviColumn<DATA> column in _columns) {

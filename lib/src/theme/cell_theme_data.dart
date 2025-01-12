@@ -36,7 +36,7 @@ class CellThemeData {
   /// Defines a background when the cell value is null.
   final CellNullColor? nullValueColor;
 
-  /// If [TRUE], overrides the [InputDecorationTheme] by setting it to dense
+  /// If `TRUE`, overrides the [InputDecorationTheme] by setting it to dense
   /// and removing the border.
   final bool overrideInputDecoration;
 
@@ -71,16 +71,28 @@ class CellThemeData {
 
 /// All default theme values.
 class CellThemeDataDefaults {
+  /// Default content height
   static const double contentHeight = 32;
+
+  /// Default padding
   static const EdgeInsets padding = EdgeInsets.only(left: 8, right: 8);
+
+  /// Default alignment
   static const Alignment alignment = Alignment.centerLeft;
+
+  /// Default overrideInputDecoration value
   static const bool overrideInputDecoration = true;
+
+  /// Default cell bar style
   static const CellBarStyle cellBarStyle = CellBarStyle(
       barBackground: Color(0xFFE0E0E0),
       barForeground: _barForeground,
       textSize: 14,
       textColor: _textColor);
 
+  /// Default bar foreground
   static Color _barForeground(double value) => Colors.grey;
+
+  /// Default text color
   static Color _textColor(double value) => Colors.black;
 }

@@ -8,10 +8,6 @@ import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
 
 /// The [Davi] column.
-///
-/// The optional value mappings [intValue], [doubleValue], [stringValue],
-/// [iconValue] and [objectValue] allows automatic cell configuration
-/// by identifying and displaying data types in the row object.
 class DaviColumn<DATA> extends ChangeNotifier {
   DaviColumn(
       {dynamic id,
@@ -92,6 +88,7 @@ class DaviColumn<DATA> extends ChangeNotifier {
   final PinStatus pinStatus;
 
   /// Cell value mapper for each row in that column.
+  /// Based on its type, it automatically defines the comparator for sorting.
   final CellValueMapper<DATA>? cellValue;
 
   /// Represents the function that calculates the value for the cell's bar.
@@ -134,9 +131,6 @@ class DaviColumn<DATA> extends ChangeNotifier {
   /// A builder function that provides a [Listenable] for a specific cell in this column.
   /// When the returned [Listenable] notifies listeners, the corresponding cell will be rebuilt.
   /// This allows dynamic updates of cell content based on external changes.
-  ///
-  /// The builder receives the row's data ([DATA]) and its index ([rowIndex]) to determine
-  /// the appropriate [Listenable] for each cell.
   final DaviCellListenableBuilder<DATA>? cellListenable;
 
   /// Defines the row span.
