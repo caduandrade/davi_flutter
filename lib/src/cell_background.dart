@@ -6,11 +6,17 @@ import 'package:flutter/widgets.dart';
 typedef CellBackgroundBuilder<DATA> = Color? Function(
     BackgroundBuilderParams<DATA> params);
 
+/// Parameters passed to the [CellBackgroundBuilder] function.
 class BackgroundBuilderParams<DATA> {
   BackgroundBuilderParams(
       {required this.data, required this.rowIndex, required this.hovered});
 
+  /// The data used to construct the background.
   final DATA data;
-  final int rowIndex;
+
+  /// Indicates if the row is hovered over.
   final bool hovered;
+
+  /// The index of the row in the data view.
+  final int rowIndex;
 }
