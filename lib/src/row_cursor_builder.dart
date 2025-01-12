@@ -10,7 +10,12 @@ class CursorBuilderParams<DATA> {
   CursorBuilderParams(
       {required this.data, required this.rowIndex, required this.hovered});
 
+  /// Represents the data for a row in the table.
   final DATA data;
+
+  /// The index of the row in the table.
   final int rowIndex;
+
+  /// Indicates whether the row is hovered over.
   final bool hovered;
 }
