@@ -27,6 +27,7 @@ class CellThemeData {
   /// Height of cell content. Mandatory due to performance.
   final double contentHeight;
 
+  /// The alignment of the content within the cell.
   final Alignment alignment;
 
   /// Defines a background.
@@ -39,6 +40,7 @@ class CellThemeData {
   /// and removing the border.
   final bool overrideInputDecoration;
 
+  /// The style of the progress bar within the cell.
   final CellBarStyle barStyle;
 
   @override
@@ -67,6 +69,7 @@ class CellThemeData {
       overrideInputDecoration.hashCode;
 }
 
+/// All default theme values.
 class CellThemeDataDefaults {
   static const double contentHeight = 32;
   static const EdgeInsets padding = EdgeInsets.only(left: 8, right: 8);
