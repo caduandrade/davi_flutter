@@ -11,11 +11,10 @@ import 'package:meta/meta.dart';
 @internal
 class TableLayout<DATA> extends MultiChildRenderObjectWidget {
   const TableLayout(
-      {Key? key,
+      {super.key,
       required this.layoutSettings,
       required this.theme,
-      required List<TableLayoutChild> children})
-      : super(key: key, children: children);
+      required List<TableLayoutChild> super.children});
 
   final TableLayoutSettings layoutSettings;
   final DaviThemeData theme;

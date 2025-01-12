@@ -10,12 +10,11 @@ import 'package:meta/meta.dart';
 class DaviHeaderCell<DATA> extends StatefulWidget {
   /// Builds a header cell.
   const DaviHeaderCell(
-      {Key? key,
+      {super.key,
       required this.daviContext,
       required this.column,
       required this.resizable,
-      required this.columnIndex})
-      : super(key: key);
+      required this.columnIndex});
 
   final DaviContext<DATA> daviContext;
   final DaviColumn<DATA> column;

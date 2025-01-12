@@ -13,13 +13,12 @@ import 'package:meta/meta.dart';
 @internal
 class DaviCellWidgetBuilder<DATA> extends StatefulWidget {
   const DaviCellWidgetBuilder(
-      {Key? key,
+      {super.key,
       required this.cellIndex,
       required this.daviContext,
       required this.painterCache,
       required this.viewportState,
-      required this.layoutSettings})
-      : super(key: key);
+      required this.layoutSettings});
 
   final int cellIndex;
   final DaviContext<DATA> daviContext;
@@ -110,7 +109,7 @@ class DaviCellWidgetBuilderState<DATA>
 
 class CustomSingleChildWidget extends SingleChildRenderObjectWidget {
   const CustomSingleChildWidget({
-    Key? key,
+    super.key,
     required this.verticalScrollController,
     required this.horizontalScrollController,
     required this.columnsMetrics,
@@ -118,8 +117,8 @@ class CustomSingleChildWidget extends SingleChildRenderObjectWidget {
     required this.rowHeight,
     required this.cellMapping,
     required this.areaBounds,
-    Widget? child,
-  }) : super(key: key, child: child);
+    super.child,
+  });
 
   final ScrollController verticalScrollController;
   final ScrollController horizontalScrollController;

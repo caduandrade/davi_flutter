@@ -334,10 +334,7 @@ typedef CellValueMapper<DATA> = dynamic Function(
 /// );
 /// ```
 class ValueMapperParams<DATA> extends CellBaseParams<DATA> {
-  ValueMapperParams({
-    required DATA data,
-    required int rowIndex,
-  }) : super(data: data, rowIndex: rowIndex);
+  ValueMapperParams({required super.data, required super.rowIndex});
 }
 
 /// A function type that maps a row's data to an icon representation for a table cell.
@@ -385,10 +382,7 @@ typedef CellIconMapper<DATA> = CellIcon? Function(
 /// );
 /// ```
 class IconMapperParams<DATA> extends CellBaseParams<DATA> {
-  IconMapperParams({
-    required DATA data,
-    required int rowIndex,
-  }) : super(data: data, rowIndex: rowIndex);
+  IconMapperParams({required super.data, required super.rowIndex});
 }
 
 /// A function type that maps a given row's data to a widget for display in a table cell.
@@ -413,11 +407,10 @@ typedef CellWidgetBuilder<DATA> = Widget? Function(
 class WidgetBuilderParams<DATA> extends CellBaseParams<DATA> {
   WidgetBuilderParams(
       {required this.buildContext,
-      required DATA data,
-      required int rowIndex,
+      required super.data,
+      required super.rowIndex,
       required this.rebuildCallback,
-      required this.columnIndex})
-      : super(data: data, rowIndex: rowIndex);
+      required this.columnIndex});
 
   /// The Flutter BuildContext for rendering.
   final BuildContext buildContext;
@@ -563,10 +556,7 @@ typedef CellBarStringify<DATA> = String Function(
 /// );
 /// ```
 class BarValueMapperParams<DATA> extends CellBaseParams<DATA> {
-  BarValueMapperParams({
-    required DATA data,
-    required int rowIndex,
-  }) : super(data: data, rowIndex: rowIndex);
+  BarValueMapperParams({required super.data, required super.rowIndex});
 }
 
 /// A base class that encapsulates common parameters for mappers, such as the row's data and index.

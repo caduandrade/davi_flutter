@@ -10,7 +10,7 @@ import 'package:meta/meta.dart';
 @internal
 class CellWidget<DATA> extends StatefulWidget {
   CellWidget(
-      {Key? key,
+      {super.key,
       required this.data,
       required this.rowIndex,
       required this.columnIndex,
@@ -22,8 +22,7 @@ class CellWidget<DATA> extends StatefulWidget {
       : cellListenable = column.cellListenable != null
             ? column.cellListenable!(
                 ListenableBuilderParams<DATA>(data: data, rowIndex: rowIndex))
-            : null,
-        super(key: key);
+            : null;
 
   final DATA data;
   final int rowIndex;

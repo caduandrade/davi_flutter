@@ -17,8 +17,7 @@ import 'package:meta/meta.dart';
 @internal
 class TableLayoutBuilder<DATA> extends StatelessWidget {
   const TableLayoutBuilder(
-      {Key? key, required this.daviContext, required this.onDragScroll})
-      : super(key: key);
+      {super.key, required this.daviContext, required this.onDragScroll});
 
   final DaviContext<DATA> daviContext;
   final OnDragScroll onDragScroll;

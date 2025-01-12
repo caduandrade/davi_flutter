@@ -10,10 +10,10 @@ class DaviTheme extends StatelessWidget {
   ///
   /// The [data] and [child] arguments must not be null.
   const DaviTheme({
-    Key? key,
+    super.key,
     required this.child,
     required this.data,
-  }) : super(key: key);
+  });
 
   /// Specifies the theme for descendant widgets.
   final DaviThemeData data;
@@ -40,10 +40,9 @@ class DaviTheme extends StatelessWidget {
 
 class _InheritedTheme extends InheritedWidget {
   const _InheritedTheme({
-    Key? key,
     required this.theme,
-    required Widget child,
-  }) : super(key: key, child: child);
+    required super.child,
+  });
 
   final DaviTheme theme;
 

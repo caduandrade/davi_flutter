@@ -8,14 +8,13 @@ import 'package:meta/meta.dart';
 @internal
 class TableScrollbar extends StatelessWidget {
   const TableScrollbar(
-      {Key? key,
+      {super.key,
       required this.contentSize,
       required this.scrollController,
       required this.axis,
       required this.color,
       required this.borderColor,
-      required this.onDragScroll})
-      : super(key: key);
+      required this.onDragScroll});
 
   final double contentSize;
   final ScrollController scrollController;

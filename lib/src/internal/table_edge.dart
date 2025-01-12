@@ -6,7 +6,7 @@ import 'package:meta/meta.dart';
 
 @internal
 class TableEdge extends StatelessWidget {
-  const TableEdge({Key? key, required this.type}) : super(key: key);
+  const TableEdge({super.key, required this.type});
 
   final CornerType type;
 

@@ -5,7 +5,7 @@ import 'package:meta/meta.dart';
 /// The [ColumnsLayout] element.
 @internal
 class ColumnsLayoutElement extends MultiChildRenderObjectElement {
-  ColumnsLayoutElement(ColumnsLayout widget) : super(widget);
+  ColumnsLayoutElement(ColumnsLayout super.widget);
 
   @override
   void debugVisitOnstageChildren(ElementVisitor visitor) {

@@ -5,13 +5,12 @@ import 'package:meta/meta.dart';
 @internal
 class TextCellPainter extends LeafRenderObjectWidget {
   const TextCellPainter(
-      {Key? key,
+      {super.key,
       required this.text,
       required this.rowSpan,
       required this.columnSpan,
       required this.painterCache,
-      required this.textStyle})
-      : super(key: key);
+      required this.textStyle});
 
   final PainterCache painterCache;
   final String text;

@@ -12,11 +12,10 @@ import 'package:meta/meta.dart';
 @internal
 class HeaderWidget<DATA> extends StatelessWidget {
   const HeaderWidget(
-      {Key? key,
+      {super.key,
       required this.daviContext,
       required this.layoutSettings,
-      required this.resizable})
-      : super(key: key);
+      required this.resizable});
 
   final DaviContext<DATA> daviContext;
   final TableLayoutSettings layoutSettings;

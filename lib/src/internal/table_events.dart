@@ -12,12 +12,11 @@ import 'package:meta/meta.dart';
 @internal
 class TableEvents<DATA> extends StatelessWidget {
   const TableEvents(
-      {Key? key,
+      {super.key,
       required this.daviContext,
       required this.child,
       required this.rowRegions,
-      required this.rowTheme})
-      : super(key: key);
+      required this.rowTheme});
 
   final Widget child;
   final DaviContext<DATA> daviContext;

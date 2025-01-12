@@ -9,8 +9,8 @@ import 'package:meta/meta.dart';
 class TableLayoutChild extends ParentDataWidget<TableLayoutParentData> {
   TableLayoutChild({
     required this.id,
-    required Widget child,
-  }) : super(key: ValueKey<LayoutChildId>(id), child: child);
+    required super.child,
+  }) : super(key: ValueKey<LayoutChildId>(id));
 
   final LayoutChildId id;
 

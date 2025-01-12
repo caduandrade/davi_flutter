@@ -9,8 +9,7 @@ import 'package:flutter/widgets.dart';
 
 class SummaryWidget<DATA> extends StatelessWidget {
   const SummaryWidget(
-      {Key? key, required this.daviContext, required this.layoutSettings})
-      : super(key: key);
+      {super.key, required this.daviContext, required this.layoutSettings});
 
   final DaviContext<DATA> daviContext;
   final TableLayoutSettings layoutSettings;

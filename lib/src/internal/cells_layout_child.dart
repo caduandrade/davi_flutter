@@ -18,10 +18,10 @@ class CellsLayoutChild<DATA> extends ParentDataWidget<CellsLayoutParentData> {
   }
 
   const CellsLayoutChild._({
-    required Key key,
+    required super.key,
     required this.cellIndex,
-    required Widget child,
-  }) : super(key: key, child: child);
+    required super.child,
+  });
 
   final int? cellIndex;
 

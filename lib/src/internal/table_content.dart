@@ -15,13 +15,12 @@ import 'package:meta/meta.dart';
 @internal
 class TableContent<DATA> extends StatefulWidget {
   const TableContent(
-      {Key? key,
+      {super.key,
       required this.layoutSettings,
       required this.daviContext,
       required this.maxHeight,
       required this.maxWidth,
-      required this.rowFillHeight})
-      : super(key: key);
+      required this.rowFillHeight});
 
   final TableLayoutSettings layoutSettings;
   final DaviContext<DATA> daviContext;

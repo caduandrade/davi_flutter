@@ -13,7 +13,7 @@ import 'package:meta/meta.dart';
 @internal
 class CellsLayout<DATA> extends MultiChildRenderObjectWidget {
   const CellsLayout(
-      {Key? key,
+      {super.key,
       required this.layoutSettings,
       required this.daviContext,
       required this.verticalOffset,
@@ -22,8 +22,7 @@ class CellsLayout<DATA> extends MultiChildRenderObjectWidget {
       required this.rowsLength,
       required this.rowRegionCache,
       required this.dividerPaintManager,
-      required List<CellsLayoutChild> children})
-      : super(key: key, children: children);
+      required List<CellsLayoutChild> super.children});
 
   final TableLayoutSettings layoutSettings;
   final DaviContext<DATA> daviContext;

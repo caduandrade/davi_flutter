@@ -5,7 +5,7 @@ import 'package:meta/meta.dart';
 /// The [CellsLayout] element.
 @internal
 class CellsLayoutElement extends MultiChildRenderObjectElement {
-  CellsLayoutElement(CellsLayout widget) : super(widget);
+  CellsLayoutElement(CellsLayout super.widget);
 
   @override
   void debugVisitOnstageChildren(ElementVisitor visitor) {

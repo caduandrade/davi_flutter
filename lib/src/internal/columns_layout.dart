@@ -10,13 +10,12 @@ import 'package:meta/meta.dart';
 @internal
 class ColumnsLayout extends MultiChildRenderObjectWidget {
   const ColumnsLayout(
-      {Key? key,
+      {super.key,
       required this.layoutSettings,
       required this.scrollControllers,
       required this.columnDividerThickness,
       required this.columnDividerColor,
-      required List<ColumnsLayoutChild> children})
-      : super(key: key, children: children);
+      required List<ColumnsLayoutChild> super.children});
 
   final TableLayoutSettings layoutSettings;
   final ScrollControllers scrollControllers;

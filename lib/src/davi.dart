@@ -23,7 +23,7 @@ class Davi<DATA> extends StatefulWidget {
 //TODO handle negative values
 //TODO allow null and use defaults?
   const Davi(this.model,
-      {Key? key,
+      {super.key,
       this.onHover,
       this.unpinnedHorizontalScrollController,
       this.leftPinnedHorizontalScrollController,
@@ -44,8 +44,7 @@ class Davi<DATA> extends StatefulWidget {
       this.onTrailingWidget})
       : visibleRowsCount = visibleRowsCount == null || visibleRowsCount > 0
             ? visibleRowsCount
-            : null,
-        super(key: key);
+            : null;
 
   final DaviModel<DATA> model;
   final ScrollController? unpinnedHorizontalScrollController;
