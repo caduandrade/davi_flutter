@@ -212,6 +212,11 @@ class DaviColumn<DATA> extends ChangeNotifier {
     }
   }
 
+  /// Indicates whether the layout process has been executed at least once
+  /// for this column. If true, disable grow in
+  /// [ColumnWidthBehavior.scrollable] mode.
+  bool _layoutPerformed = false;
+
   /// A flag indicating whether the column is resizable.
   /// If set to true, the column can be resized by the user.
   final bool resizable;
@@ -607,8 +612,8 @@ class CellBaseParams<DATA> {
 
 @internal
 class DaviColumnHelper {
-  static void performLayout(
-      {required DaviColumn column, required double layoutWidth}) {
+  static void performLayout<DATA>(
+      {required DaviColumn<DATA> column, required double layoutWidth}) {
     column._layoutPerformed = true;
     if (column._grow != null) {
       column._width = layoutWidth;
