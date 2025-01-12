@@ -1,6 +1,6 @@
 import 'package:davi/davi.dart';
 import 'package:davi/src/internal/column_metrics.dart';
-import 'package:davi/src/internal/new/viewport_state.dart';
+import 'package:davi/src/internal/viewport_state.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 DaviModel<int> buildModel(

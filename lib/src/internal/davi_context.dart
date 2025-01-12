@@ -1,6 +1,6 @@
 import 'package:davi/src/column_width_behavior.dart';
-import 'package:davi/src/internal/new/column_notifier.dart';
-import 'package:davi/src/internal/new/hover_notifier.dart';
+import 'package:davi/src/internal/column_notifier.dart';
+import 'package:davi/src/internal/hover_notifier.dart';
 import 'package:davi/src/internal/scroll_controllers.dart';
 import 'package:davi/src/internal/theme_metrics/theme_metrics.dart';
 import 'package:davi/src/last_visible_row_listener.dart';

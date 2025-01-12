@@ -1,4 +1,4 @@
-import 'package:davi/src/internal/new/cells_layout.dart';
+import 'package:davi/src/internal/cells_layout.dart';
 import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
 

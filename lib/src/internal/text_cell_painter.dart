@@ -1,4 +1,4 @@
-import 'package:davi/src/internal/new/painter_cache.dart';
+import 'package:davi/src/internal/painter_cache.dart';
 import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
 

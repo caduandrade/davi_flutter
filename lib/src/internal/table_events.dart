@@ -1,8 +1,8 @@
 import 'dart:math' as math;
 
 import 'package:davi/davi.dart';
-import 'package:davi/src/internal/new/davi_context.dart';
-import 'package:davi/src/internal/new/viewport_state.dart';
+import 'package:davi/src/internal/davi_context.dart';
+import 'package:davi/src/internal/viewport_state.dart';
 import 'package:davi/src/internal/theme_metrics/theme_metrics.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';

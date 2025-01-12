@@ -1,10 +1,10 @@
 import 'dart:math' as math;
 import 'package:davi/davi.dart';
-import 'package:davi/src/internal/new/divider_paint_manager.dart';
-import 'package:davi/src/internal/new/hover_notifier.dart';
+import 'package:davi/src/internal/divider_paint_manager.dart';
+import 'package:davi/src/internal/hover_notifier.dart';
 import 'package:davi/src/internal/column_metrics.dart';
-import 'package:davi/src/internal/new/cells_layout_parent_data.dart';
-import 'package:davi/src/internal/new/viewport_state.dart';
+import 'package:davi/src/internal/cells_layout_parent_data.dart';
+import 'package:davi/src/internal/viewport_state.dart';
 import 'package:davi/src/internal/scroll_controllers.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';

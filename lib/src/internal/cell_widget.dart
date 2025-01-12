@@ -1,9 +1,9 @@
 import 'package:davi/davi.dart';
 import 'package:davi/src/cell_semantics_builder.dart';
-import 'package:davi/src/internal/new/hover_notifier.dart';
-import 'package:davi/src/internal/new/text_cell_painter.dart';
-import 'package:davi/src/internal/new/painter_cache.dart';
-import 'package:davi/src/internal/new/davi_context.dart';
+import 'package:davi/src/internal/hover_notifier.dart';
+import 'package:davi/src/internal/painter_cache.dart';
+import 'package:davi/src/internal/text_cell_painter.dart';
+import 'package:davi/src/internal/davi_context.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 

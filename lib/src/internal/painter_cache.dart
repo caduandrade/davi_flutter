@@ -1,4 +1,4 @@
-import 'package:davi/src/internal/new/fifo_cache.dart';
+import 'package:davi/src/internal/fifo_cache.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 

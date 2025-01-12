@@ -1,7 +1,7 @@
 import 'package:davi/src/column_width_behavior.dart';
-import 'package:davi/src/internal/new/column_notifier.dart';
-import 'package:davi/src/internal/new/davi_context.dart';
-import 'package:davi/src/internal/new/hover_notifier.dart';
+import 'package:davi/src/internal/column_notifier.dart';
+import 'package:davi/src/internal/davi_context.dart';
+import 'package:davi/src/internal/hover_notifier.dart';
 import 'package:davi/src/internal/scroll_controllers.dart';
 import 'package:davi/src/internal/table_layout_builder.dart';
 import 'package:davi/src/internal/theme_metrics/theme_metrics.dart';

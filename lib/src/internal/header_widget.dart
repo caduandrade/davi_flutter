@@ -2,7 +2,7 @@ import 'package:davi/src/column.dart';
 import 'package:davi/src/internal/columns_layout.dart';
 import 'package:davi/src/internal/columns_layout_child.dart';
 import 'package:davi/src/internal/header_cell.dart';
-import 'package:davi/src/internal/new/davi_context.dart';
+import 'package:davi/src/internal/davi_context.dart';
 import 'package:davi/src/internal/table_layout_settings.dart';
 import 'package:davi/src/theme/theme.dart';
 import 'package:davi/src/theme/theme_data.dart';

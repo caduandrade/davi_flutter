@@ -1,4 +1,4 @@
-import 'package:davi/src/internal/new/divider_paint_manager.dart';
+import 'package:davi/src/internal/divider_paint_manager.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

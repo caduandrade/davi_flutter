@@ -1,4 +1,4 @@
-import 'package:davi/src/internal/new/collision_detector.dart';
+import 'package:davi/src/internal/collision_detector.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
