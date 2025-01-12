@@ -1,4 +1,4 @@
-## 4.0.0-rc.2
+## 4.0.0
 
 * Significant performance improvements
   * Internal tests show Flutter frame rates during scrolling increasing from 5 FPS to over 30 FPS
