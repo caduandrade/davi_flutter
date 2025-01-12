@@ -10,7 +10,7 @@
 * Resizable.
 * Cell merging.
 * Column summary (Footer).
-* Highly customized.
+* Highly customizable.
 * Custom cells.
 * Pinned columns.
 * Multiple sort.
