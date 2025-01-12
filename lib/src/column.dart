@@ -9,6 +9,10 @@ import 'package:meta/meta.dart';
 
 /// The [Davi] column.
 class DaviColumn<DATA> extends ChangeNotifier {
+  /// Creates a new instance of [DaviColumn].
+  ///
+  /// This constructor initializes the column with the provided parameters, such as
+  /// the header widget, alignment, padding, and other properties related to the column's appearance and behavior.
   DaviColumn(
       {dynamic id,
       double width = 100,
@@ -196,6 +200,8 @@ class DaviColumn<DATA> extends ChangeNotifier {
     }
   }
 
+  /// The width of the column. It is constrained to a minimum value of 16.
+  /// The width can be updated, and listeners are notified if the value changes.
   double get width => _width;
 
   set width(double value) {
@@ -206,12 +212,9 @@ class DaviColumn<DATA> extends ChangeNotifier {
     }
   }
 
-  /// Indicates whether the layout process has been executed at least once
-  /// for this column. If true, disable grow in
-  /// [ColumnWidthBehavior.scrollable] mode.
-  bool _layoutPerformed = false;
-
-  bool resizable;
+  /// A flag indicating whether the column is resizable.
+  /// If set to true, the column can be resized by the user.
+  final bool resizable;
 
   DaviSortDirection? _sortDirection;
 
