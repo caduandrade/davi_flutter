@@ -46,24 +46,53 @@ class Davi<DATA> extends StatefulWidget {
             ? visibleRowsCount
             : null;
 
+  /// The data model.
   final DaviModel<DATA> model;
+
+  /// The horizontal scroll controller for the unpinned area of the table.
+  /// It controls the scrolling behavior of the section that is unpinned.
   final ScrollController? unpinnedHorizontalScrollController;
+
+  /// The horizontal scroll controller for the left pinned area of the table.
+  /// It controls the scrolling behavior of the section that is pinned to the left.
   final ScrollController? leftPinnedHorizontalScrollController;
+
+  /// The vertical scroll controller for the table, allowing programmatic control of vertical scrolling.
   final ScrollController? verticalScrollController;
+
+  /// A callback that is triggered when a row is hovered over.
   final OnRowHoverListener? onHover;
+
+  /// A callback that defines the row color based on the row data.
   final DaviRowColor<DATA>? rowColor;
+
+  /// A callback to build a custom cursor when hovering over a row.
   final RowCursorBuilder<DATA>? rowCursor;
+
+  /// A callback that is triggered when a row is double-tapped.
   final RowDoubleTapCallback<DATA>? onRowDoubleTap;
+
+  /// A callback that is triggered when a row is tapped.
   final RowTapCallback<DATA>? onRowTap;
+
+  /// A callback that is triggered when a row receives a secondary tap (usually right-click).
   final RowTapCallback<DATA>? onRowSecondaryTap;
+
+  /// A callback that is triggered when a secondary tap (usually right-click) is released over a row.
   final RowTapUpCallback<DATA>? onRowSecondaryTapUp;
+
+  /// Defines column width behavior.
   final ColumnWidthBehavior columnWidthBehavior;
   final int? visibleRowsCount;
   final LastVisibleRowListener? onLastVisibleRow;
+
+  /// Defines whether the component is focusable.
   final bool focusable;
 
   /// An optional widget displayed at the end of the table's content.
   final Widget? trailingWidget;
+
+  /// A callback that is triggered when the trailing widget appears in the table.
   final TrailingWidgetListener? onTrailingWidget;
 
   /// Activates semantics by adding a Semantics widget internally,
