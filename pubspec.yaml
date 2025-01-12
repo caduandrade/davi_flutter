@@ -4,13 +4,13 @@ version: 4.0.0-rc.1
 repository: https://github.com/caduandrade/davi_flutter
 
 screenshots:
-  - description: Davi example
+  - description: Example of Davi's implementation
     path: screenshots/screenshot1.png
-  - description: Cell bar
+  - description: Cell bar layout design
     path: screenshots/screenshot2.png
-  - description: Custom cell
+  - description: Custom cell configuration example
     path: screenshots/screenshot3.png
-  - description: Cell merging
+  - description: Cell merging feature demonstration
     path: screenshots/screenshot4.png
 
 topics:
