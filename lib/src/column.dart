@@ -72,19 +72,44 @@ class DaviColumn<DATA> extends ChangeNotifier {
   /// Optional column name. Displayed by default in the cell header widget.
   final String? name;
 
+  /// An optional widget displayed at the beginning of the column header.
+  /// This widget can be used to show additional content at the start of the header, before the column title.
   final Widget? leading;
+
+  /// Padding applied to the cells within the column.
+  /// This helps control the spacing around the content inside each cell.
   final EdgeInsets? cellPadding;
 
-  /// Padding for the header widget.
+  /// Padding applied to the header widget of the column.
+  /// This allows customization of the spacing around the header content.
   final EdgeInsets? headerPadding;
 
+  /// The alignment of the column header content.
+  /// This controls how the header text is positioned within the header area.
   final Alignment? headerAlignment;
+
+  /// The alignment of the cell content within the column.
+  /// This controls how the cell data is positioned within the cell area.
   final Alignment? cellAlignment;
+
+  /// Determines how the cell content overflows when the content is too large for the cell.
+  /// The value defines the behavior of the text when it exceeds the available space.
   final TextOverflow? cellOverflow;
+
+  /// A custom background builder for each cell in the column.
+  /// This allows defining different background styles for each cell based on the data.
   final CellBackgroundBuilder<DATA>? cellBackground;
+
+  /// A custom text style builder for each cell in the column.
+  /// This allows defining different text styles for each cell based on the data.
   final CellTextStyleBuilder<DATA>? cellTextStyle;
+
+  /// The text style to be applied to the column header.
+  /// This controls the appearance of the header's text, such as font size and color.
   final TextStyle? headerTextStyle;
 
+  /// The pin status of the column, indicating whether the column is pinned or not.
+  /// This helps manage which columns remain fixed when scrolling.
   final PinStatus pinStatus;
 
   /// Cell value mapper for each row in that column.

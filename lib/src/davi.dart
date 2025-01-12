@@ -83,7 +83,14 @@ class Davi<DATA> extends StatefulWidget {
 
   /// Defines column width behavior.
   final ColumnWidthBehavior columnWidthBehavior;
+
+  /// The number of visible rows currently displayed in the table.
+  /// It is particularly useful when the table has an unbounded height,
+  /// as it helps determine the number of rows currently visible in the view.
   final int? visibleRowsCount;
+
+  /// A callback that is triggered when the last visible row in the table is rendered.
+  /// This can be used to perform actions when the table reaches its last visible row.
   final LastVisibleRowListener? onLastVisibleRow;
 
   /// Defines whether the component is focusable.
