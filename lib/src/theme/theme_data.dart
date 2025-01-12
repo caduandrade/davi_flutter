@@ -1,8 +1,10 @@
 import 'package:davi/src/theme/cell_theme_data.dart';
+import 'package:davi/src/theme/edge_theme_data.dart';
 import 'package:davi/src/theme/header_cell_theme_data.dart';
 import 'package:davi/src/theme/header_theme_data.dart';
 import 'package:davi/src/theme/row_theme_data.dart';
 import 'package:davi/src/theme/scrollbar_theme_data.dart';
+import 'package:davi/src/theme/summary_theme_data.dart';
 import 'package:flutter/material.dart';
 
 //TODO handle negative values
@@ -17,14 +19,11 @@ class DaviThemeData {
           DaviThemeDataDefaults.columnDividerThickness,
       this.columnDividerColor = DaviThemeDataDefaults.columnDividerColor,
       this.decoration = DaviThemeDataDefaults.tableDecoration,
-      this.topCornerBorderColor = DaviThemeDataDefaults.topCornerBorderColor,
-      this.topCornerColor = DaviThemeDataDefaults.topCornerColor,
-      this.bottomCornerBorderColor =
-          DaviThemeDataDefaults.bottomCornerBorderColor,
-      this.bottomCornerColor = DaviThemeDataDefaults.bottomCornerColor,
       this.row = const RowThemeData(),
+      this.edge = const EdgeThemeData(),
       this.cell = const CellThemeData(),
       this.header = const HeaderThemeData(),
+      this.summary = const SummaryThemeData(),
       this.headerCell = const HeaderCellThemeData(),
       this.scrollbar = const TableScrollbarThemeData()});
 
@@ -34,48 +33,11 @@ class DaviThemeData {
   final BoxDecoration? decoration;
   final CellThemeData cell;
   final HeaderThemeData header;
+  final SummaryThemeData summary;
   final HeaderCellThemeData headerCell;
+  final EdgeThemeData edge;
   final RowThemeData row;
   final TableScrollbarThemeData scrollbar;
-  final Color topCornerBorderColor;
-  final Color topCornerColor;
-  final Color bottomCornerBorderColor;
-  final Color bottomCornerColor;
-
-  /// Creates a copy of this theme but with the given fields replaced with
-  /// the new values.
-  DaviThemeData copyWith(
-      {bool? columnDividerFillHeight,
-      double? columnDividerThickness,
-      Color? columnDividerColor,
-      BoxDecoration? decoration,
-      CellThemeData? cell,
-      HeaderThemeData? header,
-      HeaderCellThemeData? headerCell,
-      RowThemeData? row,
-      TableScrollbarThemeData? scrollbar,
-      Color? topCornerBorderColor,
-      Color? topCornerColor,
-      Color? bottomCornerBorderColor,
-      Color? bottomCornerColor}) {
-    return DaviThemeData(
-        columnDividerFillHeight:
-            columnDividerFillHeight ?? this.columnDividerFillHeight,
-        columnDividerThickness:
-            columnDividerThickness ?? this.columnDividerThickness,
-        columnDividerColor: columnDividerColor ?? this.columnDividerColor,
-        decoration: decoration ?? this.decoration,
-        cell: cell ?? this.cell,
-        header: header ?? this.header,
-        headerCell: headerCell ?? this.headerCell,
-        row: row ?? this.row,
-        scrollbar: scrollbar ?? this.scrollbar,
-        topCornerBorderColor: topCornerBorderColor ?? this.topCornerBorderColor,
-        topCornerColor: topCornerColor ?? this.topCornerColor,
-        bottomCornerBorderColor:
-            bottomCornerBorderColor ?? this.bottomCornerBorderColor,
-        bottomCornerColor: bottomCornerColor ?? this.bottomCornerColor);
-  }
 
   @override
   bool operator ==(Object other) =>
@@ -87,14 +49,12 @@ class DaviThemeData {
           columnDividerColor == other.columnDividerColor &&
           decoration == other.decoration &&
           cell == other.cell &&
+          edge == other.edge &&
           header == other.header &&
+          summary == other.summary &&
           headerCell == other.headerCell &&
           row == other.row &&
-          scrollbar == other.scrollbar &&
-          topCornerBorderColor == other.topCornerBorderColor &&
-          topCornerColor == other.topCornerColor &&
-          bottomCornerBorderColor == other.bottomCornerBorderColor &&
-          bottomCornerColor == other.bottomCornerColor;
+          scrollbar == other.scrollbar;
 
   @override
   int get hashCode =>
@@ -102,15 +62,13 @@ class DaviThemeData {
       columnDividerFillHeight.hashCode ^
       columnDividerColor.hashCode ^
       decoration.hashCode ^
+      edge.hashCode ^
       cell.hashCode ^
       header.hashCode ^
+      summary.hashCode ^
       headerCell.hashCode ^
       row.hashCode ^
-      scrollbar.hashCode ^
-      topCornerBorderColor.hashCode ^
-      topCornerColor.hashCode ^
-      bottomCornerBorderColor.hashCode ^
-      bottomCornerColor.hashCode;
+      scrollbar.hashCode;
 }
 
 class DaviThemeDataDefaults {
@@ -128,9 +86,5 @@ class DaviThemeDataDefaults {
           left: BorderSide(color: Colors.grey),
           bottom: BorderSide(color: Colors.grey)));
 
-  static const Color bottomCornerColor = Color(0xFFE0E0E0);
-  static const Color bottomCornerBorderColor = Colors.grey;
-  static const Color topCornerColor = Color(0xFFE0E0E0);
-  static const Color topCornerBorderColor = Colors.grey;
   static const Color columnDividerColor = Colors.grey;
 }

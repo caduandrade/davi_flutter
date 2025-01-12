@@ -19,18 +19,13 @@ class DaviScrollController extends ScrollController {
 
 class DaviScrollPosition extends ScrollPositionWithSingleContext {
   DaviScrollPosition({
-    required ScrollPhysics physics,
-    required ScrollContext context,
-    double? initialPixels = 0.0,
-    bool keepScrollOffset = true,
-    ScrollPosition? oldPosition,
+    required super.physics,
+    required super.context,
+    super.initialPixels,
+    super.keepScrollOffset,
+    super.oldPosition,
     String? debugLabel,
-  }) : super(
-            physics: physics,
-            context: context,
-            initialPixels: initialPixels,
-            keepScrollOffset: keepScrollOffset,
-            oldPosition: oldPosition);
+  });
 
   @override
   double get pixels => super.pixels.floorToDouble();

@@ -8,14 +8,13 @@ import 'package:meta/meta.dart';
 @internal
 class TableScrollbar extends StatelessWidget {
   const TableScrollbar(
-      {Key? key,
+      {super.key,
       required this.contentSize,
       required this.scrollController,
       required this.axis,
       required this.color,
       required this.borderColor,
-      required this.onDragScroll})
-      : super(key: key);
+      required this.onDragScroll});
 
   final double contentSize;
   final ScrollController scrollController;
@@ -50,6 +49,7 @@ class TableScrollbar extends StatelessWidget {
                         WidgetStateProperty.all(scrollTheme.thumbColor))),
             child: Scrollbar(
                 controller: scrollController,
+                interactive: true,
                 thickness: scrollTheme.thickness,
                 radius: scrollTheme.radius,
                 thumbVisibility: true,
@@ -62,6 +62,7 @@ class TableScrollbar extends StatelessWidget {
                       PointerDeviceKind.trackpad
                     }),
                     child: SingleChildScrollView(
+                        dragStartBehavior: DragStartBehavior.down,
                         controller: scrollController,
                         scrollDirection: axis,
                         child: _sizedBox())))));

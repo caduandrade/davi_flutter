@@ -1,3 +1,4 @@
+import 'package:davi/src/column.dart';
 import 'package:davi/src/theme/cell_null_color.dart';
 import 'package:flutter/material.dart';
 
@@ -8,10 +9,11 @@ class CellThemeData {
   const CellThemeData(
       {this.textStyle,
       this.nullValueColor,
+      this.background,
       this.contentHeight = CellThemeDataDefaults.contentHeight,
-      this.overflow = CellThemeDataDefaults.overflow,
       this.alignment = CellThemeDataDefaults.alignment,
       this.padding = CellThemeDataDefaults.padding,
+      this.barStyle = CellThemeDataDefaults.cellBarStyle,
       this.overrideInputDecoration =
           CellThemeDataDefaults.overrideInputDecoration});
 
@@ -25,37 +27,21 @@ class CellThemeData {
   /// Height of cell content. Mandatory due to performance.
   final double contentHeight;
 
+  /// The alignment of the content within the cell.
   final Alignment alignment;
 
-  final TextOverflow? overflow;
+  /// Defines a background.
+  final Color? background;
 
   /// Defines a background when the cell value is null.
   final CellNullColor? nullValueColor;
 
-  /// If [TRUE], overrides the [InputDecorationTheme] by setting it to dense
+  /// If `TRUE`, overrides the [InputDecorationTheme] by setting it to dense
   /// and removing the border.
   final bool overrideInputDecoration;
 
-  /// Creates a copy of this theme but with the given fields replaced with
-  /// the new values.
-  CellThemeData copyWith(
-      {TextStyle? textStyle,
-      EdgeInsets? padding,
-      double? contentHeight,
-      Alignment? alignment,
-      TextOverflow? overflow,
-      CellNullColor? nullValueColor,
-      bool? overrideInputDecoration}) {
-    return CellThemeData(
-        textStyle: textStyle ?? this.textStyle,
-        padding: padding ?? this.padding,
-        contentHeight: contentHeight ?? this.contentHeight,
-        alignment: alignment ?? this.alignment,
-        overflow: overflow ?? this.overflow,
-        nullValueColor: nullValueColor ?? this.nullValueColor,
-        overrideInputDecoration:
-            overrideInputDecoration ?? this.overrideInputDecoration);
-  }
+  /// The style of the progress bar within the cell.
+  final CellBarStyle barStyle;
 
   @override
   bool operator ==(Object other) =>
@@ -64,9 +50,10 @@ class CellThemeData {
           runtimeType == other.runtimeType &&
           textStyle == other.textStyle &&
           padding == other.padding &&
+          barStyle == other.barStyle &&
           contentHeight == other.contentHeight &&
           alignment == other.alignment &&
-          overflow == other.overflow &&
+          background == other.background &&
           nullValueColor == other.nullValueColor &&
           overrideInputDecoration == other.overrideInputDecoration;
 
@@ -74,17 +61,38 @@ class CellThemeData {
   int get hashCode =>
       textStyle.hashCode ^
       padding.hashCode ^
+      barStyle.hashCode ^
       contentHeight.hashCode ^
       alignment.hashCode ^
-      overflow.hashCode ^
+      background.hashCode ^
       nullValueColor.hashCode ^
       overrideInputDecoration.hashCode;
 }
 
+/// All default theme values.
 class CellThemeDataDefaults {
+  /// Default content height
   static const double contentHeight = 32;
-  static const TextOverflow overflow = TextOverflow.ellipsis;
+
+  /// Default padding
   static const EdgeInsets padding = EdgeInsets.only(left: 8, right: 8);
+
+  /// Default alignment
   static const Alignment alignment = Alignment.centerLeft;
+
+  /// Default overrideInputDecoration value
   static const bool overrideInputDecoration = true;
+
+  /// Default cell bar style
+  static const CellBarStyle cellBarStyle = CellBarStyle(
+      barBackground: Color(0xFFE0E0E0),
+      barForeground: _barForeground,
+      textSize: 14,
+      textColor: _textColor);
+
+  /// Default bar foreground
+  static Color _barForeground(double value) => Colors.grey;
+
+  /// Default text color
+  static Color _textColor(double value) => Colors.black;
 }

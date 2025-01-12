@@ -63,17 +63,19 @@ class ColumnMetrics {
     for (PinStatus pinStatus in PinStatus.values) {
       for (int i = 0; i < model.columnsLength; i++) {
         final DaviColumn column = model.columnAt(i);
-        if (pinStatus == column.pinStatus) {
-          offset += column.width + dividerThickness;
-          if (column.grow != null) {
-            totalGrow += column.grow!;
+        if (!DaviColumnHelper.isLayoutPerformed(column: column)) {
+          if (pinStatus == column.pinStatus) {
+            offset += column.width + dividerThickness;
+            if (column.grow != null) {
+              totalGrow += column.grow!;
+            }
           }
         }
       }
     }
 
     double? growFactor;
-    if (offset < maxWidth && totalGrow > 0) {
+    if (totalGrow > 0 && offset < maxWidth) {
       final double availableWidth = maxWidth - offset;
       growFactor = availableWidth / totalGrow;
     }
@@ -85,7 +87,7 @@ class ColumnMetrics {
         final DaviColumn column = model.columnAt(i);
         if (pinStatus == column.pinStatus) {
           double width = column.width;
-          if (column.grow != null && growFactor != null) {
+          if (growFactor != null && column.grow != null) {
             width += column.grow! * growFactor;
           }
           list.add(ColumnMetrics(

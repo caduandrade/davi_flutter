@@ -5,7 +5,7 @@ import 'package:meta/meta.dart';
 /// The [TableLayout] element.
 @internal
 class TableLayoutElement extends MultiChildRenderObjectElement {
-  TableLayoutElement(TableLayout widget) : super(widget);
+  TableLayoutElement(TableLayout super.widget);
 
   @override
   void debugVisitOnstageChildren(ElementVisitor visitor) {

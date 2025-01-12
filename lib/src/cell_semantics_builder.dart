@@ -1,4 +1,3 @@
-import 'package:davi/src/row.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 
@@ -6,4 +5,17 @@ import 'package:flutter/widgets.dart';
 ///
 /// Used by [DaviColumn].
 typedef DaviCellSemanticsBuilder<DATA> = SemanticsProperties Function(
-    BuildContext context, DaviRow<DATA> row);
+    SemanticsBuilderParams params);
+
+class SemanticsBuilderParams<DATA> {
+  SemanticsBuilderParams(
+      {required this.context,
+      required this.data,
+      required this.rowIndex,
+      required this.hovered});
+
+  final BuildContext context;
+  final DATA data;
+  final int rowIndex;
+  final bool hovered;
+}

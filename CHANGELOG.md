@@ -1,3 +1,79 @@
+## 4.0.0
+
+* Significant performance improvements
+  * Internal tests show Flutter frame rates during scrolling increasing from 5 FPS to over 30 FPS
+* Cell merging
+* Column summary (Footer)
+* New cell types
+  * Custom rendering using Canvas
+  * Percentage bar
+* Changes
+  * `Davi`
+    * The `lastRowWidget` attribute has been renamed to `trailingWidget`.
+    * The `onLastRowWidget` attribute has been renamed to `onTrailingWidget`.
+    * The `pinnedHorizontalScrollController` attribute has been renamed to `leftPinnedHorizontalScrollController`.
+    * The `model` attribute is now non-nullable.
+    * The `tapToSortEnabled` attribute has been replaced by `DaviModel.sortingMode`.
+    * The `placeholderWidget` attribute has been added.
+  * `DaviModel`
+    * The `alwaysSorted` attribute has been replaced by `sortingMode`.
+    * The `onSort` has been changed to be called before sorting.
+  * `DaviColumn`
+    * The `stringValue`, `intValue`, `objectValue` and `doubleValue` attributes has been replaced by `cellValue`.
+    * The `cellBuilder` attribute has been replaced by `cellWidget`.
+    * The `iconValueMapper` attribute has been replaced by `cellIcon`.
+    * The `fractionDigits` attribute has been removed.
+    * The `cellStyleBuilder` attribute has been removed.
+    * The `cellTextStyle` attribute has been updated from a `TextStyle` type to a builder of type `CellTextStyleBuilder`
+    * The default `cellClip` value has been changed to `TRUE`.
+    * The `grow` attribute is now applied only during the initial layout for columns when `ColumnWidthBehavior` is set to `scrollable`.
+    * The `sort` attribute has been renamed to `sortDirection`.
+      * The type has been changed from `DaviSort` to `DaviSortDirection`.
+  * `CellThemeData`
+    * The `overflow` attribute has been removed.
+  * `DaviThemeData`
+    * The `topCornerBorderColor` attribute has been moved to `EdgeThemeData.headerColor`.
+    * The `topCornerColor` attribute has been changed to `EdgeThemeData` attributes: `headerBottomBorderColor` and `headerLeftBorderColor`.
+    * The `bottomCornerBorderColor` attribute has been changed to `EdgeThemeData` attribute: `scrollbarLeftBorderColor` and `scrollbarTopBorderColor`.
+    * The `bottomCornerColor` attribute has been moved to `EdgeThemeData.scrollbarColor`.
+    * The `copyWith` method has been removed.
+  * `RowThemeData` 
+    * The `cursor` attribute has been renamed to `callbackCursor`.
+    * The `cursorOnTapGesturesOnly` attribute has been removed.
+    * The `copyWith` method has been removed.
+    * The `lastDividerVisible` attribute has been removed.
+  * `HeaderThemeData`
+    * The `bottomBorderHeight` attribute has been renamed to `bottomBorderThickness`.
+    * The `copyWith` method has been removed.
+  * `CellThemeData`
+    * The `copyWith` method has been removed.
+  * `HeaderCellThemeData`
+    * The `copyWith` method has been removed.
+  * Typedefs
+    * `DaviDataComparator`
+      * Has been renamed to `DaviComparator`
+      * Updated the signature to include `rowA` and `rowB` parameters, and removed the `column` parameter
+    * `DaviRowCursor`
+      * Has been renamed to `RowCursorBuilder`.
+      * Its signature has been changed from `DaviRow` to `CursorBuilderParams`
+    * `OnLastRowWidgetListener` to `TrailingWidgetListener`
+    * `OnLastVisibleRowListener` to `LastVisibleRowListener`
+    * `DaviCellSemanticsBuilder`
+      * Its signature has been changed from `DaviRow` to `SemanticsBuilderParams`
+    * `CellBackgroundBuilder`
+      * Its signature has been changed from `DaviRow` to `BackgroundBuilderParams`
+  * Removed classes and typedefs
+    * `DaviIntValueMapper`
+    * `DaviDoubleValueMapper`
+    * `DaviStringValueMapper`
+    * `DaviObjectValueMapper`
+    * `DaviIconValueMapper`
+    * `CellStyleBuilder`
+    * `DaviRow`
+* BugFixes 
+  * Focus problem between instances (or simply another focus widget)
+  * Scroll is moving in opposite direction on Android.
+
 ## 3.5.0
 
 * `Davi`
@@ -69,11 +145,11 @@ final bool sortable;
 * Refactor
   * The `sortable` attribute of the `DaviColumn` can be `TRUE` even without a `sort` function.
   * Typedef `DaviColumnSort`
-    * New parameter: `DaviColumn<DATA> column`
+    * New attribute: `DaviColumn<DATA> column`
 
 ## 3.0.0
 
-* Renaming classes and parameters
+* Renaming classes and attributes
   * `EasyTable<ROW>` to `Davi<DATA>`
   * `EasyTableColumn<ROW>` to `DaviColumn<DATA>`
   * `EasyTableTheme` to `DaviTheme`

@@ -13,17 +13,17 @@ import 'package:meta/meta.dart';
 @internal
 class TableLayoutSettings {
   factory TableLayoutSettings(
-      {required DaviModel? model,
+      {required DaviModel model,
       required BoxConstraints constraints,
       required ColumnWidthBehavior columnWidthBehavior,
       required TableThemeMetrics themeMetrics,
-      required int? visibleRowsLength,
-      required bool hasLastRowWidget,
+      required int? visibleRowsCount,
+      required bool hasTrailingWidget,
       required DaviThemeData theme}) {
     if (!constraints.hasBoundedWidth) {
       throw FlutterError('Davi was given unbounded width.');
     }
-    if (!constraints.hasBoundedHeight && visibleRowsLength == null) {
+    if (!constraints.hasBoundedHeight && visibleRowsCount == null) {
       throw FlutterError.fromParts(<DiagnosticsNode>[
         ErrorSummary('Davi was given unbounded height.'),
         ErrorDescription('Davi already is scrollable in the vertical axis.'),
@@ -34,8 +34,7 @@ class TableLayoutSettings {
       ]);
     }
 
-    final int rowsLength =
-        (model != null ? model.rowsLength : 0) + (hasLastRowWidget ? 1 : 0);
+    final int rowsLength = model.rowsLength + (hasTrailingWidget ? 1 : 0);
 
     // Let's find out the dynamic metrics given the constraints!!!
     // I'm so excited!!!
@@ -58,114 +57,106 @@ class TableLayoutSettings {
       final double availableRowsHeight = math.max(
           0,
           constraints.maxHeight -
+              (model.hasSummary ? themeMetrics.summary.height : 0) -
               (themeMetrics.header.visible ? themeMetrics.header.height : 0) -
               (hasHorizontalScrollbar ? themeMetrics.scrollbar.height : 0));
-      needVerticalScrollbar = model != null
-          ? (rowsLength * themeMetrics.row.height) -
-                  themeMetrics.row.dividerThickness >
-              availableRowsHeight
-          : false;
+      needVerticalScrollbar = (rowsLength * themeMetrics.row.height) -
+              themeMetrics.row.dividerThickness >
+          availableRowsHeight;
     } else {
-      needVerticalScrollbar =
-          model != null ? visibleRowsLength! < rowsLength : false;
+      needVerticalScrollbar = visibleRowsCount! < rowsLength;
     }
     bool hasVerticalScrollbar =
         !theme.scrollbar.verticalOnlyWhenNeeded || needVerticalScrollbar;
 
-    if (model != null) {
-      if (columnWidthBehavior == ColumnWidthBehavior.fit) {
-        unpinnedContentWidth = math.max(
-            0,
-            constraints.maxWidth -
-                (hasVerticalScrollbar ? themeMetrics.scrollbar.width : 0));
-        columnsMetrics = UnmodifiableListView<ColumnMetrics>(
-            ColumnMetrics.columnsFit(
-                model: model,
-                dividerThickness: themeMetrics.columnDividerThickness,
-                maxWidth: unpinnedContentWidth));
-        hasHorizontalScrollbar = false;
-      } else {
-        // resizable columns
-        columnsMetrics = UnmodifiableListView<ColumnMetrics>(
-            ColumnMetrics.resizable(
-                model: model,
-                maxWidth: math.max(
-                    0,
-                    constraints.maxWidth -
-                        (hasVerticalScrollbar
-                            ? themeMetrics.scrollbar.width
-                            : 0)),
-                dividerThickness: themeMetrics.columnDividerThickness));
+    if (columnWidthBehavior == ColumnWidthBehavior.fit) {
+      unpinnedContentWidth = math.max(
+          0,
+          constraints.maxWidth -
+              (hasVerticalScrollbar ? themeMetrics.scrollbar.width : 0));
+      columnsMetrics = UnmodifiableListView<ColumnMetrics>(
+          ColumnMetrics.columnsFit(
+              model: model,
+              dividerThickness: themeMetrics.columnDividerThickness,
+              maxWidth: unpinnedContentWidth));
+      hasHorizontalScrollbar = false;
+    } else {
+      // resizable columns
+      columnsMetrics = UnmodifiableListView<ColumnMetrics>(
+          ColumnMetrics.resizable(
+              model: model,
+              maxWidth: math.max(
+                  0,
+                  constraints.maxWidth -
+                      (hasVerticalScrollbar
+                          ? themeMetrics.scrollbar.width
+                          : 0)),
+              dividerThickness: themeMetrics.columnDividerThickness));
 
-        for (ColumnMetrics columnMetrics in columnsMetrics) {
-          if (columnMetrics.pinStatus == PinStatus.none) {
-            unpinnedContentWidth = columnMetrics.offset + columnMetrics.width;
-          } else if (columnMetrics.pinStatus == PinStatus.left) {
-            leftPinnedContentWidth = columnMetrics.offset + columnMetrics.width;
-          }
-        }
-        unpinnedContentWidth = math.max(
-            0,
-            unpinnedContentWidth -
-                leftPinnedContentWidth -
-                (leftPinnedContentWidth > 0
-                    ? themeMetrics.columnDividerThickness
-                    : 0));
-
-        final double maxContentAreaWidth = math.max(
-            0,
-            constraints.maxWidth -
-                (hasVerticalScrollbar ? themeMetrics.scrollbar.width : 0));
-
-        final bool needLeftPinnedHorizontalScrollbar =
-            leftPinnedContentWidth > maxContentAreaWidth;
-
-        final bool needUnpinnedHorizontalScrollbar = unpinnedContentWidth >
-            maxContentAreaWidth -
-                leftPinnedContentWidth -
-                (leftPinnedContentWidth > 0
-                    ? themeMetrics.columnDividerThickness
-                    : 0);
-
-        final bool needHorizontalScrollbar = needUnpinnedHorizontalScrollbar ||
-            needLeftPinnedHorizontalScrollbar;
-
-        final bool lastHasHorizontalScrollbar = hasHorizontalScrollbar;
-        hasHorizontalScrollbar = theme.scrollbar.horizontalOnlyWhenNeeded
-            ? needHorizontalScrollbar
-            : true;
-
-        if (!lastHasHorizontalScrollbar && hasHorizontalScrollbar) {
-          // The horizontal scrollbar became visible.
-          // The available height will be smaller.
-          // Maybe now it needs to have a vertical scrollbar.
-          if (constraints.hasBoundedHeight) {
-            final double availableRowsHeight = math.max(
-                0,
-                constraints.maxHeight -
-                    (themeMetrics.header.visible
-                        ? themeMetrics.header.height
-                        : 0) -
-                    themeMetrics.scrollbar.height);
-            needVerticalScrollbar = (rowsLength * themeMetrics.row.height) -
-                    themeMetrics.row.dividerThickness >
-                availableRowsHeight;
-          }
-          hasVerticalScrollbar =
-              !theme.scrollbar.verticalOnlyWhenNeeded || needVerticalScrollbar;
+      for (ColumnMetrics columnMetrics in columnsMetrics) {
+        if (columnMetrics.pinStatus == PinStatus.none) {
+          unpinnedContentWidth = columnMetrics.offset + columnMetrics.width;
+        } else if (columnMetrics.pinStatus == PinStatus.left) {
+          leftPinnedContentWidth = columnMetrics.offset + columnMetrics.width;
         }
       }
-    } else {
-      // null model
-      columnsMetrics = UnmodifiableListView<ColumnMetrics>([]);
+      unpinnedContentWidth = math.max(
+          0,
+          unpinnedContentWidth -
+              leftPinnedContentWidth -
+              (leftPinnedContentWidth > 0
+                  ? themeMetrics.columnDividerThickness
+                  : 0));
+
+      final double maxContentAreaWidth = math.max(
+          0,
+          constraints.maxWidth -
+              (hasVerticalScrollbar ? themeMetrics.scrollbar.width : 0));
+
+      final bool needLeftPinnedHorizontalScrollbar =
+          leftPinnedContentWidth > maxContentAreaWidth;
+
+      final bool needUnpinnedHorizontalScrollbar = unpinnedContentWidth >
+          maxContentAreaWidth -
+              leftPinnedContentWidth -
+              (leftPinnedContentWidth > 0
+                  ? themeMetrics.columnDividerThickness
+                  : 0);
+
+      final bool needHorizontalScrollbar =
+          needUnpinnedHorizontalScrollbar || needLeftPinnedHorizontalScrollbar;
+
+      final bool lastHasHorizontalScrollbar = hasHorizontalScrollbar;
+      hasHorizontalScrollbar = theme.scrollbar.horizontalOnlyWhenNeeded
+          ? needHorizontalScrollbar
+          : true;
+
+      if (!lastHasHorizontalScrollbar && hasHorizontalScrollbar) {
+        // The horizontal scrollbar became visible.
+        // The available height will be smaller.
+        // Maybe now it needs to have a vertical scrollbar.
+        if (constraints.hasBoundedHeight) {
+          final double availableRowsHeight = math.max(
+              0,
+              constraints.maxHeight -
+                  (model.hasSummary ? themeMetrics.summary.height : 0) -
+                  (themeMetrics.header.visible
+                      ? themeMetrics.header.height
+                      : 0) -
+                  themeMetrics.scrollbar.height);
+          needVerticalScrollbar = (rowsLength * themeMetrics.row.height) -
+                  themeMetrics.row.dividerThickness >
+              availableRowsHeight;
+        }
+        hasVerticalScrollbar =
+            !theme.scrollbar.verticalOnlyWhenNeeded || needVerticalScrollbar;
+      }
     }
 
-    final double contentHeight = model != null
-        ? math.max(
-            0,
-            (rowsLength * themeMetrics.row.height) -
-                themeMetrics.row.dividerThickness)
-        : 0;
+    final double contentHeight = math.max(
+        0,
+        (rowsLength * themeMetrics.row.height) -
+            themeMetrics.row.dividerThickness);
 
     // Now let's set the screen boundaries!
 
@@ -176,10 +167,12 @@ class TableLayoutSettings {
     final Rect headerBounds = themeMetrics.header.visible
         ? Rect.fromLTWH(0, 0, contentAreaWidth, themeMetrics.header.height)
         : Rect.zero;
+
     final Rect cellsBounds;
     final Rect horizontalScrollbarBounds;
     final Rect unpinnedHorizontalScrollbarsBounds;
     final Rect leftPinnedHorizontalScrollbarBounds;
+    final Rect summaryBounds;
     if (constraints.hasBoundedHeight) {
       cellsBounds = Rect.fromLTWH(
           0,
@@ -189,6 +182,7 @@ class TableLayoutSettings {
               0,
               constraints.maxHeight -
                   headerBounds.height -
+                  (model.hasSummary ? themeMetrics.summary.height : 0) -
                   (hasHorizontalScrollbar
                       ? themeMetrics.scrollbar.height
                       : 0)));
@@ -200,11 +194,21 @@ class TableLayoutSettings {
           contentAreaWidth,
           math.max(
               0,
-              (visibleRowsLength! * themeMetrics.row.height) -
+              (visibleRowsCount! * themeMetrics.row.height) -
                   themeMetrics.row.dividerThickness));
     }
+
+    if (model.hasSummary) {
+      summaryBounds = Rect.fromLTWH(0, cellsBounds.bottom, cellsBounds.width,
+          themeMetrics.summary.height);
+    } else {
+      summaryBounds = Rect.zero;
+    }
+
     if (hasHorizontalScrollbar) {
-      final double top = headerBounds.height + cellsBounds.height;
+      final double top = headerBounds.height +
+          cellsBounds.height +
+          (model.hasSummary ? themeMetrics.summary.height : 0);
       final double leftDivisorWidth =
           leftPinnedContentWidth > 0 ? themeMetrics.columnDividerThickness : 0;
       horizontalScrollbarBounds = Rect.fromLTWH(
@@ -231,6 +235,7 @@ class TableLayoutSettings {
 
     height = headerBounds.height +
         cellsBounds.height +
+        summaryBounds.height +
         horizontalScrollbarBounds.height;
 
     final Rect verticalScrollbarBounds = Rect.fromLTWH(
@@ -264,9 +269,10 @@ class TableLayoutSettings {
         rowsLength.hashCode ^
         contentHeight.hashCode ^
         themeMetrics.hashCode ^
-        hasLastRowWidget.hashCode ^
+        hasTrailingWidget.hashCode ^
         headerBounds.hashCode ^
         cellsBounds.hashCode ^
+        summaryBounds.hashCode ^
         horizontalScrollbarBounds.hashCode ^
         unpinnedHorizontalScrollbarsBounds.hashCode ^
         leftPinnedHorizontalScrollbarBounds.hashCode ^
@@ -287,10 +293,11 @@ class TableLayoutSettings {
         hasVerticalScrollbar: hasVerticalScrollbar,
         hasHorizontalScrollbar: hasHorizontalScrollbar,
         columnsMetrics: columnsMetrics,
-        hasLastRowWidget: hasLastRowWidget,
+        hasTrailingWidget: hasTrailingWidget,
         rowsLength: rowsLength,
         headerBounds: headerBounds,
         cellsBounds: cellsBounds,
+        summaryBounds: summaryBounds,
         horizontalScrollbarsBounds: horizontalScrollbarBounds,
         unpinnedHorizontalScrollbarsBounds: unpinnedHorizontalScrollbarsBounds,
         leftPinnedHorizontalScrollbarBounds:
@@ -308,13 +315,14 @@ class TableLayoutSettings {
       required this.leftPinnedContentWidth,
       required this.unpinnedContentWidth,
       required this.height,
-      required this.hasLastRowWidget,
+      required this.hasTrailingWidget,
       required this.rowsLength,
       required this.contentHeight,
       required this.hasVerticalScrollbar,
       required this.hasHorizontalScrollbar,
       required this.columnsMetrics,
       required this.headerBounds,
+      required this.summaryBounds,
       required this.cellsBounds,
       required this.horizontalScrollbarsBounds,
       required this.unpinnedHorizontalScrollbarsBounds,
@@ -326,15 +334,19 @@ class TableLayoutSettings {
 
   final TableThemeMetrics themeMetrics;
   final double height;
+
+  /// total height of the content (cells and dividers)
+  /// not counting the last widget
   final double contentHeight;
   final double unpinnedContentWidth;
   final double leftPinnedContentWidth;
   final bool hasVerticalScrollbar;
   final bool hasHorizontalScrollbar;
-  final bool hasLastRowWidget;
+  final bool hasTrailingWidget;
   final int rowsLength;
   final List<ColumnMetrics> columnsMetrics;
   final Rect headerBounds;
+  final Rect summaryBounds;
   final Rect cellsBounds;
   final Rect unpinnedHorizontalScrollbarsBounds;
   final Rect leftPinnedHorizontalScrollbarBounds;
@@ -351,6 +363,9 @@ class TableLayoutSettings {
     }
     throw ArgumentError('Not recognized $pinStatus');
   }
+
+  int get maxVisibleRows =>
+      (cellsBounds.height / themeMetrics.row.height).ceil();
 
   @override
   final int hashCode;

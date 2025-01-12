@@ -1,35 +1,34 @@
-import 'package:davi/davi.dart';
 import 'package:davi/src/internal/columns_layout_child.dart';
 import 'package:davi/src/internal/columns_layout_element.dart';
 import 'package:davi/src/internal/columns_layout_render_box.dart';
-import 'package:davi/src/internal/scroll_offsets.dart';
+import 'package:davi/src/internal/scroll_controllers.dart';
 import 'package:davi/src/internal/table_layout_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
 
 @internal
-class ColumnsLayout<DATA> extends MultiChildRenderObjectWidget {
+class ColumnsLayout extends MultiChildRenderObjectWidget {
   const ColumnsLayout(
-      {Key? key,
+      {super.key,
       required this.layoutSettings,
-      required this.horizontalScrollOffsets,
-      required this.paintDividerColumns,
-      required List<ColumnsLayoutChild> children})
-      : super(key: key, children: children);
+      required this.scrollControllers,
+      required this.columnDividerThickness,
+      required this.columnDividerColor,
+      required List<ColumnsLayoutChild> super.children});
 
   final TableLayoutSettings layoutSettings;
-  final HorizontalScrollOffsets horizontalScrollOffsets;
-  final bool paintDividerColumns;
+  final ScrollControllers scrollControllers;
+  final double columnDividerThickness;
+  final Color? columnDividerColor;
 
   @override
   RenderObject createRenderObject(BuildContext context) {
-    DaviThemeData theme = DaviTheme.of(context);
-    return ColumnsLayoutRenderBox<DATA>(
+    return ColumnsLayoutRenderBox(
         layoutSettings: layoutSettings,
-        horizontalScrollOffsets: horizontalScrollOffsets,
-        theme: theme,
-        paintDividerColumns: paintDividerColumns);
+        scrollControllers: scrollControllers,
+        columnDividerColor: columnDividerColor,
+        columnDividerThickness: columnDividerThickness);
   }
 
   @override
@@ -41,11 +40,10 @@ class ColumnsLayout<DATA> extends MultiChildRenderObjectWidget {
   void updateRenderObject(
       BuildContext context, covariant ColumnsLayoutRenderBox renderObject) {
     super.updateRenderObject(context, renderObject);
-    DaviThemeData theme = DaviTheme.of(context);
     renderObject
       ..layoutSettings = layoutSettings
-      ..horizontalScrollOffsets = horizontalScrollOffsets
-      ..theme = theme
-      ..paintDividerColumns = paintDividerColumns;
+      ..scrollControllers = scrollControllers
+      ..columnDividerColor = columnDividerColor
+      ..columnDividerThickness = columnDividerThickness;
   }
 }

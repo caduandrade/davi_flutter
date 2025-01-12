@@ -150,7 +150,8 @@ void noColumn({required bool multiSortEnabled, required bool alwaysSorted}) {
       rows: _rows,
       columns: [],
       multiSortEnabled: multiSortEnabled,
-      alwaysSorted: alwaysSorted);
+      sortingMode:
+          alwaysSorted ? SortingMode.alwaysSorted : SortingMode.interactive);
   expect(model.isSorted, false);
   expect(model.isMultiSorted, false);
   expect(model.sortedColumns.length, 0);
@@ -162,23 +163,23 @@ void oneColumn(
     required bool alwaysSorted,
     required bool isColumnSortable,
     required bool expectSortedModel}) {
-  DaviModel model = DaviModel(
+  DaviModel<int> model = DaviModel(
       rows: _rows,
       columns: [
         DaviColumn<int>(id: 'id', name: 'name', sortable: isColumnSortable)
       ],
       multiSortEnabled: multiSortEnabled,
-      alwaysSorted: alwaysSorted);
+      sortingMode:
+          alwaysSorted ? SortingMode.alwaysSorted : SortingMode.interactive);
   expect(model.isSorted, expectSortedModel);
   expect(model.isMultiSorted, false);
   if (expectSortedModel) {
     expect(model.sortedColumns.length, 1);
     expect(model.sortedColumns.first.name, 'name');
-    expect(model.sortedColumns.first.sort, isNotNull);
-    expect(model.sortedColumns.first.sort?.columnId, 'id');
+    expect(model.sortedColumns.first.sortDirection, isNotNull);
     expect(model.sortedColumns.first.sortPriority, 1);
     expect(
-        model.sortedColumns.first.sort?.direction, DaviSortDirection.ascending);
+        model.sortedColumns.first.sortDirection, DaviSortDirection.ascending);
   } else {
     expect(model.sortedColumns.length, 0);
   }
@@ -191,14 +192,15 @@ void twoColumns(
     required bool isColumn1Sortable,
     required bool isColumn2Sortable,
     required int? expectSortedColumn}) {
-  DaviModel model = DaviModel(
+  DaviModel<int> model = DaviModel(
       rows: _rows,
       columns: [
         DaviColumn<int>(id: 'id1', name: 'name1', sortable: isColumn1Sortable),
         DaviColumn<int>(id: 'id2', name: 'name2', sortable: isColumn2Sortable)
       ],
       multiSortEnabled: multiSortEnabled,
-      alwaysSorted: alwaysSorted);
+      sortingMode:
+          alwaysSorted ? SortingMode.alwaysSorted : SortingMode.interactive);
   expect(model.isMultiSorted, false);
   if (expectSortedColumn == null) {
     expect(model.isSorted, false);
@@ -206,15 +208,13 @@ void twoColumns(
   } else {
     expect(model.isSorted, true);
     expect(model.sortedColumns.length, 1);
-    expect(model.sortedColumns.first.sort, isNotNull);
+    expect(model.sortedColumns.first.sortDirection, isNotNull);
     expect(model.sortedColumns.first.sortPriority, 1);
     expect(
-        model.sortedColumns.first.sort?.direction, DaviSortDirection.ascending);
+        model.sortedColumns.first.sortDirection, DaviSortDirection.ascending);
     if (expectSortedColumn == 1) {
-      expect(model.sortedColumns.first.sort?.columnId, 'id1');
       expect(model.sortedColumns.first.name, 'name1');
     } else if (expectSortedColumn == 2) {
-      expect(model.sortedColumns.first.sort?.columnId, 'id2');
       expect(model.sortedColumns.first.name, 'name2');
     }
   }

@@ -7,13 +7,12 @@ enum SortIconSize { size12, size14, size16Tall, size16Short, size19 }
 
 class SortIcon extends LeafRenderObjectWidget {
   const SortIcon(
-      {Key? key,
+      {super.key,
       required this.color,
       required this.direction,
       required this.size,
       this.inverted = false,
-      this.debug = false})
-      : super(key: key);
+      this.debug = false});
 
   final Color color;
   final DaviSortDirection direction;
@@ -177,15 +176,10 @@ abstract class RenderSortIcon extends RenderBox {
 
 class _RenderSize12 extends RenderSortIcon {
   _RenderSize12(
-      {required Color color,
-      required DaviSortDirection direction,
-      required bool inverted,
-      required bool debug})
-      : super(
-            color: color,
-            direction: direction,
-            inverted: inverted,
-            debug: debug);
+      {required super.color,
+      required super.direction,
+      required super.inverted,
+      required super.debug});
 
   @override
   double get iconSize => 12;
@@ -207,15 +201,10 @@ class _RenderSize12 extends RenderSortIcon {
 
 class _RenderSize14 extends RenderSortIcon {
   _RenderSize14(
-      {required Color color,
-      required DaviSortDirection direction,
-      required bool inverted,
-      required bool debug})
-      : super(
-            color: color,
-            direction: direction,
-            inverted: inverted,
-            debug: debug);
+      {required super.color,
+      required super.direction,
+      required super.inverted,
+      required super.debug});
 
   @override
   double get iconSize => 14;
@@ -237,15 +226,10 @@ class _RenderSize14 extends RenderSortIcon {
 
 class _RenderSize16Tall extends RenderSortIcon {
   _RenderSize16Tall(
-      {required Color color,
-      required DaviSortDirection direction,
-      required bool inverted,
-      required bool debug})
-      : super(
-            color: color,
-            direction: direction,
-            inverted: inverted,
-            debug: debug);
+      {required super.color,
+      required super.direction,
+      required super.inverted,
+      required super.debug});
 
   @override
   double get iconSize => 16;
@@ -267,15 +251,10 @@ class _RenderSize16Tall extends RenderSortIcon {
 
 class _RenderSize16Short extends RenderSortIcon {
   _RenderSize16Short(
-      {required Color color,
-      required DaviSortDirection direction,
-      required bool inverted,
-      required bool debug})
-      : super(
-            color: color,
-            direction: direction,
-            inverted: inverted,
-            debug: debug);
+      {required super.color,
+      required super.direction,
+      required super.inverted,
+      required super.debug});
 
   @override
   double get iconSize => 16;
@@ -297,15 +276,10 @@ class _RenderSize16Short extends RenderSortIcon {
 
 class _RenderSize19 extends RenderSortIcon {
   _RenderSize19(
-      {required Color color,
-      required DaviSortDirection direction,
-      required bool inverted,
-      required bool debug})
-      : super(
-            color: color,
-            direction: direction,
-            inverted: inverted,
-            debug: debug);
+      {required super.color,
+      required super.direction,
+      required super.inverted,
+      required super.debug});
 
   @override
   double get iconSize => 19;

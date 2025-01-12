@@ -13,4 +13,9 @@ class LayoutUtils {
         rowHeight: rowHeight);
     return rowRange != null ? rowRange.length : 0;
   }
+
+  static int maxRowsLength(
+      {required double visibleAreaHeight, required double rowHeight}) {
+    return (visibleAreaHeight / rowHeight).ceil();
+  }
 }

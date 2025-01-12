@@ -1,6 +1,4 @@
 docs/
-lib/src/experimental/
-
 # Miscellaneous
 *.class
 *.log

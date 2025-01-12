@@ -1,59 +1,26 @@
-import 'package:davi/src/column_width_behavior.dart';
-import 'package:davi/src/internal/row_callbacks.dart';
-import 'package:davi/src/internal/scroll_controllers.dart';
-import 'package:davi/src/internal/scroll_offsets.dart';
+import 'package:davi/davi.dart';
+import 'package:davi/src/column.dart';
+import 'package:davi/src/internal/column_metrics.dart';
+import 'package:davi/src/internal/header_widget.dart';
+import 'package:davi/src/internal/layout_child_id.dart';
+import 'package:davi/src/internal/davi_context.dart';
+import 'package:davi/src/internal/summary_widget.dart';
+import 'package:davi/src/internal/table_content.dart';
+import 'package:davi/src/internal/table_edge.dart';
 import 'package:davi/src/internal/table_layout.dart';
 import 'package:davi/src/internal/table_layout_child.dart';
 import 'package:davi/src/internal/table_layout_settings.dart';
 import 'package:davi/src/internal/table_scrollbar.dart';
-import 'package:davi/src/internal/theme_metrics/theme_metrics.dart';
-import 'package:davi/src/last_row_widget_listener.dart';
-import 'package:davi/src/last_visible_row_listener.dart';
-import 'package:davi/src/model.dart';
-import 'package:davi/src/row_color.dart';
-import 'package:davi/src/row_cursor.dart';
-import 'package:davi/src/row_hover_listener.dart';
-import 'package:davi/src/theme/theme.dart';
-import 'package:davi/src/theme/theme_data.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
 @internal
 class TableLayoutBuilder<DATA> extends StatelessWidget {
   const TableLayoutBuilder(
-      {Key? key,
-      required this.onHover,
-      required this.scrollControllers,
-      required this.onLastVisibleRow,
-      required this.model,
-      required this.themeMetrics,
-      required this.columnWidthBehavior,
-      required this.visibleRowsLength,
-      required this.rowCallbacks,
-      required this.onDragScroll,
-      required this.scrolling,
-      required this.lastRowWidget,
-      required this.onLastRowWidget,
-      required this.rowColor,
-      required this.rowCursor,
-      required this.tapToSortEnabled})
-      : super(key: key);
+      {super.key, required this.daviContext, required this.onDragScroll});
 
-  final OnLastVisibleRowListener onLastVisibleRow;
-  final OnRowHoverListener? onHover;
-  final ScrollControllers scrollControllers;
-  final DaviModel<DATA>? model;
-  final ColumnWidthBehavior columnWidthBehavior;
-  final int? visibleRowsLength;
+  final DaviContext<DATA> daviContext;
   final OnDragScroll onDragScroll;
-  final bool scrolling;
-  final RowCallbacks<DATA> rowCallbacks;
-  final TableThemeMetrics themeMetrics;
-  final Widget? lastRowWidget;
-  final OnLastRowWidgetListener onLastRowWidget;
-  final DaviRowColor<DATA>? rowColor;
-  final DaviRowCursor<DATA>? rowCursor;
-  final bool tapToSortEnabled;
 
   @override
   Widget build(BuildContext context) {
@@ -63,83 +30,111 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
   Widget _builder(BuildContext context, BoxConstraints constraints) {
     final DaviThemeData theme = DaviTheme.of(context);
 
-    final HorizontalScrollOffsets horizontalScrollOffsets =
-        HorizontalScrollOffsets(scrollControllers);
-
     TableLayoutSettings layoutSettings = TableLayoutSettings(
         constraints: constraints,
-        model: model,
+        model: daviContext.model,
         theme: theme,
-        columnWidthBehavior: columnWidthBehavior,
-        themeMetrics: themeMetrics,
-        visibleRowsLength: visibleRowsLength,
-        hasLastRowWidget: lastRowWidget != null);
+        columnWidthBehavior: daviContext.columnWidthBehavior,
+        themeMetrics: daviContext.themeMetrics,
+        visibleRowsCount: daviContext.visibleRowsCount,
+        hasTrailingWidget: daviContext.trailingWidget != null);
+
+    if (daviContext.columnWidthBehavior == ColumnWidthBehavior.scrollable) {
+      for (int columnIndex = 0;
+          columnIndex < daviContext.model.columnsLength;
+          columnIndex++) {
+        DaviColumn column = daviContext.model.columnAt(columnIndex);
+        if (!DaviColumnHelper.isLayoutPerformed(column: column)) {
+          ColumnMetrics columnMetrics =
+              layoutSettings.columnsMetrics[columnIndex];
+          DaviColumnHelper.performLayout(
+              column: column, layoutWidth: columnMetrics.width);
+        }
+      }
+    }
 
     final List<TableLayoutChild> children = [];
 
     if (layoutSettings.hasVerticalScrollbar) {
-      children.add(TableLayoutChild.verticalScrollbar(
+      children.add(TableLayoutChild(
+          id: LayoutChildId.verticalScrollbar,
           child: TableScrollbar(
               axis: Axis.vertical,
               contentSize: layoutSettings.contentHeight,
-              scrollController: scrollControllers.vertical,
+              scrollController: daviContext.scrollControllers.vertical,
               color: theme.scrollbar.verticalColor,
               borderColor: theme.scrollbar.verticalBorderColor,
               onDragScroll: onDragScroll)));
     }
 
-    if (themeMetrics.header.visible) {
-      children.add(TableLayoutChild.header(
-          layoutSettings: layoutSettings,
-          model: model,
-          resizable: columnWidthBehavior == ColumnWidthBehavior.scrollable,
-          tapToSortEnabled: tapToSortEnabled,
-          horizontalScrollOffsets: horizontalScrollOffsets));
+    if (daviContext.themeMetrics.header.visible) {
+      children.add(TableLayoutChild(
+          id: LayoutChildId.header,
+          child: HeaderWidget(
+              daviContext: daviContext,
+              layoutSettings: layoutSettings,
+              resizable: daviContext.columnWidthBehavior ==
+                  ColumnWidthBehavior.scrollable)));
       if (layoutSettings.hasVerticalScrollbar) {
-        children.add(TableLayoutChild.topCorner());
+        children.add(TableLayoutChild(
+            id: LayoutChildId.headerEdge,
+            child: const TableEdge(type: CornerType.header)));
       }
     }
 
     if (layoutSettings.hasHorizontalScrollbar) {
       Widget leftPinnedHorizontalScrollbar = TableScrollbar(
           axis: Axis.horizontal,
-          scrollController: scrollControllers.leftPinnedHorizontal,
+          scrollController: daviContext.scrollControllers.leftPinnedHorizontal,
           color: theme.scrollbar.pinnedHorizontalColor,
           borderColor: theme.scrollbar.pinnedHorizontalBorderColor,
           contentSize: layoutSettings.leftPinnedContentWidth,
           onDragScroll: onDragScroll);
-      children.add(TableLayoutChild.leftPinnedHorizontalScrollbar(
-          leftPinnedHorizontalScrollbar));
-      children.add(TableLayoutChild.unpinnedHorizontalScrollbar(TableScrollbar(
-          axis: Axis.horizontal,
-          scrollController: scrollControllers.unpinnedHorizontal,
-          color: theme.scrollbar.unpinnedHorizontalColor,
-          borderColor: theme.scrollbar.unpinnedHorizontalBorderColor,
-          contentSize: layoutSettings.unpinnedContentWidth,
-          onDragScroll: onDragScroll)));
+      children.add(TableLayoutChild(
+          id: LayoutChildId.leftPinnedHorizontalScrollbar,
+          child: leftPinnedHorizontalScrollbar));
+      children.add(TableLayoutChild(
+          id: LayoutChildId.unpinnedHorizontalScrollbar,
+          child: TableScrollbar(
+              axis: Axis.horizontal,
+              scrollController:
+                  daviContext.scrollControllers.unpinnedHorizontal,
+              color: theme.scrollbar.unpinnedHorizontalColor,
+              borderColor: theme.scrollbar.unpinnedHorizontalBorderColor,
+              contentSize: layoutSettings.unpinnedContentWidth,
+              onDragScroll: onDragScroll)));
       if (layoutSettings.hasVerticalScrollbar) {
-        children.add(TableLayoutChild.bottomCorner());
+        children.add(TableLayoutChild(
+            id: LayoutChildId.scrollbarEdge,
+            child: const TableEdge(type: CornerType.scrollbar)));
       }
     }
 
-    children.add(TableLayoutChild<DATA>.rows(
-        model: model,
-        layoutSettings: layoutSettings,
-        scrolling: scrolling,
-        horizontalScrollOffsets: horizontalScrollOffsets,
-        verticalScrollController: scrollControllers.vertical,
-        onHover: onHover,
-        rowCallbacks: rowCallbacks,
-        rowColor: rowColor,
-        rowCursor: rowCursor,
-        lastRowWidget: lastRowWidget,
-        onLastVisibleRow: onLastVisibleRow,
-        onLastRowWidget: onLastRowWidget));
+    children.add(TableLayoutChild(
+        id: LayoutChildId.cells,
+        child: LayoutBuilder(builder: (context, constraints) {
+          DaviThemeData theme = DaviTheme.of(context);
+          return TableContent(
+              daviContext: daviContext,
+              layoutSettings: layoutSettings,
+              rowFillHeight: theme.row.fillHeight,
+              maxWidth: constraints.maxWidth,
+              maxHeight: constraints.maxHeight);
+        })));
+
+    if (daviContext.model.hasSummary) {
+      children.add(TableLayoutChild(
+          id: LayoutChildId.summary,
+          child: SummaryWidget(
+              daviContext: daviContext, layoutSettings: layoutSettings)));
+      if (layoutSettings.hasVerticalScrollbar) {
+        children.add(TableLayoutChild(
+            id: LayoutChildId.summaryEdge,
+            child: const TableEdge(type: CornerType.summary)));
+      }
+    }
 
     return TableLayout<DATA>(
-        layoutSettings: layoutSettings,
-        theme: theme,
-        horizontalScrollOffsets: horizontalScrollOffsets,
-        children: children);
+        layoutSettings: layoutSettings, theme: theme, children: children);
   }
 }

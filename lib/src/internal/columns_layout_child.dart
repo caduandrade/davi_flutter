@@ -9,8 +9,8 @@ class ColumnsLayoutChild<DATA>
     extends ParentDataWidget<ColumnsLayoutParentData> {
   ColumnsLayoutChild({
     required this.index,
-    required Widget child,
-  }) : super(key: ValueKey(index), child: child);
+    required super.child,
+  }) : super(key: ValueKey(index));
 
   final int index;
 

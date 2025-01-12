@@ -7,15 +7,12 @@ class RowThemeData {
   /// Builds a row theme data.
   const RowThemeData(
       {this.color,
-      this.lastDividerVisible = RowThemeDataDefaults.lastDividerVisible,
       this.hoverBackground,
       this.hoverForeground,
       this.dividerThickness = RowThemeDataDefaults.dividerThickness,
       this.dividerColor = RowThemeDataDefaults.dividerColor,
       this.fillHeight = RowThemeDataDefaults.fillHeight,
-      this.cursor = RowThemeDataDefaults.cursor,
-      this.cursorOnTapGesturesOnly =
-          RowThemeDataDefaults.cursorOnTapGesturesOnly});
+      this.callbackCursor = RowThemeDataDefaults.callbackCursor});
 
   /// The bottom row color.
   ///
@@ -36,45 +33,11 @@ class RowThemeData {
   final double dividerThickness;
   final Color? dividerColor;
 
-  /// Indicates whether the last row divider will be painted.
-  ///
-  /// It is used when the rows do not fill the entire existing height.
-  final bool lastDividerVisible;
-
   /// Indicates whether to fill the entire height by painting
   /// the color of the rows.
   final bool fillHeight;
 
-  final MouseCursor cursor;
-
-  /// Allow cursor without tap gestures.
-  final bool cursorOnTapGesturesOnly;
-
-  /// Creates a copy of this theme but with the given fields replaced with
-  /// the new values.
-  RowThemeData copyWith({
-    ThemeRowColor? color,
-    ThemeRowColor? hoverBackground,
-    ThemeRowColor? hoverForeground,
-    double? dividerThickness,
-    Color? dividerColor,
-    bool? lastDividerVisible,
-    bool? fillHeight,
-    MouseCursor? cursor,
-    bool? cursorOnTapGesturesOnly,
-  }) {
-    return RowThemeData(
-        color: color ?? this.color,
-        hoverBackground: hoverBackground ?? this.hoverBackground,
-        hoverForeground: hoverForeground ?? this.hoverForeground,
-        dividerThickness: dividerThickness ?? this.dividerThickness,
-        dividerColor: dividerColor ?? this.dividerColor,
-        lastDividerVisible: lastDividerVisible ?? this.lastDividerVisible,
-        fillHeight: fillHeight ?? this.fillHeight,
-        cursor: cursor ?? this.cursor,
-        cursorOnTapGesturesOnly:
-            cursorOnTapGesturesOnly ?? this.cursorOnTapGesturesOnly);
-  }
+  final MouseCursor callbackCursor;
 
   @override
   bool operator ==(Object other) =>
@@ -86,10 +49,8 @@ class RowThemeData {
           hoverForeground == other.hoverForeground &&
           dividerThickness == other.dividerThickness &&
           dividerColor == other.dividerColor &&
-          lastDividerVisible == other.lastDividerVisible &&
           fillHeight == other.fillHeight &&
-          cursor == other.cursor &&
-          cursorOnTapGesturesOnly == other.cursorOnTapGesturesOnly;
+          callbackCursor == other.callbackCursor;
 
   @override
   int get hashCode =>
@@ -98,10 +59,8 @@ class RowThemeData {
       hoverForeground.hashCode ^
       dividerThickness.hashCode ^
       dividerColor.hashCode ^
-      lastDividerVisible.hashCode ^
       fillHeight.hashCode ^
-      cursor.hashCode ^
-      cursorOnTapGesturesOnly.hashCode;
+      callbackCursor.hashCode;
 
   static ThemeRowColor zebraColor(
       {Color? evenColor = const Color(0xFFF5F5F5),
@@ -117,7 +76,5 @@ class RowThemeDataDefaults {
   static const bool fillHeight = false;
   static const Color dividerColor = Colors.grey;
   static const double dividerThickness = 1;
-  static const bool lastDividerVisible = true;
-  static const MouseCursor cursor = SystemMouseCursors.click;
-  static const bool cursorOnTapGesturesOnly = true;
+  static const MouseCursor callbackCursor = SystemMouseCursors.click;
 }

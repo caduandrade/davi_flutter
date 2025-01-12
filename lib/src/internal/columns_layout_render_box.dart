@@ -1,53 +1,56 @@
 import 'package:davi/src/internal/column_metrics.dart';
 import 'package:davi/src/internal/columns_layout_parent_data.dart';
-import 'package:davi/src/internal/scroll_offsets.dart';
+import 'package:davi/src/internal/scroll_controllers.dart';
 import 'package:davi/src/internal/table_layout_settings.dart';
 import 'package:davi/src/pin_status.dart';
-import 'package:davi/src/theme/theme_data.dart';
 import 'package:flutter/rendering.dart';
 import 'package:meta/meta.dart';
 
 @internal
-class ColumnsLayoutRenderBox<DATA> extends RenderBox
+class ColumnsLayoutRenderBox extends RenderBox
     with
         ContainerRenderObjectMixin<RenderBox, ColumnsLayoutParentData>,
         RenderBoxContainerDefaultsMixin<RenderBox, ColumnsLayoutParentData> {
   ColumnsLayoutRenderBox(
       {required TableLayoutSettings layoutSettings,
-      required HorizontalScrollOffsets horizontalScrollOffsets,
-      required DaviThemeData theme,
-      required bool paintDividerColumns})
+      required Color? columnDividerColor,
+      required double columnDividerThickness,
+      required ScrollControllers scrollControllers})
       : _layoutSettings = layoutSettings,
-        _horizontalScrollOffsets = horizontalScrollOffsets,
-        _paintDividerColumns = paintDividerColumns,
-        _theme = theme;
+        _columnDividerThickness = columnDividerThickness,
+        _columnDividerColor = columnDividerColor,
+        _scrollControllers = scrollControllers {
+    _scrollControllers.leftPinnedHorizontal.addListener(markNeedsPaint);
+    _scrollControllers.unpinnedHorizontal.addListener(markNeedsPaint);
+  }
 
-  bool _paintDividerColumns;
+  double _columnDividerThickness;
 
-  set paintDividerColumns(bool value) {
-    if (_paintDividerColumns != value) {
-      _paintDividerColumns = value;
+  set columnDividerThickness(double value) {
+    if (_columnDividerThickness != value) {
+      _columnDividerThickness = value;
       markNeedsPaint();
     }
   }
 
-  DaviThemeData _theme;
+  Color? _columnDividerColor;
 
-  set theme(DaviThemeData value) {
-    if (_theme != value) {
-      _theme = value;
-      if (_paintDividerColumns) {
-        markNeedsPaint();
-      }
+  set columnDividerColor(Color? value) {
+    if (_columnDividerColor != value) {
+      _columnDividerColor = value;
+      markNeedsPaint();
     }
   }
 
-  HorizontalScrollOffsets _horizontalScrollOffsets;
+  ScrollControllers _scrollControllers;
 
-  set horizontalScrollOffsets(HorizontalScrollOffsets value) {
-    if (_horizontalScrollOffsets != value) {
-      _horizontalScrollOffsets = value;
-      markNeedsLayout();
+  set scrollControllers(ScrollControllers value) {
+    if (_scrollControllers != value) {
+      _scrollControllers.leftPinnedHorizontal.removeListener(markNeedsPaint);
+      _scrollControllers.unpinnedHorizontal.removeListener(markNeedsPaint);
+      _scrollControllers = value;
+      _scrollControllers.leftPinnedHorizontal.addListener(markNeedsPaint);
+      _scrollControllers.unpinnedHorizontal.addListener(markNeedsPaint);
     }
   }
 
@@ -80,13 +83,11 @@ class ColumnsLayoutRenderBox<DATA> extends RenderBox
       final int columnIndex = parentData.index!;
       final ColumnMetrics columnMetrics =
           _layoutSettings.columnsMetrics[columnIndex];
-      final PinStatus pinStatus = columnMetrics.pinStatus;
-      final double offset = _horizontalScrollOffsets.getOffset(pinStatus);
       renderBox.layout(
           BoxConstraints.tightFor(
               width: columnMetrics.width, height: constraints.maxHeight),
           parentUsesSize: true);
-      renderBox._parentData().offset = Offset(columnMetrics.offset - offset, 0);
+      renderBox._parentData().offset = Offset.zero;
     });
 
     size = computeDryLayout(constraints);
@@ -101,23 +102,19 @@ class ColumnsLayoutRenderBox<DATA> extends RenderBox
       final ColumnMetrics columnMetrics =
           _layoutSettings.columnsMetrics[columnIndex];
       final PinStatus pinStatus = columnMetrics.pinStatus;
+      final double offsetX = _scrollControllers.getOffset(pinStatus);
       final Rect bounds = _layoutSettings.getAreaBounds(pinStatus);
       context.canvas.save();
       context.canvas.clipRect(bounds.translate(offset.dx, offset.dy));
-      context.paintChild(child, childParentData.offset + offset);
+      context.paintChild(
+          child, Offset(columnMetrics.offset - offsetX + offset.dx, offset.dy));
       context.canvas.restore();
       child = childParentData.nextSibling;
     }
 
     // column dividers
-    if (_paintDividerColumns &&
-        _theme.columnDividerThickness > 0 &&
-        _theme.header.columnDividerColor != null) {
-      Paint? headerPaint;
-      if (_layoutSettings.themeMetrics.header.visible &&
-          _theme.header.columnDividerColor != null) {
-        headerPaint = Paint()..color = _theme.header.columnDividerColor!;
-      }
+    if (_columnDividerThickness > 0 && _columnDividerColor != null) {
+      Paint paint = Paint()..color = _columnDividerColor!;
 
       bool needAreaDivisor = false;
       for (int columnIndex = 0;
@@ -127,23 +124,20 @@ class ColumnsLayoutRenderBox<DATA> extends RenderBox
             _layoutSettings.columnsMetrics[columnIndex];
         final PinStatus pinStatus = columnMetrics.pinStatus;
         final Rect areaBounds = _layoutSettings.getAreaBounds(pinStatus);
-        final double scrollOffset =
-            _horizontalScrollOffsets.getOffset(pinStatus);
+        final double scrollOffset = _scrollControllers.getOffset(pinStatus);
         double left = offset.dx +
             columnMetrics.offset +
             columnMetrics.width -
             scrollOffset;
         context.canvas.save();
         context.canvas.clipRect(areaBounds.translate(offset.dx, offset.dy));
-        if (headerPaint != null) {
-          context.canvas.drawRect(
-              Rect.fromLTWH(
-                  left,
-                  offset.dy,
-                  _layoutSettings.themeMetrics.columnDividerThickness,
-                  _layoutSettings.themeMetrics.headerCell.height),
-              headerPaint);
-        }
+        context.canvas.drawRect(
+            Rect.fromLTWH(
+                left,
+                offset.dy,
+                _layoutSettings.themeMetrics.columnDividerThickness,
+                constraints.maxHeight),
+            paint);
         context.canvas.restore();
         if (pinStatus == PinStatus.left) {
           needAreaDivisor = true;
@@ -155,15 +149,13 @@ class ColumnsLayoutRenderBox<DATA> extends RenderBox
           left = offset.dx +
               columnMetrics.offset -
               _layoutSettings.themeMetrics.columnDividerThickness;
-          if (headerPaint != null) {
-            context.canvas.drawRect(
-                Rect.fromLTWH(
-                    left,
-                    offset.dy,
-                    _layoutSettings.themeMetrics.columnDividerThickness,
-                    _layoutSettings.themeMetrics.headerCell.height),
-                headerPaint);
-          }
+          context.canvas.drawRect(
+              Rect.fromLTWH(
+                  left,
+                  offset.dy,
+                  _layoutSettings.themeMetrics.columnDividerThickness,
+                  constraints.maxHeight),
+              paint);
           context.canvas.restore();
         }
       }
@@ -172,30 +164,35 @@ class ColumnsLayoutRenderBox<DATA> extends RenderBox
 
   @override
   bool hitTestChildren(BoxHitTestResult result, {required Offset position}) {
-    RenderBox? child = lastChild;
+    RenderBox? child = firstChild;
     while (child != null) {
       final ColumnsLayoutParentData childParentData = child._parentData();
       final int columnIndex = childParentData.index!;
       final ColumnMetrics columnMetrics =
           _layoutSettings.columnsMetrics[columnIndex];
       final PinStatus pinStatus = columnMetrics.pinStatus;
-      final Rect bounds = _layoutSettings.getAreaBounds(pinStatus);
-      if (bounds.contains(position)) {
-        final bool isHit = result.addWithPaintOffset(
-          offset: childParentData.offset,
-          position: position,
-          hitTest: (BoxHitTestResult result, Offset transformed) {
-            assert(transformed == position - childParentData.offset);
-            return child!.hitTest(result, position: transformed);
-          },
-        );
-        if (isHit) {
-          return true;
-        }
+      final Offset renderedPosition = Offset(
+          columnMetrics.offset - _scrollControllers.getOffset(pinStatus), 0);
+      final bool isHit = result.addWithPaintOffset(
+        offset: renderedPosition,
+        position: position,
+        hitTest: (BoxHitTestResult result, Offset transformed) {
+          return child!.hitTest(result, position: transformed);
+        },
+      );
+      if (isHit) {
+        return true;
       }
-      child = childParentData.previousSibling;
+      child = childParentData.nextSibling;
     }
     return false;
+  }
+
+  @override
+  void dispose() {
+    _scrollControllers.leftPinnedHorizontal.removeListener(markNeedsPaint);
+    _scrollControllers.unpinnedHorizontal.removeListener(markNeedsPaint);
+    super.dispose();
   }
 }
 

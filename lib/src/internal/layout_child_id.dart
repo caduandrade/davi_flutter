@@ -3,10 +3,12 @@ import 'package:meta/meta.dart';
 @internal
 enum LayoutChildId {
   header,
-  rows,
+  cells,
   leftPinnedHorizontalScrollbar,
   unpinnedHorizontalScrollbar,
   verticalScrollbar,
-  topCorner,
-  bottomCorner
+  summary,
+  headerEdge,
+  scrollbarEdge,
+  summaryEdge
 }
