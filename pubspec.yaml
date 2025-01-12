@@ -1,11 +1,15 @@
 name: davi
 description: A full customized dataview that builds the cells on demand. Focused on Web/Desktop Applications. Bidirectional scroll bars. (DataTable, Data Table, Data View)
-version: 3.5.0
+version: 4.0.0
 repository: https://github.com/caduandrade/davi_flutter
 
 screenshots:
-  - description: Davi example
+  - description: Davi example 1
     path: screenshots/screenshot1.png
+  - description: Davi example 2
+    path: screenshots/screenshot2.png
+  - description: Davi example 3
+    path: screenshots/screenshot3.png
 
 topics:
   - data
@@ -28,13 +32,13 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.2
+  flutter_lints: ^5.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter.
-flutter:
+#flutter:
 
   # To add assets to your package, add an assets section, like this:
   # assets:

@@ -4,7 +4,7 @@ import 'package:flutter/widgets.dart';
 ///
 /// Used by [DaviColumn].
 typedef CellTextStyleBuilder<DATA> = TextStyle? Function(
-    TextStyleBuilderParams params);
+    TextStyleBuilderParams<DATA> params);
 
 /// Parameters passed to the [CellTextStyleBuilder] function.
 class TextStyleBuilderParams<DATA> {

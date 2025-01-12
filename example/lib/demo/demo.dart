@@ -32,7 +32,7 @@ class _HomePageState extends State<HomePage> {
   bool _headerVisible = HeaderThemeDataDefaults.visible;
   bool _fewRows = false;
   bool _leftPinned = false;
-  bool _columnsFit =false;
+  bool _columnsFit = false;
   bool _rowColor = false;
   bool _growColumns = false;
   bool _hoverBackground = false;
@@ -64,7 +64,6 @@ class _HomePageState extends State<HomePage> {
     }
     return DaviModel(
         rows: characters,
-
         columns: _buildColumns(),
         multiSortEnabled: _multipleSort);
   }
@@ -76,42 +75,39 @@ class _HomePageState extends State<HomePage> {
         leading: const Icon(Icons.person, size: 16),
         name: 'Name',
         width: 100,
-        rowSpan: (params)=>params.rowIndex==_model!.rowsLength-2?2:1,
-        cellValue: (params) => params.data.name)
-    );
+        rowSpan: (params) => params.rowIndex == _model!.rowsLength - 2 ? 2 : 1,
+        cellValue: (params) => params.data.name));
     list.add(DaviColumn(
         pinStatus: _leftPinned ? PinStatus.left : PinStatus.none,
         name: 'Gender',
         width: 80,
         cellClip: true,
-        cellIcon: (params)=> params.data.male
+        cellIcon: (params) => params.data.male
             ? CellIcon(Icons.male, color: Colors.blue[700]!)
             : CellIcon(Icons.female, color: Colors.pink[600]!)));
-    list.add(
-        DaviColumn(name: 'Race', width: 100,
-    //cellValue: (row, rowIndex)=> row.race)
-            cellWidget: (params)=>TextButton(onPressed: ()=>print('a'), child: Text('a')))
-    );
-    list.add(
-        DaviColumn(name: 'Class', width: 110,
-    cellValue: (params)=>params.data.cls));
-    list.add(
-        DaviColumn(name: 'Level', width: 70,
-    cellValue: (params)=>params.data.level));
+    list.add(DaviColumn(
+        name: 'Race', width: 100, cellValue: (params) => params.data.race));
+    list.add(DaviColumn(
+        name: 'Class', width: 110, cellValue: (params) => params.data.cls));
+    list.add(DaviColumn(
+        name: 'Level', width: 70, cellValue: (params) => params.data.level));
     if (_columnsWithCustomWidget) {
       list.add(DaviColumn(
           name: 'Skills',
           width: 100,
           cellClip: true,
-          cellWidget: (params)=>SkillsWidget(skills: params.data.skills)));
+          cellWidget: (params) => SkillsWidget(skills: params.data.skills)));
     }
-    if(_growColumns){
+    if (_growColumns) {
       list.add(DaviColumn(
-          name: 'Grow 1', grow: 1, width: 80,
+          name: 'Grow 1',
+          grow: 1,
+          width: 80,
           cellValue: (params) => params.data.strength));
     }
     list.add(DaviColumn(
-        name: 'Strength', width: 80,
+        name: 'Strength',
+        width: 80,
         cellValue: (params) => params.data.strength));
     list.add(DaviColumn(
         name: 'Dexterity',
@@ -119,20 +115,25 @@ class _HomePageState extends State<HomePage> {
         cellValue: (params) => params.data.dexterity,
         summary: _summaryEnabled ? (context) => const Text('summary') : null));
     list.add(DaviColumn(
-        name: 'Intelligence', width: 90,
-      cellValue: (params) => params.data.intelligence)
-    );
-    if(_growColumns){
+        name: 'Intelligence',
+        width: 90,
+        cellValue: (params) => params.data.intelligence));
+    if (_growColumns) {
       list.add(DaviColumn(
-          name: 'Grow2', grow: 2, width: 80,cellValue: (params) => params.data.dexterity));
+          name: 'Grow2',
+          grow: 2,
+          width: 80,
+          cellValue: (params) => params.data.dexterity));
     }
-    list.add(DaviColumn(name: 'Life', width: 70, cellValue: (params) => params.data.life));
-    list.add(DaviColumn(name: 'Mana', width: 70, cellValue: (params) => params.data.mana));
+    list.add(DaviColumn(
+        name: 'Life', width: 70, cellValue: (params) => params.data.life));
+    list.add(DaviColumn(
+        name: 'Mana', width: 70, cellValue: (params) => params.data.mana));
     list.add(DaviColumn(
         name: 'Gold',
         width: 110,
         cellValue: (params) => params.data.gold,
-    cellValueStringify: (value)=>(value as double).toStringAsFixed(2)));
+        cellValueStringify: (value) => (value as double).toStringAsFixed(2)));
     return list;
   }
 
@@ -144,11 +145,11 @@ class _HomePageState extends State<HomePage> {
 
     Widget table = DaviTheme(
         child: Davi<Character>(_model!,
-            //collisionBehavior: CellCollisionBehavior.throwException,
-            columnWidthBehavior: _columnsFit?ColumnWidthBehavior.fit:ColumnWidthBehavior.scrollable,
+            columnWidthBehavior: _columnsFit
+                ? ColumnWidthBehavior.fit
+                : ColumnWidthBehavior.scrollable,
             rowColor: _rowColor
-                ? (params) =>
-                    params.data.life < 1000 ? Colors.red[200] : null
+                ? (params) => params.data.life < 1000 ? Colors.red[200] : null
                 : null,
             trailingWidget: _trailingWidget
                 ? const Center(child: Text('TRAILING WIDGET'))
@@ -185,8 +186,9 @@ class _HomePageState extends State<HomePage> {
             : RowThemeDataDefaults.dividerColor,
         fillHeight: _rowFillHeight,
         hoverBackground: _hoverBackground ? (index) => Colors.blue[50] : null,
-        hoverForeground:
-            _hoverForeground ? (index) => Colors.black.withOpacity(.1) : null);
+        hoverForeground: _hoverForeground
+            ? (index) => Colors.black.withValues(alpha: .1)
+            : null);
   }
 
   Widget _options() {
@@ -249,7 +251,8 @@ class _HomePageState extends State<HomePage> {
                   value: _summaryEnabled,
                   onChanged: _onSummaryEnabled,
                   text: 'Summary'),
-            CheckboxUtil.build(    value: _columnsFit,
+              CheckboxUtil.build(
+                  value: _columnsFit,
                   onChanged: _onColumnsFit,
                   text: 'Columns fit'),
               CheckboxUtil.build(
@@ -334,9 +337,9 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  void _onGrowColumns(){
+  void _onGrowColumns() {
     setState(() {
-      _growColumns=!_growColumns;
+      _growColumns = !_growColumns;
       _model?.removeColumns();
       _model?.addColumns(_buildColumns());
     });
@@ -401,9 +404,9 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  void _onColumnsFit(){
+  void _onColumnsFit() {
     setState(() {
-      _columnsFit=!_columnsFit;
+      _columnsFit = !_columnsFit;
     });
   }
 

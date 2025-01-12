@@ -4,7 +4,7 @@ import 'package:flutter/widgets.dart';
 ///
 /// Used by [DaviColumn].
 typedef CellBackgroundBuilder<DATA> = Color? Function(
-    BackgroundBuilderParams params);
+    BackgroundBuilderParams<DATA> params);
 
 class BackgroundBuilderParams<DATA> {
   BackgroundBuilderParams(

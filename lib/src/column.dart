@@ -36,6 +36,7 @@ class DaviColumn<DATA> extends ChangeNotifier {
       this.rowSpan = _defaultSpanProvider,
       this.columnSpan = _defaultSpanProvider,
       this.cellValueStringify = _defaultCellValueStringify,
+      this.cellBarValueStringify,
       this.leading,
       DaviComparator<DATA>? dataComparator,
       this.pinStatus = PinStatus.none,
@@ -112,6 +113,12 @@ class DaviColumn<DATA> extends ChangeNotifier {
   /// to a String. It will receive the dynamic value of the
   /// cell (as returned by `cellValue`) and return its string representation.
   final CellValueStringify cellValueStringify;
+
+  /// A function to convert the cell bar value into a String representation.
+  ///
+  /// This function is used to customize how the bar value of a cell is converted
+  /// to a String.
+  final CellBarStringify<DATA>? cellBarValueStringify;
 
   /// Cell icon mapper for each row in that column.
   final CellIconMapper<DATA>? cellIcon;
@@ -276,6 +283,15 @@ int _defaultDataComparator<DATA>(
 
   return 0;
 }
+
+/// A typedef for a function that converts a dynamic value into a String.
+///
+/// This function is used to convert any dynamic value returned by the `cellValue`
+/// function defined for a column into its string representation. The `dynamic value`
+/// will never be `null` when passed to this function. If the value for a cell is null,
+/// the cell will be rendered without calling this function, and no string conversion will
+/// occur (the cell will typically be empty, such as an empty string).
+typedef CellValueStringify = String Function(dynamic value);
 
 /// A function type that maps a row's data to a value for display or processing in a table cell.
 ///
@@ -522,6 +538,13 @@ typedef CellBarColor = Color Function(double value);
 typedef CellBarValueMapper<DATA> = double? Function(
   BarValueMapperParams<DATA> params,
 );
+
+/// A typedef for a function that converts a bar value into a String.
+///
+/// This function is used to convert any bar value returned by the `cellBarValue`
+/// function defined for a column into its string representation.
+typedef CellBarStringify<DATA> = String Function(
+    BarValueMapperParams<DATA> params);
 
 /// Parameters passed to the [CellBarValueMapper] function.
 ///

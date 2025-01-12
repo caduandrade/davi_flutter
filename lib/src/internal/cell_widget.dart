@@ -154,6 +154,9 @@ class CellWidgetState<DATA> extends State<CellWidget<DATA>> {
             size: Size(widget.column.width, theme.cell.contentHeight),
             painter: _BarPainter(
                 value: barValue,
+                text: widget.column.cellBarValueStringify != null
+                    ? widget.column.cellBarValueStringify!(params)
+                    : null,
                 painterCache: widget.painterCache,
                 barBackground: widget.column.cellBarStyle?.barBackground ??
                     theme.cell.barStyle.barBackground,
@@ -242,14 +245,17 @@ class _CustomPainter<DATA> extends CustomPainter {
 
 class _BarPainter extends CustomPainter {
   _BarPainter(
-      {required this.value,
+      {required double value,
       required this.painterCache,
       required this.barForeground,
       required this.barBackground,
       required this.textColor,
-      required this.textSize});
+      required this.text,
+      required this.textSize})
+      : value = value.clamp(0, 1);
 
   final double value;
+  final String? text;
   final Color? barBackground;
   final CellBarColor? barForeground;
   final CellBarColor? textColor;
@@ -274,7 +280,7 @@ class _BarPainter extends CustomPainter {
       TextPainter textPainter = painterCache.getTextPainter(
           width: size.width,
           textStyle: TextStyle(fontSize: textSize, color: textColor!(value)),
-          value: '${(value * 100).truncate()}%',
+          value: text ?? '${(value * 100).truncate()}%',
           rowSpan: 1,
           columnSpan: 1);
       final Offset textOffset = Offset(
