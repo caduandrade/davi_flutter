@@ -1,3 +1,8 @@
+## 4.0.1
+
+* Bugfix
+  * Cell painter and cell bar were not taking up the entire width in fit mode.
+
 ## 4.0.0
 
 * Significant performance improvements

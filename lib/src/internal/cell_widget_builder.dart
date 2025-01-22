@@ -99,6 +99,8 @@ class DaviCellWidgetBuilderState<DATA>
                 rowSpan: cellMapping.rowSpan,
                 columnSpan: cellMapping.columnSpan,
                 column: column,
+                columnMetrics: widget
+                    .layoutSettings.columnsMetrics[cellMapping.columnIndex],
                 daviContext: widget.daviContext,
                 painterCache: widget.painterCache));
       }

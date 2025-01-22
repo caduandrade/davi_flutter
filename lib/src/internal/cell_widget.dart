@@ -1,5 +1,6 @@
 import 'package:davi/davi.dart';
 import 'package:davi/src/cell_semantics_builder.dart';
+import 'package:davi/src/internal/column_metrics.dart';
 import 'package:davi/src/internal/hover_notifier.dart';
 import 'package:davi/src/internal/painter_cache.dart';
 import 'package:davi/src/internal/text_cell_painter.dart';
@@ -17,6 +18,7 @@ class CellWidget<DATA> extends StatefulWidget {
       required this.rowSpan,
       required this.columnSpan,
       required this.column,
+      required this.columnMetrics,
       required this.daviContext,
       required this.painterCache})
       : cellListenable = column.cellListenable != null
@@ -30,6 +32,7 @@ class CellWidget<DATA> extends StatefulWidget {
   final int rowSpan;
   final int columnSpan;
   final DaviColumn<DATA> column;
+  final ColumnMetrics columnMetrics;
   final DaviContext daviContext;
   final PainterCache<DATA> painterCache;
   final Listenable? cellListenable;
@@ -141,7 +144,7 @@ class CellWidgetState<DATA> extends State<CellWidget<DATA>> {
       }
     } else if (widget.column.cellPainter != null) {
       child = CustomPaint(
-          size: Size(widget.column.width, theme.cell.contentHeight),
+          size: Size(widget.columnMetrics.width, theme.cell.contentHeight),
           painter: _CustomPainter<DATA>(
               data: widget.data, cellPainting: widget.column.cellPainter!));
     } else if (widget.column.cellBarValue != null) {
@@ -150,7 +153,7 @@ class CellWidgetState<DATA> extends State<CellWidget<DATA>> {
       double? barValue = widget.column.cellBarValue!(params);
       if (barValue != null) {
         child = CustomPaint(
-            size: Size(widget.column.width, theme.cell.contentHeight),
+            size: Size(widget.columnMetrics.width, theme.cell.contentHeight),
             painter: _BarPainter(
                 value: barValue,
                 text: widget.column.cellBarValueStringify != null
