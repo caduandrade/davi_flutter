@@ -34,14 +34,15 @@ class _DaviHeaderCellState<DATA> extends State<DaviHeaderCell<DATA>> {
   Widget build(BuildContext context) {
     HeaderCellThemeData theme = DaviTheme.of(context).headerCell;
 
-    final bool sortEnabled =
-        widget.daviContext.model.sortingMode != SortingMode.disabled &&
-            !_resizing &&
-            !widget.daviContext.columnNotifier.resizing &&
-            !widget.daviContext.scrolling;
+    final bool interactionEnabled = !_resizing &&
+        !widget.daviContext.columnNotifier.resizing &&
+        !widget.daviContext.scrolling;
+    final bool sortEnabled = widget.daviContext.model.sortingMode !=
+            SortingMode.disabled &&
+        interactionEnabled;
     final bool resizable = widget.resizable &&
         widget.column.resizable &&
-        (sortEnabled || _resizing);
+        (interactionEnabled || _resizing);
 
     List<Widget> children = [];
 

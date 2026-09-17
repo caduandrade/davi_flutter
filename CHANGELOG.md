@@ -5,6 +5,8 @@
 * The header's text style is now inherited by any `Text` in the header row, including custom `leading`/`headerBuilder` content, instead of needing to be set explicitly.
 * Improved scrolling performance: the table no longer recomputes cell mapping, spans, collisions and dividers on every scroll frame, only when the visible rows actually change.
 * You can now scroll horizontally by clicking (or trackpad-dragging) and dragging anywhere in the table body, not just the scrollbar.
+* Bugfix
+  * Columns were no longer resizable when `DaviModel.sortingMode` was set to `SortingMode.disabled`.
 
 ## 4.0.1
 
