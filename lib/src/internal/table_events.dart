@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:davi/davi.dart';
 import 'package:davi/src/internal/davi_context.dart';
+import 'package:davi/src/internal/table_layout_settings.dart';
 import 'package:davi/src/internal/viewport_state.dart';
 import 'package:davi/src/internal/theme_metrics/theme_metrics.dart';
 import 'package:flutter/gestures.dart';
@@ -10,13 +11,14 @@ import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 
 @internal
-class TableEvents<DATA> extends StatelessWidget {
+class TableEvents<DATA> extends StatefulWidget {
   const TableEvents(
       {super.key,
       required this.daviContext,
       required this.child,
       required this.rowRegions,
-      required this.rowTheme});
+      required this.rowTheme,
+      required this.layoutSettings});
 
   final Widget child;
   final DaviContext<DATA> daviContext;
@@ -25,47 +27,82 @@ class TableEvents<DATA> extends StatelessWidget {
 
   final RowThemeData rowTheme;
 
+  final TableLayoutSettings layoutSettings;
+
+  @override
+  State<TableEvents<DATA>> createState() => _TableEventsState<DATA>();
+}
+
+/// Only mouse and trackpad trigger click-and-drag horizontal scrolling on
+/// the table body. Touch devices keep their platform-native gestures
+/// (tap, etc.) untouched here.
+const Set<PointerDeviceKind> _dragScrollDevices = {
+  PointerDeviceKind.mouse,
+  PointerDeviceKind.trackpad,
+};
+
+class _TableEventsState<DATA> extends State<TableEvents<DATA>> {
+  // The horizontal scroll controller targeted by the current click-and-drag
+  // gesture, chosen when the drag starts based on whether it began over the
+  // left-pinned columns or the unpinned ones.
+  ScrollController? _dragScrollController;
+
   @override
   Widget build(BuildContext context) {
     final DaviThemeData theme = DaviTheme.of(context);
 
-    Widget widget = child;
+    Widget content = widget.child;
 
-    if (daviContext.model.isRowsNotEmpty) {
+    if (widget.daviContext.model.isRowsNotEmpty) {
       // Updates logical row status on hover
-      widget = MouseRegion(
-          onEnter: _onEnter, onHover: _onHover, onExit: _onExit, child: widget);
+      content = MouseRegion(
+          onEnter: _onEnter, onHover: _onHover, onExit: _onExit, child: content);
 
-      if (daviContext.hasCallback) {
-        widget = GestureDetector(
+      if (widget.daviContext.hasCallback) {
+        content = GestureDetector(
             behavior: HitTestBehavior.opaque,
             onTap: _buildOnTap(),
             onDoubleTap: _buildOnDoubleTap(),
             onSecondaryTap: _buildOnSecondaryTap(),
             onSecondaryTapUp: _buildOnSecondaryTapUp(),
-            child: widget);
+            child: content);
       }
 
-      widget = Listener(
+      // Click-and-drag horizontal scrolling. Kept as its own GestureDetector,
+      // restricted to mouse/trackpad via supportedDevices, so touch taps
+      // above are unaffected and the drag/tap gestures are resolved by the
+      // normal gesture arena (a real drag past the touch slop wins over a
+      // tap, same as any scrollable with tappable children).
+      content = GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          supportedDevices: _dragScrollDevices,
+          onHorizontalDragStart: _onHorizontalDragStart,
+          onHorizontalDragUpdate: _onHorizontalDragUpdate,
+          onHorizontalDragEnd: _onHorizontalDragEnd,
+          onHorizontalDragCancel: _onHorizontalDragCancel,
+          child: content);
+
+      content = Listener(
           behavior: HitTestBehavior.translucent,
           onPointerSignal: _onPointerSignal,
           onPointerPanZoomUpdate: _onPointerPanZoomUpdate,
-          child: widget);
+          child: content);
 
-      if (daviContext.focusable) {
+      if (widget.daviContext.focusable) {
         final TableThemeMetrics themeMetrics = TableThemeMetrics(theme);
 
-        widget = Focus(
-            focusNode: daviContext.focusNode,
+        content = Focus(
+            focusNode: widget.daviContext.focusNode,
             onKeyEvent: (node, event) =>
                 _handleKeyPress(node, event, themeMetrics.row.height),
-            child: widget);
+            child: content);
       }
     }
-    return widget;
+    return content;
   }
 
-  ScrollController get verticalScroll => daviContext.scrollControllers.vertical;
+  ScrollController get verticalScroll =>
+      widget.daviContext.scrollControllers.vertical;
 
   void _onEnter(PointerEnterEvent event) {
     _updateHover(event.localPosition);
@@ -94,59 +131,101 @@ class TableEvents<DATA> extends StatelessWidget {
     }
   }
 
+  void _onHorizontalDragStart(DragStartDetails details) {
+    final double leftPinnedWidth =
+        widget.layoutSettings.leftPinnedAreaBounds.width;
+    final PinStatus pinStatus = details.localPosition.dx < leftPinnedWidth
+        ? PinStatus.left
+        : PinStatus.none;
+    final ScrollController controller =
+        widget.daviContext.scrollControllers.getHorizontalController(pinStatus);
+    if (!controller.hasClients) {
+      return;
+    }
+    _dragScrollController = controller;
+    widget.daviContext.onDragScroll(true);
+  }
+
+  void _onHorizontalDragUpdate(DragUpdateDetails details) {
+    final ScrollController? controller = _dragScrollController;
+    if (controller == null || !controller.hasClients) {
+      return;
+    }
+    final double target = (controller.offset - details.delta.dx)
+        .clamp(0, controller.position.maxScrollExtent);
+    controller.jumpTo(target);
+  }
+
+  void _onHorizontalDragEnd(DragEndDetails details) {
+    _endHorizontalDragScroll();
+  }
+
+  void _onHorizontalDragCancel() {
+    _endHorizontalDragScroll();
+  }
+
+  void _endHorizontalDragScroll() {
+    if (_dragScrollController != null) {
+      _dragScrollController = null;
+      widget.daviContext.onDragScroll(false);
+    }
+  }
+
   void _updateHover(Offset? position) {
-    if (daviContext.model.isRowsNotEmpty) {
+    if (widget.daviContext.model.isRowsNotEmpty) {
       int? rowIndex;
       if (position != null) {
-        rowIndex = rowRegions.boundsIndex(position);
+        rowIndex = widget.rowRegions.boundsIndex(position);
       }
       DATA? data;
-      if (rowIndex != null && rowIndex < daviContext.model.rowsLength) {
-        data = daviContext.model.rowAt(rowIndex);
+      if (rowIndex != null && rowIndex < widget.daviContext.model.rowsLength) {
+        data = widget.daviContext.model.rowAt(rowIndex);
       }
       if (data != null) {
-        daviContext.hoverNotifier.cursor = _buildCursor(
+        widget.daviContext.hoverNotifier.cursor = _buildCursor(
             data: data,
             index: rowIndex!,
-            hovered: daviContext.hoverNotifier.index == rowIndex);
+            hovered: widget.daviContext.hoverNotifier.index == rowIndex);
       } else {
         // hover over visual row without value
         rowIndex = null;
       }
-      daviContext.hoverNotifier.index = rowIndex;
+      widget.daviContext.hoverNotifier.index = rowIndex;
     }
   }
 
   MouseCursor _buildCursor(
       {required DATA data, required int index, required bool hovered}) {
     MouseCursor? mouseCursor;
-    if (daviContext.rowCursorBuilder != null) {
+    if (widget.daviContext.rowCursorBuilder != null) {
       CursorBuilderParams<DATA> params =
           CursorBuilderParams(data: data, rowIndex: index, hovered: hovered);
-      mouseCursor = daviContext.rowCursorBuilder!(params);
+      mouseCursor = widget.daviContext.rowCursorBuilder!(params);
     }
-    if (mouseCursor == null && daviContext.hasCallback) {
-      mouseCursor = rowTheme.callbackCursor;
+    if (mouseCursor == null && widget.daviContext.hasCallback) {
+      mouseCursor = widget.rowTheme.callbackCursor;
     }
     return mouseCursor ?? MouseCursor.defer;
   }
 
   DATA? get _hoverData {
     DATA? data;
-    if (daviContext.hoverNotifier.index != null) {
-      if (daviContext.hoverNotifier.index! < daviContext.model.rowsLength) {
-        data = daviContext.model.rowAt(daviContext.hoverNotifier.index!);
+    if (widget.daviContext.hoverNotifier.index != null) {
+      if (widget.daviContext.hoverNotifier.index! <
+          widget.daviContext.model.rowsLength) {
+        data =
+            widget.daviContext.model.rowAt(widget.daviContext.hoverNotifier.index!);
       }
     }
     return data;
   }
 
   GestureTapCallback? _buildOnTap() {
-    if (daviContext.onRowTap != null) {
+    if (widget.daviContext.onRowTap != null && !widget.daviContext.scrolling) {
       return () {
         DATA? data = _hoverData;
         if (data != null) {
-          daviContext.onRowTap!(data);
+          widget.daviContext.onRowTap!(data);
         }
       };
     }
@@ -154,11 +233,12 @@ class TableEvents<DATA> extends StatelessWidget {
   }
 
   GestureTapCallback? _buildOnDoubleTap() {
-    if (daviContext.onRowDoubleTap != null) {
+    if (widget.daviContext.onRowDoubleTap != null &&
+        !widget.daviContext.scrolling) {
       return () {
         DATA? data = _hoverData;
         if (data != null) {
-          daviContext.onRowDoubleTap!(data);
+          widget.daviContext.onRowDoubleTap!(data);
         }
       };
     }
@@ -166,11 +246,12 @@ class TableEvents<DATA> extends StatelessWidget {
   }
 
   GestureTapCallback? _buildOnSecondaryTap() {
-    if (daviContext.onRowSecondaryTap != null) {
+    if (widget.daviContext.onRowSecondaryTap != null &&
+        !widget.daviContext.scrolling) {
       return () {
         DATA? data = _hoverData;
         if (data != null) {
-          daviContext.onRowSecondaryTap!(data);
+          widget.daviContext.onRowSecondaryTap!(data);
         }
       };
     }
@@ -178,11 +259,12 @@ class TableEvents<DATA> extends StatelessWidget {
   }
 
   GestureTapUpCallback? _buildOnSecondaryTapUp() {
-    if (daviContext.onRowSecondaryTapUp != null) {
+    if (widget.daviContext.onRowSecondaryTapUp != null &&
+        !widget.daviContext.scrolling) {
       return (detail) {
         DATA? data = _hoverData;
         if (data != null) {
-          daviContext.onRowSecondaryTapUp!(data, detail);
+          widget.daviContext.onRowSecondaryTapUp!(data, detail);
         }
       };
     }

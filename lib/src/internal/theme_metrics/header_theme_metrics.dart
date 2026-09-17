@@ -1,21 +1,19 @@
-import 'package:davi/src/internal/theme_metrics/header_cell_theme_metrics.dart';
 import 'package:davi/src/theme/header_theme_data.dart';
 import 'package:meta/meta.dart';
 
 /// Stores header theme values that change the table layout.
+///
+/// The header no longer has a fixed height here: [TableLayoutRenderBox]
+/// discovers it from the header content's own intrinsic height at layout
+/// time.
 @internal
 class HeaderThemeMetrics {
-  HeaderThemeMetrics(
-      {required HeaderThemeData headerThemeData,
-      required HeaderCellThemeMetrics headerCellThemeMetrics})
+  HeaderThemeMetrics({required HeaderThemeData headerThemeData})
       : visible = headerThemeData.visible,
-        bottomBorderHeight = headerThemeData.bottomBorderThickness,
-        height = headerCellThemeMetrics.height +
-            headerThemeData.bottomBorderThickness;
+        bottomBorderHeight = headerThemeData.bottomBorderThickness;
 
   final bool visible;
   final double bottomBorderHeight;
-  final double height;
 
   @override
   bool operator ==(Object other) =>
@@ -23,10 +21,8 @@ class HeaderThemeMetrics {
       other is HeaderThemeMetrics &&
           runtimeType == other.runtimeType &&
           visible == other.visible &&
-          bottomBorderHeight == other.bottomBorderHeight &&
-          height == other.height;
+          bottomBorderHeight == other.bottomBorderHeight;
 
   @override
-  int get hashCode =>
-      visible.hashCode ^ bottomBorderHeight.hashCode ^ height.hashCode;
+  int get hashCode => visible.hashCode ^ bottomBorderHeight.hashCode;
 }

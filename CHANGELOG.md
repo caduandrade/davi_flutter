@@ -1,3 +1,11 @@
+## 4.1.0
+
+* The header row height is no longer fixed by the theme; it now adapts automatically to the header content's actual height.
+* `DaviColumn` has a new optional `headerBuilder`, letting you fully customize the header content instead of the automatic `Text(name)`.
+* The header's text style is now inherited by any `Text` in the header row, including custom `leading`/`headerBuilder` content, instead of needing to be set explicitly.
+* Improved scrolling performance: the table no longer recomputes cell mapping, spans, collisions and dividers on every scroll frame, only when the visible rows actually change.
+* You can now scroll horizontally by clicking (or trackpad-dragging) and dragging anywhere in the table body, not just the scrollbar.
+
 ## 4.0.1
 
 * Bugfix

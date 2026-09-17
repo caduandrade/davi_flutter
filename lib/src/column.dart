@@ -38,6 +38,7 @@ class DaviColumn<DATA> extends ChangeNotifier {
       this.cellValueStringify = _defaultCellValueStringify,
       this.cellBarValueStringify,
       this.leading,
+      this.headerBuilder,
       DaviComparator<DATA>? dataComparator,
       this.pinStatus = PinStatus.none,
       DaviSortDirection? sortDirection,
@@ -79,6 +80,10 @@ class DaviColumn<DATA> extends ChangeNotifier {
   /// An optional widget displayed at the beginning of the column header.
   /// This widget can be used to show additional content at the start of the header, before the column title.
   final Widget? leading;
+
+  /// An optional builder for the main header content, replacing the default
+  /// [Text] built from [name]. If null, the header displays `Text(name)`.
+  final HeaderCellBuilder<DATA>? headerBuilder;
 
   /// Padding applied to the cells within the column.
   /// This helps control the spacing around the content inside each cell.
@@ -429,6 +434,35 @@ class IconMapperParams<DATA> extends CellBaseParams<DATA> {
 /// ```
 typedef CellWidgetBuilder<DATA> = Widget? Function(
     WidgetBuilderParams<DATA> params);
+
+/// A function type that builds the main content of a column's header cell,
+/// replacing the default `Text(name)`.
+///
+/// Example usage:
+/// ```dart
+/// HeaderCellBuilder<MyData> headerBuilder = (params) {
+///   return Text(params.column.name!.toUpperCase());
+/// };
+/// ```
+typedef HeaderCellBuilder<DATA> = Widget Function(
+    HeaderCellBuilderParams<DATA> params);
+
+/// Parameters passed to the [HeaderCellBuilder] function.
+class HeaderCellBuilderParams<DATA> {
+  HeaderCellBuilderParams(
+      {required this.buildContext,
+      required this.column,
+      required this.columnIndex});
+
+  /// The Flutter BuildContext for rendering.
+  final BuildContext buildContext;
+
+  /// The column being rendered.
+  final DaviColumn<DATA> column;
+
+  /// The index of the column.
+  final int columnIndex;
+}
 
 /// A class that encapsulates the parameters needed to build a widget for a cell.
 class WidgetBuilderParams<DATA> extends CellBaseParams<DATA> {

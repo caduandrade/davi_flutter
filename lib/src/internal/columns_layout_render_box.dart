@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:davi/src/internal/column_metrics.dart';
 import 'package:davi/src/internal/columns_layout_parent_data.dart';
 import 'package:davi/src/internal/scroll_controllers.dart';
@@ -72,11 +74,53 @@ class ColumnsLayoutRenderBox extends RenderBox
 
   @override
   Size computeDryLayout(BoxConstraints constraints) {
+    if (!constraints.hasBoundedHeight) {
+      return Size(constraints.maxWidth,
+          constraints.constrainHeight(_measureRowHeight(useMax: true)));
+    }
     return Size(constraints.maxWidth, constraints.maxHeight);
   }
 
+  /// Measures the natural (content-driven) row height using each child's own
+  /// intrinsic height at its column width, instead of a real layout pass.
+  ///
+  /// A real layout at a loose/unbounded height would go through each cell's
+  /// normal layout algorithm, including any internal "flexible child" sizing
+  /// that measures at a temporary zero main-axis size (e.g. AxisLayout's
+  /// `expand` children) — which produces a wildly wrong height for
+  /// width-wrapping content such as unconstrained Text. The dedicated
+  /// intrinsic-height query asks each child directly "how tall would you be
+  /// at this width", sidestepping that.
+  double _measureRowHeight({required bool useMax}) {
+    double rowHeight = 0;
+    visitChildren((child) {
+      final RenderBox renderBox = child as RenderBox;
+      final ColumnsLayoutParentData parentData = child._parentData();
+      final int columnIndex = parentData.index!;
+      final double columnWidth =
+          _layoutSettings.columnsMetrics[columnIndex].width;
+      final double childHeight = useMax
+          ? renderBox.getMaxIntrinsicHeight(columnWidth)
+          : renderBox.getMinIntrinsicHeight(columnWidth);
+      rowHeight = math.max(rowHeight, childHeight);
+    });
+    return rowHeight;
+  }
+
+  @override
+  double computeMinIntrinsicHeight(double width) =>
+      _measureRowHeight(useMax: false);
+
+  @override
+  double computeMaxIntrinsicHeight(double width) =>
+      _measureRowHeight(useMax: true);
+
   @override
   void performLayout() {
+    final double rowHeight = constraints.hasBoundedHeight
+        ? constraints.maxHeight
+        : constraints.constrainHeight(_measureRowHeight(useMax: true));
+
     visitChildren((child) {
       final RenderBox renderBox = child as RenderBox;
       final ColumnsLayoutParentData parentData = child._parentData();
@@ -84,13 +128,12 @@ class ColumnsLayoutRenderBox extends RenderBox
       final ColumnMetrics columnMetrics =
           _layoutSettings.columnsMetrics[columnIndex];
       renderBox.layout(
-          BoxConstraints.tightFor(
-              width: columnMetrics.width, height: constraints.maxHeight),
+          BoxConstraints.tightFor(width: columnMetrics.width, height: rowHeight),
           parentUsesSize: true);
       renderBox._parentData().offset = Offset.zero;
     });
 
-    size = computeDryLayout(constraints);
+    size = Size(constraints.maxWidth, rowHeight);
   }
 
   @override

@@ -51,6 +51,14 @@ class HeaderWidget<DATA> extends StatelessWidget {
         columnDividerColor: theme.header.columnDividerColor,
         children: children);
 
+    // Establishes the default text style for the whole header row, so any
+    // Text (including ones from a custom leading/header builder) matches the
+    // theme without callers having to repeat it.
+    if (theme.headerCell.textStyle != null) {
+      header =
+          DefaultTextStyle.merge(style: theme.headerCell.textStyle, child: header);
+    }
+
     Color? color = theme.header.color;
     BoxBorder? border;
     if (theme.header.bottomBorderThickness > 0 &&

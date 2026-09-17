@@ -14,8 +14,8 @@ class TableThemeMetrics {
     CellThemeMetrics cell = CellThemeMetrics(themeData: themeData.cell);
     HeaderCellThemeMetrics headerCell =
         HeaderCellThemeMetrics(themeData: themeData.headerCell);
-    HeaderThemeMetrics header = HeaderThemeMetrics(
-        headerThemeData: themeData.header, headerCellThemeMetrics: headerCell);
+    HeaderThemeMetrics header =
+        HeaderThemeMetrics(headerThemeData: themeData.header);
     RowThemeMetrics row =
         RowThemeMetrics(themeData: themeData.row, cellThemeMetrics: cell);
     TableScrollbarThemeMetrics scrollbar =

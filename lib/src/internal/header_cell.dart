@@ -22,10 +22,10 @@ class DaviHeaderCell<DATA> extends StatefulWidget {
   final int columnIndex;
 
   @override
-  State<StatefulWidget> createState() => _DaviHeaderCellState();
+  State<DaviHeaderCell<DATA>> createState() => _DaviHeaderCellState<DATA>();
 }
 
-class _DaviHeaderCellState extends State<DaviHeaderCell> {
+class _DaviHeaderCellState<DATA> extends State<DaviHeaderCell<DATA>> {
   bool _hovered = false;
   double _lastDragPos = 0;
   bool _resizing = false;
@@ -50,10 +50,22 @@ class _DaviHeaderCellState extends State<DaviHeaderCell> {
           alignment: widget.column.headerAlignment ?? theme.alignment,
           child: widget.column.leading!));
     }
+    Widget content = widget.column.headerBuilder != null
+        ? widget.column.headerBuilder!(HeaderCellBuilderParams(
+            buildContext: context,
+            column: widget.column,
+            columnIndex: widget.columnIndex))
+        : _textWidget(context);
+    if (widget.column.headerTextStyle != null) {
+      content = DefaultTextStyle.merge(
+          style: widget.column.headerTextStyle, child: content);
+    }
     children.add(AxisLayoutChild(
         shrink: theme.expandableName ? 0 : 1,
         expand: theme.expandableName ? 1 : 0,
-        child: _textWidget(context)));
+        child:
+            Align(alignment: widget.column.headerAlignment ?? theme.alignment,
+                child: content)));
 
     final DaviSortDirection? sortDirection = widget.column.sortDirection;
     if (sortDirection != null) {
@@ -96,8 +108,13 @@ class _DaviHeaderCellState extends State<DaviHeaderCell> {
     }
 
     if (resizable) {
+      // The content is kept as a non-positioned Stack child (instead of
+      // Positioned.fill) so RenderStack can derive its height from it when
+      // TableLayoutRenderBox measures the header with a loose height
+      // constraint. A Stack whose children are all Positioned cannot report
+      // a real size on its own and would crash under unbounded height.
       header = Stack(clipBehavior: Clip.none, children: [
-        Positioned.fill(child: header),
+        Align(alignment: Alignment.topLeft, child: header),
         Positioned(
             top: 0,
             bottom: 0,
@@ -113,16 +130,13 @@ class _DaviHeaderCellState extends State<DaviHeaderCell> {
   }
 
   Widget _textWidget(BuildContext context) {
-    DaviThemeData theme = DaviTheme.of(context);
-    Widget? text;
-    if (widget.column.name != null) {
-      text = Text(widget.column.name!,
-          overflow: TextOverflow.ellipsis,
-          style: widget.column.headerTextStyle ?? theme.headerCell.textStyle);
+    if (widget.column.name == null) {
+      return const SizedBox.shrink();
     }
-    return Align(
-        alignment: widget.column.headerAlignment ?? theme.headerCell.alignment,
-        child: text);
+    // No explicit style: inherits the ambient DefaultTextStyle set up by
+    // HeaderWidget (theme) and, when present, by the wrapper above (the
+    // column's headerTextStyle override).
+    return Text(widget.column.name!, overflow: TextOverflow.ellipsis);
   }
 
   Widget _resizeWidget({required BuildContext context, required resizing}) {

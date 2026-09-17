@@ -243,6 +243,7 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
         onRowSecondaryTapUp: widget.onRowSecondaryTapUp,
         onRowDoubleTap: widget.onRowDoubleTap,
         scrolling: _scrolling,
+        onDragScroll: _onDragScroll,
         visibleRowsCount: widget.visibleRowsCount,
         columnWidthBehavior: widget.columnWidthBehavior,
         themeMetrics: themeMetrics,

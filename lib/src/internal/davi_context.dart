@@ -2,6 +2,7 @@ import 'package:davi/src/column_width_behavior.dart';
 import 'package:davi/src/internal/column_notifier.dart';
 import 'package:davi/src/internal/hover_notifier.dart';
 import 'package:davi/src/internal/scroll_controllers.dart';
+import 'package:davi/src/internal/table_scrollbar.dart';
 import 'package:davi/src/internal/theme_metrics/theme_metrics.dart';
 import 'package:davi/src/last_visible_row_listener.dart';
 import 'package:davi/src/model.dart';
@@ -32,6 +33,7 @@ class DaviContext<DATA> {
       required this.onRowDoubleTap,
       required this.onRowTap,
       required this.scrolling,
+      required this.onDragScroll,
       required this.visibleRowsCount,
       required this.columnWidthBehavior,
       required this.themeMetrics,
@@ -54,6 +56,7 @@ class DaviContext<DATA> {
   final RowTapCallback<DATA>? onRowSecondaryTap;
   final RowTapUpCallback<DATA>? onRowSecondaryTapUp;
   final bool scrolling;
+  final OnDragScroll onDragScroll;
   final int? visibleRowsCount;
   final ColumnWidthBehavior columnWidthBehavior;
   final TableThemeMetrics themeMetrics;

@@ -29,6 +29,18 @@ class TableLayoutRenderBox<DATA> extends RenderBox
   RenderBox? _summaryEdge;
   RenderBox? _summary;
 
+  // Bounds recomputed every layout from the header's real (discovered)
+  // height. TableLayoutSettings' own bounds only hold a pre-layout estimate;
+  // these fields hold the actual geometry used for positioning and painting.
+  Rect _headerBounds = Rect.zero;
+  Rect _cellsBounds = Rect.zero;
+  Rect _summaryBounds = Rect.zero;
+  Rect _leftPinnedHorizontalScrollbarBounds = Rect.zero;
+  Rect _unpinnedHorizontalScrollbarsBounds = Rect.zero;
+  Rect _horizontalScrollbarsBounds = Rect.zero;
+  Rect _verticalScrollbarBounds = Rect.zero;
+  double _height = 0;
+
   DaviThemeData _theme;
 
   set theme(DaviThemeData value) {
@@ -93,48 +105,83 @@ class TableLayoutRenderBox<DATA> extends RenderBox
     });
 
     // header
-    if (_header != null) {
-      _header!.layout(
-          BoxConstraints.tightFor(
-              width: _layoutSettings.headerBounds.width,
-              height: _layoutSettings.headerBounds.height),
-          parentUsesSize: true);
-      _header!._parentData().offset = Offset.zero;
-    }
+    // The header no longer has a theme-fixed height: it is discovered from
+    // the header content's own intrinsic height, then everything below it is
+    // repositioned to match.
+    final double headerHeight = _layoutHeader();
+    _headerBounds =
+        Rect.fromLTWH(0, 0, _layoutSettings.headerBounds.width, headerHeight);
 
     // rows
-    _layoutChild(child: _rows, bounds: _layoutSettings.cellsBounds);
+    double cellsHeight = _layoutSettings.cellsBounds.height;
+    if (constraints.hasBoundedHeight) {
+      // Total table height is fixed by the incoming constraints: the rows
+      // area absorbs whatever difference the real header height introduced.
+      final double headerHeightDelta =
+          headerHeight - _layoutSettings.headerBounds.height;
+      cellsHeight = math.max(0, cellsHeight - headerHeightDelta);
+    }
+    // Otherwise (unbounded height / visibleRowsCount mode) the rows area
+    // keeps its size and the table simply grows or shrinks by the delta.
+    _cellsBounds = Rect.fromLTWH(
+        0, headerHeight, _layoutSettings.cellsBounds.width, cellsHeight);
+    _layoutChild(child: _rows, bounds: _cellsBounds);
+
+    // summary
+    _summaryBounds = _summary != null
+        ? Rect.fromLTWH(0, _cellsBounds.bottom,
+            _layoutSettings.summaryBounds.width,
+            _layoutSettings.summaryBounds.height)
+        : Rect.zero;
     if (_summary != null) {
       _summary!.layout(
           BoxConstraints.tightFor(
-              width: _layoutSettings.summaryBounds.width,
-              height: _layoutSettings.summaryBounds.height),
+              width: _summaryBounds.width, height: _summaryBounds.height),
           parentUsesSize: true);
-      _summary!._parentData().offset = Offset(
-          0,
-          _layoutSettings.headerBounds.height +
-              _layoutSettings.cellsBounds.height);
+      _summary!._parentData().offset = Offset(0, _summaryBounds.top);
     }
 
     // horizontal scrollbars
+    final double horizontalScrollbarsTop =
+        _cellsBounds.bottom + _summaryBounds.height;
+    _leftPinnedHorizontalScrollbarBounds =
+        _layoutSettings.hasHorizontalScrollbar
+            ? _translateTop(_layoutSettings.leftPinnedHorizontalScrollbarBounds,
+                horizontalScrollbarsTop)
+            : Rect.zero;
+    _unpinnedHorizontalScrollbarsBounds =
+        _layoutSettings.hasHorizontalScrollbar
+            ? _translateTop(_layoutSettings.unpinnedHorizontalScrollbarsBounds,
+                horizontalScrollbarsTop)
+            : Rect.zero;
+    _horizontalScrollbarsBounds = _layoutSettings.hasHorizontalScrollbar
+        ? _translateTop(
+            _layoutSettings.horizontalScrollbarsBounds, horizontalScrollbarsTop)
+        : Rect.zero;
     _layoutChild(
         child: _leftPinnedHorizontalScrollbar,
-        bounds: _layoutSettings.leftPinnedHorizontalScrollbarBounds);
+        bounds: _leftPinnedHorizontalScrollbarBounds);
     _layoutChild(
         child: _unpinnedHorizontalScrollbar,
-        bounds: _layoutSettings.unpinnedHorizontalScrollbarsBounds);
+        bounds: _unpinnedHorizontalScrollbarsBounds);
 
     // vertical scrollbar
-    _layoutChild(
-        child: _verticalScrollbar,
-        bounds: _layoutSettings.verticalScrollbarBounds);
+    _verticalScrollbarBounds = Rect.fromLTWH(
+        _cellsBounds.width,
+        headerHeight,
+        _layoutSettings.verticalScrollbarBounds.width,
+        _cellsBounds.height);
+    _layoutChild(child: _verticalScrollbar, bounds: _verticalScrollbarBounds);
+
+    // total height
+    _height = horizontalScrollbarsTop + _horizontalScrollbarsBounds.height;
 
     // header edge
     if (_headerEdge != null) {
       _headerEdge!.layout(
           BoxConstraints.tightFor(
               width: _layoutSettings.themeMetrics.scrollbar.width,
-              height: _layoutSettings.themeMetrics.header.height),
+              height: headerHeight),
           parentUsesSize: true);
       _headerEdge!._parentData().offset = Offset(
           constraints.maxWidth - _layoutSettings.themeMetrics.scrollbar.width,
@@ -150,7 +197,7 @@ class TableLayoutRenderBox<DATA> extends RenderBox
           parentUsesSize: true);
       _summaryEdge!._parentData().offset = Offset(
           constraints.maxWidth - _layoutSettings.themeMetrics.scrollbar.width,
-          _layoutSettings.height -
+          _height -
               (_layoutSettings.hasHorizontalScrollbar
                   ? _layoutSettings.themeMetrics.scrollbar.height
                   : 0) -
@@ -166,12 +213,43 @@ class TableLayoutRenderBox<DATA> extends RenderBox
           parentUsesSize: true);
       _scrollbarEdge!._parentData().offset = Offset(
           constraints.maxWidth - _layoutSettings.themeMetrics.scrollbar.width,
-          _layoutSettings.height -
-              _layoutSettings.themeMetrics.scrollbar.height);
+          _height - _layoutSettings.themeMetrics.scrollbar.height);
     }
 
-    size = computeDryLayout(constraints);
+    size = constraints.constrain(Size(constraints.maxWidth, _height));
   }
+
+  /// Lays out the header and returns its real (discovered) height.
+  ///
+  /// The height is discovered via the header's intrinsic-height query
+  /// (rather than a real layout pass with a loose height constraint), asking
+  /// each header cell "how tall would you be at your column's width". A real
+  /// loose-height layout would instead go through each cell's normal layout
+  /// algorithm, including internal "flexible child" sizing that measures at
+  /// a temporary zero main-axis size (e.g. AxisLayout's `expand` children) —
+  /// which produces a wildly wrong height for width-wrapping content such as
+  /// unconstrained Text.
+  ///
+  /// The bottom border isn't part of that content (it paints inline, within
+  /// whatever height the header is given), so it's added afterwards.
+  double _layoutHeader() {
+    if (_header == null) {
+      return 0;
+    }
+    final double headerWidth = _layoutSettings.headerBounds.width;
+    final double bottomBorderHeight =
+        _layoutSettings.themeMetrics.header.bottomBorderHeight;
+    final double contentHeight = _header!.getMaxIntrinsicHeight(headerWidth);
+    final double headerHeight = contentHeight + bottomBorderHeight;
+    _header!.layout(
+        BoxConstraints.tightFor(width: headerWidth, height: headerHeight),
+        parentUsesSize: true);
+    _header!._parentData().offset = Offset.zero;
+    return headerHeight;
+  }
+
+  static Rect _translateTop(Rect rect, double top) =>
+      Rect.fromLTWH(rect.left, top, rect.width, rect.height);
 
   void _layoutChild({required RenderBox? child, required Rect bounds}) {
     if (child != null) {
@@ -206,24 +284,24 @@ class TableLayoutRenderBox<DATA> extends RenderBox
         context: context,
         offset: offset,
         child: _header,
-        clipBounds: _layoutSettings.headerBounds);
+        clipBounds: _headerBounds);
     _paintChild(
         context: context, offset: offset, child: _headerEdge, clipBounds: null);
     _paintChild(
         context: context,
         offset: offset,
         child: _verticalScrollbar,
-        clipBounds: _layoutSettings.verticalScrollbarBounds);
+        clipBounds: _verticalScrollbarBounds);
     _paintChild(
         context: context,
         offset: offset,
         child: _leftPinnedHorizontalScrollbar,
-        clipBounds: _layoutSettings.horizontalScrollbarsBounds);
+        clipBounds: _horizontalScrollbarsBounds);
     _paintChild(
         context: context,
         offset: offset,
         child: _unpinnedHorizontalScrollbar,
-        clipBounds: _layoutSettings.horizontalScrollbarsBounds);
+        clipBounds: _horizontalScrollbarsBounds);
     _paintChild(
         context: context,
         offset: offset,
@@ -240,27 +318,22 @@ class TableLayoutRenderBox<DATA> extends RenderBox
         context: context,
         offset: offset,
         child: _rows,
-        clipBounds: _layoutSettings.cellsBounds);
+        clipBounds: _cellsBounds);
 
     // scrollbar column divider
     if (_layoutSettings.themeMetrics.columnDividerThickness > 0 &&
-        _layoutSettings.leftPinnedHorizontalScrollbarBounds.width > 0 &&
-        _layoutSettings.leftPinnedHorizontalScrollbarBounds.width <
-            _layoutSettings.cellsBounds.width &&
+        _leftPinnedHorizontalScrollbarBounds.width > 0 &&
+        _leftPinnedHorizontalScrollbarBounds.width < _cellsBounds.width &&
         _theme.scrollbar.columnDividerColor != null) {
       context.canvas.save();
-      context.canvas.clipRect(Rect.fromLTWH(offset.dx, offset.dy,
-          _layoutSettings.cellsBounds.width, _layoutSettings.height));
+      context.canvas.clipRect(
+          Rect.fromLTWH(offset.dx, offset.dy, _cellsBounds.width, _height));
       context.canvas.drawRect(
           Rect.fromLTWH(
-              offset.dx +
-                  _layoutSettings.leftPinnedHorizontalScrollbarBounds.width,
-              offset.dy +
-                  _layoutSettings.headerBounds.height +
-                  _layoutSettings.cellsBounds.height +
-                  _layoutSettings.summaryBounds.height,
+              offset.dx + _leftPinnedHorizontalScrollbarBounds.width,
+              offset.dy + _cellsBounds.bottom + _summaryBounds.height,
               _layoutSettings.themeMetrics.columnDividerThickness,
-              _layoutSettings.leftPinnedHorizontalScrollbarBounds.height),
+              _leftPinnedHorizontalScrollbarBounds.height),
           Paint()..color = _theme.scrollbar.columnDividerColor!);
       context.canvas.restore();
     }

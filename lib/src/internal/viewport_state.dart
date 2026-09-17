@@ -5,6 +5,7 @@ import 'package:davi/src/internal/column_metrics.dart';
 import 'package:davi/src/internal/collision_detector.dart';
 import 'package:davi/src/internal/divider_paint_manager.dart';
 import 'package:davi/src/span_provider.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
 
@@ -129,6 +130,19 @@ class ViewportState<DATA> extends ChangeNotifier {
   double _verticalOffset = 0;
   double get verticalOffset => _verticalOffset;
 
+  // Snapshot of the inputs that determine cell topology (mapping, spans,
+  // collisions, divider structure) as of the last time that expensive work
+  // was actually rebuilt. Used to skip it on scroll deltas that don't change
+  // which rows/columns are visible.
+  DaviModel<DATA>? _lastModel;
+  int? _lastFirstRow;
+  int? _lastMaxDataRowIndex;
+  List<ColumnMetrics>? _lastColumnsMetrics;
+  bool? _lastHasTrailing;
+  bool? _lastRowFillHeight;
+  CellCollisionBehavior? _lastCollisionBehavior;
+  double? _lastMaxWidth;
+
   /// rowHeight (cell content height + cell padding + dividerThickness)
   void reset(
       {required double verticalOffset,
@@ -141,17 +155,7 @@ class ViewportState<DATA> extends ChangeNotifier {
       required bool hasTrailing,
       required bool rowFillHeight,
       required CellCollisionBehavior collisionBehavior}) {
-    final Map<CellMapping, int> oldCellMappings = {
-      for (var entry in _cellMappings.entries) entry.value: entry.key,
-    };
-    List<CellMapping> newCellMappings = [];
-
     _verticalOffset = verticalOffset;
-    _cellMappings.clear();
-    rowRegions._clear();
-    _collisionDetector.clear();
-
-    _lastDataRow = -1;
 
     _firstDataRow = (verticalOffset / rowHeight).floor();
 
@@ -179,16 +183,13 @@ class ViewportState<DATA> extends ChangeNotifier {
     _maxCellCount = (_maxVisibleRowCount + model.maxRowSpan - 1) *
         (model.columnsLength + model.maxColumnSpan - 1);
 
+    // Row regions (backgrounds, hover hit-testing, dividers' vertical
+    // extent) are cheap - O(visible rows) - so they're rebuilt on every
+    // call. This keeps them tracking the live scroll position precisely,
+    // even on calls where the expensive topology rebuild below is skipped.
+    rowRegions._clear();
+    _lastDataRow = -1;
     double rowY = (_firstRow * rowHeight) - verticalOffset;
-
-    HashSet<int> indices = HashSet();
-    for (int rowIndex = _firstRow; rowIndex <= _maxDataRowIndex; rowIndex++) {
-      for (int columnIndex = 0;
-          columnIndex < columnsMetrics.length;
-          columnIndex++) {
-        indices.add(indices.length);
-      }
-    }
     for (int rowIndex = _firstRow; rowIndex <= _maxDataRowIndex; rowIndex++) {
       _lastRow = rowIndex;
 
@@ -215,115 +216,157 @@ class ViewportState<DATA> extends ChangeNotifier {
         _lastDataRow = rowIndex;
       }
       rowY += rowHeight;
+    }
+
+    // Everything below (cell mapping, spans, collisions, divider topology)
+    // is O(visible rows x columns) and only depends on which rows/columns
+    // are visible, not on the exact scroll pixel offset. Skip it when
+    // nothing structural changed since the last call, so a sub-row-height
+    // scroll delta (the common case during a drag/fling) doesn't pay this
+    // cost on every frame.
+    final bool topologyUnchanged = identical(_lastModel, model) &&
+        _lastFirstRow == _firstRow &&
+        _lastMaxDataRowIndex == _maxDataRowIndex &&
+        _lastHasTrailing == hasTrailing &&
+        _lastRowFillHeight == rowFillHeight &&
+        _lastCollisionBehavior == collisionBehavior &&
+        _lastMaxWidth == maxWidth &&
+        listEquals(_lastColumnsMetrics, columnsMetrics);
+    if (topologyUnchanged) {
+      return;
+    }
+    _lastModel = model;
+    _lastFirstRow = _firstRow;
+    _lastMaxDataRowIndex = _maxDataRowIndex;
+    _lastHasTrailing = hasTrailing;
+    _lastRowFillHeight = rowFillHeight;
+    _lastCollisionBehavior = collisionBehavior;
+    _lastMaxWidth = maxWidth;
+    _lastColumnsMetrics = List.of(columnsMetrics);
+
+    final Map<CellMapping, int> oldCellMappings = {
+      for (var entry in _cellMappings.entries) entry.value: entry.key,
+    };
+    List<CellMapping> newCellMappings = [];
+
+    _cellMappings.clear();
+    _collisionDetector.clear();
+
+    final HashSet<int> indices = HashSet<int>.from(Iterable<int>.generate(
+        (_maxDataRowIndex - _firstRow + 1) * columnsMetrics.length));
+    for (int rowIndex = _firstRow; rowIndex <= _maxDataRowIndex; rowIndex++) {
+      DATA? data;
+      if (rowIndex < model.rowsLength) {
+        data = model.rowAt(rowIndex);
+      }
+      if (data == null) {
+        continue;
+      }
 
       for (int columnIndex = 0;
           columnIndex < columnsMetrics.length;
           columnIndex++) {
-        if (data != null) {
-          final SpanParams<DATA> spanParams =
-              SpanParams(data: data, rowIndex: rowIndex);
-          final DaviColumn<DATA> column = model.columnAt(columnIndex);
+        final SpanParams<DATA> spanParams =
+            SpanParams(data: data, rowIndex: rowIndex);
+        final DaviColumn<DATA> column = model.columnAt(columnIndex);
 
-          int rowSpan = math.max(column.rowSpan(spanParams), 1);
-          if (rowSpan > model.maxRowSpan) {
-            if (model.maxSpanBehavior == MaxSpanBehavior.throwException) {
-              throw StateError(
-                  'rowSpan exceeds the maximum allowed of ${model.maxRowSpan} rows');
-            } else if (model.maxSpanBehavior ==
-                MaxSpanBehavior.truncateWithWarning) {
-              rowSpan = model.maxRowSpan;
-              debugPrint(
-                  'Span too large at row $rowIndex: Truncated to $rowSpan rows');
-            }
-          }
-
-          if (rowIndex + rowSpan > model.rowsLength) {
-            if (model.rowSpanOverflowBehavior ==
-                RowSpanOverflowBehavior.error) {
-              throw StateError(
-                  'The row span exceeds the table\'s row limit at row $rowIndex and column $columnIndex.');
-            } else if (model.rowSpanOverflowBehavior ==
-                RowSpanOverflowBehavior.cap) {
-              // Adjust rowSpan to fit within the available rows
-              rowSpan = model.rowsLength - rowIndex;
-            }
-          }
-
-          int columnSpan = math.max(column.columnSpan(spanParams), 1);
-          if (columnSpan > model.maxColumnSpan) {
-            if (model.maxSpanBehavior == MaxSpanBehavior.throwException) {
-              throw StateError(
-                  'columnSpan exceeds the maximum allowed of ${model.maxColumnSpan} columns');
-            } else if (model.maxSpanBehavior ==
-                MaxSpanBehavior.truncateWithWarning) {
-              columnSpan = model.maxColumnSpan;
-              debugPrint(
-                  'Span too large at rowIndex $rowIndex column $columnIndex: Truncated to $columnSpan columns');
-            }
-          }
-
-          if (columnIndex + columnSpan > columnsMetrics.length) {
+        int rowSpan = math.max(column.rowSpan(spanParams), 1);
+        if (rowSpan > model.maxRowSpan) {
+          if (model.maxSpanBehavior == MaxSpanBehavior.throwException) {
             throw StateError(
-                'The column span exceeds the table\'s column limit at row $rowIndex, starting from column $columnIndex.');
+                'rowSpan exceeds the maximum allowed of ${model.maxRowSpan} rows');
+          } else if (model.maxSpanBehavior ==
+              MaxSpanBehavior.truncateWithWarning) {
+            rowSpan = model.maxRowSpan;
+            debugPrint(
+                'Span too large at row $rowIndex: Truncated to $rowSpan rows');
           }
+        }
 
-          // Check all columns spanned by the columnSpan
-          for (int i = columnIndex + 1; i < columnIndex + columnSpan; i++) {
-            if (columnsMetrics[i].pinStatus !=
-                columnsMetrics[columnIndex].pinStatus) {
-              throw StateError(
-                  "Invalid columnSpan: Columns spanned from index $columnIndex to ${columnIndex + columnSpan - 1} "
-                  "at rowIndex $rowIndex, have mixed pin status.");
-            }
+        if (rowIndex + rowSpan > model.rowsLength) {
+          if (model.rowSpanOverflowBehavior == RowSpanOverflowBehavior.error) {
+            throw StateError(
+                'The row span exceeds the table\'s row limit at row $rowIndex and column $columnIndex.');
+          } else if (model.rowSpanOverflowBehavior ==
+              RowSpanOverflowBehavior.cap) {
+            // Adjust rowSpan to fit within the available rows
+            rowSpan = model.rowsLength - rowIndex;
           }
+        }
 
-          if (collisionBehavior != CellCollisionBehavior.overlap) {
-            final bool intercepts = _collisionDetector.intersects(
-                rowIndex: rowIndex,
-                columnIndex: columnIndex,
-                rowSpan: rowSpan,
-                columnSpan: columnSpan);
-            if (intercepts) {
-              if (collisionBehavior == CellCollisionBehavior.ignore) {
-                continue;
-              } else if (collisionBehavior ==
-                  CellCollisionBehavior.ignoreAndWarn) {
-                debugPrint(
-                    'Collision detected at cell rowIndex: $rowIndex columnIndex: $columnIndex.');
-                continue;
-              } else if (collisionBehavior ==
-                  CellCollisionBehavior.overlapAndWarn) {
-                debugPrint(
-                    'Collision detected at cell rowIndex: $rowIndex columnIndex: $columnIndex.');
-              } else if (collisionBehavior == CellCollisionBehavior.error) {
-                throw StateError(
-                    'Collision detected at cell rowIndex: $rowIndex columnIndex: $columnIndex.');
-              }
-            }
-            _collisionDetector.add(
-                rowIndex: rowIndex,
-                columnIndex: columnIndex,
-                rowSpan: rowSpan,
-                columnSpan: columnSpan);
+        int columnSpan = math.max(column.columnSpan(spanParams), 1);
+        if (columnSpan > model.maxColumnSpan) {
+          if (model.maxSpanBehavior == MaxSpanBehavior.throwException) {
+            throw StateError(
+                'columnSpan exceeds the maximum allowed of ${model.maxColumnSpan} columns');
+          } else if (model.maxSpanBehavior ==
+              MaxSpanBehavior.truncateWithWarning) {
+            columnSpan = model.maxColumnSpan;
+            debugPrint(
+                'Span too large at rowIndex $rowIndex column $columnIndex: Truncated to $columnSpan columns');
           }
+        }
 
-          CellMapping cellMapping = CellMapping(
+        if (columnIndex + columnSpan > columnsMetrics.length) {
+          throw StateError(
+              'The column span exceeds the table\'s column limit at row $rowIndex, starting from column $columnIndex.');
+        }
+
+        // Check all columns spanned by the columnSpan
+        for (int i = columnIndex + 1; i < columnIndex + columnSpan; i++) {
+          if (columnsMetrics[i].pinStatus !=
+              columnsMetrics[columnIndex].pinStatus) {
+            throw StateError(
+                "Invalid columnSpan: Columns spanned from index $columnIndex to ${columnIndex + columnSpan - 1} "
+                "at rowIndex $rowIndex, have mixed pin status.");
+          }
+        }
+
+        if (collisionBehavior != CellCollisionBehavior.overlap) {
+          final bool intercepts = _collisionDetector.intersects(
               rowIndex: rowIndex,
               columnIndex: columnIndex,
               rowSpan: rowSpan,
               columnSpan: columnSpan);
-
-          int? oldCellIndex = oldCellMappings.remove(cellMapping);
-          if (oldCellIndex != null) {
-            _cellMappings[oldCellIndex] = cellMapping;
-            indices.remove(oldCellIndex);
-          } else {
-            newCellMappings.add(cellMapping);
+          if (intercepts) {
+            if (collisionBehavior == CellCollisionBehavior.ignore) {
+              continue;
+            } else if (collisionBehavior ==
+                CellCollisionBehavior.ignoreAndWarn) {
+              debugPrint(
+                  'Collision detected at cell rowIndex: $rowIndex columnIndex: $columnIndex.');
+              continue;
+            } else if (collisionBehavior ==
+                CellCollisionBehavior.overlapAndWarn) {
+              debugPrint(
+                  'Collision detected at cell rowIndex: $rowIndex columnIndex: $columnIndex.');
+            } else if (collisionBehavior == CellCollisionBehavior.error) {
+              throw StateError(
+                  'Collision detected at cell rowIndex: $rowIndex columnIndex: $columnIndex.');
+            }
           }
+          _collisionDetector.add(
+              rowIndex: rowIndex,
+              columnIndex: columnIndex,
+              rowSpan: rowSpan,
+              columnSpan: columnSpan);
+        }
+
+        CellMapping cellMapping = CellMapping(
+            rowIndex: rowIndex,
+            columnIndex: columnIndex,
+            rowSpan: rowSpan,
+            columnSpan: columnSpan);
+
+        int? oldCellIndex = oldCellMappings.remove(cellMapping);
+        if (oldCellIndex != null) {
+          _cellMappings[oldCellIndex] = cellMapping;
+          indices.remove(oldCellIndex);
+        } else {
+          newCellMappings.add(cellMapping);
         }
       }
     }
-    // print('newCellMappings: ${newCellMappings.length}');
     for (int cellIndex in indices) {
       if (newCellMappings.isEmpty) {
         break;

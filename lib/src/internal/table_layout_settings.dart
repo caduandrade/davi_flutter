@@ -36,6 +36,13 @@ class TableLayoutSettings {
 
     final int rowsLength = model.rowsLength + (hasTrailingWidget ? 1 : 0);
 
+    // The header no longer has a fixed height metric: TableLayoutRenderBox
+    // discovers the real height from the header content at layout time.
+    // This is only an estimate used for decisions that must be made before
+    // the render tree exists (scrollbar necessity, initial bounds).
+    final double estimatedHeaderHeight =
+        themeMetrics.headerCell.height + themeMetrics.header.bottomBorderHeight;
+
     // Let's find out the dynamic metrics given the constraints!!!
     // I'm so excited!!!
 
@@ -58,7 +65,7 @@ class TableLayoutSettings {
           0,
           constraints.maxHeight -
               (model.hasSummary ? themeMetrics.summary.height : 0) -
-              (themeMetrics.header.visible ? themeMetrics.header.height : 0) -
+              (themeMetrics.header.visible ? estimatedHeaderHeight : 0) -
               (hasHorizontalScrollbar ? themeMetrics.scrollbar.height : 0));
       needVerticalScrollbar = (rowsLength * themeMetrics.row.height) -
               themeMetrics.row.dividerThickness >
@@ -141,7 +148,7 @@ class TableLayoutSettings {
               constraints.maxHeight -
                   (model.hasSummary ? themeMetrics.summary.height : 0) -
                   (themeMetrics.header.visible
-                      ? themeMetrics.header.height
+                      ? estimatedHeaderHeight
                       : 0) -
                   themeMetrics.scrollbar.height);
           needVerticalScrollbar = (rowsLength * themeMetrics.row.height) -
@@ -165,7 +172,7 @@ class TableLayoutSettings {
         constraints.maxWidth -
             (hasVerticalScrollbar ? themeMetrics.scrollbar.width : 0));
     final Rect headerBounds = themeMetrics.header.visible
-        ? Rect.fromLTWH(0, 0, contentAreaWidth, themeMetrics.header.height)
+        ? Rect.fromLTWH(0, 0, contentAreaWidth, estimatedHeaderHeight)
         : Rect.zero;
 
     final Rect cellsBounds;

@@ -265,4 +265,60 @@ void main() {
     expect(rowRegion.bounds.top, -20);
     expect(rowRegion.bounds.bottom, 20);
   });
+
+  test(
+      'sub-row-height scroll deltas skip the expensive cell mapping rebuild '
+      'but keep row region positions live', () {
+    const double maxWidth = 500;
+    const double maxHeight = 200;
+
+    const double dividerThickness = 10;
+    const double cellHeight = 40;
+    const double rowHeight = cellHeight + dividerThickness;
+
+    DaviModel<int> model = buildModel(
+        rowCount: 20, columnCount: 2, maxRowSpan: 1, maxColumnSpan: 1);
+
+    List<ColumnMetrics> columnsMetrics = ColumnMetrics.resizable(
+        model: model, maxWidth: maxWidth, dividerThickness: dividerThickness);
+
+    ViewportState<int> viewport = ViewportState();
+    void reset(double verticalOffset) {
+      viewport.reset(
+          verticalOffset: verticalOffset,
+          columnsMetrics: columnsMetrics,
+          rowHeight: rowHeight,
+          cellHeight: cellHeight,
+          maxHeight: maxHeight,
+          maxWidth: maxWidth,
+          model: model,
+          hasTrailing: false,
+          rowFillHeight: false,
+          collisionBehavior: CellCollisionBehavior.ignore);
+    }
+
+    reset(0);
+    final CellMapping firstMapping = viewport.getCellMapping(cellIndex: 0)!;
+    final RowRegion firstRowRegionBefore = viewport.rowRegions.get(0);
+    expect(firstRowRegionBefore.bounds.top, 0);
+
+    // A small scroll delta that stays within the same row window: the cell
+    // mapping must be left untouched (same instance, no rebuild)...
+    reset(5);
+    final CellMapping mappingAfterSmallScroll =
+        viewport.getCellMapping(cellIndex: 0)!;
+    expect(identical(firstMapping, mappingAfterSmallScroll), isTrue);
+    // ...but the row region position must still track the live offset.
+    final RowRegion firstRowRegionAfter = viewport.rowRegions.get(0);
+    expect(firstRowRegionAfter.bounds.top, -5);
+
+    // A scroll delta large enough to change the first visible row must
+    // rebuild the mapping (new instance, updated content).
+    reset(rowHeight * 3);
+    expect(viewport.firstDataRow, 3);
+    final CellMapping mappingAfterBigScroll =
+        viewport.getCellMapping(cellIndex: 0)!;
+    expect(identical(firstMapping, mappingAfterBigScroll), isFalse);
+    expect(mappingAfterBigScroll.rowIndex, isNot(0));
+  });
 }
