@@ -78,51 +78,63 @@ class _HomePageState extends State<HomePage> {
 
   void _buildModel() {
     List<Data> rows = List.generate(
-        50,
-        (index) => Data(
-            orderId: randomID(),
-            status: randomStatus(),
-            orderDate: randomDate()));
+      50,
+      (index) => Data(
+        orderId: randomID(),
+        status: randomStatus(),
+        orderDate: randomDate(),
+      ),
+    );
 
     _model = DaviModel<Data>(
-        rows: rows,
-        columns: [
-          DaviColumn(
-              name: 'Order ID', cellValue: (params) => params.data.orderId),
-          DaviColumn(
-              name: 'Status',
-              cellValue: (params) => params.data.status,
-              cellTextStyle: (params) =>
-                  TextStyle(color: params.data.status.color)),
-          DaviColumn(
-              name: 'Order data',
-              cellValue: (params) => params.data.orderDate,
-              cellValueStringify: (value) {
-                DateTime date = value as DateTime;
-                return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
-              })
-        ],
-        multiSortEnabled: true);
+      rows: rows,
+      columns: [
+        DaviColumn(
+          name: 'Order ID',
+          cellValue: (params) => params.data.orderId,
+        ),
+        DaviColumn(
+          name: 'Status',
+          cellValue: (params) => params.data.status,
+          cellTextStyle: (params) => TextStyle(color: params.data.status.color),
+        ),
+        DaviColumn(
+          name: 'Order data',
+          cellValue: (params) => params.data.orderDate,
+          cellValueStringify: (value) {
+            DateTime date = value as DateTime;
+            return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+          },
+        ),
+      ],
+      multiSortEnabled: true,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     DaviTheme theme = DaviTheme(
-        data: DaviThemeData(
-            row: RowThemeData(
-              fillHeight: true,
-              color: RowThemeData.zebraColor(),
-              hoverForeground: (index) =>
-                  Colors.blue[300]!.withValues(alpha: .2),
-            ),
-            cell: CellThemeData(nullValueColor: (index, hover) => Colors.grey)),
-        child: Davi<Data>(_model,
-            columnWidthBehavior: ColumnWidthBehavior.fit, visibleRowsCount: 6));
+      data: DaviThemeData(
+        row: RowThemeData(
+          fillHeight: true,
+          color: RowThemeData.zebraColor(),
+          hoverForeground: (index) => Colors.blue[300]!.withValues(alpha: .2),
+        ),
+        cell: CellThemeData(nullValueColor: (index, hover) => Colors.grey),
+      ),
+      child: Davi<Data>(
+        _model,
+        columnWidthBehavior: ColumnWidthBehavior.fit,
+        visibleRowsCount: 6,
+      ),
+    );
 
     return Scaffold(
-        body: Container(
-            color: Colors.white,
-            padding: const EdgeInsets.all(32),
-            child: theme));
+      body: Container(
+        color: Colors.white,
+        padding: const EdgeInsets.all(32),
+        child: theme,
+      ),
+    );
   }
 }

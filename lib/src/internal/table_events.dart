@@ -3,8 +3,8 @@ import 'dart:math' as math;
 import 'package:davi/davi.dart';
 import 'package:davi/src/internal/davi_context.dart';
 import 'package:davi/src/internal/table_layout_settings.dart';
-import 'package:davi/src/internal/viewport_state.dart';
 import 'package:davi/src/internal/theme_metrics/theme_metrics.dart';
+import 'package:davi/src/internal/viewport_state.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -56,7 +56,10 @@ class _TableEventsState<DATA> extends State<TableEvents<DATA>> {
     if (widget.daviContext.model.isRowsNotEmpty) {
       // Updates logical row status on hover
       content = MouseRegion(
-          onEnter: _onEnter, onHover: _onHover, onExit: _onExit, child: content);
+          onEnter: _onEnter,
+          onHover: _onHover,
+          onExit: _onExit,
+          child: content);
 
       if (widget.daviContext.hasCallback) {
         content = GestureDetector(
@@ -213,8 +216,8 @@ class _TableEventsState<DATA> extends State<TableEvents<DATA>> {
     if (widget.daviContext.hoverNotifier.index != null) {
       if (widget.daviContext.hoverNotifier.index! <
           widget.daviContext.model.rowsLength) {
-        data =
-            widget.daviContext.model.rowAt(widget.daviContext.hoverNotifier.index!);
+        data = widget.daviContext.model
+            .rowAt(widget.daviContext.hoverNotifier.index!);
       }
     }
     return data;

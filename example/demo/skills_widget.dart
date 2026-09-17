@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'character.dart';
 
 class SkillsWidget extends StatelessWidget {
@@ -55,12 +56,18 @@ class SkillsWidget extends StatelessWidget {
       if (color == null || iconData == null) {
         throw StateError('Null');
       }
-      children.add(Flexible(
+      children.add(
+        Flexible(
           child: Padding(
-              padding: const EdgeInsets.only(right: 4),
-              child: Icon(iconData, color: color))));
+            padding: const EdgeInsets.only(right: 4),
+            child: Icon(iconData, color: color),
+          ),
+        ),
+      );
     }
     return Row(
-        crossAxisAlignment: CrossAxisAlignment.center, children: children);
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: children,
+    );
   }
 }

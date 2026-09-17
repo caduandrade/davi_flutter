@@ -13,7 +13,7 @@ enum Skill {
   filterVintage,
   workspaces,
   cloud,
-  acUnit
+  acUnit,
 }
 
 extension on Skill {
@@ -21,20 +21,21 @@ extension on Skill {
 }
 
 class Character {
-  Character(
-      {required this.name,
-      required this.male,
-      required this.age,
-      required this.race,
-      required this.gold,
-      required this.cls,
-      required this.level,
-      required this.strength,
-      required this.intelligence,
-      required this.dexterity,
-      required this.life,
-      required this.mana,
-      required this.skills});
+  Character({
+    required this.name,
+    required this.male,
+    required this.age,
+    required this.race,
+    required this.gold,
+    required this.cls,
+    required this.level,
+    required this.strength,
+    required this.intelligence,
+    required this.dexterity,
+    required this.life,
+    required this.mana,
+    required this.skills,
+  });
 
   final String name;
   final bool male;
@@ -63,7 +64,7 @@ class Character {
     'Troll',
     'Angel',
     'Elemental',
-    'Undead'
+    'Undead',
   ];
 
   static const List<String> _classes = [
@@ -78,7 +79,7 @@ class Character {
     'Bard',
     'Monk',
     'Paladin',
-    'Druid'
+    'Druid',
   ];
 
   static const List<String> _females = [
@@ -398,18 +399,27 @@ class Character {
     return list;
   }
 
-  static Character _character(
-      {required String name, required bool male, required math.Random random}) {
+  static Character _character({
+    required String name,
+    required bool male,
+    required math.Random random,
+  }) {
     String race = _races[random.nextInt(_races.length)];
     int age = 20 + random.nextInt(80);
     String cls = _classes[random.nextInt(_classes.length)];
     int level = 1 + (random.nextInt(100) * random.nextDouble()).round();
-    int strength =
-        math.max(level + random.nextInt(100) - random.nextInt(20), 10);
-    int intelligence =
-        math.max(level + random.nextInt(100) - random.nextInt(20), 10);
-    int dexterity =
-        math.max(level + random.nextInt(100) - random.nextInt(20), 10);
+    int strength = math.max(
+      level + random.nextInt(100) - random.nextInt(20),
+      10,
+    );
+    int intelligence = math.max(
+      level + random.nextInt(100) - random.nextInt(20),
+      10,
+    );
+    int dexterity = math.max(
+      level + random.nextInt(100) - random.nextInt(20),
+      10,
+    );
     int mana = level + random.nextInt(500);
     int life = level + random.nextInt(5000);
     double? gold =
@@ -424,18 +434,19 @@ class Character {
     skills.sort((a, b) => a.compareTo(b));
 
     return Character(
-        cls: cls,
-        name: name,
-        race: race,
-        age: age,
-        male: male,
-        gold: gold,
-        level: level,
-        strength: strength,
-        intelligence: intelligence,
-        dexterity: dexterity,
-        life: life,
-        mana: mana,
-        skills: skills);
+      cls: cls,
+      name: name,
+      race: race,
+      age: age,
+      male: male,
+      gold: gold,
+      level: level,
+      strength: strength,
+      intelligence: intelligence,
+      dexterity: dexterity,
+      life: life,
+      mana: mana,
+      skills: skills,
+    );
   }
 }

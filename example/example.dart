@@ -62,47 +62,59 @@ class _HomePageState extends State<HomePage> {
     // rows.shuffle();
 
     _model = DaviModel<Data>(
-        rows: rows,
-        columns: [
-          DaviColumn(
-              name: 'String',
-              cellValue: (params) => params.data.stringValue,
-              pinStatus: PinStatus.left),
-          DaviColumn(
-              name: 'Int 1',
-              cellValue: (params) => params.data.intValue,
-              summary: (context) => const Text('summary')),
-          DaviColumn(
-              name: 'Int 2',
-              cellValue: (params) =>
-                  params.rowIndex == 2 ? 'SPAN' : params.data.intValue,
-              columnSpan: (params) => params.rowIndex == 2 ? 2 : 1,
-              cellBackground: (params) =>
-                  params.data.intValue == 10 ? Colors.green : null),
-          DaviColumn(
-              name: 'Widget',
-              cellWidget: (params) => params.rowIndex == 10
-                  ? Container(color: Colors.white, child: const Placeholder())
-                  : null,
-              rowSpan: (params) => params.rowIndex == 10 ? 6 : 1),
-          DaviColumn(name: 'Bar', cellBarValue: (params) => params.data.bar),
-          DaviColumn(
-              name: 'Editable',
-              sortable: false,
-              cellWidget: _buildField,
-              //cellListenable: (d,i)=>d,
-              cellBackground: (params) =>
-                  params.data.valid ? null : Colors.red[800])
-        ],
-        multiSortEnabled: true);
+      rows: rows,
+      columns: [
+        DaviColumn(
+          name: 'String',
+          cellValue: (params) => params.data.stringValue,
+          pinStatus: PinStatus.left,
+        ),
+        DaviColumn(
+          name: 'Int 1',
+          cellValue: (params) => params.data.intValue,
+          summary: (context) => const Text('summary'),
+        ),
+        DaviColumn(
+          name: 'Int 2',
+          cellValue:
+              (params) => params.rowIndex == 2 ? 'SPAN' : params.data.intValue,
+          columnSpan: (params) => params.rowIndex == 2 ? 2 : 1,
+          cellBackground:
+              (params) => params.data.intValue == 10 ? Colors.green : null,
+        ),
+        DaviColumn(
+          name: 'Widget',
+          cellWidget:
+              (params) =>
+                  params.rowIndex == 10
+                      ? Container(
+                        color: Colors.white,
+                        child: const Placeholder(),
+                      )
+                      : null,
+          rowSpan: (params) => params.rowIndex == 10 ? 6 : 1,
+        ),
+        DaviColumn(name: 'Bar', cellBarValue: (params) => params.data.bar),
+        DaviColumn(
+          name: 'Editable',
+          sortable: false,
+          cellWidget: _buildField,
+          //cellListenable: (d,i)=>d,
+          cellBackground:
+              (params) => params.data.valid ? null : Colors.red[800],
+        ),
+      ],
+      multiSortEnabled: true,
+    );
   }
 
   Widget _buildField(WidgetBuilderParams<Data> params) {
     return TextFormField(
-        key: params.localKey,
-        initialValue: params.data.editable,
-        onChanged: (value) =>
-            _onFieldChange(value, params.data, params.rebuildCallback));
+      key: params.localKey,
+      initialValue: params.data.editable,
+      onChanged:
+          (value) => _onFieldChange(value, params.data, params.rebuildCallback),
+    );
   }
 
   void _onFieldChange(String value, Data person, VoidCallback rebuild) {
@@ -116,23 +128,33 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     DaviTheme theme = DaviTheme(
-        data: DaviThemeData(
-            row: RowThemeData(
-              fillHeight: true,
-              color: RowThemeData.zebraColor(),
-              hoverForeground: (index) =>
-                  Colors.blue[300]!.withValues(alpha: .2),
-            ),
-            cell: CellThemeData(nullValueColor: (index, hover) => Colors.grey)),
-        child: Davi<Data>(_model, onRowTap: _onRowTap));
+      data: DaviThemeData(
+        row: RowThemeData(
+          fillHeight: true,
+          color: RowThemeData.zebraColor(),
+          hoverForeground: (index) => Colors.blue[300]!.withValues(alpha: .2),
+        ),
+        cell: CellThemeData(nullValueColor: (index, hover) => Colors.grey),
+      ),
+      child: Davi<Data>(_model, onRowTap: _onRowTap),
+    );
 
     return Scaffold(
-        body: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-      Center(
-          child: TextButton(
-              onPressed: _onTextButtonClick, child: const Text('rebuild'))),
-      Expanded(child: Padding(padding: const EdgeInsets.all(32), child: theme))
-    ]));
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Center(
+            child: TextButton(
+              onPressed: _onTextButtonClick,
+              child: const Text('rebuild'),
+            ),
+          ),
+          Expanded(
+            child: Padding(padding: const EdgeInsets.all(32), child: theme),
+          ),
+        ],
+      ),
+    );
   }
 
   void _onRowTap(Data p) {

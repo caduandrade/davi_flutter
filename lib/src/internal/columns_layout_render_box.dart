@@ -128,7 +128,8 @@ class ColumnsLayoutRenderBox extends RenderBox
       final ColumnMetrics columnMetrics =
           _layoutSettings.columnsMetrics[columnIndex];
       renderBox.layout(
-          BoxConstraints.tightFor(width: columnMetrics.width, height: rowHeight),
+          BoxConstraints.tightFor(
+              width: columnMetrics.width, height: rowHeight),
           parentUsesSize: true);
       renderBox._parentData().offset = Offset.zero;
     });

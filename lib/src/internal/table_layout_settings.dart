@@ -147,9 +147,7 @@ class TableLayoutSettings {
               0,
               constraints.maxHeight -
                   (model.hasSummary ? themeMetrics.summary.height : 0) -
-                  (themeMetrics.header.visible
-                      ? estimatedHeaderHeight
-                      : 0) -
+                  (themeMetrics.header.visible ? estimatedHeaderHeight : 0) -
                   themeMetrics.scrollbar.height);
           needVerticalScrollbar = (rowsLength * themeMetrics.row.height) -
                   themeMetrics.row.dividerThickness >

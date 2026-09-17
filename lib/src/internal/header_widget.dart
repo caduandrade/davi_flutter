@@ -1,8 +1,8 @@
 import 'package:davi/src/column.dart';
 import 'package:davi/src/internal/columns_layout.dart';
 import 'package:davi/src/internal/columns_layout_child.dart';
-import 'package:davi/src/internal/header_cell.dart';
 import 'package:davi/src/internal/davi_context.dart';
+import 'package:davi/src/internal/header_cell.dart';
 import 'package:davi/src/internal/table_layout_settings.dart';
 import 'package:davi/src/theme/theme.dart';
 import 'package:davi/src/theme/theme_data.dart';
@@ -55,8 +55,8 @@ class HeaderWidget<DATA> extends StatelessWidget {
     // Text (including ones from a custom leading/header builder) matches the
     // theme without callers having to repeat it.
     if (theme.headerCell.textStyle != null) {
-      header =
-          DefaultTextStyle.merge(style: theme.headerCell.textStyle, child: header);
+      header = DefaultTextStyle.merge(
+          style: theme.headerCell.textStyle, child: header);
     }
 
     Color? color = theme.header.color;

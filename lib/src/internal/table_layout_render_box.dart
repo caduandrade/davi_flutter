@@ -129,7 +129,9 @@ class TableLayoutRenderBox<DATA> extends RenderBox
 
     // summary
     _summaryBounds = _summary != null
-        ? Rect.fromLTWH(0, _cellsBounds.bottom,
+        ? Rect.fromLTWH(
+            0,
+            _cellsBounds.bottom,
             _layoutSettings.summaryBounds.width,
             _layoutSettings.summaryBounds.height)
         : Rect.zero;
@@ -149,11 +151,10 @@ class TableLayoutRenderBox<DATA> extends RenderBox
             ? _translateTop(_layoutSettings.leftPinnedHorizontalScrollbarBounds,
                 horizontalScrollbarsTop)
             : Rect.zero;
-    _unpinnedHorizontalScrollbarsBounds =
-        _layoutSettings.hasHorizontalScrollbar
-            ? _translateTop(_layoutSettings.unpinnedHorizontalScrollbarsBounds,
-                horizontalScrollbarsTop)
-            : Rect.zero;
+    _unpinnedHorizontalScrollbarsBounds = _layoutSettings.hasHorizontalScrollbar
+        ? _translateTop(_layoutSettings.unpinnedHorizontalScrollbarsBounds,
+            horizontalScrollbarsTop)
+        : Rect.zero;
     _horizontalScrollbarsBounds = _layoutSettings.hasHorizontalScrollbar
         ? _translateTop(
             _layoutSettings.horizontalScrollbarsBounds, horizontalScrollbarsTop)
@@ -166,11 +167,8 @@ class TableLayoutRenderBox<DATA> extends RenderBox
         bounds: _unpinnedHorizontalScrollbarsBounds);
 
     // vertical scrollbar
-    _verticalScrollbarBounds = Rect.fromLTWH(
-        _cellsBounds.width,
-        headerHeight,
-        _layoutSettings.verticalScrollbarBounds.width,
-        _cellsBounds.height);
+    _verticalScrollbarBounds = Rect.fromLTWH(_cellsBounds.width, headerHeight,
+        _layoutSettings.verticalScrollbarBounds.width, _cellsBounds.height);
     _layoutChild(child: _verticalScrollbar, bounds: _verticalScrollbarBounds);
 
     // total height

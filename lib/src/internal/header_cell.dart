@@ -37,9 +37,9 @@ class _DaviHeaderCellState<DATA> extends State<DaviHeaderCell<DATA>> {
     final bool interactionEnabled = !_resizing &&
         !widget.daviContext.columnNotifier.resizing &&
         !widget.daviContext.scrolling;
-    final bool sortEnabled = widget.daviContext.model.sortingMode !=
-            SortingMode.disabled &&
-        interactionEnabled;
+    final bool sortEnabled =
+        widget.daviContext.model.sortingMode != SortingMode.disabled &&
+            interactionEnabled;
     final bool resizable = widget.resizable &&
         widget.column.resizable &&
         (interactionEnabled || _resizing);
@@ -64,9 +64,9 @@ class _DaviHeaderCellState<DATA> extends State<DaviHeaderCell<DATA>> {
     children.add(AxisLayoutChild(
         shrink: theme.expandableName ? 0 : 1,
         expand: theme.expandableName ? 1 : 0,
-        child:
-            Align(alignment: widget.column.headerAlignment ?? theme.alignment,
-                child: content)));
+        child: Align(
+            alignment: widget.column.headerAlignment ?? theme.alignment,
+            child: content)));
 
     final DaviSortDirection? sortDirection = widget.column.sortDirection;
     if (sortDirection != null) {
