@@ -1,15 +1,15 @@
 import 'dart:math' as math;
+
 import 'package:davi/davi.dart';
+import 'package:davi/src/internal/cells_layout_parent_data.dart';
+import 'package:davi/src/internal/column_metrics.dart';
 import 'package:davi/src/internal/divider_paint_manager.dart';
 import 'package:davi/src/internal/hover_notifier.dart';
-import 'package:davi/src/internal/column_metrics.dart';
-import 'package:davi/src/internal/cells_layout_parent_data.dart';
-import 'package:davi/src/internal/viewport_state.dart';
 import 'package:davi/src/internal/scroll_controllers.dart';
+import 'package:davi/src/internal/viewport_state.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:meta/meta.dart';
 
 @internal
 class CellsLayoutRenderBox<DATA> extends RenderBox

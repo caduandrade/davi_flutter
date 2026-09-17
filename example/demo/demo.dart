@@ -355,23 +355,25 @@ class _HomePageState extends State<HomePage> {
               text: 'Row color',
             ),
             const Text('Row theme color'),
-            RadioButton<RowThemeColor>(
-              text: 'None',
-              value: RowThemeColor.none,
-              groupValue: _demoBackground,
+            RadioGroup<RowThemeColor>(
               onChanged: _onBackgroundChanged,
-            ),
-            RadioButton<RowThemeColor>(
-              text: 'Simple',
-              value: RowThemeColor.simple,
               groupValue: _demoBackground,
-              onChanged: _onBackgroundChanged,
-            ),
-            RadioButton<RowThemeColor>(
-              text: 'Zebra',
-              value: RowThemeColor.zebra,
-              groupValue: _demoBackground,
-              onChanged: _onBackgroundChanged,
+              child: Column(
+                children: [
+                  RadioButton<RowThemeColor>(
+                    text: 'None',
+                    value: RowThemeColor.none,
+                  ),
+                  RadioButton<RowThemeColor>(
+                    text: 'Simple',
+                    value: RowThemeColor.simple,
+                  ),
+                  RadioButton<RowThemeColor>(
+                    text: 'Zebra',
+                    value: RowThemeColor.zebra,
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -519,27 +521,14 @@ enum RowThemeColor { none, zebra, simple }
 
 class RadioButton<T> extends StatelessWidget {
   final String text;
-  final ValueChanged<T?>? onChanged;
-  final T? groupValue;
   final T value;
 
-  const RadioButton({
-    required this.text,
-    required this.value,
-    required this.onChanged,
-    required this.groupValue,
-    super.key,
-  });
+  const RadioButton({required this.text, required this.value, super.key});
 
   @override
   Widget build(BuildContext context) {
     return IntrinsicWidth(
-      child: Row(
-        children: [
-          Radio<T>(value: value, onChanged: onChanged, groupValue: groupValue),
-          Text(text),
-        ],
-      ),
+      child: Row(children: [Radio<T>(value: value), Text(text)]),
     );
   }
 }

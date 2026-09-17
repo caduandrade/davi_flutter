@@ -2,7 +2,6 @@ import 'package:davi/src/internal/cells_layout.dart';
 import 'package:davi/src/internal/cells_layout_parent_data.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:meta/meta.dart';
 
 @internal
 class CellsLayoutChild<DATA> extends ParentDataWidget<CellsLayoutParentData> {

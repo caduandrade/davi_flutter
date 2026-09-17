@@ -1,13 +1,13 @@
 import 'dart:collection';
 import 'dart:math' as math;
+
 import 'package:davi/davi.dart';
-import 'package:davi/src/internal/column_metrics.dart';
 import 'package:davi/src/internal/collision_detector.dart';
+import 'package:davi/src/internal/column_metrics.dart';
 import 'package:davi/src/internal/divider_paint_manager.dart';
 import 'package:davi/src/span_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-import 'package:meta/meta.dart';
 
 @internal
 class RowRegion implements Comparable<RowRegion> {

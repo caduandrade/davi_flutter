@@ -3,12 +3,11 @@ import 'package:davi/src/internal/cell_widget.dart';
 import 'package:davi/src/internal/column_metrics.dart';
 import 'package:davi/src/internal/davi_context.dart';
 import 'package:davi/src/internal/painter_cache.dart';
-import 'package:davi/src/internal/viewport_state.dart';
 import 'package:davi/src/internal/table_layout_settings.dart';
+import 'package:davi/src/internal/viewport_state.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:meta/meta.dart';
 
 @internal
 class DaviCellWidgetBuilder<DATA> extends StatefulWidget {
