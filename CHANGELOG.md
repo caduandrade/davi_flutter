@@ -12,6 +12,8 @@
   * `RowThemeData`
     * New `estimatedHeight` attribute: an initial height hint used only until a row's real content is measured.
   * Removed `SpanProvider`, `SpanParams`, `MaxSpanBehavior`, `RowSpanOverflowBehavior` and `CellCollisionBehavior`.
+* Bugfix
+  * Cell text with no explicit `textStyle` (the default) could render invisible/white instead of a visible color, since it bypassed `DefaultTextStyle` inheritance.
 
 ## 4.1.0
 

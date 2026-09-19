@@ -179,10 +179,17 @@ class CellWidgetState<DATA> extends State<CellWidget<DATA>> {
     }
 
     if (textCell && value != null) {
+      // TextCellPainter paints with a raw TextPainter, bypassing the
+      // DefaultTextStyle inheritance a normal Text widget would get - merge
+      // it explicitly so an unset color (the default) doesn't fall through
+      // to the text engine's own default of white instead of a visible
+      // color.
+      final TextStyle effectiveTextStyle =
+          DefaultTextStyle.of(context).style.merge(textStyle);
       child = TextCellPainter(
           text: widget.column.cellValueStringify(value),
           painterCache: widget.painterCache,
-          textStyle: textStyle);
+          textStyle: effectiveTextStyle);
     }
 
     if (widget.daviContext.semanticsEnabled &&
