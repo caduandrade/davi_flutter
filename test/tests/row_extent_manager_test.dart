@@ -203,4 +203,81 @@ void main() {
           manager.visibleRowCount(scrollOffset: 0, availableHeight: 45), 5);
     });
   });
+
+  group('RowExtentManager - updateGeometry', () {
+    test('preserves already-measured rows, only reseeds unmeasured ones', () {
+      final manager = RowExtentManager();
+      manager.resize(rowsLength: 3, estimatedHeight: 20, dividerThickness: 1);
+      manager.setHeight(1, 150); // row 1 is measured; 0 and 2 are not.
+
+      manager.updateGeometry(estimatedHeight: 40, dividerThickness: 10);
+
+      expect(manager.heightOf(0), 40); // unmeasured -> reseeded
+      expect(manager.heightOf(1), 150); // measured -> preserved
+      expect(manager.heightOf(2), 40); // unmeasured -> reseeded
+      // offsets reflect the new dividerThickness (10) between all rows.
+      expect(manager.offsetOf(1), 50); // 40 + 10
+      expect(manager.offsetOf(2), 210); // 50 + 150 + 10
+    });
+
+    test('a measured height matching the old seed exactly is still kept',
+        () {
+      final manager = RowExtentManager();
+      manager.resize(rowsLength: 2, estimatedHeight: 20, dividerThickness: 0);
+      // Real content happens to measure to exactly the seed estimate.
+      manager.setHeight(0, 20);
+
+      manager.updateGeometry(estimatedHeight: 99, dividerThickness: 0);
+
+      // Row 0 was measured (even though delta was 0), so it must NOT be
+      // reseeded to the new, unrelated estimate of 99.
+      expect(manager.heightOf(0), 20);
+      // Row 1 was never measured, so it does adopt the new estimate.
+      expect(manager.heightOf(1), 99);
+    });
+
+    test('a no-op call (same values) does not bump generation', () {
+      final manager = RowExtentManager();
+      manager.resize(rowsLength: 2, estimatedHeight: 20, dividerThickness: 5);
+      final int generationAfterResize = manager.generation;
+
+      manager.updateGeometry(estimatedHeight: 20, dividerThickness: 5);
+
+      expect(manager.generation, generationAfterResize);
+    });
+  });
+
+  group('RowExtentManager - change notifications', () {
+    test('resize() and updateGeometry() notify synchronously', () {
+      final manager = RowExtentManager();
+      int notifications = 0;
+      manager.addListener(() => notifications++);
+
+      manager.resize(rowsLength: 2, estimatedHeight: 20, dividerThickness: 0);
+      expect(notifications, 1);
+
+      manager.updateGeometry(estimatedHeight: 30, dividerThickness: 0);
+      expect(notifications, 2);
+    });
+
+    test('setHeight() defers and coalesces notifications to a microtask',
+        () async {
+      final manager = RowExtentManager();
+      manager.resize(rowsLength: 3, estimatedHeight: 20, dividerThickness: 0);
+      int notifications = 0;
+      manager.addListener(() => notifications++);
+
+      // Several measurements within the same synchronous pass (mirroring
+      // CellsLayoutRenderBox's measure pass, called mid-layout) must not
+      // notify synchronously (that would trip Flutter's "Build scheduled
+      // during frame" guard) and must coalesce into a single notification.
+      manager.setHeight(0, 50);
+      manager.setHeight(1, 60);
+      manager.setHeight(2, 70);
+      expect(notifications, 0);
+
+      await Future<void>.delayed(Duration.zero);
+      expect(notifications, 1);
+    });
+  });
 }

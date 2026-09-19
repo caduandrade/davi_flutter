@@ -264,9 +264,10 @@ class TableLayoutRenderBox<DATA> extends RenderBox
 
   @override
   double computeMaxIntrinsicHeight(double width) {
-    final int maxVisibleRowsLength =
-        _layoutSettings.rowExtentManager.visibleRowCount(
-            scrollOffset: 0, availableHeight: _layoutSettings.cellsBounds.height);
+    final int maxVisibleRowsLength = _layoutSettings.rowExtentManager
+        .visibleRowCount(
+            scrollOffset: 0,
+            availableHeight: _layoutSettings.cellsBounds.height);
     final int visibleRowsLength =
         math.min(_layoutSettings.rowsLength, maxVisibleRowsLength);
     return computeMinIntrinsicHeight(width) +

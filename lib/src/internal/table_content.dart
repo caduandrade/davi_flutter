@@ -37,6 +37,13 @@ class TableContentState<DATA> extends State<TableContent<DATA>> {
   final ViewportState<DATA> _viewportState = ViewportState();
   Object? _error;
 
+  bool _postFrameRefreshScheduled = false;
+
+  /// The vertical offset as of the last time [_onVerticalScrollChange] ran
+  /// (whichever path drove it). Used by [_onRowExtentChanged] to detect a
+  /// *silent* `ScrollPosition` correction - see there.
+  double? _lastKnownVerticalOffset;
+
   @override
   void initState() {
     super.initState();
@@ -44,6 +51,7 @@ class TableContentState<DATA> extends State<TableContent<DATA>> {
     _onVerticalScrollChange();
     widget.daviContext.scrollControllers.vertical
         .addListener(_onVerticalScrollChange);
+    widget.daviContext.rowExtentManager.addListener(_onRowExtentChanged);
   }
 
   @override
@@ -58,11 +66,68 @@ class TableContentState<DATA> extends State<TableContent<DATA>> {
       widget.daviContext.scrollControllers.vertical
           .addListener(_onVerticalScrollChange);
     }
+    if (oldWidget.daviContext.rowExtentManager !=
+        widget.daviContext.rowExtentManager) {
+      oldWidget.daviContext.rowExtentManager
+          .removeListener(_onRowExtentChanged);
+      widget.daviContext.rowExtentManager.addListener(_onRowExtentChanged);
+    }
   }
 
   @override
   void dispose() {
+    widget.daviContext.scrollControllers.vertical
+        .removeListener(_onVerticalScrollChange);
+    widget.daviContext.rowExtentManager.removeListener(_onRowExtentChanged);
     super.dispose();
+  }
+
+  /// [RowExtentManager] can shrink the true total content height (a theme
+  /// change that resizes rows, or a row's real content finally being
+  /// measured) while already scrolled near the end. When that happens,
+  /// Flutter's own `ScrollPosition` silently corrects `pixels` during the
+  /// `SingleChildScrollView` inside `TableScrollbar`'s layout - but that
+  /// correction does NOT call `notifyListeners()` (confirmed: the vertical
+  /// `ScrollController`'s own listeners never fire for it, only for a real
+  /// user-driven scroll). Since `_onVerticalScrollChange` above only runs
+  /// off that listener, nothing re-drives `ViewportState`/row rendering to
+  /// pick up the already-corrected offset, leaving a blank gap until the
+  /// user scrolls.
+  ///
+  /// [RowExtentManager] notifies far more often than that rare case though -
+  /// once for every row that gets measured for the first time, which
+  /// happens continuously during ordinary scrolling. Reacting to every one
+  /// of those with a full rebuild previously caused a feedback loop
+  /// (rebuild -> relayout -> newly-visible rows get measured -> notify ->
+  /// rebuild -> ...), visible as a severe "accordion" jitter. So instead of
+  /// reacting unconditionally, this only resyncs when the scroll offset
+  /// itself was actually corrected out from under us - comparing the offset
+  /// before/after the frame settles, rather than trusting the notification
+  /// alone as a signal that something needs fixing.
+  void _onRowExtentChanged() {
+    if (_postFrameRefreshScheduled) {
+      return;
+    }
+    _postFrameRefreshScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _postFrameRefreshScheduled = false;
+      if (!mounted) {
+        return;
+      }
+      final ScrollController controller =
+          widget.daviContext.scrollControllers.vertical;
+      final double currentOffset =
+          controller.hasClients ? controller.offset : 0;
+      if (_lastKnownVerticalOffset != null &&
+          currentOffset != _lastKnownVerticalOffset) {
+        // Unlike the plain scroll-position listener (where the cell pool
+        // size - maxCellCount - is designed to stay constant across a pure
+        // scroll), a content-size change can legitimately change how many
+        // rows fit the viewport, so this needs an actual rebuild - not just
+        // an internal ViewportState update - to grow/shrink the cell pool.
+        setState(_onVerticalScrollChange);
+      }
+    });
   }
 
   void _updatePainterCacheSize() {
@@ -76,6 +141,7 @@ class TableContentState<DATA> extends State<TableContent<DATA>> {
         widget.daviContext.scrollControllers.vertical.hasClients
             ? widget.daviContext.scrollControllers.vertical.offset
             : 0;
+    _lastKnownVerticalOffset = verticalOffset;
 
     if (_error != null) {
       setState(() {

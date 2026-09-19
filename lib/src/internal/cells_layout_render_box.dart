@@ -44,6 +44,7 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
       required DaviModel<DATA> model})
       : _model = model,
         _rowExtentManager = rowExtentManager,
+        _rowExtentGeneration = rowExtentManager.generation,
         _viewportState = viewportState,
         _verticalOffset = verticalOffset,
         _scrollControllers = scrollControllers,
@@ -148,10 +149,18 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
   }
 
   RowExtentManager _rowExtentManager;
+  int _rowExtentGeneration;
 
   set rowExtentManager(RowExtentManager value) {
-    if (_rowExtentManager != value) {
+    // The same instance is mutated in place (resize()/setHeight()) rather
+    // than replaced, so reference equality alone can't detect a content
+    // change - compare generations too, otherwise a mutation (e.g. a theme
+    // change resizing every row's estimate) would silently skip the
+    // relayout needed to re-measure and correct row heights.
+    if (_rowExtentManager != value ||
+        _rowExtentGeneration != value.generation) {
       _rowExtentManager = value;
+      _rowExtentGeneration = value.generation;
       markNeedsLayout();
     }
   }

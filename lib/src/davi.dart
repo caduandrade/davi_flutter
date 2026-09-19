@@ -149,6 +149,7 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
     _hoverNotifier.removeListener(_onHover);
     _hoverNotifier.dispose();
     _columnNotifier.dispose();
+    _rowExtentManager.dispose();
     _focusNode.dispose();
     super.dispose();
   }
@@ -233,14 +234,26 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
     final int rowsLength =
         widget.model.rowsLength + (widget.trailingWidget != null ? 1 : 0);
     if (_rowExtentManager.rowsLength != rowsLength ||
-        !identical(_lastRowExtentModel, widget.model) ||
-        _lastDividerThickness != theme.row.dividerThickness ||
-        _lastEstimatedHeight != theme.row.estimatedHeight) {
+        !identical(_lastRowExtentModel, widget.model)) {
+      // Structural change (row count, or a different model instance
+      // entirely): the data underneath every index may now be different,
+      // so every measurement is discarded and re-measured as rows scroll
+      // back into view.
       _rowExtentManager.resize(
           rowsLength: rowsLength,
           estimatedHeight: theme.row.estimatedHeight,
           dividerThickness: theme.row.dividerThickness);
       _lastRowExtentModel = widget.model;
+      _lastDividerThickness = theme.row.dividerThickness;
+      _lastEstimatedHeight = theme.row.estimatedHeight;
+    } else if (_lastDividerThickness != theme.row.dividerThickness ||
+        _lastEstimatedHeight != theme.row.estimatedHeight) {
+      // Only the geometry changed - the same rows are still showing the
+      // same data, so real measurements stay valid; only rows that were
+      // never actually measured get reseeded to the new estimate.
+      _rowExtentManager.updateGeometry(
+          estimatedHeight: theme.row.estimatedHeight,
+          dividerThickness: theme.row.dividerThickness);
       _lastDividerThickness = theme.row.dividerThickness;
       _lastEstimatedHeight = theme.row.estimatedHeight;
     }

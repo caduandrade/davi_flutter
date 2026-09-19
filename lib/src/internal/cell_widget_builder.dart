@@ -165,6 +165,7 @@ class RenderCustomSingleChild extends RenderBox
         _areaBounds = areaBounds,
         _columnsMetrics = columnsMetrics,
         _rowExtentManager = rowExtentManager,
+        _rowExtentGeneration = rowExtentManager.generation,
         _cellMapping = cellMapping {
     _verticalScrollController.addListener(markNeedsPaint);
     _horizontalScrollController.addListener(markNeedsPaint);
@@ -234,10 +235,15 @@ class RenderCustomSingleChild extends RenderBox
   }
 
   RowExtentManager _rowExtentManager;
+  int _rowExtentGeneration;
 
   set rowExtentManager(RowExtentManager value) {
-    if (_rowExtentManager != value) {
+    // Same reasoning as CellsLayoutRenderBox.rowExtentManager: the instance
+    // is mutated in place, so identity alone can't detect a content change.
+    if (_rowExtentManager != value ||
+        _rowExtentGeneration != value.generation) {
       _rowExtentManager = value;
+      _rowExtentGeneration = value.generation;
       markNeedsLayout();
     }
   }
@@ -278,6 +284,16 @@ class RenderCustomSingleChild extends RenderBox
     }
   }
 
+  /// Where [child] is manually painted, relative to this box's own origin -
+  /// [paint], [hitTest] and [applyPaintTransform] must all agree on this.
+  Offset get _childOffset {
+    final int rowIndex = _cellMapping.rowIndex;
+    final ColumnMetrics columnMetrics =
+        _columnsMetrics[_cellMapping.columnIndex];
+    final double top = _rowExtentManager.offsetOf(rowIndex) - verticalOffset;
+    return Offset(columnMetrics.offset - horizontalOffset, top);
+  }
+
   @override
   void paint(PaintingContext context, Offset offset) {
     if (_hasLayoutErrors ||
@@ -287,18 +303,9 @@ class RenderCustomSingleChild extends RenderBox
     }
 
     if (child != null) {
-      final int rowIndex = _cellMapping.rowIndex;
-      final ColumnMetrics columnMetrics =
-          _columnsMetrics[_cellMapping.columnIndex];
-
       context.canvas.save();
       context.canvas.clipRect(_areaBounds.translate(offset.dx, offset.dy));
-
-      final double top = _rowExtentManager.offsetOf(rowIndex) - verticalOffset;
-      final Offset childOffset =
-          offset.translate(columnMetrics.offset - horizontalOffset, top);
-
-      context.paintChild(child!, childOffset);
+      context.paintChild(child!, offset + _childOffset);
       context.canvas.restore();
     }
   }
@@ -306,19 +313,23 @@ class RenderCustomSingleChild extends RenderBox
   @override
   bool hitTest(BoxHitTestResult result, {required Offset position}) {
     if (child != null) {
-      final int rowIndex = _cellMapping.rowIndex;
-      final ColumnMetrics columnMetrics =
-          _columnsMetrics[_cellMapping.columnIndex];
-      final double top = _rowExtentManager.offsetOf(rowIndex) - verticalOffset;
-      final Offset renderedChildOffset =
-          Offset(columnMetrics.offset - horizontalOffset, top);
-
       // Adjusts the offset to the position relative to the hit within the child.
-      final Offset localOffset = position - renderedChildOffset;
+      final Offset localOffset = position - _childOffset;
       if (child!.hitTest(result, position: localOffset)) {
         return true;
       }
     }
     return false;
+  }
+
+  // Since positioning is entirely manual (not via the standard
+  // BoxParentData.offset convention), this must be overridden too, or
+  // anything that walks the render tree via RenderObject.getTransformTo /
+  // localToGlobal (semantics, ensureVisible, and widget-test position
+  // queries like tester.getTopLeft) would see every cell as sitting at this
+  // box's own origin, regardless of which row it actually renders at.
+  @override
+  void applyPaintTransform(RenderObject child, Matrix4 transform) {
+    transform.translateByDouble(_childOffset.dx, _childOffset.dy, 0, 1);
   }
 }

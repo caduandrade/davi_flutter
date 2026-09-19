@@ -62,6 +62,7 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
           child: TableScrollbar(
               axis: Axis.vertical,
               contentSize: layoutSettings.contentHeight,
+              rowExtentManager: daviContext.rowExtentManager,
               scrollController: daviContext.scrollControllers.vertical,
               color: theme.scrollbar.verticalColor,
               borderColor: theme.scrollbar.verticalBorderColor,

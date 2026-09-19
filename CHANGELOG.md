@@ -14,6 +14,9 @@
   * Removed `SpanProvider`, `SpanParams`, `MaxSpanBehavior`, `RowSpanOverflowBehavior` and `CellCollisionBehavior`.
 * Bugfix
   * Cell text with no explicit `textStyle` (the default) could render invisible/white instead of a visible color, since it bypassed `DefaultTextStyle` inheritance.
+  * Mouse-wheel/keyboard scrolling could stop short of (or overshoot) the table's real end, while dragging the scrollbar itself was always correct - the scroll position's max extent wasn't kept in sync as row heights were measured. This also fixes a blank gap left at the bottom when scrolled near the end and the content height then shrank (e.g. turning off a custom row divider thickness).
+  * A settings change that also resized rows (e.g. a custom row divider thickness) could leave a row's layout visibly stale for one frame.
+  * Cell content position wasn't reported to Flutter's transform tree (`RenderObject.applyPaintTransform`), only used at paint/hit-test time - anything relying on it (accessibility/semantics, `Scrollable.ensureVisible`, `localToGlobal`) saw every cell as sitting at its row's container origin instead of its real position.
 
 ## 4.1.0
 
