@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:collection/collection.dart';
 import 'package:davi/src/column_width_behavior.dart';
 import 'package:davi/src/internal/column_metrics.dart';
+import 'package:davi/src/internal/row_extent_manager.dart';
 import 'package:davi/src/internal/theme_metrics/theme_metrics.dart';
 import 'package:davi/src/model.dart';
 import 'package:davi/src/pin_status.dart';
@@ -19,6 +20,7 @@ class TableLayoutSettings {
       required TableThemeMetrics themeMetrics,
       required int? visibleRowsCount,
       required bool hasTrailingWidget,
+      required RowExtentManager rowExtentManager,
       required DaviThemeData theme}) {
     if (!constraints.hasBoundedWidth) {
       throw FlutterError('Davi was given unbounded width.');
@@ -67,9 +69,8 @@ class TableLayoutSettings {
               (model.hasSummary ? themeMetrics.summary.height : 0) -
               (themeMetrics.header.visible ? estimatedHeaderHeight : 0) -
               (hasHorizontalScrollbar ? themeMetrics.scrollbar.height : 0));
-      needVerticalScrollbar = (rowsLength * themeMetrics.row.height) -
-              themeMetrics.row.dividerThickness >
-          availableRowsHeight;
+      needVerticalScrollbar =
+          rowExtentManager.totalHeight > availableRowsHeight;
     } else {
       needVerticalScrollbar = visibleRowsCount! < rowsLength;
     }
@@ -149,19 +150,15 @@ class TableLayoutSettings {
                   (model.hasSummary ? themeMetrics.summary.height : 0) -
                   (themeMetrics.header.visible ? estimatedHeaderHeight : 0) -
                   themeMetrics.scrollbar.height);
-          needVerticalScrollbar = (rowsLength * themeMetrics.row.height) -
-                  themeMetrics.row.dividerThickness >
-              availableRowsHeight;
+          needVerticalScrollbar =
+              rowExtentManager.totalHeight > availableRowsHeight;
         }
         hasVerticalScrollbar =
             !theme.scrollbar.verticalOnlyWhenNeeded || needVerticalScrollbar;
       }
     }
 
-    final double contentHeight = math.max(
-        0,
-        (rowsLength * themeMetrics.row.height) -
-            themeMetrics.row.dividerThickness);
+    final double contentHeight = rowExtentManager.totalHeight;
 
     // Now let's set the screen boundaries!
 
@@ -197,10 +194,7 @@ class TableLayoutSettings {
           0,
           headerBounds.height,
           contentAreaWidth,
-          math.max(
-              0,
-              (visibleRowsCount! * themeMetrics.row.height) -
-                  themeMetrics.row.dividerThickness));
+          rowExtentManager.heightUpTo(visibleRowsCount!));
     }
 
     if (model.hasSummary) {
@@ -294,6 +288,7 @@ class TableLayoutSettings {
     return TableLayoutSettings._(
         height: height,
         themeMetrics: themeMetrics,
+        rowExtentManager: rowExtentManager,
         contentHeight: contentHeight,
         hasVerticalScrollbar: hasVerticalScrollbar,
         hasHorizontalScrollbar: hasHorizontalScrollbar,
@@ -317,6 +312,7 @@ class TableLayoutSettings {
 
   TableLayoutSettings._(
       {required this.themeMetrics,
+      required this.rowExtentManager,
       required this.leftPinnedContentWidth,
       required this.unpinnedContentWidth,
       required this.height,
@@ -338,6 +334,7 @@ class TableLayoutSettings {
       required this.hashCode});
 
   final TableThemeMetrics themeMetrics;
+  final RowExtentManager rowExtentManager;
   final double height;
 
   /// total height of the content (cells and dividers)
@@ -369,8 +366,11 @@ class TableLayoutSettings {
     throw ArgumentError('Not recognized $pinStatus');
   }
 
-  int get maxVisibleRows =>
-      (cellsBounds.height / themeMetrics.row.height).ceil();
+  // A cache-sizing heuristic only (see TableContentState._updatePainterCacheSize)
+  // - real per-row height is looked up from RowExtentManager elsewhere.
+  int get maxVisibleRows => (cellsBounds.height /
+          (themeMetrics.row.estimatedHeight + themeMetrics.row.dividerThickness))
+      .ceil();
 
   @override
   final int hashCode;

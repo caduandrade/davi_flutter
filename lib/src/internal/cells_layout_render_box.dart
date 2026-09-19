@@ -1,10 +1,12 @@
 import 'dart:math' as math;
 
 import 'package:davi/davi.dart';
+import 'package:davi/src/internal/cell_widget_builder.dart';
 import 'package:davi/src/internal/cells_layout_parent_data.dart';
 import 'package:davi/src/internal/column_metrics.dart';
 import 'package:davi/src/internal/divider_paint_manager.dart';
 import 'package:davi/src/internal/hover_notifier.dart';
+import 'package:davi/src/internal/row_extent_manager.dart';
 import 'package:davi/src/internal/scroll_controllers.dart';
 import 'package:davi/src/internal/viewport_state.dart';
 import 'package:flutter/foundation.dart';
@@ -18,8 +20,8 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
         RenderBoxContainerDefaultsMixin<RenderBox, CellsLayoutParentData>
     implements MouseTrackerAnnotation {
   CellsLayoutRenderBox(
-      {required double cellHeight,
-      required double rowHeight,
+      {required RowExtentManager rowExtentManager,
+      required ViewportState<DATA> viewportState,
       required double verticalOffset,
       required ScrollControllers scrollControllers,
       required List<ColumnMetrics> columnsMetrics,
@@ -41,8 +43,8 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
       required DividerPaintManager dividerPaintManager,
       required DaviModel<DATA> model})
       : _model = model,
-        _cellHeight = cellHeight,
-        _rowHeight = rowHeight,
+        _rowExtentManager = rowExtentManager,
+        _viewportState = viewportState,
         _verticalOffset = verticalOffset,
         _scrollControllers = scrollControllers,
         _hoverNotifier = hoverNotifier,
@@ -65,6 +67,11 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
     _hoverNotifier.addListener(markNeedsPaint);
     _scrollControllers.leftPinnedHorizontal.addListener(markNeedsPaint);
     _scrollControllers.unpinnedHorizontal.addListener(markNeedsPaint);
+    // Relayout (re-measure visible rows' real content height) exactly when
+    // the visible row window actually changes topology - ViewportState only
+    // notifies then (see its `topologyUnchanged` early return), not on every
+    // scroll pixel.
+    _viewportState.addListener(markNeedsLayout);
   }
 
   DaviModel<DATA> _model;
@@ -140,20 +147,22 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
     }
   }
 
-  double _rowHeight;
+  RowExtentManager _rowExtentManager;
 
-  set rowHeight(double value) {
-    if (_rowHeight != value) {
-      _rowHeight = value;
+  set rowExtentManager(RowExtentManager value) {
+    if (_rowExtentManager != value) {
+      _rowExtentManager = value;
       markNeedsLayout();
     }
   }
 
-  double _cellHeight;
+  ViewportState<DATA> _viewportState;
 
-  set cellHeight(double value) {
-    if (_cellHeight != value) {
-      _cellHeight = value;
+  set viewportState(ViewportState<DATA> value) {
+    if (_viewportState != value) {
+      _viewportState.removeListener(markNeedsLayout);
+      _viewportState = value;
+      _viewportState.addListener(markNeedsLayout);
       markNeedsLayout();
     }
   }
@@ -289,24 +298,73 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
     _hasLayoutErrors = false;
     _cells.clear();
     _trailing = null;
+    RenderBox? trailingBox;
+
+    // Measure pass: query each visible cell's real content height - the
+    // same intrinsic-height trick the header already uses (see
+    // ColumnsLayoutRenderBox._measureRowHeight) - before laying anything
+    // out, then resolve each row to the max across its cells. Rows without
+    // data (filler rows) are left at the seed estimate.
+    final Map<int, double> rowMaxIntrinsic = {};
     visitChildren((child) {
       final RenderBox renderBox = child as RenderBox;
       final CellsLayoutParentData childParentData = child._parentData();
       childParentData.offset = const Offset(0, 0);
       if (childParentData.isCell) {
-        renderBox.layout(
-            BoxConstraints.tightFor(width: size.width, height: size.height),
-            parentUsesSize: false);
         _cells.add(renderBox);
+        if (renderBox is RenderCustomSingleChild) {
+          final CellMapping mapping = renderBox.cellMapping;
+          final RenderBox? content = renderBox.child;
+          if (content != null &&
+              _rowRegionCache.get(mapping.rowIndex).hasData) {
+            final double columnWidth =
+                _columnsMetrics[mapping.columnIndex].width;
+            final double measured = content.getMaxIntrinsicHeight(columnWidth);
+            final double current = rowMaxIntrinsic[mapping.rowIndex] ?? 0;
+            if (measured > current) {
+              rowMaxIntrinsic[mapping.rowIndex] = measured;
+            }
+          }
+        }
       } else {
-        // trailing
-        renderBox.layout(
-            BoxConstraints.tightFor(
-                width: constraints.maxWidth, height: _cellHeight),
-            parentUsesSize: false);
-        _trailing = renderBox;
+        trailingBox = renderBox;
       }
     });
+
+    rowMaxIntrinsic.forEach(_rowExtentManager.setHeight);
+
+    final RowRegion? trailingRegion = _rowRegionCache.trailingRegion;
+    if (trailingBox != null && trailingRegion != null) {
+      final double measured =
+          trailingBox!.getMaxIntrinsicHeight(constraints.maxWidth);
+      _rowExtentManager.setHeight(trailingRegion.index, measured);
+    }
+
+    // Bring row region bounds (backgrounds, dividers) in sync with any
+    // heights just corrected above, in this same layout pass rather than
+    // lagging a frame behind.
+    if (rowMaxIntrinsic.isNotEmpty || trailingBox != null) {
+      _viewportState.refreshRowRegions(_rowExtentManager);
+    }
+
+    // Layout pass: cell/trailing positioning is fully manual (see
+    // RenderCustomSingleChild), so every cell is simply given the whole
+    // viewport as its own constraints.
+    for (final RenderBox cell in _cells) {
+      cell.layout(
+          BoxConstraints.tightFor(width: size.width, height: size.height),
+          parentUsesSize: false);
+    }
+    if (trailingBox != null) {
+      final double trailingHeight = trailingRegion != null
+          ? _rowExtentManager.heightOf(trailingRegion.index)
+          : 0;
+      trailingBox!.layout(
+          BoxConstraints.tightFor(
+              width: constraints.maxWidth, height: trailingHeight),
+          parentUsesSize: false);
+      _trailing = trailingBox;
+    }
   }
 
   @override
@@ -412,13 +470,13 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
           double bottom = offset.dy;
           if (!start.edge) {
             RowRegion startRow = _rowRegionCache.get(start.index);
-            top += startRow.bounds.top + _cellHeight;
+            top += startRow.bounds.bottom;
           }
           if (end.edge) {
             bottom += constraints.maxHeight;
           } else {
             RowRegion endRow = _rowRegionCache.get(end.index);
-            bottom += endRow.bounds.top + _cellHeight;
+            bottom += endRow.bounds.bottom;
           }
           context.canvas
               .drawRect(Rect.fromLTRB(left, top, right, bottom), paint);
@@ -478,7 +536,7 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
                   right, offset.dx + _areaBounds[PinStatus.left]!.right);
             }
           }
-          double top = offset.dy + rowRegion.bounds.top + _cellHeight;
+          double top = offset.dy + rowRegion.bounds.bottom;
           context.canvas.drawRect(
               Rect.fromLTRB(left, top, right, top + _dividerThickness), paint);
         }
@@ -531,6 +589,7 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
     _scrollControllers.leftPinnedHorizontal.removeListener(markNeedsPaint);
     _scrollControllers.unpinnedHorizontal.removeListener(markNeedsPaint);
     _hoverNotifier.removeListener(markNeedsPaint);
+    _viewportState.removeListener(markNeedsLayout);
     super.dispose();
   }
 }

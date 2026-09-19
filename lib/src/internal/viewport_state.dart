@@ -2,10 +2,9 @@ import 'dart:collection';
 import 'dart:math' as math;
 
 import 'package:davi/davi.dart';
-import 'package:davi/src/internal/collision_detector.dart';
 import 'package:davi/src/internal/column_metrics.dart';
 import 'package:davi/src/internal/divider_paint_manager.dart';
-import 'package:davi/src/span_provider.dart';
+import 'package:davi/src/internal/row_extent_manager.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
@@ -100,7 +99,6 @@ class RowRegionCache {
 @internal
 class ViewportState<DATA> extends ChangeNotifier {
   final Map<int, CellMapping> _cellMappings = {};
-  final CollisionDetector _collisionDetector = CollisionDetector();
   final RowRegionCache rowRegions = RowRegionCache();
   final DividerPaintManager dividerPaintManager = DividerPaintManager();
 
@@ -140,96 +138,55 @@ class ViewportState<DATA> extends ChangeNotifier {
   List<ColumnMetrics>? _lastColumnsMetrics;
   bool? _lastHasTrailing;
   bool? _lastRowFillHeight;
-  CellCollisionBehavior? _lastCollisionBehavior;
   double? _lastMaxWidth;
 
-  /// rowHeight (cell content height + cell padding + dividerThickness)
+  // Stored so refreshRowRegions() can redo the (cheap) bounds-only rebuild
+  // below without every caller having to re-supply the same viewport shape.
+  double _maxWidth = 0;
+  double _maxHeight = 0;
+  bool _hasTrailing = false;
+  DaviModel<DATA>? _model;
+
   void reset(
       {required double verticalOffset,
       required List<ColumnMetrics> columnsMetrics,
-      required double rowHeight,
-      required double cellHeight,
+      required RowExtentManager rowExtentManager,
       required double maxHeight,
       required double maxWidth,
       required DaviModel<DATA> model,
       required bool hasTrailing,
-      required bool rowFillHeight,
-      required CellCollisionBehavior collisionBehavior}) {
+      required bool rowFillHeight}) {
     _verticalOffset = verticalOffset;
+    _maxWidth = maxWidth;
+    _maxHeight = maxHeight;
+    _hasTrailing = hasTrailing;
+    _model = model;
 
-    _firstDataRow = (verticalOffset / rowHeight).floor();
+    _firstDataRow = rowExtentManager.indexAtOffset(verticalOffset);
 
-    // Need to add one extra row because the scroll may be in between rows,
-    // causing an additional row to be partially visible.
-    _maxVisibleRowCount = ((maxHeight + rowHeight) / rowHeight).ceil();
+    _maxVisibleRowCount = rowExtentManager.viewportRowCount(
+        scrollOffset: verticalOffset, availableHeight: maxHeight);
 
     // Minus 1 because the index starts at 0.
     // Example: number of visible rows is 2, the last index must be 1.
     _maxDataRowIndex = _firstDataRow + _maxVisibleRowCount - 1;
 
-    // Calculating the index of the first row in the model that
-    // can be visible because span. This ensures that, when scrolling,
-    // rows above the visible area that have a span extending into
-    // the visible viewport remain included.
-    // The +1 adjustment accounts for the minimum span of 1 that every
-    // cell inherently has. Without this +1, the calculation might
-    // result in an index corresponding to a cell whose entire span
-    // lies above the visible viewport, making it incorrectly
-    // excluded from the visible area.
-    _firstRow = math.max(0, _firstDataRow - model.maxRowSpan + 1);
+    _firstRow = math.max(0, _firstDataRow);
 
-    // - 1 because [maxRowSpan] and [maxColumnSpan]
-    // are minimal 1 (already include themselves).
-    _maxCellCount = (_maxVisibleRowCount + model.maxRowSpan - 1) *
-        (model.columnsLength + model.maxColumnSpan - 1);
+    _maxCellCount = _maxVisibleRowCount * model.columnsLength;
 
-    // Row regions (backgrounds, hover hit-testing, dividers' vertical
-    // extent) are cheap - O(visible rows) - so they're rebuilt on every
-    // call. This keeps them tracking the live scroll position precisely,
-    // even on calls where the expensive topology rebuild below is skipped.
-    rowRegions._clear();
-    _lastDataRow = -1;
-    double rowY = (_firstRow * rowHeight) - verticalOffset;
-    for (int rowIndex = _firstRow; rowIndex <= _maxDataRowIndex; rowIndex++) {
-      _lastRow = rowIndex;
+    _rebuildRowRegions(rowExtentManager);
 
-      DATA? data;
-      if (rowIndex < model.rowsLength) {
-        data = model.rowAt(rowIndex);
-      }
-
-      bool trailingRegion = false;
-      if (hasTrailing && rowRegions._trailingRegion == null && data == null) {
-        trailingRegion = true;
-      }
-
-      final Rect rowBounds = Rect.fromLTWH(0, rowY, maxWidth, cellHeight);
-      rowRegions._add(RowRegion(
-          index: rowIndex,
-          bounds: rowBounds,
-          hasData: data != null,
-          trailing: trailingRegion,
-          visible: (rowBounds.top > 0 && rowBounds.top < maxHeight) ||
-              (rowBounds.bottom > 0 && rowBounds.bottom < maxHeight)));
-
-      if (data != null && rowBounds.top < maxHeight) {
-        _lastDataRow = rowIndex;
-      }
-      rowY += rowHeight;
-    }
-
-    // Everything below (cell mapping, spans, collisions, divider topology)
-    // is O(visible rows x columns) and only depends on which rows/columns
-    // are visible, not on the exact scroll pixel offset. Skip it when
-    // nothing structural changed since the last call, so a sub-row-height
-    // scroll delta (the common case during a drag/fling) doesn't pay this
-    // cost on every frame.
+    // Everything below (cell mapping, divider topology) is O(visible rows x
+    // columns) and only depends on which rows/columns are visible, not on
+    // the exact scroll pixel offset. Skip it when nothing structural changed
+    // since the last call, so a sub-row-height scroll delta (the common case
+    // during a drag/fling) doesn't pay this cost on every frame.
     final bool topologyUnchanged = identical(_lastModel, model) &&
         _lastFirstRow == _firstRow &&
         _lastMaxDataRowIndex == _maxDataRowIndex &&
         _lastHasTrailing == hasTrailing &&
         _lastRowFillHeight == rowFillHeight &&
-        _lastCollisionBehavior == collisionBehavior &&
         _lastMaxWidth == maxWidth &&
         listEquals(_lastColumnsMetrics, columnsMetrics);
     if (topologyUnchanged) {
@@ -240,7 +197,6 @@ class ViewportState<DATA> extends ChangeNotifier {
     _lastMaxDataRowIndex = _maxDataRowIndex;
     _lastHasTrailing = hasTrailing;
     _lastRowFillHeight = rowFillHeight;
-    _lastCollisionBehavior = collisionBehavior;
     _lastMaxWidth = maxWidth;
     _lastColumnsMetrics = List.of(columnsMetrics);
 
@@ -250,7 +206,6 @@ class ViewportState<DATA> extends ChangeNotifier {
     List<CellMapping> newCellMappings = [];
 
     _cellMappings.clear();
-    _collisionDetector.clear();
 
     final HashSet<int> indices = HashSet<int>.from(Iterable<int>.generate(
         (_maxDataRowIndex - _firstRow + 1) * columnsMetrics.length));
@@ -266,97 +221,8 @@ class ViewportState<DATA> extends ChangeNotifier {
       for (int columnIndex = 0;
           columnIndex < columnsMetrics.length;
           columnIndex++) {
-        final SpanParams<DATA> spanParams =
-            SpanParams(data: data, rowIndex: rowIndex);
-        final DaviColumn<DATA> column = model.columnAt(columnIndex);
-
-        int rowSpan = math.max(column.rowSpan(spanParams), 1);
-        if (rowSpan > model.maxRowSpan) {
-          if (model.maxSpanBehavior == MaxSpanBehavior.throwException) {
-            throw StateError(
-                'rowSpan exceeds the maximum allowed of ${model.maxRowSpan} rows');
-          } else if (model.maxSpanBehavior ==
-              MaxSpanBehavior.truncateWithWarning) {
-            rowSpan = model.maxRowSpan;
-            debugPrint(
-                'Span too large at row $rowIndex: Truncated to $rowSpan rows');
-          }
-        }
-
-        if (rowIndex + rowSpan > model.rowsLength) {
-          if (model.rowSpanOverflowBehavior == RowSpanOverflowBehavior.error) {
-            throw StateError(
-                'The row span exceeds the table\'s row limit at row $rowIndex and column $columnIndex.');
-          } else if (model.rowSpanOverflowBehavior ==
-              RowSpanOverflowBehavior.cap) {
-            // Adjust rowSpan to fit within the available rows
-            rowSpan = model.rowsLength - rowIndex;
-          }
-        }
-
-        int columnSpan = math.max(column.columnSpan(spanParams), 1);
-        if (columnSpan > model.maxColumnSpan) {
-          if (model.maxSpanBehavior == MaxSpanBehavior.throwException) {
-            throw StateError(
-                'columnSpan exceeds the maximum allowed of ${model.maxColumnSpan} columns');
-          } else if (model.maxSpanBehavior ==
-              MaxSpanBehavior.truncateWithWarning) {
-            columnSpan = model.maxColumnSpan;
-            debugPrint(
-                'Span too large at rowIndex $rowIndex column $columnIndex: Truncated to $columnSpan columns');
-          }
-        }
-
-        if (columnIndex + columnSpan > columnsMetrics.length) {
-          throw StateError(
-              'The column span exceeds the table\'s column limit at row $rowIndex, starting from column $columnIndex.');
-        }
-
-        // Check all columns spanned by the columnSpan
-        for (int i = columnIndex + 1; i < columnIndex + columnSpan; i++) {
-          if (columnsMetrics[i].pinStatus !=
-              columnsMetrics[columnIndex].pinStatus) {
-            throw StateError(
-                "Invalid columnSpan: Columns spanned from index $columnIndex to ${columnIndex + columnSpan - 1} "
-                "at rowIndex $rowIndex, have mixed pin status.");
-          }
-        }
-
-        if (collisionBehavior != CellCollisionBehavior.overlap) {
-          final bool intercepts = _collisionDetector.intersects(
-              rowIndex: rowIndex,
-              columnIndex: columnIndex,
-              rowSpan: rowSpan,
-              columnSpan: columnSpan);
-          if (intercepts) {
-            if (collisionBehavior == CellCollisionBehavior.ignore) {
-              continue;
-            } else if (collisionBehavior ==
-                CellCollisionBehavior.ignoreAndWarn) {
-              debugPrint(
-                  'Collision detected at cell rowIndex: $rowIndex columnIndex: $columnIndex.');
-              continue;
-            } else if (collisionBehavior ==
-                CellCollisionBehavior.overlapAndWarn) {
-              debugPrint(
-                  'Collision detected at cell rowIndex: $rowIndex columnIndex: $columnIndex.');
-            } else if (collisionBehavior == CellCollisionBehavior.error) {
-              throw StateError(
-                  'Collision detected at cell rowIndex: $rowIndex columnIndex: $columnIndex.');
-            }
-          }
-          _collisionDetector.add(
-              rowIndex: rowIndex,
-              columnIndex: columnIndex,
-              rowSpan: rowSpan,
-              columnSpan: columnSpan);
-        }
-
-        CellMapping cellMapping = CellMapping(
-            rowIndex: rowIndex,
-            columnIndex: columnIndex,
-            rowSpan: rowSpan,
-            columnSpan: columnSpan);
+        CellMapping cellMapping =
+            CellMapping(rowIndex: rowIndex, columnIndex: columnIndex);
 
         int? oldCellIndex = oldCellMappings.remove(cellMapping);
         if (oldCellIndex != null) {
@@ -377,7 +243,7 @@ class ViewportState<DATA> extends ChangeNotifier {
 
     dividerPaintManager.reset(
         firstRowIndex: _firstRow,
-        lastRowIndex: _maxDataRowIndex + model.maxRowSpan - 1,
+        lastRowIndex: _maxDataRowIndex,
         columnsLength: columnsMetrics.length);
     if (rowRegions.trailingRegion != null &&
         rowRegions.trailingRegion!.index >= _firstDataRow &&
@@ -394,14 +260,61 @@ class ViewportState<DATA> extends ChangeNotifier {
       }
     }
 
-    for (CellMapping cellMapping in _cellMappings.values) {
-      dividerPaintManager.addStopsForCell(
-          rowIndex: cellMapping.rowIndex,
-          columnIndex: cellMapping.columnIndex,
-          rowSpan: cellMapping.rowSpan,
-          columnSpan: cellMapping.columnSpan);
-    }
     notifyListeners();
+  }
+
+  /// Redoes the (cheap) row region rebuild - not the expensive cell-mapping
+  /// one - using the viewport shape from the last [reset] call.
+  ///
+  /// Called by [CellsLayoutRenderBox] right after it measures real cell
+  /// content and corrects [rowExtentManager], so that background/divider
+  /// bounds reflect the corrected heights in the very same layout pass,
+  /// instead of lagging a frame behind.
+  void refreshRowRegions(RowExtentManager rowExtentManager) {
+    _rebuildRowRegions(rowExtentManager);
+  }
+
+  void _rebuildRowRegions(RowExtentManager rowExtentManager) {
+    final DaviModel<DATA> model = _model!;
+
+    // Row regions (backgrounds, hover hit-testing, dividers' vertical
+    // extent) are cheap - O(visible rows) - so they're rebuilt on every
+    // call. This keeps them tracking the live scroll position precisely,
+    // even on calls where the expensive topology rebuild is skipped.
+    rowRegions._clear();
+    _lastDataRow = -1;
+    double rowY = rowExtentManager.offsetOf(_firstRow) - _verticalOffset;
+    for (int rowIndex = _firstRow; rowIndex <= _maxDataRowIndex; rowIndex++) {
+      _lastRow = rowIndex;
+
+      DATA? data;
+      if (rowIndex < model.rowsLength) {
+        data = model.rowAt(rowIndex);
+      }
+
+      bool trailingRegion = false;
+      if (_hasTrailing &&
+          rowRegions._trailingRegion == null &&
+          data == null) {
+        trailingRegion = true;
+      }
+
+      final double rowContentHeight = rowExtentManager.heightOf(rowIndex);
+      final Rect rowBounds =
+          Rect.fromLTWH(0, rowY, _maxWidth, rowContentHeight);
+      rowRegions._add(RowRegion(
+          index: rowIndex,
+          bounds: rowBounds,
+          hasData: data != null,
+          trailing: trailingRegion,
+          visible: (rowBounds.top > 0 && rowBounds.top < _maxHeight) ||
+              (rowBounds.bottom > 0 && rowBounds.bottom < _maxHeight)));
+
+      if (data != null && rowBounds.top < _maxHeight) {
+        _lastDataRow = rowIndex;
+      }
+      rowY += rowExtentManager.extentOf(rowIndex);
+    }
   }
 
   /// Method to get a [CellMapping] based on cell index.
@@ -413,22 +326,12 @@ class ViewportState<DATA> extends ChangeNotifier {
 /// Represents the model indexes. These indexes will be mapped to cell indexes.
 @internal
 class CellMapping {
-  CellMapping(
-      {required this.rowIndex,
-      required this.columnIndex,
-      required this.rowSpan,
-      required this.columnSpan});
+  CellMapping({required this.rowIndex, required this.columnIndex});
 
   /// The row index of the model cell to be displayed.
   final int rowIndex;
 
   final int columnIndex;
-
-  /// Number of rows spanned by the model cell in the view.
-  final int rowSpan;
-
-  /// Number of columns spanned by the model cell in the view.
-  final int columnSpan;
 
   @override
   bool operator ==(Object other) =>
@@ -436,14 +339,8 @@ class CellMapping {
       other is CellMapping &&
           runtimeType == other.runtimeType &&
           rowIndex == other.rowIndex &&
-          columnIndex == other.columnIndex &&
-          rowSpan == other.rowSpan &&
-          columnSpan == other.columnSpan;
+          columnIndex == other.columnIndex;
 
   @override
-  int get hashCode =>
-      rowIndex.hashCode ^
-      columnIndex.hashCode ^
-      rowSpan.hashCode ^
-      columnSpan.hashCode;
+  int get hashCode => rowIndex.hashCode ^ columnIndex.hashCode;
 }

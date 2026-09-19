@@ -22,6 +22,7 @@ class CellsLayout<DATA> extends MultiChildRenderObjectWidget {
       required this.rowsLength,
       required this.rowRegionCache,
       required this.dividerPaintManager,
+      required this.viewportState,
       required List<CellsLayoutChild> super.children});
 
   final TableLayoutSettings layoutSettings;
@@ -32,6 +33,7 @@ class CellsLayout<DATA> extends MultiChildRenderObjectWidget {
   final RowRegionCache rowRegionCache;
   final int rowsLength;
   final DividerPaintManager dividerPaintManager;
+  final ViewportState<DATA> viewportState;
 
   @override
   RenderObject createRenderObject(BuildContext context) {
@@ -40,8 +42,8 @@ class CellsLayout<DATA> extends MultiChildRenderObjectWidget {
         model: daviContext.model,
         hoverBackground: theme.row.hoverBackground,
         hoverForeground: theme.row.hoverForeground,
-        cellHeight: layoutSettings.themeMetrics.cell.height,
-        rowHeight: layoutSettings.themeMetrics.row.height,
+        rowExtentManager: daviContext.rowExtentManager,
+        viewportState: viewportState,
         columnsMetrics: layoutSettings.columnsMetrics,
         verticalOffset: verticalOffset,
         scrollControllers: daviContext.scrollControllers,
@@ -74,8 +76,8 @@ class CellsLayout<DATA> extends MultiChildRenderObjectWidget {
     renderObject
       ..hoverBackground = theme.row.hoverBackground
       ..hoverForeground = theme.row.hoverForeground
-      ..cellHeight = layoutSettings.themeMetrics.cell.height
-      ..rowHeight = layoutSettings.themeMetrics.row.height
+      ..rowExtentManager = daviContext.rowExtentManager
+      ..viewportState = viewportState
       ..columnsMetrics = layoutSettings.columnsMetrics
       ..verticalOffset = verticalOffset
       ..scrollControllers = daviContext.scrollControllers

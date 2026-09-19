@@ -2,7 +2,6 @@ import 'dart:math' as math;
 
 import 'package:davi/davi.dart';
 import 'package:davi/src/cell_semantics_builder.dart';
-import 'package:davi/src/span_provider.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
@@ -33,8 +32,6 @@ class DaviColumn<DATA> extends ChangeNotifier {
       this.cellBarStyle,
       this.cellBarValue,
       this.cellListenable,
-      this.rowSpan = _defaultSpanProvider,
-      this.columnSpan = _defaultSpanProvider,
       this.cellValueStringify = _defaultCellValueStringify,
       this.cellBarValueStringify,
       this.leading,
@@ -167,12 +164,6 @@ class DaviColumn<DATA> extends ChangeNotifier {
   /// This allows dynamic updates of cell content based on external changes.
   final DaviCellListenableBuilder<DATA>? cellListenable;
 
-  /// Defines the row span.
-  final SpanProvider<DATA> rowSpan;
-
-  /// Defines the column span.
-  final SpanProvider<DATA> columnSpan;
-
   /// Function used to sort the column. If not defined, it can be created
   /// according to value mappings.
   final DaviComparator<DATA> dataComparator;
@@ -259,8 +250,6 @@ SemanticsProperties _defaultSemanticsBuilder(SemanticsBuilderParams params) {
 /// Signature for sort column function.
 typedef DaviComparator<DATA> = int Function(
     dynamic cellValueA, dynamic cellValueB, DATA rowA, DATA rowB);
-
-int _defaultSpanProvider(SpanParams params) => 1;
 
 String _defaultCellValueStringify(dynamic value) => value.toString();
 

@@ -76,9 +76,7 @@ class _HomePageState extends State<HomePage> {
         ),
         DaviColumn(
           name: 'Int 2',
-          cellValue:
-              (params) => params.rowIndex == 2 ? 'SPAN' : params.data.intValue,
-          columnSpan: (params) => params.rowIndex == 2 ? 2 : 1,
+          cellValue: (params) => params.data.intValue,
           cellBackground:
               (params) => params.data.intValue == 10 ? Colors.green : null,
         ),
@@ -92,7 +90,6 @@ class _HomePageState extends State<HomePage> {
                         child: const Placeholder(),
                       )
                       : null,
-          rowSpan: (params) => params.rowIndex == 10 ? 6 : 1,
         ),
         DaviColumn(name: 'Bar', cellBarValue: (params) => params.data.bar),
         DaviColumn(

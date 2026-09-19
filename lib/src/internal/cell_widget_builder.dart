@@ -3,6 +3,7 @@ import 'package:davi/src/internal/cell_widget.dart';
 import 'package:davi/src/internal/column_metrics.dart';
 import 'package:davi/src/internal/davi_context.dart';
 import 'package:davi/src/internal/painter_cache.dart';
+import 'package:davi/src/internal/row_extent_manager.dart';
 import 'package:davi/src/internal/table_layout_settings.dart';
 import 'package:davi/src/internal/viewport_state.dart';
 import 'package:flutter/foundation.dart';
@@ -88,15 +89,12 @@ class DaviCellWidgetBuilderState<DATA>
                 .getHorizontalController(column.pinStatus),
             areaBounds: widget.layoutSettings.getAreaBounds(column.pinStatus),
             columnsMetrics: widget.layoutSettings.columnsMetrics,
-            cellHeight: widget.layoutSettings.themeMetrics.cell.height,
-            rowHeight: widget.layoutSettings.themeMetrics.row.height,
+            rowExtentManager: widget.daviContext.rowExtentManager,
             cellMapping: cellMapping,
             child: CellWidget(
                 data: data,
                 rowIndex: cellMapping.rowIndex,
                 columnIndex: cellMapping.columnIndex,
-                rowSpan: cellMapping.rowSpan,
-                columnSpan: cellMapping.columnSpan,
                 column: column,
                 columnMetrics: widget
                     .layoutSettings.columnsMetrics[cellMapping.columnIndex],
@@ -114,8 +112,7 @@ class CustomSingleChildWidget extends SingleChildRenderObjectWidget {
     required this.verticalScrollController,
     required this.horizontalScrollController,
     required this.columnsMetrics,
-    required this.cellHeight,
-    required this.rowHeight,
+    required this.rowExtentManager,
     required this.cellMapping,
     required this.areaBounds,
     super.child,
@@ -124,40 +121,31 @@ class CustomSingleChildWidget extends SingleChildRenderObjectWidget {
   final ScrollController verticalScrollController;
   final ScrollController horizontalScrollController;
   final List<ColumnMetrics> columnsMetrics;
-  final double cellHeight;
-  final double rowHeight;
+  final RowExtentManager rowExtentManager;
   final CellMapping cellMapping;
   final Rect areaBounds;
 
   @override
   RenderCustomSingleChild createRenderObject(BuildContext context) {
-    DaviThemeData theme = DaviTheme.of(context);
     return RenderCustomSingleChild(
         verticalScrollController: verticalScrollController,
         horizontalScrollController: horizontalScrollController,
         columnsMetrics: columnsMetrics,
-        cellHeight: cellHeight,
-        rowHeight: rowHeight,
+        rowExtentManager: rowExtentManager,
         cellMapping: cellMapping,
-        areaBounds: areaBounds,
-        dividerThickness: theme.row.dividerThickness,
-        columnDividerThickness: theme.columnDividerThickness);
+        areaBounds: areaBounds);
   }
 
   @override
   void updateRenderObject(
       BuildContext context, RenderCustomSingleChild renderObject) {
-    DaviThemeData theme = DaviTheme.of(context);
     renderObject
       ..verticalScrollController = verticalScrollController
       ..horizontalScrollController = horizontalScrollController
       ..columnsMetrics = columnsMetrics
-      ..cellHeight = cellHeight
-      ..rowHeight = rowHeight
+      ..rowExtentManager = rowExtentManager
       ..areaBounds = areaBounds
-      ..dividerThickness = theme.row.dividerThickness
-      ..cellMapping = cellMapping
-      ..columnDividerThickness = theme.columnDividerThickness;
+      ..cellMapping = cellMapping;
   }
 }
 
@@ -169,24 +157,22 @@ class RenderCustomSingleChild extends RenderBox
       {required ScrollController verticalScrollController,
       required ScrollController horizontalScrollController,
       required List<ColumnMetrics> columnsMetrics,
-      required double cellHeight,
-      required double rowHeight,
-      required double columnDividerThickness,
-      required double dividerThickness,
+      required RowExtentManager rowExtentManager,
       required Rect areaBounds,
       required CellMapping cellMapping})
       : _verticalScrollController = verticalScrollController,
         _horizontalScrollController = horizontalScrollController,
         _areaBounds = areaBounds,
         _columnsMetrics = columnsMetrics,
-        _rowHeight = rowHeight,
-        _cellHeight = cellHeight,
-        _columnDividerThickness = columnDividerThickness,
-        _dividerThickness = dividerThickness,
+        _rowExtentManager = rowExtentManager,
         _cellMapping = cellMapping {
     _verticalScrollController.addListener(markNeedsPaint);
     _horizontalScrollController.addListener(markNeedsPaint);
   }
+
+  /// The (row, column) this cell currently displays - read by
+  /// [CellsLayoutRenderBox]'s measure pass to group cells by row.
+  CellMapping get cellMapping => _cellMapping;
 
   @override
   void dispose() {
@@ -247,38 +233,11 @@ class RenderCustomSingleChild extends RenderBox
     }
   }
 
-  double _rowHeight;
+  RowExtentManager _rowExtentManager;
 
-  set rowHeight(double value) {
-    if (_rowHeight != value) {
-      _rowHeight = value;
-      markNeedsLayout();
-    }
-  }
-
-  double _columnDividerThickness;
-
-  set columnDividerThickness(double value) {
-    if (_columnDividerThickness != value) {
-      _columnDividerThickness = value;
-      markNeedsLayout();
-    }
-  }
-
-  double _cellHeight;
-
-  set cellHeight(double value) {
-    if (_cellHeight != value) {
-      _cellHeight = value;
-      markNeedsLayout();
-    }
-  }
-
-  double _dividerThickness;
-
-  set dividerThickness(double value) {
-    if (_dividerThickness != value) {
-      _dividerThickness = value;
+  set rowExtentManager(RowExtentManager value) {
+    if (_rowExtentManager != value) {
+      _rowExtentManager = value;
       markNeedsLayout();
     }
   }
@@ -307,26 +266,8 @@ class RenderCustomSingleChild extends RenderBox
     size = constraints.biggest;
 
     if (child != null) {
-      double width = 0;
-      for (int i = _cellMapping.columnIndex;
-          i < _cellMapping.columnIndex + _cellMapping.columnSpan;
-          i++) {
-        final ColumnMetrics columnMetrics = _columnsMetrics[i];
-        width += columnMetrics.width;
-        if (i < _cellMapping.columnIndex + _cellMapping.columnSpan - 1) {
-          width += _columnDividerThickness;
-        }
-      }
-
-      double height = 0;
-      for (int i = _cellMapping.rowIndex;
-          i < _cellMapping.rowIndex + _cellMapping.rowSpan;
-          i++) {
-        height += _cellHeight;
-        if (i < _cellMapping.rowIndex + _cellMapping.rowSpan - 1) {
-          height += _dividerThickness;
-        }
-      }
+      final double width = _columnsMetrics[_cellMapping.columnIndex].width;
+      final double height = _rowExtentManager.heightOf(_cellMapping.rowIndex);
 
       child!.layout(BoxConstraints.tightFor(width: width, height: height),
           parentUsesSize: false);
@@ -353,7 +294,7 @@ class RenderCustomSingleChild extends RenderBox
       context.canvas.save();
       context.canvas.clipRect(_areaBounds.translate(offset.dx, offset.dy));
 
-      final double top = (rowIndex * _rowHeight) - verticalOffset;
+      final double top = _rowExtentManager.offsetOf(rowIndex) - verticalOffset;
       final Offset childOffset =
           offset.translate(columnMetrics.offset - horizontalOffset, top);
 
@@ -368,7 +309,7 @@ class RenderCustomSingleChild extends RenderBox
       final int rowIndex = _cellMapping.rowIndex;
       final ColumnMetrics columnMetrics =
           _columnsMetrics[_cellMapping.columnIndex];
-      final double top = (rowIndex * _rowHeight) - verticalOffset;
+      final double top = _rowExtentManager.offsetOf(rowIndex) - verticalOffset;
       final Offset renderedChildOffset =
           Offset(columnMetrics.offset - horizontalOffset, top);
 

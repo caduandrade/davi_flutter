@@ -8,7 +8,7 @@
 * Focused on Web/Desktop Applications.
 * Bidirectional scroll bars.
 * Resizable.
-* Cell merging.
+* Dynamic row height.
 * Column summary (Footer).
 * Highly customizable.
 * Custom cells.

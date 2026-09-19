@@ -3,7 +3,6 @@ import 'dart:math' as math;
 import 'package:davi/davi.dart';
 import 'package:davi/src/internal/davi_context.dart';
 import 'package:davi/src/internal/table_layout_settings.dart';
-import 'package:davi/src/internal/theme_metrics/theme_metrics.dart';
 import 'package:davi/src/internal/viewport_state.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -49,8 +48,6 @@ class _TableEventsState<DATA> extends State<TableEvents<DATA>> {
 
   @override
   Widget build(BuildContext context) {
-    final DaviThemeData theme = DaviTheme.of(context);
-
     Widget content = widget.child;
 
     if (widget.daviContext.model.isRowsNotEmpty) {
@@ -92,12 +89,9 @@ class _TableEventsState<DATA> extends State<TableEvents<DATA>> {
           child: content);
 
       if (widget.daviContext.focusable) {
-        final TableThemeMetrics themeMetrics = TableThemeMetrics(theme);
-
         content = Focus(
             focusNode: widget.daviContext.focusNode,
-            onKeyEvent: (node, event) =>
-                _handleKeyPress(node, event, themeMetrics.row.height),
+            onKeyEvent: _handleKeyPress,
             child: content);
       }
     }
@@ -274,17 +268,22 @@ class _TableEventsState<DATA> extends State<TableEvents<DATA>> {
     return null;
   }
 
-  KeyEventResult _handleKeyPress(
-      FocusNode node, KeyEvent event, double rowHeight) {
+  KeyEventResult _handleKeyPress(FocusNode node, KeyEvent event) {
     if (event is KeyUpEvent) {
       if (verticalScroll.hasClients) {
         if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+          final double rowHeight = widget.layoutSettings.rowExtentManager
+              .extentOf(widget.layoutSettings.rowExtentManager
+                  .indexAtOffset(verticalScroll.position.pixels));
           double target = math.min(verticalScroll.position.pixels + rowHeight,
               verticalScroll.position.maxScrollExtent);
           verticalScroll.animateTo(target,
               duration: const Duration(milliseconds: 30), curve: Curves.ease);
           return KeyEventResult.handled;
         } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+          final double rowHeight = widget.layoutSettings.rowExtentManager
+              .extentOf(widget.layoutSettings.rowExtentManager
+                  .indexAtOffset(verticalScroll.position.pixels));
           double target =
               math.max(verticalScroll.position.pixels - rowHeight, 0);
           verticalScroll.animateTo(target,

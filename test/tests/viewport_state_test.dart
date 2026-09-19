@@ -1,48 +1,56 @@
 import 'package:davi/davi.dart';
 import 'package:davi/src/internal/column_metrics.dart';
+import 'package:davi/src/internal/row_extent_manager.dart';
 import 'package:davi/src/internal/viewport_state.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-DaviModel<int> buildModel(
-    {required int rowCount,
-    required int columnCount,
-    required int maxRowSpan,
-    required int maxColumnSpan}) {
+DaviModel<int> buildModel({required int rowCount, required int columnCount}) {
   List<int> rows = List.generate(rowCount, (index) => index);
   List<DaviColumn<int>> columns =
       List.generate(columnCount, (index) => DaviColumn(id: 'c$index'));
-  return DaviModel(
-      rows: rows, columns: columns, maxRowSpan: maxRowSpan, maxColumnSpan: 1);
+  return DaviModel(rows: rows, columns: columns);
+}
+
+RowExtentManager buildExtentManager(
+    {required int rowsLength,
+    required double cellHeight,
+    required double dividerThickness}) {
+  final manager = RowExtentManager();
+  manager.resize(
+      rowsLength: rowsLength,
+      estimatedHeight: cellHeight,
+      dividerThickness: dividerThickness);
+  return manager;
 }
 
 void main() {
   group('ViewportState', () {
-    test('verticalOffset: 0 - maxRowSpan: 2 - view > model', () {
+    test('verticalOffset: 0 - view > model', () {
       const double maxWidth = 500;
       const double maxHeight = 200;
 
       const double dividerThickness = 10;
       const double cellHeight = 40;
-      const double rowHeight = cellHeight + dividerThickness;
 
-      DaviModel<int> model = buildModel(
-          rowCount: 3, columnCount: 2, maxRowSpan: 2, maxColumnSpan: 1);
+      DaviModel<int> model = buildModel(rowCount: 3, columnCount: 2);
 
       List<ColumnMetrics> columnsMetrics = ColumnMetrics.resizable(
           model: model, maxWidth: maxWidth, dividerThickness: dividerThickness);
+      RowExtentManager rowExtentManager = buildExtentManager(
+          rowsLength: model.rowsLength,
+          cellHeight: cellHeight,
+          dividerThickness: dividerThickness);
 
       ViewportState<int> viewport = ViewportState();
       viewport.reset(
           verticalOffset: 0,
           columnsMetrics: columnsMetrics,
-          rowHeight: rowHeight,
-          cellHeight: cellHeight,
+          rowExtentManager: rowExtentManager,
           maxHeight: maxHeight,
           maxWidth: maxWidth,
           model: model,
           hasTrailing: false,
-          rowFillHeight: false,
-          collisionBehavior: CellCollisionBehavior.ignore);
+          rowFillHeight: false);
 
       // testing attributes
 
@@ -52,7 +60,7 @@ void main() {
       expect(viewport.firstDataRow, 0);
       expect(viewport.maxDataRowIndex, 4);
       expect(viewport.lastDataRow, 2);
-      expect(viewport.maxCellCount, 12);
+      expect(viewport.maxCellCount, 10);
 
       expect(viewport.mappedCellCount, 6);
 
@@ -61,14 +69,10 @@ void main() {
       CellMapping? cellMapping = viewport.getCellMapping(cellIndex: 0);
       expect(cellMapping, isNotNull);
       expect(cellMapping?.rowIndex, 0);
-      expect(cellMapping?.rowSpan, 1);
-      expect(cellMapping?.columnSpan, 1);
 
       cellMapping = viewport.getCellMapping(cellIndex: 3);
       expect(cellMapping, isNotNull);
       expect(cellMapping?.rowIndex, 1);
-      expect(cellMapping?.rowSpan, 1);
-      expect(cellMapping?.columnSpan, 1);
 
       cellMapping = viewport.getCellMapping(cellIndex: 6);
       expect(cellMapping, isNull);
@@ -105,76 +109,64 @@ void main() {
       expect(rowRegion.bounds.bottom, 240);
     });
 
-    test('verticalOffset: 70 - maxRowSpan: 2 - view < model', () {
+    test('verticalOffset: 70 - view < model', () {
       const double maxWidth = 500;
       const double maxHeight = 100;
 
       const double dividerThickness = 10;
       const double cellHeight = 40;
-      const double rowHeight = cellHeight + dividerThickness;
 
-      DaviModel<int> model = buildModel(
-          rowCount: 5, columnCount: 2, maxRowSpan: 2, maxColumnSpan: 1);
+      DaviModel<int> model = buildModel(rowCount: 5, columnCount: 2);
 
       List<ColumnMetrics> columnsMetrics = ColumnMetrics.resizable(
           model: model, maxWidth: maxWidth, dividerThickness: dividerThickness);
+      RowExtentManager rowExtentManager = buildExtentManager(
+          rowsLength: model.rowsLength,
+          cellHeight: cellHeight,
+          dividerThickness: dividerThickness);
 
       ViewportState<int> viewport = ViewportState();
       viewport.reset(
           verticalOffset: 70,
           columnsMetrics: columnsMetrics,
-          rowHeight: rowHeight,
-          cellHeight: cellHeight,
+          rowExtentManager: rowExtentManager,
           maxHeight: maxHeight,
           maxWidth: maxWidth,
           model: model,
           hasTrailing: false,
-          rowFillHeight: false,
-          collisionBehavior: CellCollisionBehavior.ignore);
+          rowFillHeight: false);
 
       // testing view attributes
 
       expect(viewport.maxVisibleRowCount, 3);
-      expect(viewport.firstRow, 0);
+      expect(viewport.firstRow, 1);
       expect(viewport.lastRow, 3);
       expect(viewport.firstDataRow, 1);
       expect(viewport.maxDataRowIndex, 3);
       expect(viewport.lastDataRow, 3);
-      expect(viewport.maxCellCount, 8);
-      expect(viewport.mappedCellCount, 8);
+      expect(viewport.maxCellCount, 6);
+      expect(viewport.mappedCellCount, 6);
 
       // testing cell mapping
 
       CellMapping? cellMapping = viewport.getCellMapping(cellIndex: 0);
       expect(cellMapping, isNotNull);
-      expect(cellMapping?.rowIndex, 0);
+      expect(cellMapping?.rowIndex, 1);
       expect(cellMapping?.columnIndex, 0);
-      expect(cellMapping?.rowSpan, 1);
-      expect(cellMapping?.columnSpan, 1);
 
       cellMapping = viewport.getCellMapping(cellIndex: 3);
       expect(cellMapping, isNotNull);
-      expect(cellMapping?.rowIndex, 1);
+      expect(cellMapping?.rowIndex, 2);
       expect(cellMapping?.columnIndex, 1);
-      expect(cellMapping?.rowSpan, 1);
-      expect(cellMapping?.columnSpan, 1);
 
       // testing row regions
 
       expect(viewport.rowRegions.trailingRegion, isNull);
-      expect(viewport.rowRegions.firstRowIndex, 0);
+      expect(viewport.rowRegions.firstRowIndex, 1);
       expect(viewport.rowRegions.lastRowIndex, 3);
-      expect(viewport.rowRegions.values.length, 4);
+      expect(viewport.rowRegions.values.length, 3);
 
-      RowRegion rowRegion = viewport.rowRegions.get(0);
-      expect(rowRegion.index, 0);
-      expect(rowRegion.visible, false);
-      expect(rowRegion.hasData, true);
-      expect(rowRegion.trailing, false);
-      expect(rowRegion.bounds.top, -70);
-      expect(rowRegion.bounds.bottom, -30);
-
-      rowRegion = viewport.rowRegions.get(1);
+      RowRegion rowRegion = viewport.rowRegions.get(1);
       expect(rowRegion.index, 1);
       expect(rowRegion.visible, true);
       expect(rowRegion.hasData, true);
@@ -182,88 +174,6 @@ void main() {
       expect(rowRegion.bounds.top, -20);
       expect(rowRegion.bounds.bottom, 20);
     });
-  });
-
-  test('verticalOffset: 70 - maxRowSpan: 2 - view < model - row span', () {
-    const double maxWidth = 500;
-    const double maxHeight = 100;
-
-    const double dividerThickness = 10;
-    const double cellHeight = 40;
-    const double rowHeight = cellHeight + dividerThickness;
-
-    List<int> rows = List.generate(10, (index) => index);
-    List<DaviColumn<int>> columns = [
-      DaviColumn(name: 'c1', rowSpan: (params) => params.rowIndex == 3 ? 3 : 1)
-    ];
-    DaviModel<int> model = DaviModel(
-        rows: rows, columns: columns, maxRowSpan: 3, maxColumnSpan: 1);
-
-    List<ColumnMetrics> columnsMetrics = ColumnMetrics.resizable(
-        model: model, maxWidth: maxWidth, dividerThickness: dividerThickness);
-
-    ViewportState<int> viewport = ViewportState();
-    viewport.reset(
-        verticalOffset: 70,
-        columnsMetrics: columnsMetrics,
-        rowHeight: rowHeight,
-        cellHeight: cellHeight,
-        maxHeight: maxHeight,
-        maxWidth: maxWidth,
-        model: model,
-        hasTrailing: false,
-        rowFillHeight: false,
-        collisionBehavior: CellCollisionBehavior.ignore);
-
-    // testing view attributes
-
-    expect(viewport.maxVisibleRowCount, 3);
-    expect(viewport.firstRow, 0);
-    expect(viewport.lastRow, 3);
-    expect(viewport.firstDataRow, 1);
-    expect(viewport.maxDataRowIndex, 3);
-    expect(viewport.lastDataRow, 3);
-    expect(viewport.maxCellCount, 5);
-    expect(viewport.mappedCellCount, 4);
-
-    // testing cell mapping
-
-    CellMapping? cellMapping = viewport.getCellMapping(cellIndex: 0);
-    expect(cellMapping, isNotNull);
-    expect(cellMapping?.rowIndex, 0);
-    expect(cellMapping?.columnIndex, 0);
-    expect(cellMapping?.rowSpan, 1);
-    expect(cellMapping?.columnSpan, 1);
-
-    cellMapping = viewport.getCellMapping(cellIndex: 3);
-    expect(cellMapping, isNotNull);
-    expect(cellMapping?.rowIndex, 3);
-    expect(cellMapping?.columnIndex, 0);
-    expect(cellMapping?.rowSpan, 3);
-    expect(cellMapping?.columnSpan, 1);
-
-    // testing row regions
-
-    expect(viewport.rowRegions.trailingRegion, isNull);
-    expect(viewport.rowRegions.firstRowIndex, 0);
-    expect(viewport.rowRegions.lastRowIndex, 3);
-    expect(viewport.rowRegions.values.length, 4);
-
-    RowRegion rowRegion = viewport.rowRegions.get(0);
-    expect(rowRegion.index, 0);
-    expect(rowRegion.visible, false);
-    expect(rowRegion.hasData, true);
-    expect(rowRegion.trailing, false);
-    expect(rowRegion.bounds.top, -70);
-    expect(rowRegion.bounds.bottom, -30);
-
-    rowRegion = viewport.rowRegions.get(1);
-    expect(rowRegion.index, 1);
-    expect(rowRegion.visible, true);
-    expect(rowRegion.hasData, true);
-    expect(rowRegion.trailing, false);
-    expect(rowRegion.bounds.top, -20);
-    expect(rowRegion.bounds.bottom, 20);
   });
 
   test(
@@ -276,25 +186,26 @@ void main() {
     const double cellHeight = 40;
     const double rowHeight = cellHeight + dividerThickness;
 
-    DaviModel<int> model = buildModel(
-        rowCount: 20, columnCount: 2, maxRowSpan: 1, maxColumnSpan: 1);
+    DaviModel<int> model = buildModel(rowCount: 20, columnCount: 2);
 
     List<ColumnMetrics> columnsMetrics = ColumnMetrics.resizable(
         model: model, maxWidth: maxWidth, dividerThickness: dividerThickness);
+    RowExtentManager rowExtentManager = buildExtentManager(
+        rowsLength: model.rowsLength,
+        cellHeight: cellHeight,
+        dividerThickness: dividerThickness);
 
     ViewportState<int> viewport = ViewportState();
     void reset(double verticalOffset) {
       viewport.reset(
           verticalOffset: verticalOffset,
           columnsMetrics: columnsMetrics,
-          rowHeight: rowHeight,
-          cellHeight: cellHeight,
+          rowExtentManager: rowExtentManager,
           maxHeight: maxHeight,
           maxWidth: maxWidth,
           model: model,
           hasTrailing: false,
-          rowFillHeight: false,
-          collisionBehavior: CellCollisionBehavior.ignore);
+          rowFillHeight: false);
     }
 
     reset(0);

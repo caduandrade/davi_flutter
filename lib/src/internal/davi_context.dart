@@ -1,6 +1,7 @@
 import 'package:davi/src/column_width_behavior.dart';
 import 'package:davi/src/internal/column_notifier.dart';
 import 'package:davi/src/internal/hover_notifier.dart';
+import 'package:davi/src/internal/row_extent_manager.dart';
 import 'package:davi/src/internal/scroll_controllers.dart';
 import 'package:davi/src/internal/table_scrollbar.dart';
 import 'package:davi/src/internal/theme_metrics/theme_metrics.dart';
@@ -37,6 +38,7 @@ class DaviContext<DATA> {
       required this.visibleRowsCount,
       required this.columnWidthBehavior,
       required this.themeMetrics,
+      required this.rowExtentManager,
       required this.scrollControllers});
 
   final HoverNotifier hoverNotifier;
@@ -60,6 +62,7 @@ class DaviContext<DATA> {
   final int? visibleRowsCount;
   final ColumnWidthBehavior columnWidthBehavior;
   final TableThemeMetrics themeMetrics;
+  final RowExtentManager rowExtentManager;
   final ScrollControllers scrollControllers;
 
   bool get hasCallback =>

@@ -9,10 +9,12 @@ class RowThemeMetrics {
       {required RowThemeData themeData,
       required CellThemeMetrics cellThemeMetrics})
       : dividerThickness = themeData.dividerThickness,
-        height = themeData.dividerThickness + cellThemeMetrics.height;
+        estimatedHeight = themeData.estimatedHeight + cellThemeMetrics.padding;
 
   final double dividerThickness;
-  final double height;
+
+  /// Row height used before a row's real content has been measured.
+  final double estimatedHeight;
 
   @override
   bool operator ==(Object other) =>
@@ -20,8 +22,8 @@ class RowThemeMetrics {
       other is RowThemeMetrics &&
           runtimeType == other.runtimeType &&
           dividerThickness == other.dividerThickness &&
-          height == other.height;
+          estimatedHeight == other.estimatedHeight;
 
   @override
-  int get hashCode => dividerThickness.hashCode ^ height.hashCode;
+  int get hashCode => dividerThickness.hashCode ^ estimatedHeight.hashCode;
 }

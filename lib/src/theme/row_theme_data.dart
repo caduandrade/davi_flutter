@@ -12,6 +12,7 @@ class RowThemeData {
       this.dividerThickness = RowThemeDataDefaults.dividerThickness,
       this.dividerColor = RowThemeDataDefaults.dividerColor,
       this.fillHeight = RowThemeDataDefaults.fillHeight,
+      this.estimatedHeight = RowThemeDataDefaults.estimatedHeight,
       this.callbackCursor = RowThemeDataDefaults.callbackCursor});
 
   /// The bottom row color.
@@ -37,6 +38,15 @@ class RowThemeData {
   /// the color of the rows.
   final bool fillHeight;
 
+  /// The height used for a row before its real content has been measured,
+  /// and for cell content that has no intrinsic size of its own (such as
+  /// [DaviColumn.cellPainter] or [DaviColumn.cellBarValue]).
+  ///
+  /// Row height is otherwise derived automatically from cell content, the
+  /// same way the header row already behaves - this value is only a hint,
+  /// not a fixed size.
+  final double estimatedHeight;
+
   final MouseCursor callbackCursor;
 
   @override
@@ -50,6 +60,7 @@ class RowThemeData {
           dividerThickness == other.dividerThickness &&
           dividerColor == other.dividerColor &&
           fillHeight == other.fillHeight &&
+          estimatedHeight == other.estimatedHeight &&
           callbackCursor == other.callbackCursor;
 
   @override
@@ -60,6 +71,7 @@ class RowThemeData {
       dividerThickness.hashCode ^
       dividerColor.hashCode ^
       fillHeight.hashCode ^
+      estimatedHeight.hashCode ^
       callbackCursor.hashCode;
 
   static ThemeRowColor zebraColor(
@@ -76,5 +88,6 @@ class RowThemeDataDefaults {
   static const bool fillHeight = false;
   static const Color dividerColor = Colors.grey;
   static const double dividerThickness = 1;
+  static const double estimatedHeight = 32;
   static const MouseCursor callbackCursor = SystemMouseCursors.click;
 }

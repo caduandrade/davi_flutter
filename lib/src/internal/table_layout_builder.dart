@@ -37,6 +37,7 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
         columnWidthBehavior: daviContext.columnWidthBehavior,
         themeMetrics: daviContext.themeMetrics,
         visibleRowsCount: daviContext.visibleRowsCount,
+        rowExtentManager: daviContext.rowExtentManager,
         hasTrailingWidget: daviContext.trailingWidget != null);
 
     if (daviContext.columnWidthBehavior == ColumnWidthBehavior.scrollable) {

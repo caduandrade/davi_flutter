@@ -1,7 +1,6 @@
 import 'dart:math' as math;
 
 import 'package:davi/src/internal/layout_child_id.dart';
-import 'package:davi/src/internal/layout_utils.dart';
 import 'package:davi/src/internal/table_layout_parent_data.dart';
 import 'package:davi/src/internal/table_layout_settings.dart';
 import 'package:davi/src/theme/theme_data.dart';
@@ -265,14 +264,13 @@ class TableLayoutRenderBox<DATA> extends RenderBox
 
   @override
   double computeMaxIntrinsicHeight(double width) {
-    final int maxVisibleRowsLength = LayoutUtils.maxVisibleRowsLength(
-        scrollOffset: 0,
-        visibleAreaHeight: _layoutSettings.cellsBounds.height,
-        rowHeight: _layoutSettings.themeMetrics.row.height);
+    final int maxVisibleRowsLength =
+        _layoutSettings.rowExtentManager.visibleRowCount(
+            scrollOffset: 0, availableHeight: _layoutSettings.cellsBounds.height);
     final int visibleRowsLength =
         math.min(_layoutSettings.rowsLength, maxVisibleRowsLength);
     return computeMinIntrinsicHeight(width) +
-        (visibleRowsLength * _layoutSettings.themeMetrics.cell.height) +
+        _layoutSettings.rowExtentManager.heightUpTo(visibleRowsLength) +
         _layoutSettings.themeMetrics.scrollbar.height;
   }
 

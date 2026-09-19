@@ -1,3 +1,18 @@
+## 5.0.0
+
+* Row height is now dynamic: each row automatically grows to fit its content, the same way the header row already does, instead of using a single fixed height for every row.
+* Cell merging (`rowSpan`/`columnSpan`) has been removed. It was one of the main blockers to making row height dynamic, made sorting and horizontal merging harder to reason about together, and added significant internal complexity for a rarely used feature. Removing it keeps the package simpler to maintain.
+* Changes
+  * `DaviColumn`
+    * The `rowSpan` and `columnSpan` attributes have been removed.
+  * `DaviModel`
+    * The `maxRowSpan`, `maxColumnSpan`, `maxSpanBehavior`, `rowSpanOverflowBehavior` and `collisionBehavior` attributes have been removed.
+  * `CellThemeData`
+    * The `contentHeight` attribute has been removed; height is now derived automatically from cell content.
+  * `RowThemeData`
+    * New `estimatedHeight` attribute: an initial height hint used only until a row's real content is measured.
+  * Removed `SpanProvider`, `SpanParams`, `MaxSpanBehavior`, `RowSpanOverflowBehavior` and `CellCollisionBehavior`.
+
 ## 4.1.0
 
 * The header row height is no longer fixed by the theme; it now adapts automatically to the header content's actual height.

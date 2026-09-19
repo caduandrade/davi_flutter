@@ -13,15 +13,8 @@ class PainterCache<DATA> {
   TextPainter getTextPainter(
       {required double width,
       required TextStyle? textStyle,
-      required String value,
-      required int rowSpan,
-      required int columnSpan}) {
-    _Key key = _Key(
-        width: width,
-        textStyle: textStyle,
-        value: value,
-        rowSpan: rowSpan,
-        columnSpan: columnSpan);
+      required String value}) {
+    _Key key = _Key(width: width, textStyle: textStyle, value: value);
     TextPainter? painter = _cache.get(key);
     if (painter == null) {
       painter = TextPainter(
@@ -38,18 +31,11 @@ class PainterCache<DATA> {
 }
 
 class _Key {
-  _Key(
-      {required this.width,
-      required this.textStyle,
-      required this.value,
-      required this.rowSpan,
-      required this.columnSpan});
+  _Key({required this.width, required this.textStyle, required this.value});
 
   final double width;
   final TextStyle? textStyle;
   final String value;
-  final int rowSpan;
-  final int columnSpan;
 
   @override
   bool operator ==(Object other) =>
@@ -58,15 +44,8 @@ class _Key {
           runtimeType == other.runtimeType &&
           width == other.width &&
           textStyle == other.textStyle &&
-          value == other.value &&
-          rowSpan == other.rowSpan &&
-          columnSpan == other.columnSpan;
+          value == other.value;
 
   @override
-  int get hashCode =>
-      width.hashCode ^
-      textStyle.hashCode ^
-      value.hashCode ^
-      rowSpan.hashCode ^
-      columnSpan.hashCode;
+  int get hashCode => width.hashCode ^ textStyle.hashCode ^ value.hashCode;
 }

@@ -1,11 +1,7 @@
 import 'dart:collection';
-import 'dart:math' as math;
 
 import 'package:collection/collection.dart';
-import 'package:davi/src/cell_collision_behavior.dart';
 import 'package:davi/src/column.dart';
-import 'package:davi/src/max_span_behavior.dart';
-import 'package:davi/src/row_span_overflow_behavior.dart';
 import 'package:davi/src/sort.dart';
 import 'package:davi/src/sort_callback_typedef.dart';
 import 'package:davi/src/sort_direction.dart';
@@ -22,18 +18,8 @@ class DaviModel<DATA> extends ChangeNotifier {
       this.ignoreDataComparators = false,
       this.multiSortEnabled = false,
       SortingMode sortingMode = SortingMode.interactive,
-      this.onSort,
-      int maxColumnSpan = 10,
-      int maxRowSpan = 15,
-      CellCollisionBehavior collisionBehavior = CellCollisionBehavior.ignore,
-      RowSpanOverflowBehavior rowSpanOverflowBehavior =
-          RowSpanOverflowBehavior.cap,
-      this.maxSpanBehavior = MaxSpanBehavior.throwException})
-      : maxRowSpan = math.max(maxRowSpan, 1),
-        maxColumnSpan = math.max(maxColumnSpan, 1),
-        _sortingMode = sortingMode,
-        _collisionBehavior = collisionBehavior,
-        _rowSpanOverflowBehavior = rowSpanOverflowBehavior {
+      this.onSort})
+      : _sortingMode = sortingMode {
     _originalRows = List.from(rows);
     _addColumns(columns, false);
     _updateRows(notify: false);
@@ -54,21 +40,6 @@ class DaviModel<DATA> extends ChangeNotifier {
   bool _hasSummary = false;
 
   bool get hasSummary => _hasSummary;
-
-  CellCollisionBehavior _collisionBehavior;
-
-  /// Determines the behavior when a cell collision occurs in the grid.
-  ///
-  /// This property uses [CellCollisionBehavior] to define how collisions
-  /// are handled, such as ignoring the colliding cell, logging a warning,
-  /// allowing overlap, or throwing an exception.
-  CellCollisionBehavior get collisionBehavior => _collisionBehavior;
-  set collisionBehavior(CellCollisionBehavior value) {
-    if (_collisionBehavior != value) {
-      _collisionBehavior = value;
-      notifyListeners();
-    }
-  }
 
   /// Gets the sorted columns.
   List<DaviColumn<DATA>> get sortedColumns {
@@ -124,38 +95,6 @@ class DaviModel<DATA> extends ChangeNotifier {
   bool get isColumnsEmpty => _columns.isEmpty;
 
   bool get isColumnsNotEmpty => _columns.isNotEmpty;
-
-  /// The maximum number of rows a single cell can span.
-  ///
-  /// If a cell's `rowSpan` exceeds this value, the behavior will depend on
-  /// [maxSpanBehavior]. See [MaxSpanBehavior] for available options and details.
-  ///
-  /// Adjust this value to control the performance and usability of the grid.
-  final int maxRowSpan;
-
-  /// The maximum number of columns a single cell can span.
-  ///
-  /// If a cell's `columnSpan` exceeds this value, the behavior will depend on
-  /// [maxSpanBehavior]. See [MaxSpanBehavior] for available options and details.
-  ///
-  /// Adjust this value to accommodate wider spans when necessary.
-  final int maxColumnSpan;
-
-  /// Determines how to handle spans that exceed [maxRowSpan] or [maxColumnSpan].
-  ///
-  /// Refer to [MaxSpanBehavior] for details on the available policies.
-  final MaxSpanBehavior maxSpanBehavior;
-
-  /// Defines the behavior when a cell's rowSpan exceeds the available number of rows in the table.
-  RowSpanOverflowBehavior _rowSpanOverflowBehavior;
-  RowSpanOverflowBehavior get rowSpanOverflowBehavior =>
-      _rowSpanOverflowBehavior;
-  set rowSpanOverflowBehavior(RowSpanOverflowBehavior value) {
-    if (_rowSpanOverflowBehavior != value) {
-      _rowSpanOverflowBehavior = value;
-      notifyListeners();
-    }
-  }
 
   /// Indicates whether the model is sorted.
   ///

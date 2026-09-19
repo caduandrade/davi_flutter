@@ -10,7 +10,6 @@ class CellThemeData {
       {this.textStyle,
       this.nullValueColor,
       this.background,
-      this.contentHeight = CellThemeDataDefaults.contentHeight,
       this.alignment = CellThemeDataDefaults.alignment,
       this.padding = CellThemeDataDefaults.padding,
       this.barStyle = CellThemeDataDefaults.cellBarStyle,
@@ -23,9 +22,6 @@ class CellThemeData {
   /// The cell padding.
   /// The default value is defined by [CellThemeDataDefaults.padding].
   final EdgeInsets? padding;
-
-  /// Height of cell content. Mandatory due to performance.
-  final double contentHeight;
 
   /// The alignment of the content within the cell.
   final Alignment alignment;
@@ -51,7 +47,6 @@ class CellThemeData {
           textStyle == other.textStyle &&
           padding == other.padding &&
           barStyle == other.barStyle &&
-          contentHeight == other.contentHeight &&
           alignment == other.alignment &&
           background == other.background &&
           nullValueColor == other.nullValueColor &&
@@ -62,7 +57,6 @@ class CellThemeData {
       textStyle.hashCode ^
       padding.hashCode ^
       barStyle.hashCode ^
-      contentHeight.hashCode ^
       alignment.hashCode ^
       background.hashCode ^
       nullValueColor.hashCode ^
@@ -71,9 +65,6 @@ class CellThemeData {
 
 /// All default theme values.
 class CellThemeDataDefaults {
-  /// Default content height
-  static const double contentHeight = 32;
-
   /// Default padding
   static const EdgeInsets padding = EdgeInsets.only(left: 8, right: 8);
 

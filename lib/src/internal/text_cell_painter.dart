@@ -7,25 +7,17 @@ class TextCellPainter extends LeafRenderObjectWidget {
   const TextCellPainter(
       {super.key,
       required this.text,
-      required this.rowSpan,
-      required this.columnSpan,
       required this.painterCache,
       required this.textStyle});
 
   final PainterCache painterCache;
   final String text;
-  final int rowSpan;
-  final int columnSpan;
   final TextStyle? textStyle;
 
   @override
   RenderObject createRenderObject(BuildContext context) {
     return CellPainterRenderBox(
-        text: text,
-        rowSpan: rowSpan,
-        columnSpan: columnSpan,
-        renderCache: painterCache,
-        textStyle: textStyle);
+        text: text, renderCache: painterCache, textStyle: textStyle);
   }
 
   @override
@@ -33,8 +25,6 @@ class TextCellPainter extends LeafRenderObjectWidget {
       BuildContext context, CellPainterRenderBox renderObject) {
     renderObject
       ..text = text
-      ..rowSpan = rowSpan
-      ..columnSpan = columnSpan
       ..painterCache = painterCache
       ..textStyle = textStyle;
   }
@@ -44,13 +34,9 @@ class TextCellPainter extends LeafRenderObjectWidget {
 class CellPainterRenderBox extends RenderBox {
   CellPainterRenderBox(
       {required String text,
-      required int rowSpan,
-      required int columnSpan,
       required PainterCache renderCache,
       required TextStyle? textStyle})
       : _text = text,
-        _rowSpan = rowSpan,
-        _columnSpan = columnSpan,
         _painterCache = renderCache,
         _textStyle = textStyle;
 
@@ -78,35 +64,28 @@ class CellPainterRenderBox extends RenderBox {
     }
   }
 
-  int _rowSpan;
-
-  set rowSpan(int value) {
-    if (_rowSpan != value) {
-      _rowSpan = value;
-      markNeedsLayout();
-    }
-  }
-
-  int _columnSpan;
-
-  set columnSpan(int value) {
-    if (_columnSpan != value) {
-      _columnSpan = value;
-      markNeedsLayout();
-    }
-  }
-
   late TextPainter _textPainter;
 
   @override
   void performLayout() {
     _textPainter = _painterCache.getTextPainter(
-        width: constraints.maxWidth,
-        textStyle: _textStyle,
-        value: _text,
-        rowSpan: _rowSpan,
-        columnSpan: _columnSpan);
+        width: constraints.maxWidth, textStyle: _textStyle, value: _text);
     size = Size(_textPainter.width, _textPainter.height);
+  }
+
+  // The default RenderBox intrinsics are 0, which would report a text cell
+  // as having no content height at all - measure it the same way
+  // performLayout does, so a row sizes correctly around its text cells.
+  @override
+  double computeMinIntrinsicHeight(double width) => _measureHeight(width);
+
+  @override
+  double computeMaxIntrinsicHeight(double width) => _measureHeight(width);
+
+  double _measureHeight(double width) {
+    return _painterCache
+        .getTextPainter(width: width, textStyle: _textStyle, value: _text)
+        .height;
   }
 
   @override

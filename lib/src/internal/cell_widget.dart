@@ -15,8 +15,6 @@ class CellWidget<DATA> extends StatefulWidget {
       required this.data,
       required this.rowIndex,
       required this.columnIndex,
-      required this.rowSpan,
-      required this.columnSpan,
       required this.column,
       required this.columnMetrics,
       required this.daviContext,
@@ -29,8 +27,6 @@ class CellWidget<DATA> extends StatefulWidget {
   final DATA data;
   final int rowIndex;
   final int columnIndex;
-  final int rowSpan;
-  final int columnSpan;
   final DaviColumn<DATA> column;
   final ColumnMetrics columnMetrics;
   final DaviContext daviContext;
@@ -143,18 +139,21 @@ class CellWidgetState<DATA> extends State<CellWidget<DATA>> {
             color: cellIcon.color);
       }
     } else if (widget.column.cellPainter != null) {
-      child = CustomPaint(
-          size: Size(widget.columnMetrics.width, theme.cell.contentHeight),
-          painter: _CustomPainter<DATA>(
-              data: widget.data, cellPainting: widget.column.cellPainter!));
+      child = SizedBox(
+          width: widget.columnMetrics.width,
+          height: theme.row.estimatedHeight,
+          child: CustomPaint(
+              painter: _CustomPainter<DATA>(
+                  data: widget.data, cellPainting: widget.column.cellPainter!)));
     } else if (widget.column.cellBarValue != null) {
       final BarValueMapperParams<DATA> params =
           BarValueMapperParams(data: widget.data, rowIndex: widget.rowIndex);
       double? barValue = widget.column.cellBarValue!(params);
       if (barValue != null) {
-        child = CustomPaint(
-            size: Size(widget.columnMetrics.width, theme.cell.contentHeight),
-            painter: _BarPainter(
+        child = SizedBox(
+            width: widget.columnMetrics.width,
+            height: theme.row.estimatedHeight,
+            child: CustomPaint(painter: _BarPainter(
                 value: barValue,
                 text: widget.column.cellBarValueStringify != null
                     ? widget.column.cellBarValueStringify!(params)
@@ -167,7 +166,7 @@ class CellWidgetState<DATA> extends State<CellWidget<DATA>> {
                 textSize: widget.column.cellBarStyle?.textSize ??
                     theme.cell.barStyle.textSize,
                 textColor: widget.column.cellBarStyle?.textColor ??
-                    theme.cell.barStyle.textColor));
+                    theme.cell.barStyle.textColor)));
       }
     } else if (widget.column.cellWidget != null) {
       final WidgetBuilderParams<DATA> params = WidgetBuilderParams(
@@ -182,8 +181,6 @@ class CellWidgetState<DATA> extends State<CellWidget<DATA>> {
     if (textCell && value != null) {
       child = TextCellPainter(
           text: widget.column.cellValueStringify(value),
-          rowSpan: widget.rowSpan,
-          columnSpan: widget.columnSpan,
           painterCache: widget.painterCache,
           textStyle: textStyle);
     }
@@ -282,9 +279,7 @@ class _BarPainter extends CustomPainter {
       TextPainter textPainter = painterCache.getTextPainter(
           width: size.width,
           textStyle: TextStyle(fontSize: textSize, color: textColor!(value)),
-          value: text ?? '${(value * 100).truncate()}%',
-          rowSpan: 1,
-          columnSpan: 1);
+          value: text ?? '${(value * 100).truncate()}%');
       final Offset textOffset = Offset(
         (size.width - textPainter.width) / 2,
         (size.height - textPainter.height) / 2,

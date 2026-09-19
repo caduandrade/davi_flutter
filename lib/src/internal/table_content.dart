@@ -86,14 +86,12 @@ class TableContentState<DATA> extends State<TableContent<DATA>> {
       _viewportState.reset(
           verticalOffset: verticalOffset,
           columnsMetrics: widget.layoutSettings.columnsMetrics,
-          rowHeight: widget.layoutSettings.themeMetrics.row.height,
-          cellHeight: widget.layoutSettings.themeMetrics.cell.height,
+          rowExtentManager: widget.daviContext.rowExtentManager,
           maxHeight: widget.maxHeight,
           maxWidth: widget.maxWidth,
           model: widget.daviContext.model,
           hasTrailing: widget.daviContext.trailingWidget != null,
-          rowFillHeight: widget.rowFillHeight,
-          collisionBehavior: widget.daviContext.model.collisionBehavior);
+          rowFillHeight: widget.rowFillHeight);
     } catch (e, stackTrace) {
       setState(() {
         _error = e;
@@ -151,6 +149,7 @@ class TableContentState<DATA> extends State<TableContent<DATA>> {
           rowsLength: widget.layoutSettings.rowsLength,
           rowRegionCache: _viewportState.rowRegions,
           dividerPaintManager: _viewportState.dividerPaintManager,
+          viewportState: _viewportState,
           children: children);
     }
 

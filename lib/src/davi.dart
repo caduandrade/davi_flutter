@@ -2,6 +2,7 @@ import 'package:davi/src/column_width_behavior.dart';
 import 'package:davi/src/internal/column_notifier.dart';
 import 'package:davi/src/internal/davi_context.dart';
 import 'package:davi/src/internal/hover_notifier.dart';
+import 'package:davi/src/internal/row_extent_manager.dart';
 import 'package:davi/src/internal/scroll_controllers.dart';
 import 'package:davi/src/internal/table_layout_builder.dart';
 import 'package:davi/src/internal/theme_metrics/theme_metrics.dart';
@@ -125,6 +126,10 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
   int? _lastVisibleRow;
   final HoverNotifier _hoverNotifier = HoverNotifier();
   final ColumnNotifier _columnNotifier = ColumnNotifier();
+  final RowExtentManager _rowExtentManager = RowExtentManager();
+  double? _lastDividerThickness;
+  double? _lastEstimatedHeight;
+  DaviModel<DATA>? _lastRowExtentModel;
 
   final FocusNode _focusNode = FocusNode(debugLabel: 'Davi');
 
@@ -225,6 +230,21 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
     final DaviThemeData theme = DaviTheme.of(context);
     final TableThemeMetrics themeMetrics = TableThemeMetrics(theme);
 
+    final int rowsLength =
+        widget.model.rowsLength + (widget.trailingWidget != null ? 1 : 0);
+    if (_rowExtentManager.rowsLength != rowsLength ||
+        !identical(_lastRowExtentModel, widget.model) ||
+        _lastDividerThickness != theme.row.dividerThickness ||
+        _lastEstimatedHeight != theme.row.estimatedHeight) {
+      _rowExtentManager.resize(
+          rowsLength: rowsLength,
+          estimatedHeight: theme.row.estimatedHeight,
+          dividerThickness: theme.row.dividerThickness);
+      _lastRowExtentModel = widget.model;
+      _lastDividerThickness = theme.row.dividerThickness;
+      _lastEstimatedHeight = theme.row.estimatedHeight;
+    }
+
     final DaviContext<DATA> daviContext = DaviContext(
         hoverNotifier: _hoverNotifier,
         hasHoverListener: widget.onHover != null,
@@ -247,6 +267,7 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
         visibleRowsCount: widget.visibleRowsCount,
         columnWidthBehavior: widget.columnWidthBehavior,
         themeMetrics: themeMetrics,
+        rowExtentManager: _rowExtentManager,
         scrollControllers: _scrollControllers);
 
     return FocusTraversalGroup(
