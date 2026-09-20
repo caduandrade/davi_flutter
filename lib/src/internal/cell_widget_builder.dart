@@ -1,6 +1,6 @@
 import 'package:davi/davi.dart';
-import 'package:davi/src/internal/cell_widget.dart';
 import 'package:davi/src/internal/cell_focus_traversal.dart';
+import 'package:davi/src/internal/cell_widget.dart';
 import 'package:davi/src/internal/column_metrics.dart';
 import 'package:davi/src/internal/davi_context.dart';
 import 'package:davi/src/internal/painter_cache.dart';
@@ -93,7 +93,7 @@ class DaviCellWidgetBuilderState<DATA>
                 widget.layoutSettings.columnsMetrics[cellMapping.columnIndex],
             daviContext: widget.daviContext,
             painterCache: widget.painterCache);
-        if (column.cellWidget != null) {
+        if (column.cellFocusTraversalEnabled) {
           content = CellFocusRegion(
               key: ValueKey(cellMapping),
               policy: widget.focusTraversal,

@@ -50,7 +50,7 @@ class TableContentState<DATA> extends State<TableContent<DATA>> {
         rowCount: () => widget.daviContext.model.rowsLength,
         columnCount: () => widget.daviContext.model.columnsLength,
         hasWidgets: (column) =>
-            widget.daviContext.model.columnAt(column).cellWidget != null,
+            widget.daviContext.model.columnAt(column).cellFocusTraversalEnabled,
         reveal: _revealCell);
     widget.daviContext.model.addListener(_focusTraversal.cancel);
     _updatePainterCacheSize();

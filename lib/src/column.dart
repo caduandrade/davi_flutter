@@ -28,6 +28,7 @@ class DaviColumn<DATA> extends ChangeNotifier {
       this.cellValue,
       this.cellIcon,
       this.cellWidget,
+      this.cellFocusTraversalEnabled = false,
       this.cellPainter,
       this.cellBarStyle,
       this.cellBarValue,
@@ -62,6 +63,11 @@ class DaviColumn<DATA> extends ChangeNotifier {
         'Conflict detected: Only one of "cellValue", "cellIcon", "cellWidget", '
         '"cellPainter", or "cellBarValue" can be used at a time. '
         'Ensure that only one attribute is set to avoid this error.',
+      );
+    }
+    if (cellFocusTraversalEnabled && cellWidget == null) {
+      throw ArgumentError(
+        '"cellFocusTraversalEnabled" requires "cellWidget".',
       );
     }
   }
@@ -161,10 +167,16 @@ class DaviColumn<DATA> extends ChangeNotifier {
 
   /// Cell widget mapper for each row in that column.
   ///
-  /// TAB and Shift+TAB traverse focusable controls in row/column order,
-  /// scrolling vertically and horizontally to reveal the destination.
-  /// Offscreen rows are built on demand; disabled controls are skipped.
   final CellWidgetBuilder<DATA>? cellWidget;
+
+  /// Enables TAB and Shift+TAB traversal for focusable controls created by
+  /// [cellWidget].
+  ///
+  /// When enabled, traversal follows row/column order and automatically
+  /// scrolls vertically and horizontally to build and reveal offscreen cells.
+  /// Disabled controls are skipped. Defaults to `false`, avoiding the focus
+  /// bookkeeping cost for custom cells that contain no focusable controls.
+  final bool cellFocusTraversalEnabled;
 
   /// A builder function that provides a [Listenable] for a specific cell in this column.
   /// When the returned [Listenable] notifies listeners, the corresponding cell will be rebuilt.

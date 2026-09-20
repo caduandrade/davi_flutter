@@ -1,8 +1,19 @@
 import 'package:davi/davi.dart';
 import 'package:davi/src/column.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('cell focus traversal requires a cellWidget', () {
+    expect(
+        () => DaviColumn(cellFocusTraversalEnabled: true), throwsArgumentError);
+    expect(
+        DaviColumn(
+            cellFocusTraversalEnabled: true,
+            cellWidget: (_) => const SizedBox()),
+        isA<DaviColumn>());
+  });
+
   group('DaviColumn', () {
     test('setting sort', () {
       DaviColumn column = DaviColumn(id: 'id', sortable: true);

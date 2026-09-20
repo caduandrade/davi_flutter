@@ -1,4 +1,5 @@
 import 'package:davi/davi.dart';
+import 'package:davi/src/internal/cell_focus_traversal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -15,6 +16,25 @@ Future<void> tab(WidgetTester tester, {bool reverse = false}) async {
 }
 
 void main() {
+  testWidgets('focus regions are created only for opted-in columns',
+      (tester) async {
+    final model = DaviModel<int>(rows: [
+      0
+    ], columns: [
+      DaviColumn<int>(cellWidget: (_) => const Text('plain custom widget')),
+      DaviColumn<int>(
+          cellFocusTraversalEnabled: true,
+          cellWidget: (_) => const TextField()),
+    ]);
+
+    await tester.pumpWidget(MaterialApp(
+        home: Scaffold(
+            body: SizedBox(width: 300, height: 180, child: Davi<int>(model)))));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(CellFocusRegion), findsOneWidget);
+  });
+
   testWidgets('pinned columns use their own horizontal area with variable rows',
       (tester) async {
     final nodes = <String, FocusNode>{};
@@ -34,6 +54,7 @@ void main() {
         DaviColumn<int>(
             width: column == 0 ? 90 : 170,
             pinStatus: column == 0 ? PinStatus.left : PinStatus.none,
+            cellFocusTraversalEnabled: true,
             cellWidget: (p) {
               final id = '${p.rowIndex}:$column';
               return SizedBox(
@@ -75,6 +96,7 @@ void main() {
       (tester) async {
     final model = DaviModel<int>(rows: List.generate(50, (i) => i), columns: [
       DaviColumn<int>(
+          cellFocusTraversalEnabled: true,
           cellWidget: (p) => TextField(key: ValueKey('field-${p.rowIndex}'))),
     ]);
     await tester.pumpWidget(MaterialApp(
@@ -107,6 +129,7 @@ void main() {
     addTearDown(outside.dispose);
     final model = DaviModel<int>(rows: List.generate(50, (i) => i), columns: [
       DaviColumn<int>(
+          cellFocusTraversalEnabled: true,
           cellWidget: (p) => TextField(
               key: ValueKey(p.rowIndex),
               enabled: p.rowIndex == 0 || p.rowIndex == 49)),
@@ -154,6 +177,7 @@ void main() {
       for (int column = 0; column < 3; column++)
         DaviColumn<int>(
             width: 180,
+            cellFocusTraversalEnabled: true,
             cellWidget: (params) {
               final id = '${params.rowIndex}:$column';
               return TextField(
@@ -224,13 +248,16 @@ void main() {
     ], columns: [
       DaviColumn<int>(
           width: 180,
+          cellFocusTraversalEnabled: true,
           cellWidget: (p) => Row(children: [
                 for (int i = 0; i < 2; i++)
                   Expanded(
                       child: TextField(focusNode: nodes[p.rowIndex * 2 + i])),
               ])),
       DaviColumn<int>(cellValue: (p) => 'plain'),
-      DaviColumn<int>(cellWidget: (p) => const TextField(enabled: false)),
+      DaviColumn<int>(
+          cellFocusTraversalEnabled: true,
+          cellWidget: (p) => const TextField(enabled: false)),
     ]);
     await tester.pumpWidget(MaterialApp(
         home: Scaffold(

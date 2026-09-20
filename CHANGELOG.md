@@ -15,7 +15,7 @@
     * `cellOverflow` now actually applies to `cellValue` cells (it was previously unused): leave it unset to let text wrap onto multiple lines and grow the row, or set it (e.g. `TextOverflow.ellipsis`) to keep it on a single line as before.
   * Removed `SpanProvider`, `SpanParams`, `MaxSpanBehavior`, `RowSpanOverflowBehavior` and `CellCollisionBehavior`.
 * Bugfix
-  * TAB and Shift+TAB now traverse controls built with `cellWidget` across virtualized rows, revealing the destination with vertical and horizontal scrolling (including pinned columns). Disabled controls are skipped and traversal continues outside the table at its boundaries.
+  * Columns with `cellFocusTraversalEnabled: true` now support TAB and Shift+TAB across controls built with `cellWidget` and virtualized rows, revealing the destination with vertical and horizontal scrolling (including pinned columns). Disabled controls are skipped and traversal continues outside the table at its boundaries. The feature is opt-in so custom cells without focusable controls avoid its bookkeeping cost.
   * Cell text with no explicit `textStyle` (the default) could render invisible/white instead of a visible color, since it bypassed `DefaultTextStyle` inheritance.
   * `cellValue` text never wrapped, even with dynamic row height, since it was always measured/painted as a single line internally.
   * Mouse-wheel/keyboard scrolling could stop short of (or overshoot) the table's real end, while dragging the scrollbar itself was always correct - the scroll position's max extent wasn't kept in sync as row heights were measured. This also fixes a blank gap left at the bottom when scrolled near the end and the content height then shrank (e.g. turning off a custom row divider thickness).
