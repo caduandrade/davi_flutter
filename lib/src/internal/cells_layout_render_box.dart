@@ -328,7 +328,10 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
               _rowRegionCache.get(mapping.rowIndex).hasData) {
             final double columnWidth =
                 _columnsMetrics[mapping.columnIndex].width;
-            final double measured = content.getMaxIntrinsicHeight(columnWidth);
+            // Query the cell wrapper so Flutter tracks the intrinsic
+            // dependency through its relayout boundary as content changes.
+            final double measured =
+                renderBox.getMaxIntrinsicHeight(columnWidth);
             final double current = rowMaxIntrinsic[mapping.rowIndex] ?? 0;
             if (measured > current) {
               rowMaxIntrinsic[mapping.rowIndex] = measured;
@@ -356,12 +359,14 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
       _viewportState.refreshRowRegions(_rowExtentManager);
     }
 
-    // Layout pass: cell/trailing positioning is fully manual (see
-    // RenderCustomSingleChild), so every cell is simply given the whole
-    // viewport as its own constraints.
+    // Positioning is manual (see RenderCustomSingleChild). Include the
+    // measured row height in each cell's constraints so Flutter relays out
+    // an otherwise unchanged cell when another column makes its row taller.
     for (final RenderBox cell in _cells) {
-      cell.layout(
-          BoxConstraints.tightFor(width: size.width, height: size.height),
+      final double height = cell is RenderCustomSingleChild
+          ? _rowExtentManager.heightOf(cell.cellMapping.rowIndex)
+          : size.height;
+      cell.layout(BoxConstraints.tightFor(width: size.width, height: height),
           parentUsesSize: false);
     }
     if (trailingBox != null) {

@@ -20,6 +20,8 @@
   * Mouse-wheel/keyboard scrolling could stop short of (or overshoot) the table's real end, while dragging the scrollbar itself was always correct - the scroll position's max extent wasn't kept in sync as row heights were measured. This also fixes a blank gap left at the bottom when scrolled near the end and the content height then shrank (e.g. turning off a custom row divider thickness).
   * A settings change that also resized rows (e.g. a custom row divider thickness) could leave a row's layout visibly stale for one frame.
   * Cell content position wasn't reported to Flutter's transform tree (`RenderObject.applyPaintTransform`), only used at paint/hit-test time - anything relying on it (accessibility/semantics, `Scrollable.ensureVisible`, `localToGlobal`) saw every cell as sitting at its row's container origin instead of its real position.
+  * Resizing or scrolling through dynamic-height rows could leave cells missing or make row heights oscillate: recycled cells could retain slots outside a shrinking pool. Keep mappings within the pool, reconcile its size after measurement without a debounce, and lay out every cell with its row's corrected height.
+  * Scrollbar visibility now updates after row measurement, including when widening the table makes wrapped content fit without vertical scrolling.
 
 ## 4.1.0
 

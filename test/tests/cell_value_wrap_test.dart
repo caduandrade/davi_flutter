@@ -8,9 +8,9 @@ class _Row {
   final String text;
 }
 
-const String _longText =
-    'This is a long sentence that will not fit on a single line at all '
-    'given a narrow column width, so it must wrap onto several lines.';
+// Short enough to wrap onto just a few lines at the 80px column width used
+// below (not so long the row alone would exceed the test viewport height).
+const String _longText = 'A sentence that wraps onto a few lines.';
 
 /// The rendered heights of every `TextCellPainter` currently on screen,
 /// ordered top to bottom (row order). `cellValue` paints through a raw

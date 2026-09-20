@@ -22,6 +22,40 @@ Widget _buildTable({
 }
 
 void main() {
+  testWidgets(
+      'changing one cell height lays out its unchanged sibling '
+      'in the same frame', (tester) async {
+    final height = ValueNotifier<double>(40);
+    addTearDown(height.dispose);
+    const siblingKey = Key('unchanged-sibling');
+    await tester.pumpWidget(_buildTable(
+        rows: [
+          _Row('a')
+        ],
+        columns: [
+          DaviColumn<_Row>(
+              cellWidget: (_) => ValueListenableBuilder<double>(
+                  valueListenable: height,
+                  builder: (_, value, child) => SizedBox(height: value))),
+          DaviColumn<_Row>(
+              cellWidget: (_) => const SizedBox.expand(key: siblingKey)),
+        ],
+        theme: const DaviThemeData(
+            cell: CellThemeData(padding: EdgeInsets.zero))));
+    await tester.pumpAndSettle();
+    expect(tester.getSize(find.byKey(siblingKey)).height, 40);
+
+    height.value = 150;
+    await tester.pump();
+    expect(tester.takeException(), isNull);
+    expect(tester.getSize(find.byKey(siblingKey)).height, 150);
+    await tester.pumpAndSettle();
+    height.value = 40;
+    await tester.pump();
+    expect(tester.getSize(find.byKey(siblingKey)).height, 40);
+    await tester.pumpAndSettle();
+  });
+
   testWidgets('renders without crashing with plain text cells',
       (WidgetTester tester) async {
     await tester.pumpWidget(_buildTable(

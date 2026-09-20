@@ -260,6 +260,10 @@ class RenderCustomSingleChild extends RenderBox
   bool _hasLayoutErrors = false;
 
   @override
+  double computeMaxIntrinsicHeight(double width) =>
+      child?.getMaxIntrinsicHeight(width) ?? 0;
+
+  @override
   void setupParentData(RenderObject child) {
     if (child.parentData is! CustomParentData) {
       child.parentData = CustomParentData();

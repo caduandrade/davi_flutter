@@ -24,6 +24,44 @@ RowExtentManager buildExtentManager(
 }
 
 void main() {
+  test('shrinking a recycled pool keeps every mapping inside the pool', () {
+    final model = buildModel(rowCount: 100, columnCount: 3);
+    final manager = buildExtentManager(
+        rowsLength: 100, cellHeight: 40, dividerThickness: 0);
+    final columns = ColumnMetrics.resizable(
+        model: model, maxWidth: 500, dividerThickness: 0);
+    final viewport = ViewportState<int>();
+    addTearDown(manager.dispose);
+    addTearDown(viewport.dispose);
+
+    void reset(double offset, double height) => viewport.reset(
+        verticalOffset: offset,
+        columnsMetrics: columns,
+        rowExtentManager: manager,
+        maxHeight: height,
+        maxWidth: 500,
+        model: model,
+        hasTrailing: false,
+        rowFillHeight: false);
+
+    reset(0, 240);
+    reset(120, 240);
+    reset(120, 80);
+
+    final mappings = <CellMapping>{
+      for (int slot = 0; slot < viewport.maxCellCount; slot++)
+        if (viewport.getCellMapping(cellIndex: slot) case final mapping?)
+          mapping,
+    };
+    expect(mappings.length, viewport.mappedCellCount);
+    for (int row = viewport.firstRow; row <= viewport.maxDataRowIndex; row++) {
+      for (int column = 0; column < model.columnsLength; column++) {
+        expect(mappings,
+            contains(CellMapping(rowIndex: row, columnIndex: column)));
+      }
+    }
+  });
+
   group('ViewportState', () {
     test('verticalOffset: 0 - view > model', () {
       const double maxWidth = 500;

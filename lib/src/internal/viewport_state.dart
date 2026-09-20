@@ -225,7 +225,10 @@ class ViewportState<DATA> extends ChangeNotifier {
             CellMapping(rowIndex: rowIndex, columnIndex: columnIndex);
 
         int? oldCellIndex = oldCellMappings.remove(cellMapping);
-        if (oldCellIndex != null) {
+        // A height correction can shrink the pool. Retain a recycled slot
+        // only if its widget will still exist after that shrink; otherwise
+        // move the cell into one of the new pool's available slots.
+        if (oldCellIndex != null && oldCellIndex < _maxCellCount) {
           _cellMappings[oldCellIndex] = cellMapping;
           indices.remove(oldCellIndex);
         } else {
@@ -293,9 +296,7 @@ class ViewportState<DATA> extends ChangeNotifier {
       }
 
       bool trailingRegion = false;
-      if (_hasTrailing &&
-          rowRegions._trailingRegion == null &&
-          data == null) {
+      if (_hasTrailing && rowRegions._trailingRegion == null && data == null) {
         trailingRegion = true;
       }
 
