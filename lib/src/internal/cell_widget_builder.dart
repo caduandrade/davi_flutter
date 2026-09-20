@@ -1,4 +1,5 @@
 import 'package:davi/davi.dart';
+import 'package:davi/src/internal/cell_focus_traversal.dart';
 import 'package:davi/src/internal/cell_widget.dart';
 import 'package:davi/src/internal/column_metrics.dart';
 import 'package:davi/src/internal/davi_context.dart';
@@ -18,6 +19,7 @@ class DaviCellWidgetBuilder<DATA> extends StatefulWidget {
       required this.daviContext,
       required this.painterCache,
       required this.viewportState,
+      required this.focusTraversal,
       required this.layoutSettings});
 
   final int cellIndex;
@@ -25,6 +27,7 @@ class DaviCellWidgetBuilder<DATA> extends StatefulWidget {
   final ViewportState<DATA> viewportState;
   final PainterCache<DATA> painterCache;
   final TableLayoutSettings layoutSettings;
+  final CellFocusTraversalPolicy focusTraversal;
 
   @override
   State<StatefulWidget> createState() => DaviCellWidgetBuilderState<DATA>();
@@ -81,6 +84,22 @@ class DaviCellWidgetBuilderState<DATA>
       if (data != null) {
         DaviColumn<DATA> column =
             widget.daviContext.model.columnAt(cellMapping.columnIndex);
+        Widget content = CellWidget(
+            data: data,
+            rowIndex: cellMapping.rowIndex,
+            columnIndex: cellMapping.columnIndex,
+            column: column,
+            columnMetrics:
+                widget.layoutSettings.columnsMetrics[cellMapping.columnIndex],
+            daviContext: widget.daviContext,
+            painterCache: widget.painterCache);
+        if (column.cellFocusTraversalEnabled) {
+          content = CellFocusRegion(
+              key: ValueKey(cellMapping),
+              policy: widget.focusTraversal,
+              mapping: cellMapping,
+              child: content);
+        }
 
         return CustomSingleChildWidget(
             verticalScrollController:
@@ -91,15 +110,7 @@ class DaviCellWidgetBuilderState<DATA>
             columnsMetrics: widget.layoutSettings.columnsMetrics,
             rowExtentManager: widget.daviContext.rowExtentManager,
             cellMapping: cellMapping,
-            child: CellWidget(
-                data: data,
-                rowIndex: cellMapping.rowIndex,
-                columnIndex: cellMapping.columnIndex,
-                column: column,
-                columnMetrics: widget
-                    .layoutSettings.columnsMetrics[cellMapping.columnIndex],
-                daviContext: widget.daviContext,
-                painterCache: widget.painterCache));
+            child: content);
       }
     }
     return Container();

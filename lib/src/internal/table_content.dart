@@ -1,5 +1,6 @@
 import 'package:davi/davi.dart';
 import 'package:davi/src/internal/cell_widget_builder.dart';
+import 'package:davi/src/internal/cell_focus_traversal.dart';
 import 'package:davi/src/internal/cells_layout.dart';
 import 'package:davi/src/internal/cells_layout_child.dart';
 import 'package:davi/src/internal/davi_context.dart';
@@ -40,10 +41,18 @@ class TableContentState<DATA> extends State<TableContent<DATA>> {
 
   bool _postFrameRefreshScheduled = false;
   int _builtCellCount = 0;
+  late final CellFocusTraversalPolicy _focusTraversal;
 
   @override
   void initState() {
     super.initState();
+    _focusTraversal = CellFocusTraversalPolicy(
+        rowCount: () => widget.daviContext.model.rowsLength,
+        columnCount: () => widget.daviContext.model.columnsLength,
+        hasWidgets: (column) =>
+            widget.daviContext.model.columnAt(column).cellFocusTraversalEnabled,
+        reveal: _revealCell);
+    widget.daviContext.model.addListener(_focusTraversal.cancel);
     _updatePainterCacheSize();
     _onVerticalScrollChange();
     widget.daviContext.scrollControllers.vertical
@@ -54,6 +63,11 @@ class TableContentState<DATA> extends State<TableContent<DATA>> {
   @override
   void didUpdateWidget(covariant TableContent<DATA> oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (oldWidget.daviContext.model != widget.daviContext.model) {
+      oldWidget.daviContext.model.removeListener(_focusTraversal.cancel);
+      _focusTraversal.cancel();
+      widget.daviContext.model.addListener(_focusTraversal.cancel);
+    }
     _updatePainterCacheSize();
     _onVerticalScrollChange();
     if (oldWidget.daviContext.scrollControllers.vertical !=
@@ -73,6 +87,8 @@ class TableContentState<DATA> extends State<TableContent<DATA>> {
 
   @override
   void dispose() {
+    widget.daviContext.model.removeListener(_focusTraversal.cancel);
+    _focusTraversal.dispose();
     widget.daviContext.scrollControllers.vertical
         .removeListener(_onVerticalScrollChange);
     widget.daviContext.rowExtentManager.removeListener(_onRowExtentChanged);
@@ -114,6 +130,53 @@ class TableContentState<DATA> extends State<TableContent<DATA>> {
     _painterCache.size = widget.layoutSettings.maxVisibleRows *
         2 *
         widget.layoutSettings.columnsMetrics.length;
+  }
+
+  Future<void> _revealCell(CellMapping cell, bool Function() active) async {
+    // First reveal using estimated extents, then correct after the row has
+    // been built and measured. Both scrollbars may change during this step.
+    for (int pass = 0; pass < 4 && mounted && active(); pass++) {
+      if (cell.rowIndex >= widget.daviContext.model.rowsLength ||
+          cell.columnIndex >= widget.layoutSettings.columnsMetrics.length) {
+        return;
+      }
+      final manager = widget.daviContext.rowExtentManager;
+      final vertical = widget.daviContext.scrollControllers.vertical;
+      final top = manager.offsetOf(cell.rowIndex);
+      final height = manager.heightOf(cell.rowIndex);
+      final column = widget.layoutSettings.columnsMetrics[cell.columnIndex];
+      final area = widget.layoutSettings.getAreaBounds(column.pinStatus);
+      final horizontal = widget.daviContext.scrollControllers
+          .getHorizontalController(column.pinStatus);
+      final movedVertically =
+          _revealInterval(vertical, top, height, widget.maxHeight);
+      final movedHorizontally = _revealInterval(
+          horizontal, column.offset - area.left, column.width, area.width);
+      if (pass > 0 &&
+          !movedVertically &&
+          !movedHorizontally &&
+          _focusTraversal.cells.containsKey(cell)) {
+        return;
+      }
+      await WidgetsBinding.instance.endOfFrame;
+    }
+  }
+
+  bool _revealInterval(ScrollController controller, double start, double extent,
+      double viewport) {
+    if (!controller.hasClients || viewport <= 0) return false;
+    final offset = controller.offset;
+    double target = offset;
+    if (start < offset || extent > viewport) {
+      target = start;
+    } else if (start + extent > offset + viewport) {
+      target = start + extent - viewport;
+    }
+    target = target.clamp(controller.position.minScrollExtent,
+        controller.position.maxScrollExtent);
+    if ((target - offset).abs() < 0.01) return false;
+    controller.jumpTo(target);
+    return true;
   }
 
   void _onVerticalScrollChange() {
@@ -186,6 +249,7 @@ class TableContentState<DATA> extends State<TableContent<DATA>> {
                 cellIndex: cellIndex,
                 daviContext: widget.daviContext,
                 viewportState: _viewportState,
+                focusTraversal: _focusTraversal,
                 painterCache: _painterCache,
                 layoutSettings: widget.layoutSettings)));
       }
@@ -211,6 +275,10 @@ class TableContentState<DATA> extends State<TableContent<DATA>> {
             rowTheme: theme.row,
             layoutSettings: widget.layoutSettings,
             child: FocusTraversalGroup(
-                policy: OrderedTraversalPolicy(), child: cells)));
+                policy: _focusTraversal,
+                child: Focus(
+                    focusNode: _focusTraversal.parkingNode,
+                    skipTraversal: true,
+                    child: cells))));
   }
 }
