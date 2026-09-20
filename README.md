@@ -24,5 +24,3 @@ Explore and learn more by clicking [here](https://caduandrade.github.io/davi_flu
 ![](https://caduandrade.github.io/davi_flutter/screenshot2.png)
 
 ![](https://caduandrade.github.io/davi_flutter/screenshot3.png)
-
-![](https://caduandrade.github.io/davi_flutter/screenshot4.png)

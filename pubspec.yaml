@@ -10,8 +10,6 @@ screenshots:
     path: screenshots/screenshot2.png
   - description: Custom cell configuration example
     path: screenshots/screenshot3.png
-  - description: Cell merging feature demonstration
-    path: screenshots/screenshot4.png
 
 topics:
   - data
