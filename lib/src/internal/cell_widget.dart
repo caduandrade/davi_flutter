@@ -189,7 +189,8 @@ class CellWidgetState<DATA> extends State<CellWidget<DATA>> {
       child = TextCellPainter(
           text: widget.column.cellValueStringify(value),
           painterCache: widget.painterCache,
-          textStyle: effectiveTextStyle);
+          textStyle: effectiveTextStyle,
+          overflow: widget.column.cellOverflow);
     }
 
     if (widget.daviContext.semanticsEnabled &&

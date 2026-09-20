@@ -8,16 +8,21 @@ class TextCellPainter extends LeafRenderObjectWidget {
       {super.key,
       required this.text,
       required this.painterCache,
-      required this.textStyle});
+      required this.textStyle,
+      this.overflow});
 
   final PainterCache painterCache;
   final String text;
   final TextStyle? textStyle;
+  final TextOverflow? overflow;
 
   @override
   RenderObject createRenderObject(BuildContext context) {
     return CellPainterRenderBox(
-        text: text, renderCache: painterCache, textStyle: textStyle);
+        text: text,
+        renderCache: painterCache,
+        textStyle: textStyle,
+        overflow: overflow);
   }
 
   @override
@@ -26,7 +31,8 @@ class TextCellPainter extends LeafRenderObjectWidget {
     renderObject
       ..text = text
       ..painterCache = painterCache
-      ..textStyle = textStyle;
+      ..textStyle = textStyle
+      ..overflow = overflow;
   }
 }
 
@@ -35,10 +41,12 @@ class CellPainterRenderBox extends RenderBox {
   CellPainterRenderBox(
       {required String text,
       required PainterCache renderCache,
-      required TextStyle? textStyle})
+      required TextStyle? textStyle,
+      TextOverflow? overflow})
       : _text = text,
         _painterCache = renderCache,
-        _textStyle = textStyle;
+        _textStyle = textStyle,
+        _overflow = overflow;
 
   PainterCache _painterCache;
 
@@ -51,6 +59,15 @@ class CellPainterRenderBox extends RenderBox {
   set textStyle(TextStyle? value) {
     if (_textStyle != value) {
       _textStyle = value;
+      markNeedsLayout();
+    }
+  }
+
+  TextOverflow? _overflow;
+
+  set overflow(TextOverflow? value) {
+    if (_overflow != value) {
+      _overflow = value;
       markNeedsLayout();
     }
   }
@@ -69,7 +86,10 @@ class CellPainterRenderBox extends RenderBox {
   @override
   void performLayout() {
     _textPainter = _painterCache.getTextPainter(
-        width: constraints.maxWidth, textStyle: _textStyle, value: _text);
+        width: constraints.maxWidth,
+        textStyle: _textStyle,
+        value: _text,
+        overflow: _overflow);
     size = Size(_textPainter.width, _textPainter.height);
   }
 
@@ -84,7 +104,11 @@ class CellPainterRenderBox extends RenderBox {
 
   double _measureHeight(double width) {
     return _painterCache
-        .getTextPainter(width: width, textStyle: _textStyle, value: _text)
+        .getTextPainter(
+            width: width,
+            textStyle: _textStyle,
+            value: _text,
+            overflow: _overflow)
         .height;
   }
 

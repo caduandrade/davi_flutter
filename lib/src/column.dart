@@ -98,8 +98,11 @@ class DaviColumn<DATA> extends ChangeNotifier {
   /// This controls how the cell data is positioned within the cell area.
   final Alignment? cellAlignment;
 
-  /// Determines how the cell content overflows when the content is too large for the cell.
-  /// The value defines the behavior of the text when it exceeds the available space.
+  /// Determines how a [cellValue] text overflows when it's too large for the
+  /// cell's width. Only applies to [cellValue] - [cellWidget] is unaffected.
+  /// Defaults to `null`, which lets the text wrap onto as many lines as it
+  /// needs, growing the row to fit. Set this (e.g. [TextOverflow.ellipsis])
+  /// to keep the text on a single line instead.
   final TextOverflow? cellOverflow;
 
   /// A custom background builder for each cell in the column.
