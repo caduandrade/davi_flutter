@@ -46,6 +46,45 @@ class _TableEventsState<DATA> extends State<TableEvents<DATA>> {
   // left-pinned columns or the unpinned ones.
   ScrollController? _dragScrollController;
 
+  // The mouse's last known local position while it's over the table (null
+  // when it isn't). Vertical scrolling moves row content underneath a
+  // stationary mouse without generating a new PointerHoverEvent - Flutter
+  // only fires those on actual pointer movement - so the hovered row index
+  // would otherwise stay pinned to whatever row was under the mouse before
+  // the scroll, visibly sliding away from the cursor. Recomputing hover
+  // from this cached position whenever the vertical offset changes keeps it
+  // under the cursor instead.
+  Offset? _lastHoverPosition;
+
+  @override
+  void initState() {
+    super.initState();
+    verticalScroll.addListener(_onVerticalScroll);
+  }
+
+  @override
+  void didUpdateWidget(covariant TableEvents<DATA> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final ScrollController oldController =
+        oldWidget.daviContext.scrollControllers.vertical;
+    if (oldController != verticalScroll) {
+      oldController.removeListener(_onVerticalScroll);
+      verticalScroll.addListener(_onVerticalScroll);
+    }
+  }
+
+  @override
+  void dispose() {
+    verticalScroll.removeListener(_onVerticalScroll);
+    super.dispose();
+  }
+
+  void _onVerticalScroll() {
+    if (_lastHoverPosition != null) {
+      _updateHover(_lastHoverPosition);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     Widget content = widget.child;
@@ -102,14 +141,17 @@ class _TableEventsState<DATA> extends State<TableEvents<DATA>> {
       widget.daviContext.scrollControllers.vertical;
 
   void _onEnter(PointerEnterEvent event) {
+    _lastHoverPosition = event.localPosition;
     _updateHover(event.localPosition);
   }
 
   void _onHover(PointerHoverEvent event) {
+    _lastHoverPosition = event.localPosition;
     _updateHover(event.localPosition);
   }
 
   void _onExit(PointerExitEvent event) {
+    _lastHoverPosition = null;
     _updateHover(null);
   }
 

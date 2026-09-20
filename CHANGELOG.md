@@ -22,6 +22,7 @@
   * Cell content position wasn't reported to Flutter's transform tree (`RenderObject.applyPaintTransform`), only used at paint/hit-test time - anything relying on it (accessibility/semantics, `Scrollable.ensureVisible`, `localToGlobal`) saw every cell as sitting at its row's container origin instead of its real position.
   * Resizing or scrolling through dynamic-height rows could leave cells missing or make row heights oscillate: recycled cells could retain slots outside a shrinking pool. Keep mappings within the pool, reconcile its size after measurement without a debounce, and lay out every cell with its row's corrected height.
   * Scrollbar visibility now updates after row measurement, including when widening the table makes wrapped content fit without vertical scrolling.
+  * The hovered row stayed pinned to whichever row was under the mouse before a scroll instead of following the cursor, since scrolling content under a stationary mouse doesn't generate a new hover event.
 
 ## 4.1.0
 
