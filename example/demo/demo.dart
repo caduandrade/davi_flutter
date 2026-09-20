@@ -76,8 +76,7 @@ class _HomePageState extends State<HomePage> {
         name: 'Name',
         cellFocusTraversalEnabled: true,
         width: 100,
-        //cellValue: (params) => params.data.name,
-        cellWidget: (param) => TextField(),
+        cellValue: (params) => params.data.name,
         //cellValue: (params) =>       params.rowIndex == 0 ? 'a\nb\nc' : params.data.name,
       ),
     );
@@ -104,8 +103,7 @@ class _HomePageState extends State<HomePage> {
       DaviColumn(
         name: 'Class',
         width: 110,
-        //cellValue: (params) => params.data.cls,
-        cellWidget: (param) => TextField(),
+        cellValue: (params) => params.data.cls,
       ),
     );
     list.add(

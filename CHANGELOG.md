@@ -1,4 +1,4 @@
-## 5.0.0
+## 5.0.0-beta.1
 
 * Row height is now dynamic: each row automatically grows to fit its content, the same way the header row already does, instead of using a single fixed height for every row.
 * Cell merging (`rowSpan`/`columnSpan`) has been removed. It was one of the main blockers to making row height dynamic, made sorting and horizontal merging harder to reason about together, and added significant internal complexity for a rarely used feature. Removing it keeps the package simpler to maintain.
