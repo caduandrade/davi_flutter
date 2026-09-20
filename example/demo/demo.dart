@@ -75,7 +75,8 @@ class _HomePageState extends State<HomePage> {
         leading: const Icon(Icons.person, size: 16),
         name: 'Name',
         width: 100,
-        cellValue: (params) => params.data.name,
+        //cellValue: (params) => params.data.name,
+        cellWidget: (param) => TextField(),
         //cellValue: (params) =>       params.rowIndex == 0 ? 'a\nb\nc' : params.data.name,
       ),
     );
@@ -102,7 +103,8 @@ class _HomePageState extends State<HomePage> {
       DaviColumn(
         name: 'Class',
         width: 110,
-        cellValue: (params) => params.data.cls,
+        //cellValue: (params) => params.data.cls,
+        cellWidget: (param) => TextField(),
       ),
     );
     list.add(

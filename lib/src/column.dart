@@ -160,6 +160,10 @@ class DaviColumn<DATA> extends ChangeNotifier {
   final CellPainter<DATA>? cellPainter;
 
   /// Cell widget mapper for each row in that column.
+  ///
+  /// TAB and Shift+TAB traverse focusable controls in row/column order,
+  /// scrolling vertically and horizontally to reveal the destination.
+  /// Offscreen rows are built on demand; disabled controls are skipped.
   final CellWidgetBuilder<DATA>? cellWidget;
 
   /// A builder function that provides a [Listenable] for a specific cell in this column.
