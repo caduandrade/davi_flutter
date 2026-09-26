@@ -39,7 +39,7 @@ class _DaviHeaderCellState<DATA> extends State<DaviHeaderCell<DATA>> {
         !widget.daviContext.columnNotifier.resizing &&
         !widget.daviContext.scrolling;
     final bool sortEnabled =
-        widget.daviContext.model.sortingMode != SortingMode.disabled &&
+        widget.daviContext.dataSource.sortingMode != SortingMode.disabled &&
             interactionEnabled;
     final bool resizable = widget.resizable &&
         widget.column.resizable &&
@@ -78,7 +78,7 @@ class _DaviHeaderCellState<DATA> extends State<DaviHeaderCell<DATA>> {
         child: sortIconWidget,
       ));
 
-      if (widget.daviContext.model.isMultiSorted) {
+      if (widget.daviContext.dataSource.isMultiSorted) {
         if (theme.sortPriorityGap != null) {
           children.add(SizedBox(width: theme.sortPriorityGap));
         }
@@ -189,12 +189,12 @@ class _DaviHeaderCellState<DATA> extends State<DaviHeaderCell<DATA>> {
   }
 
   void _onHeaderSortPressed() {
-    final DaviDataSource<DATA> model = widget.daviContext.model;
+    final DaviDataSource<DATA> dataSource = widget.daviContext.dataSource;
     List<DaviSort> sortList = SortUtil.newSortList(
-        sortList: model.sortList,
-        multiSortEnabled: model.multiSortEnabled,
-        alwaysSorted: model.sortingMode == SortingMode.alwaysSorted,
+        sortList: dataSource.sortList,
+        multiSortEnabled: dataSource.multiSortEnabled,
+        alwaysSorted: dataSource.sortingMode == SortingMode.alwaysSorted,
         columnIdToSort: widget.column.id);
-    model.sort(sortList);
+    dataSource.sort(sortList);
   }
 }

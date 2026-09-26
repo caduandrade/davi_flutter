@@ -42,8 +42,8 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
       required Color? dividerColor,
       required DaviRowColor<DATA>? rowColor,
       required DividerPaintManager dividerPaintManager,
-      required DaviDataSource<DATA> model})
-      : _model = model,
+      required DaviDataSource<DATA> dataSource})
+      : _dataSource = dataSource,
         _rowExtentManager = rowExtentManager,
         _rowExtentGeneration = rowExtentManager.generation,
         _viewportState = viewportState,
@@ -76,11 +76,11 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
     _viewportState.addListener(markNeedsLayout);
   }
 
-  DaviDataSource<DATA> _model;
+  DaviDataSource<DATA> _dataSource;
 
-  set model(DaviDataSource<DATA> value) {
-    if (_model != value) {
-      _model = value;
+  set dataSource(DaviDataSource<DATA> value) {
+    if (_dataSource != value) {
+      _dataSource = value;
       markNeedsPaint();
     }
   }
@@ -411,7 +411,7 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
           color = _hoverBackground!(rowRegion.index) ?? color;
         }
         if (rowRegion.hasData && color == null && _rowColor != null) {
-          final DATA data = _model.rowAt(rowRegion.index);
+          final DATA data = _dataSource.rowAt(rowRegion.index);
           color = _rowColor!(RowColorParams(
               data: data,
               rowIndex: rowRegion.index,

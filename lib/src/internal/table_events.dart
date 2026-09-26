@@ -89,7 +89,7 @@ class _TableEventsState<DATA> extends State<TableEvents<DATA>> {
   Widget build(BuildContext context) {
     Widget content = widget.child;
 
-    if (widget.daviContext.model.isRowsNotEmpty) {
+    if (widget.daviContext.dataSource.isRowsNotEmpty) {
       // Updates logical row status on hover
       content = MouseRegion(
           onEnter: _onEnter,
@@ -211,14 +211,14 @@ class _TableEventsState<DATA> extends State<TableEvents<DATA>> {
   }
 
   void _updateHover(Offset? position) {
-    if (widget.daviContext.model.isRowsNotEmpty) {
+    if (widget.daviContext.dataSource.isRowsNotEmpty) {
       int? rowIndex;
       if (position != null) {
         rowIndex = widget.rowRegions.boundsIndex(position);
       }
       DATA? data;
-      if (rowIndex != null && rowIndex < widget.daviContext.model.rowsLength) {
-        data = widget.daviContext.model.rowAt(rowIndex);
+      if (rowIndex != null && rowIndex < widget.daviContext.dataSource.rowsLength) {
+        data = widget.daviContext.dataSource.rowAt(rowIndex);
       }
       if (data != null) {
         widget.daviContext.hoverNotifier.cursor = _buildCursor(
@@ -251,8 +251,8 @@ class _TableEventsState<DATA> extends State<TableEvents<DATA>> {
     DATA? data;
     if (widget.daviContext.hoverNotifier.index != null) {
       if (widget.daviContext.hoverNotifier.index! <
-          widget.daviContext.model.rowsLength) {
-        data = widget.daviContext.model
+          widget.daviContext.dataSource.rowsLength) {
+        data = widget.daviContext.dataSource
             .rowAt(widget.daviContext.hoverNotifier.index!);
       }
     }

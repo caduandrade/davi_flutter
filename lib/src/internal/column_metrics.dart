@@ -27,25 +27,25 @@ class ColumnMetrics {
   int get hashCode => width.hashCode ^ offset.hashCode ^ pinStatus.hashCode;
 
   static List<ColumnMetrics> columnsFit(
-      {required DaviDataSource model,
+      {required DaviDataSource dataSource,
       required double maxWidth,
       required double dividerThickness}) {
     List<ColumnMetrics> list = [];
     double offset = 0;
-    final int dividersLength = math.max(0, model.columnsLength - 1);
+    final int dividersLength = math.max(0, dataSource.columnsLength - 1);
     final double availableWidth =
         math.max(0, maxWidth - (dividerThickness * dividersLength));
 
     double totalGrow = 0;
-    for (int i = 0; i < model.columnsLength; i++) {
-      final DaviColumn column = model.columnAt(i);
+    for (int i = 0; i < dataSource.columnsLength; i++) {
+      final DaviColumn column = dataSource.columnAt(i);
       totalGrow += column.grow ?? 1;
     }
 
     final double columnWidthRatio = availableWidth / totalGrow;
 
-    for (int i = 0; i < model.columnsLength; i++) {
-      final DaviColumn column = model.columnAt(i);
+    for (int i = 0; i < dataSource.columnsLength; i++) {
+      final DaviColumn column = dataSource.columnAt(i);
       final double width = columnWidthRatio * (column.grow ?? 1);
       list.add(ColumnMetrics(
           width: width, offset: offset, pinStatus: PinStatus.none));
@@ -55,14 +55,14 @@ class ColumnMetrics {
   }
 
   static List<ColumnMetrics> resizable(
-      {required DaviDataSource model,
+      {required DaviDataSource dataSource,
       required double maxWidth,
       required double dividerThickness}) {
     double offset = 0;
     double totalGrow = 0;
     for (PinStatus pinStatus in PinStatus.values) {
-      for (int i = 0; i < model.columnsLength; i++) {
-        final DaviColumn column = model.columnAt(i);
+      for (int i = 0; i < dataSource.columnsLength; i++) {
+        final DaviColumn column = dataSource.columnAt(i);
         if (!DaviColumnHelper.isLayoutPerformed(column: column)) {
           if (pinStatus == column.pinStatus) {
             offset += column.width + dividerThickness;
@@ -83,8 +83,8 @@ class ColumnMetrics {
     offset = 0;
     List<ColumnMetrics> list = [];
     for (PinStatus pinStatus in PinStatus.values) {
-      for (int i = 0; i < model.columnsLength; i++) {
-        final DaviColumn column = model.columnAt(i);
+      for (int i = 0; i < dataSource.columnsLength; i++) {
+        final DaviColumn column = dataSource.columnAt(i);
         if (pinStatus == column.pinStatus) {
           double width = column.width;
           if (growFactor != null && column.grow != null) {

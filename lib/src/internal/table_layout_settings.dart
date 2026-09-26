@@ -14,7 +14,7 @@ import 'package:meta/meta.dart';
 @internal
 class TableLayoutSettings {
   factory TableLayoutSettings(
-      {required DaviDataSource model,
+      {required DaviDataSource dataSource,
       required BoxConstraints constraints,
       required ColumnWidthBehavior columnWidthBehavior,
       required TableThemeMetrics themeMetrics,
@@ -36,7 +36,7 @@ class TableLayoutSettings {
       ]);
     }
 
-    final int rowsLength = model.rowsLength + (hasTrailingWidget ? 1 : 0);
+    final int rowsLength = dataSource.rowsLength + (hasTrailingWidget ? 1 : 0);
 
     // The header no longer has a fixed height metric: TableLayoutRenderBox
     // discovers the real height from the header content at layout time.
@@ -66,7 +66,7 @@ class TableLayoutSettings {
       final double availableRowsHeight = math.max(
           0,
           constraints.maxHeight -
-              (model.hasSummary ? themeMetrics.summary.height : 0) -
+              (dataSource.hasSummary ? themeMetrics.summary.height : 0) -
               (themeMetrics.header.visible ? estimatedHeaderHeight : 0) -
               (hasHorizontalScrollbar ? themeMetrics.scrollbar.height : 0));
       needVerticalScrollbar =
@@ -84,7 +84,7 @@ class TableLayoutSettings {
               (hasVerticalScrollbar ? themeMetrics.scrollbar.width : 0));
       columnsMetrics = UnmodifiableListView<ColumnMetrics>(
           ColumnMetrics.columnsFit(
-              model: model,
+              dataSource: dataSource,
               dividerThickness: themeMetrics.columnDividerThickness,
               maxWidth: unpinnedContentWidth));
       hasHorizontalScrollbar = false;
@@ -92,7 +92,7 @@ class TableLayoutSettings {
       // resizable columns
       columnsMetrics = UnmodifiableListView<ColumnMetrics>(
           ColumnMetrics.resizable(
-              model: model,
+              dataSource: dataSource,
               maxWidth: math.max(
                   0,
                   constraints.maxWidth -
@@ -147,7 +147,7 @@ class TableLayoutSettings {
           final double availableRowsHeight = math.max(
               0,
               constraints.maxHeight -
-                  (model.hasSummary ? themeMetrics.summary.height : 0) -
+                  (dataSource.hasSummary ? themeMetrics.summary.height : 0) -
                   (themeMetrics.header.visible ? estimatedHeaderHeight : 0) -
                   themeMetrics.scrollbar.height);
           needVerticalScrollbar =
@@ -184,7 +184,7 @@ class TableLayoutSettings {
               0,
               constraints.maxHeight -
                   headerBounds.height -
-                  (model.hasSummary ? themeMetrics.summary.height : 0) -
+                  (dataSource.hasSummary ? themeMetrics.summary.height : 0) -
                   (hasHorizontalScrollbar
                       ? themeMetrics.scrollbar.height
                       : 0)));
@@ -197,7 +197,7 @@ class TableLayoutSettings {
           rowExtentManager.heightUpTo(visibleRowsCount!));
     }
 
-    if (model.hasSummary) {
+    if (dataSource.hasSummary) {
       summaryBounds = Rect.fromLTWH(0, cellsBounds.bottom, cellsBounds.width,
           themeMetrics.summary.height);
     } else {
@@ -207,7 +207,7 @@ class TableLayoutSettings {
     if (hasHorizontalScrollbar) {
       final double top = headerBounds.height +
           cellsBounds.height +
-          (model.hasSummary ? themeMetrics.summary.height : 0);
+          (dataSource.hasSummary ? themeMetrics.summary.height : 0);
       final double leftDivisorWidth =
           leftPinnedContentWidth > 0 ? themeMetrics.columnDividerThickness : 0;
       horizontalScrollbarBounds = Rect.fromLTWH(

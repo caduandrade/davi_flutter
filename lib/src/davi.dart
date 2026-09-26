@@ -363,7 +363,7 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
         hasHoverListener: widget.onHover != null,
         columnNotifier: _columnNotifier,
         semanticsEnabled: widget.semanticsEnabled,
-        model: dataSource,
+        dataSource: dataSource,
         onLastVisibleRow: _onLastVisibleRowListener,
         onTrailingWidget: _onTrailingWidget,
         rowColor: widget.rowColor,

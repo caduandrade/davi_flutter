@@ -70,7 +70,7 @@ void _expectCompleteViewport(WidgetTester tester) {
       row < manager.rowsLength && manager.offsetOf(row) < table.maxHeight;
       row++) {
     expect(cells.where((cell) => cell.rowIndex == row).length,
-        table.daviContext.model.columnsLength,
+        table.daviContext.dataSource.columnsLength,
         reason: 'Missing cells in visible row $row');
   }
 }

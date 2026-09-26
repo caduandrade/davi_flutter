@@ -21,7 +21,7 @@ class DaviContext<DATA> {
       required this.hasHoverListener,
       required this.columnNotifier,
       required this.semanticsEnabled,
-      required this.model,
+      required this.dataSource,
       required this.onLastVisibleRow,
       required this.focusable,
       required this.focusNode,
@@ -45,7 +45,7 @@ class DaviContext<DATA> {
   final bool hasHoverListener;
   final ColumnNotifier columnNotifier;
   final bool semanticsEnabled;
-  final DaviDataSource<DATA> model;
+  final DaviDataSource<DATA> dataSource;
   final bool focusable;
   final FocusNode focusNode;
   final Widget? trailingWidget;
