@@ -5,7 +5,7 @@ import 'package:meta/meta.dart';
 @internal
 class SortUtil {
   /// Creates a new sort list given a list of sorted columns,
-  /// model configuration and the new column.
+  /// sort configuration and the new column.
   static List<DaviSort> newSortList(
       {required List<DaviSort> sortList,
       required bool multiSortEnabled,

@@ -1,3 +1,17 @@
+## 5.0.0-beta.2
+
+* New builder mode: `Davi.builder` lets the rows come from an external source (a `State`, Bloc, `ChangeNotifier`, etc.), which also owns their order, instead of being held by a `DaviModel`. It fits apps that already use a state management solution, and cases like server-side sorting.
+  * The rows are passed directly to `Davi.builder` through `rows`. When the data changes, rebuild it with a new list, like `ListView.builder`; don't modify the same list in place.
+  * The new `DaviController` keeps only the state of the columns (order, width and the sort indicator), never the rows.
+  * Tapping a sortable header never reorders the rows: it updates the sort indicator and calls `onSort`, and whoever owns the data applies the order and rebuilds. Without `onSort`, sorting is disabled.
+  * `DaviController.applySort` updates the sort indicator without touching the data, for example to reflect a sort changed programmatically or to revert a rejected one.
+  * The existing mode, based on `DaviModel` (the default `Davi` constructor), is now called model mode and works as before.
+* Changes
+  * `Davi`
+    * New `Davi.builder` named constructor, with the `controller`, `rows` and `onSort` attributes.
+    * The `model` attribute is now nullable (it is `null` in builder mode), and there's a new `controller` attribute (`null` in model mode).
+  * New `DaviController` class.
+
 ## 5.0.0-beta.1
 
 * Row height is now dynamic: each row automatically grows to fit its content, the same way the header row already does, instead of using a single fixed height for every row.

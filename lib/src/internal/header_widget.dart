@@ -23,7 +23,7 @@ class HeaderWidget<DATA> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (daviContext.model.isColumnsEmpty) {
+    if (daviContext.dataSource.isColumnsEmpty) {
       return Container();
     }
     DaviThemeData theme = DaviTheme.of(context);
@@ -31,9 +31,9 @@ class HeaderWidget<DATA> extends StatelessWidget {
     List<ColumnsLayoutChild<DATA>> children = [];
 
     for (int columnIndex = 0;
-        columnIndex < daviContext.model.columnsLength;
+        columnIndex < daviContext.dataSource.columnsLength;
         columnIndex++) {
-      final DaviColumn<DATA> column = daviContext.model.columnAt(columnIndex);
+      final DaviColumn<DATA> column = daviContext.dataSource.columnAt(columnIndex);
 
       final Widget cell = DaviHeaderCell<DATA>(
           key: ValueKey<int>(columnIndex),

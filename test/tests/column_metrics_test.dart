@@ -21,14 +21,14 @@ void main() {
       test('Empty', () {
         DaviModel model = DaviModel(columns: []);
         List<ColumnMetrics> list = ColumnMetrics.columnsFit(
-            model: model, maxWidth: 100, dividerThickness: 10);
+            dataSource: model, maxWidth: 100, dividerThickness: 10);
         expect(list.length, 0);
       });
       test('Single - Divider', () {
         DaviModel model =
             DaviModel(columns: [DaviColumn(pinStatus: PinStatus.left)]);
         List<ColumnMetrics> list = ColumnMetrics.columnsFit(
-            model: model, maxWidth: 100, dividerThickness: 10);
+            dataSource: model, maxWidth: 100, dividerThickness: 10);
         expect(list.length, 1);
         expect(list[0].offset, 0);
         expect(list[0].width, 100);
@@ -38,7 +38,7 @@ void main() {
         DaviModel model =
             DaviModel(columns: [DaviColumn(pinStatus: PinStatus.left)]);
         List<ColumnMetrics> list = ColumnMetrics.columnsFit(
-            model: model, maxWidth: 100, dividerThickness: 0);
+            dataSource: model, maxWidth: 100, dividerThickness: 0);
         expect(list.length, 1);
         expect(list[0].offset, 0);
         expect(list[0].width, 100);
@@ -50,7 +50,7 @@ void main() {
           DaviColumn(pinStatus: PinStatus.none)
         ]);
         List<ColumnMetrics> list = ColumnMetrics.columnsFit(
-            model: model, maxWidth: 100, dividerThickness: 10);
+            dataSource: model, maxWidth: 100, dividerThickness: 10);
         expect(list.length, 2);
         expect(list[0].offset, 0);
         expect(list[0].width, 45);
@@ -65,7 +65,7 @@ void main() {
           DaviColumn(pinStatus: PinStatus.none)
         ]);
         List<ColumnMetrics> list = ColumnMetrics.columnsFit(
-            model: model, maxWidth: 100, dividerThickness: 0);
+            dataSource: model, maxWidth: 100, dividerThickness: 0);
         expect(list.length, 2);
         expect(list[0].offset, 0);
         expect(list[0].width, 50);
@@ -78,7 +78,7 @@ void main() {
         DaviModel model = DaviModel(
             columns: [DaviColumn(pinStatus: PinStatus.left, grow: 2)]);
         List<ColumnMetrics> list = ColumnMetrics.columnsFit(
-            model: model, maxWidth: 100, dividerThickness: 10);
+            dataSource: model, maxWidth: 100, dividerThickness: 10);
         expect(list.length, 1);
         expect(list[0].offset, 0);
         expect(list[0].width, 100);
@@ -88,7 +88,7 @@ void main() {
         DaviModel model = DaviModel(
             columns: [DaviColumn(pinStatus: PinStatus.left, grow: 2)]);
         List<ColumnMetrics> list = ColumnMetrics.columnsFit(
-            model: model, maxWidth: 100, dividerThickness: 0);
+            dataSource: model, maxWidth: 100, dividerThickness: 0);
         expect(list.length, 1);
         expect(list[0].offset, 0);
         expect(list[0].width, 100);
@@ -100,7 +100,7 @@ void main() {
           DaviColumn(pinStatus: PinStatus.none, grow: 6)
         ]);
         List<ColumnMetrics> list = ColumnMetrics.columnsFit(
-            model: model, maxWidth: 100, dividerThickness: 20);
+            dataSource: model, maxWidth: 100, dividerThickness: 20);
         expect(list.length, 2);
         expect(list[0].offset, 0);
         expect(list[0].width, 20);
@@ -115,7 +115,7 @@ void main() {
           DaviColumn(pinStatus: PinStatus.none, grow: 8)
         ]);
         List<ColumnMetrics> list = ColumnMetrics.columnsFit(
-            model: model, maxWidth: 100, dividerThickness: 0);
+            dataSource: model, maxWidth: 100, dividerThickness: 0);
         expect(list.length, 2);
         expect(list[0].offset, 0);
         expect(list[0].width, 20);
@@ -129,14 +129,14 @@ void main() {
       test('Empty', () {
         DaviModel model = DaviModel(columns: []);
         List<ColumnMetrics> list = ColumnMetrics.resizable(
-            model: model, maxWidth: 500, dividerThickness: 10);
+            dataSource: model, maxWidth: 500, dividerThickness: 10);
         expect(list.length, 0);
       });
       test('Single - Divider', () {
         DaviModel model = DaviModel(
             columns: [DaviColumn(pinStatus: PinStatus.left, width: 50)]);
         List<ColumnMetrics> list = ColumnMetrics.resizable(
-            model: model, maxWidth: 500, dividerThickness: 10);
+            dataSource: model, maxWidth: 500, dividerThickness: 10);
         expect(list.length, 1);
         expect(list[0].offset, 0);
         expect(list[0].width, 50);
@@ -146,7 +146,7 @@ void main() {
         DaviModel model = DaviModel(
             columns: [DaviColumn(pinStatus: PinStatus.left, width: 50)]);
         List<ColumnMetrics> list = ColumnMetrics.resizable(
-            model: model, maxWidth: 500, dividerThickness: 10);
+            dataSource: model, maxWidth: 500, dividerThickness: 10);
         expect(list.length, 1);
         expect(list[0].offset, 0);
         expect(list[0].width, 50);
@@ -158,7 +158,7 @@ void main() {
           DaviColumn(pinStatus: PinStatus.none, width: 100)
         ]);
         List<ColumnMetrics> list = ColumnMetrics.resizable(
-            model: model, maxWidth: 500, dividerThickness: 10);
+            dataSource: model, maxWidth: 500, dividerThickness: 10);
         expect(list.length, 2);
         expect(list[0].offset, 0);
         expect(list[0].width, 50);
@@ -173,7 +173,7 @@ void main() {
           DaviColumn(pinStatus: PinStatus.none, width: 100)
         ]);
         List<ColumnMetrics> list = ColumnMetrics.resizable(
-            model: model, maxWidth: 500, dividerThickness: 0);
+            dataSource: model, maxWidth: 500, dividerThickness: 0);
         expect(list.length, 2);
         expect(list[0].offset, 0);
         expect(list[0].width, 50);

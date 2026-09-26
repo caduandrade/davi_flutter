@@ -39,7 +39,7 @@ class CellsLayout<DATA> extends MultiChildRenderObjectWidget {
   RenderObject createRenderObject(BuildContext context) {
     DaviThemeData theme = DaviTheme.of(context);
     return CellsLayoutRenderBox<DATA>(
-        model: daviContext.model,
+        dataSource: daviContext.dataSource,
         hoverBackground: theme.row.hoverBackground,
         hoverForeground: theme.row.hoverForeground,
         rowExtentManager: daviContext.rowExtentManager,
@@ -95,6 +95,6 @@ class CellsLayout<DATA> extends MultiChildRenderObjectWidget {
       ..themeRowColor = theme.row.color
       ..rowColor = daviContext.rowColor
       ..dividerPaintManager = dividerPaintManager
-      ..model = daviContext.model;
+      ..dataSource = daviContext.dataSource;
   }
 }

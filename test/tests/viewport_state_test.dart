@@ -29,7 +29,7 @@ void main() {
     final manager = buildExtentManager(
         rowsLength: 100, cellHeight: 40, dividerThickness: 0);
     final columns = ColumnMetrics.resizable(
-        model: model, maxWidth: 500, dividerThickness: 0);
+        dataSource: model, maxWidth: 500, dividerThickness: 0);
     final viewport = ViewportState<int>();
     addTearDown(manager.dispose);
     addTearDown(viewport.dispose);
@@ -40,7 +40,7 @@ void main() {
         rowExtentManager: manager,
         maxHeight: height,
         maxWidth: 500,
-        model: model,
+        dataSource: model,
         hasTrailing: false,
         rowFillHeight: false);
 
@@ -73,7 +73,7 @@ void main() {
       DaviModel<int> model = buildModel(rowCount: 3, columnCount: 2);
 
       List<ColumnMetrics> columnsMetrics = ColumnMetrics.resizable(
-          model: model, maxWidth: maxWidth, dividerThickness: dividerThickness);
+          dataSource: model, maxWidth: maxWidth, dividerThickness: dividerThickness);
       RowExtentManager rowExtentManager = buildExtentManager(
           rowsLength: model.rowsLength,
           cellHeight: cellHeight,
@@ -86,7 +86,7 @@ void main() {
           rowExtentManager: rowExtentManager,
           maxHeight: maxHeight,
           maxWidth: maxWidth,
-          model: model,
+          dataSource: model,
           hasTrailing: false,
           rowFillHeight: false);
 
@@ -157,7 +157,7 @@ void main() {
       DaviModel<int> model = buildModel(rowCount: 5, columnCount: 2);
 
       List<ColumnMetrics> columnsMetrics = ColumnMetrics.resizable(
-          model: model, maxWidth: maxWidth, dividerThickness: dividerThickness);
+          dataSource: model, maxWidth: maxWidth, dividerThickness: dividerThickness);
       RowExtentManager rowExtentManager = buildExtentManager(
           rowsLength: model.rowsLength,
           cellHeight: cellHeight,
@@ -170,7 +170,7 @@ void main() {
           rowExtentManager: rowExtentManager,
           maxHeight: maxHeight,
           maxWidth: maxWidth,
-          model: model,
+          dataSource: model,
           hasTrailing: false,
           rowFillHeight: false);
 
@@ -227,7 +227,7 @@ void main() {
     DaviModel<int> model = buildModel(rowCount: 20, columnCount: 2);
 
     List<ColumnMetrics> columnsMetrics = ColumnMetrics.resizable(
-        model: model, maxWidth: maxWidth, dividerThickness: dividerThickness);
+        dataSource: model, maxWidth: maxWidth, dividerThickness: dividerThickness);
     RowExtentManager rowExtentManager = buildExtentManager(
         rowsLength: model.rowsLength,
         cellHeight: cellHeight,
@@ -241,7 +241,7 @@ void main() {
           rowExtentManager: rowExtentManager,
           maxHeight: maxHeight,
           maxWidth: maxWidth,
-          model: model,
+          dataSource: model,
           hasTrailing: false,
           rowFillHeight: false);
     }

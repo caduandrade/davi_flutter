@@ -96,9 +96,9 @@ class _TableLayoutBuilderState<DATA> extends State<TableLayoutBuilder<DATA>> {
 
     if (daviContext.columnWidthBehavior == ColumnWidthBehavior.scrollable) {
       for (int columnIndex = 0;
-          columnIndex < daviContext.model.columnsLength;
+          columnIndex < daviContext.dataSource.columnsLength;
           columnIndex++) {
-        DaviColumn column = daviContext.model.columnAt(columnIndex);
+        DaviColumn column = daviContext.dataSource.columnAt(columnIndex);
         if (!DaviColumnHelper.isLayoutPerformed(column: column)) {
           ColumnMetrics columnMetrics =
               layoutSettings.columnsMetrics[columnIndex];
@@ -178,7 +178,7 @@ class _TableLayoutBuilderState<DATA> extends State<TableLayoutBuilder<DATA>> {
               maxHeight: constraints.maxHeight);
         })));
 
-    if (daviContext.model.hasSummary) {
+    if (daviContext.dataSource.hasSummary) {
       children.add(TableLayoutChild(
           id: LayoutChildId.summary,
           child: SummaryWidget(
@@ -198,7 +198,7 @@ class _TableLayoutBuilderState<DATA> extends State<TableLayoutBuilder<DATA>> {
           BoxConstraints constraints, DaviThemeData theme) =>
       TableLayoutSettings(
           constraints: constraints,
-          model: daviContext.model,
+          dataSource: daviContext.dataSource,
           theme: theme,
           columnWidthBehavior: daviContext.columnWidthBehavior,
           themeMetrics: daviContext.themeMetrics,

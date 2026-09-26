@@ -74,10 +74,8 @@ class _HomePageState extends State<HomePage> {
         pinStatus: _leftPinned ? PinStatus.left : PinStatus.none,
         leading: const Icon(Icons.person, size: 16),
         name: 'Name',
-        cellFocusTraversalEnabled: true,
         width: 100,
         cellValue: (params) => params.data.name,
-        //cellValue: (params) =>       params.rowIndex == 0 ? 'a\nb\nc' : params.data.name,
       ),
     );
     list.add(

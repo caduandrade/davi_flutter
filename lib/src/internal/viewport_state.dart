@@ -1,7 +1,7 @@
 import 'dart:collection';
 import 'dart:math' as math;
 
-import 'package:davi/davi.dart';
+import 'package:davi/src/data_source.dart';
 import 'package:davi/src/internal/column_metrics.dart';
 import 'package:davi/src/internal/divider_paint_manager.dart';
 import 'package:davi/src/internal/row_extent_manager.dart';
@@ -132,7 +132,7 @@ class ViewportState<DATA> extends ChangeNotifier {
   // collisions, divider structure) as of the last time that expensive work
   // was actually rebuilt. Used to skip it on scroll deltas that don't change
   // which rows/columns are visible.
-  DaviModel<DATA>? _lastModel;
+  DaviDataSource<DATA>? _lastDataSource;
   int? _lastFirstRow;
   int? _lastMaxDataRowIndex;
   List<ColumnMetrics>? _lastColumnsMetrics;
@@ -145,7 +145,7 @@ class ViewportState<DATA> extends ChangeNotifier {
   double _maxWidth = 0;
   double _maxHeight = 0;
   bool _hasTrailing = false;
-  DaviModel<DATA>? _model;
+  DaviDataSource<DATA>? _dataSource;
 
   void reset(
       {required double verticalOffset,
@@ -153,14 +153,14 @@ class ViewportState<DATA> extends ChangeNotifier {
       required RowExtentManager rowExtentManager,
       required double maxHeight,
       required double maxWidth,
-      required DaviModel<DATA> model,
+      required DaviDataSource<DATA> dataSource,
       required bool hasTrailing,
       required bool rowFillHeight}) {
     _verticalOffset = verticalOffset;
     _maxWidth = maxWidth;
     _maxHeight = maxHeight;
     _hasTrailing = hasTrailing;
-    _model = model;
+    _dataSource = dataSource;
 
     _firstDataRow = rowExtentManager.indexAtOffset(verticalOffset);
 
@@ -173,7 +173,7 @@ class ViewportState<DATA> extends ChangeNotifier {
 
     _firstRow = math.max(0, _firstDataRow);
 
-    _maxCellCount = _maxVisibleRowCount * model.columnsLength;
+    _maxCellCount = _maxVisibleRowCount * dataSource.columnsLength;
 
     _rebuildRowRegions(rowExtentManager);
 
@@ -182,7 +182,7 @@ class ViewportState<DATA> extends ChangeNotifier {
     // the exact scroll pixel offset. Skip it when nothing structural changed
     // since the last call, so a sub-row-height scroll delta (the common case
     // during a drag/fling) doesn't pay this cost on every frame.
-    final bool topologyUnchanged = identical(_lastModel, model) &&
+    final bool topologyUnchanged = identical(_lastDataSource, dataSource) &&
         _lastFirstRow == _firstRow &&
         _lastMaxDataRowIndex == _maxDataRowIndex &&
         _lastHasTrailing == hasTrailing &&
@@ -192,7 +192,7 @@ class ViewportState<DATA> extends ChangeNotifier {
     if (topologyUnchanged) {
       return;
     }
-    _lastModel = model;
+    _lastDataSource = dataSource;
     _lastFirstRow = _firstRow;
     _lastMaxDataRowIndex = _maxDataRowIndex;
     _lastHasTrailing = hasTrailing;
@@ -211,8 +211,8 @@ class ViewportState<DATA> extends ChangeNotifier {
         (_maxDataRowIndex - _firstRow + 1) * columnsMetrics.length));
     for (int rowIndex = _firstRow; rowIndex <= _maxDataRowIndex; rowIndex++) {
       DATA? data;
-      if (rowIndex < model.rowsLength) {
-        data = model.rowAt(rowIndex);
+      if (rowIndex < dataSource.rowsLength) {
+        data = dataSource.rowAt(rowIndex);
       }
       if (data == null) {
         continue;
@@ -278,7 +278,7 @@ class ViewportState<DATA> extends ChangeNotifier {
   }
 
   void _rebuildRowRegions(RowExtentManager rowExtentManager) {
-    final DaviModel<DATA> model = _model!;
+    final DaviDataSource<DATA> dataSource = _dataSource!;
 
     // Row regions (backgrounds, hover hit-testing, dividers' vertical
     // extent) are cheap - O(visible rows) - so they're rebuilt on every
@@ -291,8 +291,8 @@ class ViewportState<DATA> extends ChangeNotifier {
       _lastRow = rowIndex;
 
       DATA? data;
-      if (rowIndex < model.rowsLength) {
-        data = model.rowAt(rowIndex);
+      if (rowIndex < dataSource.rowsLength) {
+        data = dataSource.rowAt(rowIndex);
       }
 
       bool trailingRegion = false;
@@ -324,12 +324,12 @@ class ViewportState<DATA> extends ChangeNotifier {
   }
 }
 
-/// Represents the model indexes. These indexes will be mapped to cell indexes.
+/// Represents the data source indexes. These indexes will be mapped to cell indexes.
 @internal
 class CellMapping {
   CellMapping({required this.rowIndex, required this.columnIndex});
 
-  /// The row index of the model cell to be displayed.
+  /// The row index of the data source cell to be displayed.
   final int rowIndex;
 
   final int columnIndex;

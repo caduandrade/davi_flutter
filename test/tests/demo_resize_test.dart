@@ -18,11 +18,11 @@ void _expectCompleteRows(WidgetTester tester) {
           find.byType(CustomSingleChildWidget))
       .toList();
   for (int row = manager.indexAtOffset(offset);
-      row < table.daviContext.model.rowsLength &&
+      row < table.daviContext.dataSource.rowsLength &&
           manager.offsetOf(row) < offset + table.maxHeight;
       row++) {
     final rowCells = cells.where((cell) => cell.cellMapping.rowIndex == row);
-    expect(rowCells.length, table.daviContext.model.columnsLength,
+    expect(rowCells.length, table.daviContext.dataSource.columnsLength,
         reason: 'Missing cells in visible row $row');
     for (final cell in rowCells) {
       expect(cell.child!.size.height, closeTo(manager.heightOf(row), 0.001),
@@ -87,7 +87,7 @@ void main() {
     await tester.tap(find.text('Few rows'));
     await _settle(tester);
     expect(
-        tester.widget<TableContent>(_tableFinder).daviContext.model.rowsLength,
+        tester.widget<TableContent>(_tableFinder).daviContext.dataSource.rowsLength,
         5);
     final scrollbarStates = <bool>{};
     for (final size in [

@@ -1,4 +1,7 @@
 import 'package:davi/src/column_width_behavior.dart';
+import 'package:davi/src/controller.dart';
+import 'package:davi/src/data_source.dart';
+import 'package:davi/src/internal/builder_data_source.dart';
 import 'package:davi/src/internal/column_notifier.dart';
 import 'package:davi/src/internal/davi_context.dart';
 import 'package:davi/src/internal/hover_notifier.dart';
@@ -6,15 +9,16 @@ import 'package:davi/src/internal/row_extent_manager.dart';
 import 'package:davi/src/internal/scroll_controllers.dart';
 import 'package:davi/src/internal/table_layout_builder.dart';
 import 'package:davi/src/internal/theme_metrics/theme_metrics.dart';
-import 'package:davi/src/trailing_widget_listener.dart';
 import 'package:davi/src/last_visible_row_listener.dart';
 import 'package:davi/src/model.dart';
 import 'package:davi/src/row_callback_typedefs.dart';
 import 'package:davi/src/row_color.dart';
 import 'package:davi/src/row_cursor_builder.dart';
 import 'package:davi/src/row_hover_listener.dart';
+import 'package:davi/src/sort_callback_typedef.dart';
 import 'package:davi/src/theme/theme.dart';
 import 'package:davi/src/theme/theme_data.dart';
+import 'package:davi/src/trailing_widget_listener.dart';
 import 'package:flutter/material.dart';
 
 /// Table view designed for a large number of data.
@@ -23,7 +27,9 @@ import 'package:flutter/material.dart';
 class Davi<DATA> extends StatefulWidget {
 //TODO handle negative values
 //TODO allow null and use defaults?
-  const Davi(this.model,
+  /// Creates a [Davi] in model mode: the table owns its data through
+  /// [model], including (unless disabled) its own sorting.
+  const Davi(DaviModel<DATA> this.model,
       {super.key,
       this.onHover,
       this.unpinnedHorizontalScrollController,
@@ -43,12 +49,74 @@ class Davi<DATA> extends StatefulWidget {
       this.rowCursor,
       this.semanticsEnabled = false,
       this.onTrailingWidget})
-      : visibleRowsCount = visibleRowsCount == null || visibleRowsCount > 0
+      : controller = null,
+        rows = null,
+        onSort = null,
+        visibleRowsCount = visibleRowsCount == null || visibleRowsCount > 0
             ? visibleRowsCount
             : null;
 
-  /// The data model.
-  final DaviModel<DATA> model;
+  /// Creates a [Davi] in builder mode: rows are supplied directly (an
+  /// external source, e.g. a Bloc/ChangeNotifier, is the source of truth
+  /// for both the data and its order), while [controller] only keeps the
+  /// state of the columns (order, size, and the *visual* sort state).
+  ///
+  /// Tapping a sortable header never reorders [rows] by itself: it calls
+  /// [onSort] with the requested sort configuration, and it's up to
+  /// whoever owns the data to honor it (or not) and rebuild with new
+  /// [rows]. If [onSort] is `null`, sorting is treated as disabled since
+  /// nothing would apply the requested order.
+  const Davi.builder(
+      {super.key,
+      required DaviController<DATA> this.controller,
+      this.rows = const [],
+      this.onSort,
+      this.onHover,
+      this.unpinnedHorizontalScrollController,
+      this.leftPinnedHorizontalScrollController,
+      this.verticalScrollController,
+      this.onLastVisibleRow,
+      this.onRowTap,
+      this.onRowSecondaryTap,
+      this.onRowSecondaryTapUp,
+      this.onRowDoubleTap,
+      this.columnWidthBehavior = ColumnWidthBehavior.scrollable,
+      int? visibleRowsCount,
+      this.focusable = true,
+      this.trailingWidget,
+      this.placeholderWidget,
+      this.rowColor,
+      this.rowCursor,
+      this.semanticsEnabled = false,
+      this.onTrailingWidget})
+      : model = null,
+        visibleRowsCount = visibleRowsCount == null || visibleRowsCount > 0
+            ? visibleRowsCount
+            : null;
+
+  /// The data model used in model mode (the default constructor).
+  /// `null` when using [Davi.builder].
+  final DaviModel<DATA>? model;
+
+  /// The controller used in builder mode ([Davi.builder]), holding only the
+  /// state of the columns (order, size, visual sort state). `null` when
+  /// using the default (model mode) constructor.
+  final DaviController<DATA>? controller;
+
+  /// The rows to display in builder mode ([Davi.builder]). Ignored in
+  /// model mode, where rows come from [model].
+  ///
+  /// Like `ListView.builder`'s `itemCount`/`itemBuilder`, pass a new (or
+  /// updated) value and rebuild whenever the data changes; don't mutate
+  /// the same [List] in place, since parts of the table read from it
+  /// between rebuilds (e.g. on a repaint triggered by scrolling,
+  /// hovering or resizing a column).
+  final Iterable<DATA>? rows;
+
+  /// Called with the requested sort configuration when the user taps a
+  /// sortable header, only used in builder mode ([Davi.builder]). If
+  /// `null`, sorting is treated as disabled.
+  final OnSortCallback<DATA>? onSort;
 
   /// The horizontal scroll controller for the unpinned area of the table.
   /// It controls the scrolling behavior of the section that is unpinned.
@@ -129,9 +197,15 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
   final RowExtentManager _rowExtentManager = RowExtentManager();
   double? _lastDividerThickness;
   double? _lastEstimatedHeight;
-  DaviModel<DATA>? _lastRowExtentModel;
+  Object? _lastDataSourceOwner;
+  BuilderDataSource<DATA>? _builderDataSource;
 
   final FocusNode _focusNode = FocusNode(debugLabel: 'Davi');
+
+  /// The data source consumed by the internal widgets, regardless of mode:
+  /// [widget.model] in model mode, or an adapter around
+  /// [widget.controller] and [widget.rows] in builder mode.
+  DaviDataSource<DATA> get _dataSource => widget.model ?? _builderDataSource!;
 
   @override
   void initState() {
@@ -141,6 +215,7 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
         leftPinnedHorizontal: widget.leftPinnedHorizontalScrollController,
         vertical: widget.verticalScrollController);
     _hoverNotifier.addListener(_onHover);
+    _initBuilderDataSource();
     _buildListenable();
   }
 
@@ -165,7 +240,12 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
         // rebuild subtree with the new scroll controllers.
       });
     }
-    if (widget.model != oldWidget.model) {
+    final bool dataSourceOwnerChanged = widget.model != oldWidget.model ||
+        widget.controller != oldWidget.controller;
+    if (dataSourceOwnerChanged) {
+      // A genuinely different table (different model/controller instance):
+      // rebuild the data source and reset scroll, same as a model swap.
+      _initBuilderDataSource();
       _buildListenable();
       if (_scrollControllers.vertical.hasClients) {
         _scrollControllers.vertical.jumpTo(0);
@@ -176,11 +256,29 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
       if (_scrollControllers.unpinnedHorizontal.hasClients) {
         _scrollControllers.unpinnedHorizontal.jumpTo(0);
       }
+    } else if (widget.controller != null) {
+      // Builder mode, same controller: only the rows (and/or onSort) may
+      // have changed, which is the normal case on every external rebuild.
+      // Keep the adapter's identity so listener registrations made against
+      // it by internal widgets stay valid.
+      _builderDataSource!.updateRows(widget.rows ?? const []);
+      _builderDataSource!.onSort = widget.onSort;
     }
   }
 
+  void _initBuilderDataSource() {
+    final DaviController<DATA>? controller = widget.controller;
+    _builderDataSource = controller != null
+        ? BuilderDataSource<DATA>(
+            controller: controller,
+            rows: widget.rows ?? const [],
+            onSort: widget.onSort)
+        : null;
+  }
+
   void _buildListenable() {
-    _listenable = Listenable.merge([widget.model, _columnNotifier]);
+    final Listenable owner = widget.model ?? widget.controller!;
+    _listenable = Listenable.merge([owner, _columnNotifier]);
   }
 
   @override
@@ -230,20 +328,22 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
   Widget _builder(BuildContext context, Widget? child) {
     final DaviThemeData theme = DaviTheme.of(context);
     final TableThemeMetrics themeMetrics = TableThemeMetrics(theme);
+    final DaviDataSource<DATA> dataSource = _dataSource;
+    final Object dataSourceOwner = widget.model ?? widget.controller!;
 
     final int rowsLength =
-        widget.model.rowsLength + (widget.trailingWidget != null ? 1 : 0);
+        dataSource.rowsLength + (widget.trailingWidget != null ? 1 : 0);
     if (_rowExtentManager.rowsLength != rowsLength ||
-        !identical(_lastRowExtentModel, widget.model)) {
-      // Structural change (row count, or a different model instance
-      // entirely): the data underneath every index may now be different,
-      // so every measurement is discarded and re-measured as rows scroll
-      // back into view.
+        !identical(_lastDataSourceOwner, dataSourceOwner)) {
+      // Structural change (row count, or a different model/controller
+      // instance entirely): the data underneath every index may now be
+      // different, so every measurement is discarded and re-measured as
+      // rows scroll back into view.
       _rowExtentManager.resize(
           rowsLength: rowsLength,
           estimatedHeight: theme.row.estimatedHeight,
           dividerThickness: theme.row.dividerThickness);
-      _lastRowExtentModel = widget.model;
+      _lastDataSourceOwner = dataSourceOwner;
       _lastDividerThickness = theme.row.dividerThickness;
       _lastEstimatedHeight = theme.row.estimatedHeight;
     } else if (_lastDividerThickness != theme.row.dividerThickness ||
@@ -263,7 +363,7 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
         hasHoverListener: widget.onHover != null,
         columnNotifier: _columnNotifier,
         semanticsEnabled: widget.semanticsEnabled,
-        model: widget.model,
+        dataSource: dataSource,
         onLastVisibleRow: _onLastVisibleRowListener,
         onTrailingWidget: _onTrailingWidget,
         rowColor: widget.rowColor,
@@ -288,7 +388,7 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
         child: Listener(
           behavior: HitTestBehavior.translucent,
           onPointerDown: (pointer) {
-            if (widget.model.isRowsNotEmpty && widget.focusable) {
+            if (dataSource.isRowsNotEmpty && widget.focusable) {
               _focusNode.requestFocus();
             }
           },

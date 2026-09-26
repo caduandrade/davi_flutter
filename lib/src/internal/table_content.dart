@@ -47,12 +47,12 @@ class TableContentState<DATA> extends State<TableContent<DATA>> {
   void initState() {
     super.initState();
     _focusTraversal = CellFocusTraversalPolicy(
-        rowCount: () => widget.daviContext.model.rowsLength,
-        columnCount: () => widget.daviContext.model.columnsLength,
+        rowCount: () => widget.daviContext.dataSource.rowsLength,
+        columnCount: () => widget.daviContext.dataSource.columnsLength,
         hasWidgets: (column) =>
-            widget.daviContext.model.columnAt(column).cellFocusTraversalEnabled,
+            widget.daviContext.dataSource.columnAt(column).cellFocusTraversalEnabled,
         reveal: _revealCell);
-    widget.daviContext.model.addListener(_focusTraversal.cancel);
+    widget.daviContext.dataSource.addListener(_focusTraversal.cancel);
     _updatePainterCacheSize();
     _onVerticalScrollChange();
     widget.daviContext.scrollControllers.vertical
@@ -63,10 +63,10 @@ class TableContentState<DATA> extends State<TableContent<DATA>> {
   @override
   void didUpdateWidget(covariant TableContent<DATA> oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.daviContext.model != widget.daviContext.model) {
-      oldWidget.daviContext.model.removeListener(_focusTraversal.cancel);
+    if (oldWidget.daviContext.dataSource != widget.daviContext.dataSource) {
+      oldWidget.daviContext.dataSource.removeListener(_focusTraversal.cancel);
       _focusTraversal.cancel();
-      widget.daviContext.model.addListener(_focusTraversal.cancel);
+      widget.daviContext.dataSource.addListener(_focusTraversal.cancel);
     }
     _updatePainterCacheSize();
     _onVerticalScrollChange();
@@ -87,7 +87,7 @@ class TableContentState<DATA> extends State<TableContent<DATA>> {
 
   @override
   void dispose() {
-    widget.daviContext.model.removeListener(_focusTraversal.cancel);
+    widget.daviContext.dataSource.removeListener(_focusTraversal.cancel);
     _focusTraversal.dispose();
     widget.daviContext.scrollControllers.vertical
         .removeListener(_onVerticalScrollChange);
@@ -136,7 +136,7 @@ class TableContentState<DATA> extends State<TableContent<DATA>> {
     // First reveal using estimated extents, then correct after the row has
     // been built and measured. Both scrollbars may change during this step.
     for (int pass = 0; pass < 4 && mounted && active(); pass++) {
-      if (cell.rowIndex >= widget.daviContext.model.rowsLength ||
+      if (cell.rowIndex >= widget.daviContext.dataSource.rowsLength ||
           cell.columnIndex >= widget.layoutSettings.columnsMetrics.length) {
         return;
       }
@@ -197,7 +197,7 @@ class TableContentState<DATA> extends State<TableContent<DATA>> {
           rowExtentManager: widget.daviContext.rowExtentManager,
           maxHeight: widget.maxHeight,
           maxWidth: widget.maxWidth,
-          model: widget.daviContext.model,
+          dataSource: widget.daviContext.dataSource,
           hasTrailing: widget.daviContext.trailingWidget != null,
           rowFillHeight: widget.rowFillHeight);
       // Scrolling into shorter rows can grow the pool too. Mapping listeners

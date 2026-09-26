@@ -16,7 +16,7 @@ class SummaryWidget<DATA> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (daviContext.model.isColumnsEmpty) {
+    if (daviContext.dataSource.isColumnsEmpty) {
       return Container();
     }
     DaviThemeData theme = DaviTheme.of(context);
@@ -24,9 +24,9 @@ class SummaryWidget<DATA> extends StatelessWidget {
     List<ColumnsLayoutChild<DATA>> children = [];
 
     for (int columnIndex = 0;
-        columnIndex < daviContext.model.columnsLength;
+        columnIndex < daviContext.dataSource.columnsLength;
         columnIndex++) {
-      final DaviColumn<DATA> column = daviContext.model.columnAt(columnIndex);
+      final DaviColumn<DATA> column = daviContext.dataSource.columnAt(columnIndex);
       if (column.summary != null) {
         Widget summaryCell = ClipRect(child: column.summary!(context));
         if (theme.summary.padding != null) {

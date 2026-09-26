@@ -78,12 +78,12 @@ class DaviCellWidgetBuilderState<DATA>
     final CellMapping? cellMapping = _cellMapping;
     if (cellMapping != null) {
       DATA? data;
-      if (cellMapping.rowIndex < widget.daviContext.model.rowsLength) {
-        data = widget.daviContext.model.rowAt(cellMapping.rowIndex);
+      if (cellMapping.rowIndex < widget.daviContext.dataSource.rowsLength) {
+        data = widget.daviContext.dataSource.rowAt(cellMapping.rowIndex);
       }
       if (data != null) {
         DaviColumn<DATA> column =
-            widget.daviContext.model.columnAt(cellMapping.columnIndex);
+            widget.daviContext.dataSource.columnAt(cellMapping.columnIndex);
         Widget content = CellWidget(
             data: data,
             rowIndex: cellMapping.rowIndex,

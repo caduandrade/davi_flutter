@@ -227,7 +227,7 @@ class CellWidgetState<DATA> extends State<CellWidget<DATA>> {
     }
 
     double focusOrder =
-        ((widget.rowIndex * widget.daviContext.model.columnsLength) +
+        ((widget.rowIndex * widget.daviContext.dataSource.columnsLength) +
                 widget.columnIndex)
             .toDouble();
     return FocusTraversalOrder(
