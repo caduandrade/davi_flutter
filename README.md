@@ -9,6 +9,7 @@
 * Model mode, where the table owns the rows and sorts them, or builder mode, where the rows come from your own state (Bloc, `ChangeNotifier`, etc.), for example for server-side sorting.
 * Bidirectional scroll bars.
 * Resizable.
+* Column auto size to fit the content.
 * Dynamic row height.
 * Column summary (Footer).
 * Highly customizable.

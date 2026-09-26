@@ -2,6 +2,7 @@ import 'package:davi/src/column_width_behavior.dart';
 import 'package:davi/src/controller.dart';
 import 'package:davi/src/data_source.dart';
 import 'package:davi/src/internal/builder_data_source.dart';
+import 'package:davi/src/internal/column_auto_sizer.dart';
 import 'package:davi/src/internal/column_notifier.dart';
 import 'package:davi/src/internal/davi_context.dart';
 import 'package:davi/src/internal/hover_notifier.dart';
@@ -195,6 +196,7 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
   final HoverNotifier _hoverNotifier = HoverNotifier();
   final ColumnNotifier _columnNotifier = ColumnNotifier();
   final RowExtentManager _rowExtentManager = RowExtentManager();
+  final ColumnAutoSizer _autoSizer = ColumnAutoSizer();
   double? _lastDividerThickness;
   double? _lastEstimatedHeight;
   Object? _lastDataSourceOwner;
@@ -225,6 +227,7 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
     _hoverNotifier.dispose();
     _columnNotifier.dispose();
     _rowExtentManager.dispose();
+    _autoSizer.dispose();
     _focusNode.dispose();
     super.dispose();
   }
@@ -358,6 +361,10 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
       _lastEstimatedHeight = theme.row.estimatedHeight;
     }
 
+    _autoSizer.update(
+        dataSource: dataSource,
+        enabled: widget.columnWidthBehavior == ColumnWidthBehavior.scrollable);
+
     final DaviContext<DATA> daviContext = DaviContext(
         hoverNotifier: _hoverNotifier,
         hasHoverListener: widget.onHover != null,
@@ -381,6 +388,7 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
         columnWidthBehavior: widget.columnWidthBehavior,
         themeMetrics: themeMetrics,
         rowExtentManager: _rowExtentManager,
+        autoSizer: _autoSizer,
         scrollControllers: _scrollControllers);
 
     return FocusTraversalGroup(

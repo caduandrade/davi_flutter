@@ -1,3 +1,4 @@
+import 'package:davi/src/internal/column_auto_sizer.dart';
 import 'package:davi/src/internal/table_layout_child.dart';
 import 'package:davi/src/internal/table_layout_element.dart';
 import 'package:davi/src/internal/table_layout_render_box.dart';
@@ -14,15 +15,17 @@ class TableLayout<DATA> extends MultiChildRenderObjectWidget {
       {super.key,
       required this.layoutSettings,
       required this.theme,
+      required this.autoSizer,
       required List<TableLayoutChild> super.children});
 
   final TableLayoutSettings layoutSettings;
   final DaviThemeData theme;
+  final ColumnAutoSizer autoSizer;
 
   @override
   RenderObject createRenderObject(BuildContext context) {
     return TableLayoutRenderBox<DATA>(
-        layoutSettings: layoutSettings, theme: theme);
+        layoutSettings: layoutSettings, theme: theme, autoSizer: autoSizer);
   }
 
   @override
@@ -36,6 +39,7 @@ class TableLayout<DATA> extends MultiChildRenderObjectWidget {
     super.updateRenderObject(context, renderObject);
     renderObject
       ..layoutSettings = layoutSettings
-      ..theme = theme;
+      ..theme = theme
+      ..autoSizer = autoSizer;
   }
 }

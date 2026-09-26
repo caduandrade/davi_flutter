@@ -16,6 +16,8 @@ class DaviColumn<DATA> extends ChangeNotifier {
       {dynamic id,
       double width = 100,
       double? grow,
+      this.initialAutoSize = false,
+      this.maxAutoSizeWidth,
       this.name,
       this.headerPadding,
       this.cellPadding,
@@ -51,6 +53,7 @@ class DaviColumn<DATA> extends ChangeNotifier {
         _sortPriority = math.max(1, sortPriority),
         _width = width,
         _grow = grow != null ? math.max(1, grow) : null,
+        _initialAutoSizePending = initialAutoSize,
         dataComparator = dataComparator ?? _defaultDataComparator {
     int count = 0;
     if (cellValue != null) count++;
@@ -215,11 +218,48 @@ class DaviColumn<DATA> extends ChangeNotifier {
     }
   }
 
+  /// Whether the column width is adjusted once to fit its content, as soon
+  /// as there are rows to display.
+  ///
+  /// The width considers the header and only the cells of the rows visible
+  /// in the viewport at that moment, limited by [maxAutoSizeWidth]. Rows
+  /// outside the scroll area are not measured, so the cost doesn't depend
+  /// on the number of rows, but a longer value in one of them is not
+  /// considered. Rows added later (e.g. with infinite scroll) are not
+  /// considered either: after the initial auto size, the width no longer
+  /// follows the content and can be resized like any other.
+  /// Until then, [width] is used.
+  ///
+  /// Cells built with [cellPainter] or [cellBarValue] have no width of
+  /// their own, so only the header is considered for them.
+  ///
+  /// Only works with [ColumnWidthBehavior.scrollable]. The [grow] is
+  /// applied after the auto size, distributing the remaining space.
+  /// Setting the [width] before the auto size happens cancels it.
+  final bool initialAutoSize;
+
+  /// The maximum width that auto size can set, preventing a column with
+  /// long texts from taking up too much space.
+  ///
+  /// Applies to [initialAutoSize] and to the auto size requested by the
+  /// user (double click on the resize area of the header) or by
+  /// `autoSizeColumns` of [DaviModel] and [DaviController].
+  /// If `null`, there is no limit.
+  final double? maxAutoSizeWidth;
+
+  bool _initialAutoSizePending;
+  bool _autoSizeRequested = false;
+
+  void _notifyAutoSize() => notifyListeners();
+
   /// The width of the column. It is constrained to a minimum value of 16.
   /// The width can be updated, and listeners are notified if the value changes.
+  /// Setting it cancels a pending auto size.
   double get width => _width;
 
   set width(double value) {
+    _initialAutoSizePending = false;
+    _autoSizeRequested = false;
     value = math.max(16, value);
     if (_width != value) {
       _width = value;
@@ -703,6 +743,33 @@ class DaviColumnHelper {
 
   static bool isLayoutPerformed({required DaviColumn column}) =>
       column._layoutPerformed;
+
+  static bool isInitialAutoSizePending({required DaviColumn column}) =>
+      column._initialAutoSizePending;
+
+  static bool isAutoSizeRequested({required DaviColumn column}) =>
+      column._autoSizeRequested;
+
+  static bool isAutoSizePending({required DaviColumn column}) =>
+      column._initialAutoSizePending || column._autoSizeRequested;
+
+  /// Requests the column to be auto sized in the next layout.
+  static void requestAutoSize({required DaviColumn column}) {
+    if (!column._autoSizeRequested) {
+      column._autoSizeRequested = true;
+      column._notifyAutoSize();
+    }
+  }
+
+  /// Applies the measured width, ending any pending auto size.
+  /// Always notifies, so the table is rebuilt even without width change.
+  static void applyAutoSize(
+      {required DaviColumn column, required double width}) {
+    column._initialAutoSizePending = false;
+    column._autoSizeRequested = false;
+    column._width = math.max(16, width);
+    column._notifyAutoSize();
+  }
 
   static void setSort(
       {required DaviColumn column,

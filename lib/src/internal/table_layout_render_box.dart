@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:davi/src/internal/column_auto_sizer.dart';
 import 'package:davi/src/internal/layout_child_id.dart';
 import 'package:davi/src/internal/table_layout_parent_data.dart';
 import 'package:davi/src/internal/table_layout_settings.dart';
@@ -14,9 +15,12 @@ class TableLayoutRenderBox<DATA> extends RenderBox
         RenderBoxContainerDefaultsMixin<RenderBox, TableLayoutParentData> {
   TableLayoutRenderBox(
       {required TableLayoutSettings layoutSettings,
-      required DaviThemeData theme})
+      required DaviThemeData theme,
+      required ColumnAutoSizer autoSizer})
       : _layoutSettings = layoutSettings,
-        _theme = theme;
+        _theme = theme,
+        _autoSizer = autoSizer,
+        _autoSizerGeneration = autoSizer.generation;
 
   RenderBox? _header;
   RenderBox? _rows;
@@ -44,6 +48,17 @@ class TableLayoutRenderBox<DATA> extends RenderBox
 
   set theme(DaviThemeData value) {
     _theme = value;
+  }
+
+  ColumnAutoSizer _autoSizer;
+  int _autoSizerGeneration;
+
+  set autoSizer(ColumnAutoSizer value) {
+    if (_autoSizer != value || _autoSizerGeneration != value.generation) {
+      _autoSizer = value;
+      _autoSizerGeneration = value.generation;
+      markNeedsPaint();
+    }
   }
 
   TableLayoutSettings _layoutSettings;
@@ -277,6 +292,10 @@ class TableLayoutRenderBox<DATA> extends RenderBox
 
   @override
   void paint(PaintingContext context, Offset offset) {
+    if (_autoSizer.hidePaint) {
+      // Frame only used to measure the initial auto size of the columns.
+      return;
+    }
     _paintChild(
         context: context,
         offset: offset,

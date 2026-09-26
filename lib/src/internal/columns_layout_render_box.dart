@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:davi/src/internal/column_auto_sizer.dart';
 import 'package:davi/src/internal/column_metrics.dart';
 import 'package:davi/src/internal/columns_layout_parent_data.dart';
 import 'package:davi/src/internal/scroll_controllers.dart';
@@ -17,13 +18,27 @@ class ColumnsLayoutRenderBox extends RenderBox
       {required TableLayoutSettings layoutSettings,
       required Color? columnDividerColor,
       required double columnDividerThickness,
-      required ScrollControllers scrollControllers})
-      : _layoutSettings = layoutSettings,
+      required ScrollControllers scrollControllers,
+      ColumnAutoSizer? autoSizer})
+      : _autoSizer = autoSizer,
+        _autoSizerGeneration = autoSizer?.generation,
+        _layoutSettings = layoutSettings,
         _columnDividerThickness = columnDividerThickness,
         _columnDividerColor = columnDividerColor,
         _scrollControllers = scrollControllers {
     _scrollControllers.leftPinnedHorizontal.addListener(markNeedsPaint);
     _scrollControllers.unpinnedHorizontal.addListener(markNeedsPaint);
+  }
+
+  ColumnAutoSizer? _autoSizer;
+  int? _autoSizerGeneration;
+
+  set autoSizer(ColumnAutoSizer? value) {
+    if (_autoSizer != value || _autoSizerGeneration != value?.generation) {
+      _autoSizer = value;
+      _autoSizerGeneration = value?.generation;
+      markNeedsLayout();
+    }
   }
 
   double _columnDividerThickness;
@@ -132,6 +147,7 @@ class ColumnsLayoutRenderBox extends RenderBox
               width: columnMetrics.width, height: rowHeight),
           parentUsesSize: true);
       renderBox._parentData().offset = Offset.zero;
+      _autoSizer?.measureHeader(columnIndex, renderBox);
     });
 
     size = Size(constraints.maxWidth, rowHeight);

@@ -274,6 +274,15 @@ class RenderCustomSingleChild extends RenderBox
   double computeMaxIntrinsicHeight(double width) =>
       child?.getMaxIntrinsicHeight(width) ?? 0;
 
+  // Used by the column auto size.
+  @override
+  double computeMaxIntrinsicWidth(double height) =>
+      child?.getMaxIntrinsicWidth(height) ?? 0;
+
+  @override
+  double computeMinIntrinsicWidth(double height) =>
+      child?.getMinIntrinsicWidth(height) ?? 0;
+
   @override
   void setupParentData(RenderObject child) {
     if (child.parentData is! CustomParentData) {

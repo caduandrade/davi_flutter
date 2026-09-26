@@ -1,5 +1,6 @@
 import 'package:axis_layout/axis_layout.dart';
 import 'package:davi/davi.dart';
+import 'package:davi/src/column.dart';
 import 'package:davi/src/data_source.dart';
 import 'package:davi/src/internal/davi_context.dart';
 import 'package:davi/src/internal/sort_util.dart';
@@ -91,6 +92,23 @@ class _DaviHeaderCellState<DATA> extends State<DaviHeaderCell<DATA>> {
       }
     }
 
+    if (sortDirection == null &&
+        widget.column.sortable &&
+        widget.daviContext.dataSource.sortingMode != SortingMode.disabled &&
+        widget.daviContext.columnWidthBehavior ==
+            ColumnWidthBehavior.scrollable &&
+        DaviColumnHelper.isAutoSizePending(column: widget.column)) {
+      // Reserves (invisibly) the room of the sort icon while the auto size
+      // is measured, so the name isn't truncated once the column is sorted.
+      children.add(Visibility(
+          visible: false,
+          maintainSize: true,
+          maintainAnimation: true,
+          maintainState: true,
+          child: theme.sortIconBuilder(
+              DaviSortDirection.ascending, theme.sortIconColors)));
+    }
+
     Widget header = AxisLayout(
         axis: Axis.horizontal,
         crossAlignment: CrossAlignment.stretch,
@@ -155,6 +173,7 @@ class _DaviHeaderCellState<DATA> extends State<DaviHeaderCell<DATA>> {
             onHorizontalDragStart: _onResizeDragStart,
             onHorizontalDragEnd: _onResizeDragEnd,
             onHorizontalDragUpdate: _onResizeDragUpdate,
+            onDoubleTap: _onResizeDoubleTap,
             behavior: HitTestBehavior.opaque,
             child: Container(
                 width: theme.headerCell.resizeAreaWidth,
@@ -178,6 +197,10 @@ class _DaviHeaderCellState<DATA> extends State<DaviHeaderCell<DATA>> {
     final double diff = pos.dx - _lastDragPos;
     widget.column.width += diff;
     _lastDragPos = pos.dx;
+  }
+
+  void _onResizeDoubleTap() {
+    DaviColumnHelper.requestAutoSize(column: widget.column);
   }
 
   void _onResizeDragEnd(DragEndDetails details) {

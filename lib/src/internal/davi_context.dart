@@ -1,5 +1,6 @@
 import 'package:davi/src/column_width_behavior.dart';
 import 'package:davi/src/data_source.dart';
+import 'package:davi/src/internal/column_auto_sizer.dart';
 import 'package:davi/src/internal/column_notifier.dart';
 import 'package:davi/src/internal/hover_notifier.dart';
 import 'package:davi/src/internal/row_extent_manager.dart';
@@ -39,6 +40,7 @@ class DaviContext<DATA> {
       required this.columnWidthBehavior,
       required this.themeMetrics,
       required this.rowExtentManager,
+      required this.autoSizer,
       required this.scrollControllers});
 
   final HoverNotifier hoverNotifier;
@@ -63,6 +65,7 @@ class DaviContext<DATA> {
   final ColumnWidthBehavior columnWidthBehavior;
   final TableThemeMetrics themeMetrics;
   final RowExtentManager rowExtentManager;
+  final ColumnAutoSizer autoSizer;
   final ScrollControllers scrollControllers;
 
   bool get hasCallback =>

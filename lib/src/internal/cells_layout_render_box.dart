@@ -4,6 +4,7 @@ import 'package:davi/davi.dart';
 import 'package:davi/src/data_source.dart';
 import 'package:davi/src/internal/cell_widget_builder.dart';
 import 'package:davi/src/internal/cells_layout_parent_data.dart';
+import 'package:davi/src/internal/column_auto_sizer.dart';
 import 'package:davi/src/internal/column_metrics.dart';
 import 'package:davi/src/internal/divider_paint_manager.dart';
 import 'package:davi/src/internal/hover_notifier.dart';
@@ -42,8 +43,11 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
       required Color? dividerColor,
       required DaviRowColor<DATA>? rowColor,
       required DividerPaintManager dividerPaintManager,
-      required DaviDataSource<DATA> dataSource})
+      required DaviDataSource<DATA> dataSource,
+      required ColumnAutoSizer autoSizer})
       : _dataSource = dataSource,
+        _autoSizer = autoSizer,
+        _autoSizerGeneration = autoSizer.generation,
         _rowExtentManager = rowExtentManager,
         _rowExtentGeneration = rowExtentManager.generation,
         _viewportState = viewportState,
@@ -82,6 +86,17 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
     if (_dataSource != value) {
       _dataSource = value;
       markNeedsPaint();
+    }
+  }
+
+  ColumnAutoSizer _autoSizer;
+  int _autoSizerGeneration;
+
+  set autoSizer(ColumnAutoSizer value) {
+    if (_autoSizer != value || _autoSizerGeneration != value.generation) {
+      _autoSizer = value;
+      _autoSizerGeneration = value.generation;
+      markNeedsLayout();
     }
   }
 
@@ -337,6 +352,7 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
             if (measured > current) {
               rowMaxIntrinsic[mapping.rowIndex] = measured;
             }
+            _autoSizer.measureCell(mapping.columnIndex, renderBox);
           }
         }
       } else {

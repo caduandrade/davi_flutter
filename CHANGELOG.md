@@ -1,4 +1,4 @@
-## 5.0.0-beta.2
+## 5.0.0-beta.3
 
 * New builder mode: `Davi.builder` lets the rows come from an external source (a `State`, Bloc, `ChangeNotifier`, etc.), which also owns their order, instead of being held by a `DaviModel`. It fits apps that already use a state management solution, and cases like server-side sorting.
   * The rows are passed directly to `Davi.builder` through `rows`. When the data changes, rebuild it with a new list, like `ListView.builder`; don't modify the same list in place.
@@ -6,21 +6,19 @@
   * Tapping a sortable header never reorders the rows: it updates the sort indicator and calls `onSort`, and whoever owns the data applies the order and rebuilds. Without `onSort`, sorting is disabled.
   * `DaviController.applySort` updates the sort indicator without touching the data, for example to reflect a sort changed programmatically or to revert a rejected one.
   * The existing mode, based on `DaviModel` (the default `Davi` constructor), is now called model mode and works as before.
-* Changes
-  * `Davi`
-    * New `Davi.builder` named constructor, with the `controller`, `rows` and `onSort` attributes.
-    * The `model` attribute is now nullable (it is `null` in builder mode), and there's a new `controller` attribute (`null` in model mode).
-  * New `DaviController` class.
-
-## 5.0.0-beta.1
-
+* Column auto size, only with `ColumnWidthBehavior.scrollable`: the column width is adjusted to fit its content, limited by `maxAutoSizeWidth`. Only the header and the cells of the rows visible in the viewport at the moment are measured: rows outside the scroll area are not, so the cost doesn't depend on the number of rows.
+  * `initialAutoSize` does it once, as soon as there are rows to display. After that, the width no longer follows the content.
+  * Double clicking the resize area of a column header does it again for that column.
+  * `autoSizeColumns` does it again for all resizable columns, for example after loading new data.
 * Row height is now dynamic: each row automatically grows to fit its content, the same way the header row already does, instead of using a single fixed height for every row.
 * Cell merging (`rowSpan`/`columnSpan`) has been removed. It was one of the main blockers to making row height dynamic, made sorting and horizontal merging harder to reason about together, and added significant internal complexity for a rarely used feature. Removing it keeps the package simpler to maintain.
 * Changes
   * `DaviColumn`
     * The `rowSpan` and `columnSpan` attributes have been removed.
+    * New `initialAutoSize` and `maxAutoSizeWidth` attributes.
   * `DaviModel`
     * The `maxRowSpan`, `maxColumnSpan`, `maxSpanBehavior`, `rowSpanOverflowBehavior` and `collisionBehavior` attributes have been removed.
+    * New `autoSizeColumns` method.
   * `CellThemeData`
     * The `contentHeight` attribute has been removed; height is now derived automatically from cell content.
   * `RowThemeData`
@@ -28,6 +26,10 @@
   * `DaviColumn`
     * `cellOverflow` now actually applies to `cellValue` cells (it was previously unused): leave it unset to let text wrap onto multiple lines and grow the row, or set it (e.g. `TextOverflow.ellipsis`) to keep it on a single line as before.
   * Removed `SpanProvider`, `SpanParams`, `MaxSpanBehavior`, `RowSpanOverflowBehavior` and `CellCollisionBehavior`.
+* `Davi`
+    * New `Davi.builder` named constructor, with the `controller`, `rows` and `onSort` attributes.
+    * The `model` attribute is now nullable (it is `null` in builder mode), and there's a new `controller` attribute (`null` in model mode).
+  * New `DaviController` class.
 * Bugfix
   * Columns with `cellFocusTraversalEnabled: true` now support TAB and Shift+TAB across controls built with `cellWidget` and virtualized rows, revealing the destination with vertical and horizontal scrolling (including pinned columns). Disabled controls are skipped and traversal continues outside the table at its boundaries. The feature is opt-in so custom cells without focusable controls avoid its bookkeeping cost.
   * Cell text with no explicit `textStyle` (the default) could render invisible/white instead of a visible color, since it bypassed `DefaultTextStyle` inheritance.

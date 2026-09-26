@@ -60,7 +60,8 @@ class CellsLayout<DATA> extends MultiChildRenderObjectWidget {
         fillHeight: theme.row.fillHeight,
         columnDividerFillHeight: theme.columnDividerFillHeight,
         dividerThickness: theme.row.dividerThickness,
-        dividerPaintManager: dividerPaintManager);
+        dividerPaintManager: dividerPaintManager,
+        autoSizer: daviContext.autoSizer);
   }
 
   @override
@@ -95,6 +96,7 @@ class CellsLayout<DATA> extends MultiChildRenderObjectWidget {
       ..themeRowColor = theme.row.color
       ..rowColor = daviContext.rowColor
       ..dividerPaintManager = dividerPaintManager
-      ..dataSource = daviContext.dataSource;
+      ..dataSource = daviContext.dataSource
+      ..autoSizer = daviContext.autoSizer;
   }
 }

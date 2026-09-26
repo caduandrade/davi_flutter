@@ -33,7 +33,8 @@ class HeaderWidget<DATA> extends StatelessWidget {
     for (int columnIndex = 0;
         columnIndex < daviContext.dataSource.columnsLength;
         columnIndex++) {
-      final DaviColumn<DATA> column = daviContext.dataSource.columnAt(columnIndex);
+      final DaviColumn<DATA> column =
+          daviContext.dataSource.columnAt(columnIndex);
 
       final Widget cell = DaviHeaderCell<DATA>(
           key: ValueKey<int>(columnIndex),
@@ -49,6 +50,7 @@ class HeaderWidget<DATA> extends StatelessWidget {
         scrollControllers: daviContext.scrollControllers,
         columnDividerThickness: theme.columnDividerThickness,
         columnDividerColor: theme.header.columnDividerColor,
+        autoSizer: daviContext.autoSizer,
         children: children);
 
     // Establishes the default text style for the whole header row, so any

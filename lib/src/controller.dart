@@ -161,6 +161,21 @@ class DaviController<DATA> extends ChangeNotifier {
     }
   }
 
+  /// Adjusts the width of the resizable columns to fit their content: the
+  /// header and only the cells of the rows visible in the viewport at the
+  /// moment (rows outside the scroll area are not measured). The width is
+  /// limited by [DaviColumn.maxAutoSizeWidth].
+  ///
+  /// It has the same effect as double clicking the resize area of each
+  /// column header. Only works with [ColumnWidthBehavior.scrollable].
+  void autoSizeColumns() {
+    for (DaviColumn<DATA> column in _columns) {
+      if (column.resizable) {
+        DaviColumnHelper.requestAutoSize(column: column);
+      }
+    }
+  }
+
   /// Remove all columns.
   void removeColumns() {
     _columns.clear();

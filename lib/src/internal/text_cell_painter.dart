@@ -102,6 +102,21 @@ class CellPainterRenderBox extends RenderBox {
   @override
   double computeMaxIntrinsicHeight(double width) => _measureHeight(width);
 
+  // The text width without wrapping, used by the column auto size.
+  @override
+  double computeMinIntrinsicWidth(double height) =>
+      _unconstrainedPainter().minIntrinsicWidth;
+
+  @override
+  double computeMaxIntrinsicWidth(double height) =>
+      _unconstrainedPainter().maxIntrinsicWidth;
+
+  TextPainter _unconstrainedPainter() => _painterCache.getTextPainter(
+      width: double.infinity,
+      textStyle: _textStyle,
+      value: _text,
+      overflow: _overflow);
+
   double _measureHeight(double width) {
     return _painterCache
         .getTextPainter(

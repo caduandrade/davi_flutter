@@ -94,7 +94,10 @@ class _TableLayoutBuilderState<DATA> extends State<TableLayoutBuilder<DATA>> {
     _lastTheme = theme;
     _lastLayoutSettings = layoutSettings;
 
-    if (daviContext.columnWidthBehavior == ColumnWidthBehavior.scrollable) {
+    // While an initial auto size is pending, grow is only displayed, not
+    // committed: it must distribute the space remaining after the auto size.
+    if (daviContext.columnWidthBehavior == ColumnWidthBehavior.scrollable &&
+        !daviContext.autoSizer.hasPendingInitial) {
       for (int columnIndex = 0;
           columnIndex < daviContext.dataSource.columnsLength;
           columnIndex++) {
@@ -191,7 +194,10 @@ class _TableLayoutBuilderState<DATA> extends State<TableLayoutBuilder<DATA>> {
     }
 
     return TableLayout<DATA>(
-        layoutSettings: layoutSettings, theme: theme, children: children);
+        layoutSettings: layoutSettings,
+        theme: theme,
+        autoSizer: daviContext.autoSizer,
+        children: children);
   }
 
   TableLayoutSettings _settings(
