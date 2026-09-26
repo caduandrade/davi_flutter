@@ -2,6 +2,7 @@ import 'dart:collection';
 
 import 'package:collection/collection.dart';
 import 'package:davi/src/column.dart';
+import 'package:davi/src/data_source.dart';
 import 'package:davi/src/sort.dart';
 import 'package:davi/src/sort_callback_typedef.dart';
 import 'package:davi/src/sort_direction.dart';
@@ -11,7 +12,7 @@ import 'package:flutter/widgets.dart';
 /// The [Davi] model.
 ///
 /// The type [DATA] represents the data of each row.
-class DaviModel<DATA> extends ChangeNotifier {
+class DaviModel<DATA> extends ChangeNotifier implements DaviDataSource<DATA> {
   DaviModel(
       {List<DATA> rows = const [],
       List<DaviColumn<DATA>> columns = const [],
@@ -35,10 +36,12 @@ class DaviModel<DATA> extends ChangeNotifier {
   /// The event that will be triggered before each sorting.
   OnSortCallback<DATA>? onSort;
 
+  @override
   final bool multiSortEnabled;
 
   bool _hasSummary = false;
 
+  @override
   bool get hasSummary => _hasSummary;
 
   /// Gets the sorted columns.
@@ -50,6 +53,7 @@ class DaviModel<DATA> extends ChangeNotifier {
   }
 
   /// The list of sorts. The list is sorted by priority.
+  @override
   List<DaviSort> get sortList {
     List<DaviSort> list = [];
     for (DaviColumn<DATA> column in sortedColumns) {
@@ -64,6 +68,7 @@ class DaviModel<DATA> extends ChangeNotifier {
 
   /// Specifies the sorting mode for the table: interactive, always sorted, or disabled.
   SortingMode _sortingMode;
+  @override
   SortingMode get sortingMode => _sortingMode;
   set sortingMode(SortingMode value) {
     if (_sortingMode != value) {
@@ -84,14 +89,19 @@ class DaviModel<DATA> extends ChangeNotifier {
 
   bool get isOriginalRowsNotEmpty => _originalRows.isNotEmpty;
 
+  @override
   int get rowsLength => _sortableRows.length;
 
+  @override
   bool get isRowsEmpty => _sortableRows.isEmpty;
 
+  @override
   bool get isRowsNotEmpty => _sortableRows.isNotEmpty;
 
+  @override
   int get columnsLength => _columns.length;
 
+  @override
   bool get isColumnsEmpty => _columns.isEmpty;
 
   bool get isColumnsNotEmpty => _columns.isNotEmpty;
@@ -106,6 +116,7 @@ class DaviModel<DATA> extends ChangeNotifier {
           : false;
 
   /// Indicates whether the model is sorted by multiple columns.
+  @override
   bool get isMultiSorted {
     int count = 0;
     for (DaviColumn column in _columns) {
@@ -119,6 +130,7 @@ class DaviModel<DATA> extends ChangeNotifier {
     return false;
   }
 
+  @override
   DATA rowAt(int index) => _sortableRows[index];
 
   void addRow(DATA row) {
@@ -163,6 +175,7 @@ class DaviModel<DATA> extends ChangeNotifier {
     notifyListeners();
   }
 
+  @override
   DaviColumn<DATA> columnAt(int index) => _columns[index];
 
   /// Gets a column given an [id]. If [id] is `NULL`, no columns are returned.
@@ -288,6 +301,7 @@ class DaviModel<DATA> extends ChangeNotifier {
   ///
   /// If multi sorting is disabled, only the first one in the list will be used.
   /// Not sortable columns will be ignored.
+  @override
   void sort(List<DaviSort> newSortList) {
     if (sortingMode == SortingMode.disabled) {
       return;

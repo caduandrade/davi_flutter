@@ -1,5 +1,6 @@
 import 'package:axis_layout/axis_layout.dart';
 import 'package:davi/davi.dart';
+import 'package:davi/src/data_source.dart';
 import 'package:davi/src/internal/davi_context.dart';
 import 'package:davi/src/internal/sort_util.dart';
 import 'package:flutter/material.dart';
@@ -188,7 +189,7 @@ class _DaviHeaderCellState<DATA> extends State<DaviHeaderCell<DATA>> {
   }
 
   void _onHeaderSortPressed() {
-    final DaviModel model = widget.daviContext.model;
+    final DaviDataSource<DATA> model = widget.daviContext.model;
     List<DaviSort> sortList = SortUtil.newSortList(
         sortList: model.sortList,
         multiSortEnabled: model.multiSortEnabled,

@@ -1,4 +1,5 @@
 import 'package:davi/src/column_width_behavior.dart';
+import 'package:davi/src/data_source.dart';
 import 'package:davi/src/internal/column_notifier.dart';
 import 'package:davi/src/internal/hover_notifier.dart';
 import 'package:davi/src/internal/row_extent_manager.dart';
@@ -6,7 +7,6 @@ import 'package:davi/src/internal/scroll_controllers.dart';
 import 'package:davi/src/internal/table_scrollbar.dart';
 import 'package:davi/src/internal/theme_metrics/theme_metrics.dart';
 import 'package:davi/src/last_visible_row_listener.dart';
-import 'package:davi/src/model.dart';
 import 'package:davi/src/row_callback_typedefs.dart';
 import 'package:davi/src/row_color.dart';
 import 'package:davi/src/row_cursor_builder.dart';
@@ -45,7 +45,7 @@ class DaviContext<DATA> {
   final bool hasHoverListener;
   final ColumnNotifier columnNotifier;
   final bool semanticsEnabled;
-  final DaviModel<DATA> model;
+  final DaviDataSource<DATA> model;
   final bool focusable;
   final FocusNode focusNode;
   final Widget? trailingWidget;

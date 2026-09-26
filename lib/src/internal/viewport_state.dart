@@ -1,7 +1,7 @@
 import 'dart:collection';
 import 'dart:math' as math;
 
-import 'package:davi/davi.dart';
+import 'package:davi/src/data_source.dart';
 import 'package:davi/src/internal/column_metrics.dart';
 import 'package:davi/src/internal/divider_paint_manager.dart';
 import 'package:davi/src/internal/row_extent_manager.dart';
@@ -132,7 +132,7 @@ class ViewportState<DATA> extends ChangeNotifier {
   // collisions, divider structure) as of the last time that expensive work
   // was actually rebuilt. Used to skip it on scroll deltas that don't change
   // which rows/columns are visible.
-  DaviModel<DATA>? _lastModel;
+  DaviDataSource<DATA>? _lastModel;
   int? _lastFirstRow;
   int? _lastMaxDataRowIndex;
   List<ColumnMetrics>? _lastColumnsMetrics;
@@ -145,7 +145,7 @@ class ViewportState<DATA> extends ChangeNotifier {
   double _maxWidth = 0;
   double _maxHeight = 0;
   bool _hasTrailing = false;
-  DaviModel<DATA>? _model;
+  DaviDataSource<DATA>? _model;
 
   void reset(
       {required double verticalOffset,
@@ -153,7 +153,7 @@ class ViewportState<DATA> extends ChangeNotifier {
       required RowExtentManager rowExtentManager,
       required double maxHeight,
       required double maxWidth,
-      required DaviModel<DATA> model,
+      required DaviDataSource<DATA> model,
       required bool hasTrailing,
       required bool rowFillHeight}) {
     _verticalOffset = verticalOffset;
@@ -278,7 +278,7 @@ class ViewportState<DATA> extends ChangeNotifier {
   }
 
   void _rebuildRowRegions(RowExtentManager rowExtentManager) {
-    final DaviModel<DATA> model = _model!;
+    final DaviDataSource<DATA> model = _model!;
 
     // Row regions (backgrounds, hover hit-testing, dividers' vertical
     // extent) are cheap - O(visible rows) - so they're rebuilt on every

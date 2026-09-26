@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:davi/src/column.dart';
-import 'package:davi/src/model.dart';
+import 'package:davi/src/data_source.dart';
 import 'package:davi/src/pin_status.dart';
 import 'package:meta/meta.dart';
 
@@ -27,7 +27,7 @@ class ColumnMetrics {
   int get hashCode => width.hashCode ^ offset.hashCode ^ pinStatus.hashCode;
 
   static List<ColumnMetrics> columnsFit(
-      {required DaviModel model,
+      {required DaviDataSource model,
       required double maxWidth,
       required double dividerThickness}) {
     List<ColumnMetrics> list = [];
@@ -55,7 +55,7 @@ class ColumnMetrics {
   }
 
   static List<ColumnMetrics> resizable(
-      {required DaviModel model,
+      {required DaviDataSource model,
       required double maxWidth,
       required double dividerThickness}) {
     double offset = 0;

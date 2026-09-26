@@ -5,7 +5,7 @@ import 'package:davi/src/column_width_behavior.dart';
 import 'package:davi/src/internal/column_metrics.dart';
 import 'package:davi/src/internal/row_extent_manager.dart';
 import 'package:davi/src/internal/theme_metrics/theme_metrics.dart';
-import 'package:davi/src/model.dart';
+import 'package:davi/src/data_source.dart';
 import 'package:davi/src/pin_status.dart';
 import 'package:davi/src/theme/theme_data.dart';
 import 'package:flutter/widgets.dart';
@@ -14,7 +14,7 @@ import 'package:meta/meta.dart';
 @internal
 class TableLayoutSettings {
   factory TableLayoutSettings(
-      {required DaviModel model,
+      {required DaviDataSource model,
       required BoxConstraints constraints,
       required ColumnWidthBehavior columnWidthBehavior,
       required TableThemeMetrics themeMetrics,

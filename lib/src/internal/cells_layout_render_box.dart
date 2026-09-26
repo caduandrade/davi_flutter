@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:davi/davi.dart';
+import 'package:davi/src/data_source.dart';
 import 'package:davi/src/internal/cell_widget_builder.dart';
 import 'package:davi/src/internal/cells_layout_parent_data.dart';
 import 'package:davi/src/internal/column_metrics.dart';
@@ -41,7 +42,7 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
       required Color? dividerColor,
       required DaviRowColor<DATA>? rowColor,
       required DividerPaintManager dividerPaintManager,
-      required DaviModel<DATA> model})
+      required DaviDataSource<DATA> model})
       : _model = model,
         _rowExtentManager = rowExtentManager,
         _rowExtentGeneration = rowExtentManager.generation,
@@ -75,9 +76,9 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
     _viewportState.addListener(markNeedsLayout);
   }
 
-  DaviModel<DATA> _model;
+  DaviDataSource<DATA> _model;
 
-  set model(DaviModel<DATA> value) {
+  set model(DaviDataSource<DATA> value) {
     if (_model != value) {
       _model = value;
       markNeedsPaint();

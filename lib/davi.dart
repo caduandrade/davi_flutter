@@ -7,6 +7,7 @@ export 'src/sort.dart';
 export 'src/sorting_mode.dart';
 export 'src/cell_listenable_builder.dart';
 export 'src/column_width_behavior.dart';
+export 'src/controller.dart';
 export 'src/davi.dart';
 export 'src/last_visible_row_listener.dart';
 export 'src/model.dart';
