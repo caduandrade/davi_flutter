@@ -26,7 +26,6 @@ dependencies:
   flutter:
     sdk: flutter
   meta: ^1.8.0
-  axis_layout: ^1.0.1
   collection: ^1.16.0
 
 dev_dependencies:

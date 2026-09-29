@@ -100,10 +100,9 @@ class ColumnsLayoutRenderBox extends RenderBox
   /// intrinsic height at its column width, instead of a real layout pass.
   ///
   /// A real layout at a loose/unbounded height would go through each cell's
-  /// normal layout algorithm, including any internal "flexible child" sizing
-  /// that measures at a temporary zero main-axis size (e.g. AxisLayout's
-  /// `expand` children) — which produces a wildly wrong height for
-  /// width-wrapping content such as unconstrained Text. The dedicated
+  /// normal layout algorithm, including flexible header content measured at
+  /// a temporary zero main-axis size, which produces a wildly wrong height
+  /// for width-wrapping content such as unconstrained Text. The dedicated
   /// intrinsic-height query asks each child directly "how tall would you be
   /// at this width", sidestepping that.
   double _measureRowHeight({required bool useMax}) {

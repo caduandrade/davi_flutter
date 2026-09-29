@@ -237,10 +237,9 @@ class TableLayoutRenderBox<DATA> extends RenderBox
   /// (rather than a real layout pass with a loose height constraint), asking
   /// each header cell "how tall would you be at your column's width". A real
   /// loose-height layout would instead go through each cell's normal layout
-  /// algorithm, including internal "flexible child" sizing that measures at
-  /// a temporary zero main-axis size (e.g. AxisLayout's `expand` children) —
-  /// which produces a wildly wrong height for width-wrapping content such as
-  /// unconstrained Text.
+  /// algorithm, including flexible header content measured at a temporary
+  /// zero main-axis size, which produces a wildly wrong height for
+  /// width-wrapping content such as unconstrained Text.
   ///
   /// The bottom border isn't part of that content (it paints inline, within
   /// whatever height the header is given), so it's added afterwards.

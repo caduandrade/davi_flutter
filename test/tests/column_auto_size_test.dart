@@ -1,8 +1,12 @@
 import 'package:davi/davi.dart';
+import 'package:davi/src/internal/header_widget.dart';
 import 'package:davi/src/internal/table_content.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import '../../example/demo/character.dart';
+import '../../example/demo/demo.dart';
 
 class _Row {
   _Row(this.name);
@@ -196,5 +200,76 @@ void main() {
     await tester.tap(resizeArea, kind: PointerDeviceKind.mouse);
     await tester.pumpAndSettle();
     expect(column.width, greaterThan(200));
+  });
+
+  testWidgets('demo double click fits the Intelligence header the first time',
+      (WidgetTester tester) async {
+    await tester.binding.setSurfaceSize(const Size(1400, 700));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(const DemoApp());
+    await tester.pumpAndSettle();
+
+    final Davi<Character> davi =
+        tester.widget<Davi<Character>>(find.byType(Davi<Character>));
+    final DaviModel<Character> model = davi.model!;
+    final DaviColumn<Character> intelligence = model.columnAt(7);
+    expect(intelligence.name, 'Intelligence');
+    final TableContent<Character> table = tester
+        .widget<TableContent<Character>>(find.byType(TableContent<Character>));
+    final columnMetrics = table.layoutSettings.columnsMetrics[7];
+    final Offset headerOrigin =
+        tester.getTopLeft(find.byType(HeaderWidget<Character>));
+    final Offset resizePosition = headerOrigin +
+        Offset(
+            columnMetrics.offset +
+                columnMetrics.width -
+                HeaderCellThemeDataDefaults.resizeAreaWidth / 2,
+            HeaderCellThemeDataDefaults.height / 2);
+    await tester.tapAt(resizePosition, kind: PointerDeviceKind.mouse);
+    await tester.pump(const Duration(milliseconds: 50));
+    await tester.tapAt(resizePosition, kind: PointerDeviceKind.mouse);
+    await tester.pumpAndSettle();
+
+    final RenderBox title = tester.renderObject(find.text('Intelligence'));
+    final double requiredWidth = title.getMaxIntrinsicWidth(double.infinity) +
+        HeaderCellThemeDataDefaults.padding.horizontal +
+        16;
+    expect(intelligence.width, greaterThanOrEqualTo(requiredWidth));
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('auto size leaves room for multi-sort priority',
+      (WidgetTester tester) async {
+    final DaviColumn<_Row> first = DaviColumn<_Row>(
+        id: 1, name: 'A', cellValue: (params) => params.data.name);
+    final DaviColumn<_Row> intelligence = DaviColumn<_Row>(
+        id: 2,
+        name: 'Intelligence',
+        width: 90,
+        cellValue: (params) => params.data.name);
+    final DaviModel<_Row> model = DaviModel(
+        rows: [_Row('1')],
+        columns: [first, intelligence],
+        multiSortEnabled: true);
+    model.sort([DaviSort(1)]);
+    await tester.pumpWidget(_table(Davi<_Row>(model)));
+    await tester.pumpAndSettle();
+
+    model.autoSizeColumns();
+    await tester.pumpAndSettle();
+    model.sort([DaviSort(1), DaviSort(2)]);
+    await tester.pumpAndSettle();
+
+    final RenderBox title = tester.renderObject(find.text('Intelligence'));
+    final RenderBox priority = tester.renderObject(find.text('2'));
+    final double requiredWidth = title.getMaxIntrinsicWidth(double.infinity) +
+        HeaderCellThemeDataDefaults.padding.horizontal +
+        16 +
+        HeaderCellThemeDataDefaults.sortPriorityGap +
+        priority.getMaxIntrinsicWidth(double.infinity);
+    expect(intelligence.width, greaterThanOrEqualTo(requiredWidth));
+    expect(title.size.width,
+        greaterThanOrEqualTo(title.getMaxIntrinsicWidth(double.infinity)));
+    expect(tester.takeException(), isNull);
   });
 }
