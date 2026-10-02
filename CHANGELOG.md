@@ -1,4 +1,4 @@
-## 5.0.0-beta.3
+## 5.0.0-beta.4
 
 * New builder mode: `Davi.builder` lets the rows come from an external source (a `State`, Bloc, `ChangeNotifier`, etc.), which also owns their order, instead of being held by a `DaviModel`. It fits apps that already use a state management solution, and cases like server-side sorting.
   * The rows are passed directly to `Davi.builder` through `rows`. When the data changes, rebuild it with a new list, like `ListView.builder`; don't modify the same list in place.
