@@ -1,3 +1,8 @@
+## 5.0.1
+
+* Bugfix
+  * `CellThemeData.overrideInputDecoration` now overrides only `inputDecorationTheme`, preserving all other properties of the inherited application theme.
+
 ## 5.0.0
 
 * New builder mode: `Davi.builder` lets the rows come from an external source (a `State`, Bloc, `ChangeNotifier`, etc.), which also owns their order, instead of being held by a `DaviModel`. It fits apps that already use a state management solution, and cases like server-side sorting.

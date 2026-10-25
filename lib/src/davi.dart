@@ -289,10 +289,14 @@ class _DaviState<DATA> extends State<Davi<DATA>> {
     final DaviThemeData theme = DaviTheme.of(context);
     if (theme.cell.overrideInputDecoration) {
       return Theme(
-          data: ThemeData(
-              inputDecorationTheme: const InputDecorationTheme(
-                  isDense: true, border: InputBorder.none)),
-          child: _decoratedContainer(context));
+        data: Theme.of(context).copyWith(
+          inputDecorationTheme: const InputDecorationTheme(
+            isDense: true,
+            border: InputBorder.none,
+          ),
+        ),
+        child: _decoratedContainer(context),
+      );
     }
     return _decoratedContainer(context);
   }
