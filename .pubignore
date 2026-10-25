@@ -28,3 +28,14 @@ docs/
 .dart_tool/
 .packages
 build/
+
+# example/ is a runnable Flutter app used for local development; pub.dev only
+# needs its Dart source (example/*.dart, example/lib/, example/demo/) for
+# documentation, not the regenerable native-platform scaffolding.
+example/android/
+example/ios/
+example/linux/
+example/macos/
+example/windows/
+example/web/
+example/pubspec.lock

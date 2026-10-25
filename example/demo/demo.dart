@@ -75,7 +75,6 @@ class _HomePageState extends State<HomePage> {
         leading: const Icon(Icons.person, size: 16),
         name: 'Name',
         width: 100,
-        rowSpan: (params) => params.rowIndex == _model!.rowsLength - 2 ? 2 : 1,
         cellValue: (params) => params.data.name,
       ),
     );
@@ -85,18 +84,17 @@ class _HomePageState extends State<HomePage> {
         name: 'Gender',
         width: 80,
         cellClip: true,
-        cellIcon:
-            (params) =>
-                params.data.male
-                    ? CellIcon(Icons.male, color: Colors.blue[700]!)
-                    : CellIcon(Icons.female, color: Colors.pink[600]!),
+        cellIcon: (params) => params.data.male
+            ? CellIcon(Icons.male, color: Colors.blue[700]!)
+            : CellIcon(Icons.female, color: Colors.pink[600]!),
       ),
     );
     list.add(
       DaviColumn(
         name: 'Race',
         width: 100,
-        cellValue: (params) => params.data.race,
+        cellValue: (params) =>
+            params.rowIndex == 0 ? 'a\nb\nc' : params.data.race,
       ),
     );
     list.add(
@@ -201,25 +199,23 @@ class _HomePageState extends State<HomePage> {
         columnDividerFillHeight: _columnDividerFillHeight,
         header: HeaderThemeData(visible: _headerVisible),
         cell: CellThemeData(
-          nullValueColor:
-              _nullValueColor ? (index, hovered) => Colors.grey[400] : null,
+          nullValueColor: _nullValueColor
+              ? (index, hovered) => Colors.grey[400]
+              : null,
         ),
         row: _rowThemeData(),
       ),
       child: Davi<Character>(
         _model!,
-        columnWidthBehavior:
-            _columnsFit
-                ? ColumnWidthBehavior.fit
-                : ColumnWidthBehavior.scrollable,
-        rowColor:
-            _rowColor
-                ? (params) => params.data.life < 1000 ? Colors.red[200] : null
-                : null,
-        trailingWidget:
-            _trailingWidget
-                ? const Center(child: Text('TRAILING WIDGET'))
-                : null,
+        columnWidthBehavior: _columnsFit
+            ? ColumnWidthBehavior.fit
+            : ColumnWidthBehavior.scrollable,
+        rowColor: _rowColor
+            ? (params) => params.data.life < 1000 ? Colors.red[200] : null
+            : null,
+        trailingWidget: _trailingWidget
+            ? const Center(child: Text('TRAILING WIDGET'))
+            : null,
       ),
     );
 
@@ -243,18 +239,17 @@ class _HomePageState extends State<HomePage> {
     }
     return RowThemeData(
       color: color,
-      dividerThickness:
-          _customDividerThickness ? 10 : RowThemeDataDefaults.dividerThickness,
-      dividerColor:
-          _customDividerThickness
-              ? Colors.blue[200]
-              : RowThemeDataDefaults.dividerColor,
+      dividerThickness: _customDividerThickness
+          ? 10
+          : RowThemeDataDefaults.dividerThickness,
+      dividerColor: _customDividerThickness
+          ? Colors.blue[200]
+          : RowThemeDataDefaults.dividerColor,
       fillHeight: _rowFillHeight,
       hoverBackground: _hoverBackground ? (index) => Colors.blue[50] : null,
-      hoverForeground:
-          _hoverForeground
-              ? (index) => Colors.black.withValues(alpha: .1)
-              : null,
+      hoverForeground: _hoverForeground
+          ? (index) => Colors.black.withValues(alpha: .1)
+          : null,
     );
   }
 
@@ -528,7 +523,12 @@ class RadioButton<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IntrinsicWidth(
-      child: Row(children: [Radio<T>(value: value), Text(text)]),
+      child: Row(
+        children: [
+          Radio<T>(value: value),
+          Text(text),
+        ],
+      ),
     );
   }
 }

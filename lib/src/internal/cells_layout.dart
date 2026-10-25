@@ -22,6 +22,7 @@ class CellsLayout<DATA> extends MultiChildRenderObjectWidget {
       required this.rowsLength,
       required this.rowRegionCache,
       required this.dividerPaintManager,
+      required this.viewportState,
       required List<CellsLayoutChild> super.children});
 
   final TableLayoutSettings layoutSettings;
@@ -32,16 +33,17 @@ class CellsLayout<DATA> extends MultiChildRenderObjectWidget {
   final RowRegionCache rowRegionCache;
   final int rowsLength;
   final DividerPaintManager dividerPaintManager;
+  final ViewportState<DATA> viewportState;
 
   @override
   RenderObject createRenderObject(BuildContext context) {
     DaviThemeData theme = DaviTheme.of(context);
     return CellsLayoutRenderBox<DATA>(
-        model: daviContext.model,
+        dataSource: daviContext.dataSource,
         hoverBackground: theme.row.hoverBackground,
         hoverForeground: theme.row.hoverForeground,
-        cellHeight: layoutSettings.themeMetrics.cell.height,
-        rowHeight: layoutSettings.themeMetrics.row.height,
+        rowExtentManager: daviContext.rowExtentManager,
+        viewportState: viewportState,
         columnsMetrics: layoutSettings.columnsMetrics,
         verticalOffset: verticalOffset,
         scrollControllers: daviContext.scrollControllers,
@@ -58,7 +60,8 @@ class CellsLayout<DATA> extends MultiChildRenderObjectWidget {
         fillHeight: theme.row.fillHeight,
         columnDividerFillHeight: theme.columnDividerFillHeight,
         dividerThickness: theme.row.dividerThickness,
-        dividerPaintManager: dividerPaintManager);
+        dividerPaintManager: dividerPaintManager,
+        autoSizer: daviContext.autoSizer);
   }
 
   @override
@@ -74,8 +77,8 @@ class CellsLayout<DATA> extends MultiChildRenderObjectWidget {
     renderObject
       ..hoverBackground = theme.row.hoverBackground
       ..hoverForeground = theme.row.hoverForeground
-      ..cellHeight = layoutSettings.themeMetrics.cell.height
-      ..rowHeight = layoutSettings.themeMetrics.row.height
+      ..rowExtentManager = daviContext.rowExtentManager
+      ..viewportState = viewportState
       ..columnsMetrics = layoutSettings.columnsMetrics
       ..verticalOffset = verticalOffset
       ..scrollControllers = daviContext.scrollControllers
@@ -93,6 +96,7 @@ class CellsLayout<DATA> extends MultiChildRenderObjectWidget {
       ..themeRowColor = theme.row.color
       ..rowColor = daviContext.rowColor
       ..dividerPaintManager = dividerPaintManager
-      ..model = daviContext.model;
+      ..dataSource = daviContext.dataSource
+      ..autoSizer = daviContext.autoSizer;
   }
 }

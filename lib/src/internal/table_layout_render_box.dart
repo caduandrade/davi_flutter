@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 
+import 'package:davi/src/internal/column_auto_sizer.dart';
 import 'package:davi/src/internal/layout_child_id.dart';
-import 'package:davi/src/internal/layout_utils.dart';
 import 'package:davi/src/internal/table_layout_parent_data.dart';
 import 'package:davi/src/internal/table_layout_settings.dart';
 import 'package:davi/src/theme/theme_data.dart';
@@ -15,9 +15,12 @@ class TableLayoutRenderBox<DATA> extends RenderBox
         RenderBoxContainerDefaultsMixin<RenderBox, TableLayoutParentData> {
   TableLayoutRenderBox(
       {required TableLayoutSettings layoutSettings,
-      required DaviThemeData theme})
+      required DaviThemeData theme,
+      required ColumnAutoSizer autoSizer})
       : _layoutSettings = layoutSettings,
-        _theme = theme;
+        _theme = theme,
+        _autoSizer = autoSizer,
+        _autoSizerGeneration = autoSizer.generation;
 
   RenderBox? _header;
   RenderBox? _rows;
@@ -45,6 +48,17 @@ class TableLayoutRenderBox<DATA> extends RenderBox
 
   set theme(DaviThemeData value) {
     _theme = value;
+  }
+
+  ColumnAutoSizer _autoSizer;
+  int _autoSizerGeneration;
+
+  set autoSizer(ColumnAutoSizer value) {
+    if (_autoSizer != value || _autoSizerGeneration != value.generation) {
+      _autoSizer = value;
+      _autoSizerGeneration = value.generation;
+      markNeedsPaint();
+    }
   }
 
   TableLayoutSettings _layoutSettings;
@@ -223,10 +237,9 @@ class TableLayoutRenderBox<DATA> extends RenderBox
   /// (rather than a real layout pass with a loose height constraint), asking
   /// each header cell "how tall would you be at your column's width". A real
   /// loose-height layout would instead go through each cell's normal layout
-  /// algorithm, including internal "flexible child" sizing that measures at
-  /// a temporary zero main-axis size (e.g. AxisLayout's `expand` children) —
-  /// which produces a wildly wrong height for width-wrapping content such as
-  /// unconstrained Text.
+  /// algorithm, including flexible header content measured at a temporary
+  /// zero main-axis size, which produces a wildly wrong height for
+  /// width-wrapping content such as unconstrained Text.
   ///
   /// The bottom border isn't part of that content (it paints inline, within
   /// whatever height the header is given), so it's added afterwards.
@@ -265,19 +278,23 @@ class TableLayoutRenderBox<DATA> extends RenderBox
 
   @override
   double computeMaxIntrinsicHeight(double width) {
-    final int maxVisibleRowsLength = LayoutUtils.maxVisibleRowsLength(
-        scrollOffset: 0,
-        visibleAreaHeight: _layoutSettings.cellsBounds.height,
-        rowHeight: _layoutSettings.themeMetrics.row.height);
+    final int maxVisibleRowsLength = _layoutSettings.rowExtentManager
+        .visibleRowCount(
+            scrollOffset: 0,
+            availableHeight: _layoutSettings.cellsBounds.height);
     final int visibleRowsLength =
         math.min(_layoutSettings.rowsLength, maxVisibleRowsLength);
     return computeMinIntrinsicHeight(width) +
-        (visibleRowsLength * _layoutSettings.themeMetrics.cell.height) +
+        _layoutSettings.rowExtentManager.heightUpTo(visibleRowsLength) +
         _layoutSettings.themeMetrics.scrollbar.height;
   }
 
   @override
   void paint(PaintingContext context, Offset offset) {
+    if (_autoSizer.hidePaint) {
+      // Frame only used to measure the initial auto size of the columns.
+      return;
+    }
     _paintChild(
         context: context,
         offset: offset,

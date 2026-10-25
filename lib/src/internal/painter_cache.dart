@@ -10,23 +10,23 @@ class PainterCache<DATA> {
     _cache.maxSize = size;
   }
 
+  /// [overflow] null (the default) lets the text wrap onto as many lines as
+  /// it needs - the row then grows to fit, since row height is dynamic.
+  /// A non-null value keeps the text on a single line, truncated to [width]
+  /// (with an ellipsis for [TextOverflow.ellipsis]) - the pre-dynamic-height
+  /// behavior, opt-in via `DaviColumn.cellOverflow`.
   TextPainter getTextPainter(
       {required double width,
       required TextStyle? textStyle,
       required String value,
-      required int rowSpan,
-      required int columnSpan}) {
+      TextOverflow? overflow}) {
     _Key key = _Key(
-        width: width,
-        textStyle: textStyle,
-        value: value,
-        rowSpan: rowSpan,
-        columnSpan: columnSpan);
+        width: width, textStyle: textStyle, value: value, overflow: overflow);
     TextPainter? painter = _cache.get(key);
     if (painter == null) {
       painter = TextPainter(
-        maxLines: 1,
-        ellipsis: '\u2026',
+        maxLines: overflow != null ? 1 : null,
+        ellipsis: overflow == TextOverflow.ellipsis ? '\u2026' : null,
         text: TextSpan(text: value, style: textStyle),
         textDirection: TextDirection.ltr,
       );
@@ -42,14 +42,12 @@ class _Key {
       {required this.width,
       required this.textStyle,
       required this.value,
-      required this.rowSpan,
-      required this.columnSpan});
+      required this.overflow});
 
   final double width;
   final TextStyle? textStyle;
   final String value;
-  final int rowSpan;
-  final int columnSpan;
+  final TextOverflow? overflow;
 
   @override
   bool operator ==(Object other) =>
@@ -59,14 +57,9 @@ class _Key {
           width == other.width &&
           textStyle == other.textStyle &&
           value == other.value &&
-          rowSpan == other.rowSpan &&
-          columnSpan == other.columnSpan;
+          overflow == other.overflow;
 
   @override
   int get hashCode =>
-      width.hashCode ^
-      textStyle.hashCode ^
-      value.hashCode ^
-      rowSpan.hashCode ^
-      columnSpan.hashCode;
+      width.hashCode ^ textStyle.hashCode ^ value.hashCode ^ overflow.hashCode;
 }

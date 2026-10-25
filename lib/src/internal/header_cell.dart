@@ -1,6 +1,8 @@
-import 'package:axis_layout/axis_layout.dart';
 import 'package:davi/davi.dart';
+import 'package:davi/src/column.dart';
+import 'package:davi/src/data_source.dart';
 import 'package:davi/src/internal/davi_context.dart';
+import 'package:davi/src/internal/header_content_layout.dart';
 import 'package:davi/src/internal/sort_util.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
@@ -38,19 +40,17 @@ class _DaviHeaderCellState<DATA> extends State<DaviHeaderCell<DATA>> {
         !widget.daviContext.columnNotifier.resizing &&
         !widget.daviContext.scrolling;
     final bool sortEnabled =
-        widget.daviContext.model.sortingMode != SortingMode.disabled &&
+        widget.daviContext.dataSource.sortingMode != SortingMode.disabled &&
             interactionEnabled;
     final bool resizable = widget.resizable &&
         widget.column.resizable &&
         (interactionEnabled || _resizing);
 
-    List<Widget> children = [];
-
-    if (widget.column.leading != null) {
-      children.add(Align(
-          alignment: widget.column.headerAlignment ?? theme.alignment,
-          child: widget.column.leading!));
-    }
+    final Alignment alignment =
+        widget.column.headerAlignment ?? theme.alignment;
+    final Widget? leading = widget.column.leading == null
+        ? null
+        : Align(alignment: alignment, child: widget.column.leading!);
     Widget content = widget.column.headerBuilder != null
         ? widget.column.headerBuilder!(HeaderCellBuilderParams(
             buildContext: context,
@@ -61,39 +61,74 @@ class _DaviHeaderCellState<DATA> extends State<DaviHeaderCell<DATA>> {
       content = DefaultTextStyle.merge(
           style: widget.column.headerTextStyle, child: content);
     }
-    children.add(AxisLayoutChild(
-        shrink: theme.expandableName ? 0 : 1,
-        expand: theme.expandableName ? 1 : 0,
-        child: Align(
-            alignment: widget.column.headerAlignment ?? theme.alignment,
-            child: content)));
+    content = Align(alignment: alignment, child: content);
 
     final DaviSortDirection? sortDirection = widget.column.sortDirection;
+    Widget? sortIcon;
+    Widget? priorityGap;
+    Widget? priority;
+    final bool autoSizePending = widget.column.sortable &&
+        widget.daviContext.dataSource.sortingMode != SortingMode.disabled &&
+        widget.daviContext.columnWidthBehavior ==
+            ColumnWidthBehavior.scrollable &&
+        DaviColumnHelper.isAutoSizePending(column: widget.column);
+    final TextStyle priorityStyle = TextStyle(
+        color: theme.sortPriorityColor, fontSize: theme.sortPrioritySize);
     if (sortDirection != null) {
-      Widget sortIconWidget =
-          theme.sortIconBuilder(sortDirection, theme.sortIconColors);
-      children.add(Align(
-        alignment: widget.column.headerAlignment ?? theme.alignment,
-        child: sortIconWidget,
-      ));
+      sortIcon = Align(
+          alignment: alignment,
+          child: theme.sortIconBuilder(sortDirection, theme.sortIconColors));
 
-      if (widget.daviContext.model.isMultiSorted) {
+      if (widget.daviContext.dataSource.isMultiSorted) {
         if (theme.sortPriorityGap != null) {
-          children.add(SizedBox(width: theme.sortPriorityGap));
+          priorityGap = SizedBox(width: theme.sortPriorityGap);
         }
-        children.add(Align(
-            alignment: widget.column.headerAlignment ?? theme.alignment,
+        priority = Align(
+            alignment: alignment,
             child: Text(widget.column.sortPriority.toString(),
-                style: TextStyle(
-                    color: theme.sortPriorityColor,
-                    fontSize: theme.sortPrioritySize))));
+                style: priorityStyle));
       }
     }
 
-    Widget header = AxisLayout(
-        axis: Axis.horizontal,
-        crossAlignment: CrossAlignment.stretch,
-        children: children);
+    if (sortDirection == null && autoSizePending) {
+      // Reserves (invisibly) the room of the sort icon while the auto size
+      // is measured, so the name isn't truncated once the column is sorted.
+      sortIcon = Visibility(
+          visible: false,
+          maintainSize: true,
+          maintainAnimation: true,
+          maintainState: true,
+          child: theme.sortIconBuilder(
+              DaviSortDirection.ascending, theme.sortIconColors));
+    }
+    if (priority == null &&
+        autoSizePending &&
+        widget.daviContext.dataSource.multiSortEnabled &&
+        widget.daviContext.dataSource.columnsLength > 1) {
+      // A later multi-sort can add a priority number without another auto
+      // size request. Reserve a label with the maximum number of digits.
+      if (theme.sortPriorityGap != null) {
+        priorityGap = SizedBox(width: theme.sortPriorityGap);
+      }
+      priority = Visibility(
+          visible: false,
+          maintainSize: true,
+          maintainAnimation: true,
+          maintainState: true,
+          child: Align(
+              alignment: alignment,
+              child: Text(
+                  widget.daviContext.dataSource.columnsLength.toString(),
+                  style: priorityStyle)));
+    }
+
+    Widget header = HeaderContentLayout(
+        leading: leading,
+        content: content,
+        sortIcon: sortIcon,
+        priorityGap: priorityGap,
+        priority: priority,
+        expandableName: theme.expandableName);
     final EdgeInsets? padding = widget.column.headerPadding ?? theme.padding;
     if (padding != null) {
       header = Padding(padding: padding, child: header);
@@ -127,6 +162,10 @@ class _DaviHeaderCellState<DATA> extends State<DaviHeaderCell<DATA>> {
         readOnly: true,
         enabled: true,
         label: 'header ${widget.columnIndex}',
+        value: sortDirection == null
+            ? null
+            : 'sorted ${sortDirection == DaviSortDirection.ascending ? 'ascending' : 'descending'}'
+                '${widget.daviContext.dataSource.isMultiSorted ? ', priority ${widget.column.sortPriority}' : ''}',
         child: ClipRect(child: header));
   }
 
@@ -154,6 +193,7 @@ class _DaviHeaderCellState<DATA> extends State<DaviHeaderCell<DATA>> {
             onHorizontalDragStart: _onResizeDragStart,
             onHorizontalDragEnd: _onResizeDragEnd,
             onHorizontalDragUpdate: _onResizeDragUpdate,
+            onDoubleTap: _onResizeDoubleTap,
             behavior: HitTestBehavior.opaque,
             child: Container(
                 width: theme.headerCell.resizeAreaWidth,
@@ -179,6 +219,10 @@ class _DaviHeaderCellState<DATA> extends State<DaviHeaderCell<DATA>> {
     _lastDragPos = pos.dx;
   }
 
+  void _onResizeDoubleTap() {
+    DaviColumnHelper.requestAutoSize(column: widget.column);
+  }
+
   void _onResizeDragEnd(DragEndDetails details) {
     widget.daviContext.hoverNotifier.enabled = true;
     widget.daviContext.columnNotifier.resizing = false;
@@ -188,12 +232,12 @@ class _DaviHeaderCellState<DATA> extends State<DaviHeaderCell<DATA>> {
   }
 
   void _onHeaderSortPressed() {
-    final DaviModel model = widget.daviContext.model;
+    final DaviDataSource<DATA> dataSource = widget.daviContext.dataSource;
     List<DaviSort> sortList = SortUtil.newSortList(
-        sortList: model.sortList,
-        multiSortEnabled: model.multiSortEnabled,
-        alwaysSorted: model.sortingMode == SortingMode.alwaysSorted,
+        sortList: dataSource.sortList,
+        multiSortEnabled: dataSource.multiSortEnabled,
+        alwaysSorted: dataSource.sortingMode == SortingMode.alwaysSorted,
         columnIdToSort: widget.column.id);
-    model.sort(sortList);
+    dataSource.sort(sortList);
   }
 }

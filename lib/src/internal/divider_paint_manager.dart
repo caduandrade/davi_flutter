@@ -3,16 +3,12 @@ import 'package:meta/meta.dart';
 /// Designed to manage and determine the grid dividers that need to be painted.
 ///
 /// It works by first mapping all possible divider connections within the grid
-/// (e.g., between cells like (0,0) to (1,0) or (0,0) to (0,1)).
-///
-/// As the grid's layout is processed, including spans that merge cells,
-/// the manager dynamically updates its internal mapping by removing dividers
-/// that are covered by the merged areas.
+/// (e.g., between cells like (0,0) to (1,0) or (0,0) to (0,1)), then removing
+/// the dividers that shouldn't be painted (e.g. around rows without data when
+/// [DividerPaintManager.addStopsForEntireRow] is used).
 ///
 /// Once the layout processing is complete, the [DividerPaintManager] retains
 /// only the dividers that should be visually rendered.
-/// This ensures the painted dividers accurately represent
-/// the grid's structure while accounting for merged cells.
 @internal
 class DividerPaintManager {
   final Map<int, _DividerVertices> _horizontalVertices = {};
@@ -105,38 +101,6 @@ class DividerPaintManager {
     }
   }
 
-  void addStopsForCell(
-      {required int rowIndex,
-      required int columnIndex,
-      required int rowSpan,
-      required int columnSpan}) {
-    // Updating vertical vertices stop
-    for (int ci = columnIndex; ci < columnIndex + columnSpan - 1; ci++) {
-      _DividerVertices verticalVertices = _verticalVertices[ci]!;
-      for (int ri = rowIndex; ri < rowIndex + rowSpan; ri++) {
-        if (ri == _firstRowIndex) {
-          verticalVertices.start._stop = true;
-        } else {
-          verticalVertices.middle(ri - 1)._stop = true;
-        }
-      }
-    }
-
-    // Updating horizontal vertices stop
-    for (int ri = rowIndex; ri < rowIndex + rowSpan - 1; ri++) {
-      _DividerVertices? horizontalVertices = _horizontalVertices[ri];
-      if (horizontalVertices == null) {
-        throw StateError('No horizontal vertices for rowIndex $ri');
-      }
-      for (int ci = columnIndex; ci < columnIndex + columnSpan; ci++) {
-        if (ci == 0) {
-          horizontalVertices.start._stop = true;
-        } else {
-          horizontalVertices.middle(ci - 1)._stop = true;
-        }
-      }
-    }
-  }
 }
 
 /// Represents each point between row or column dividers in the grid,

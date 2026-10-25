@@ -7,25 +7,22 @@ class TextCellPainter extends LeafRenderObjectWidget {
   const TextCellPainter(
       {super.key,
       required this.text,
-      required this.rowSpan,
-      required this.columnSpan,
       required this.painterCache,
-      required this.textStyle});
+      required this.textStyle,
+      this.overflow});
 
   final PainterCache painterCache;
   final String text;
-  final int rowSpan;
-  final int columnSpan;
   final TextStyle? textStyle;
+  final TextOverflow? overflow;
 
   @override
   RenderObject createRenderObject(BuildContext context) {
     return CellPainterRenderBox(
         text: text,
-        rowSpan: rowSpan,
-        columnSpan: columnSpan,
         renderCache: painterCache,
-        textStyle: textStyle);
+        textStyle: textStyle,
+        overflow: overflow);
   }
 
   @override
@@ -33,10 +30,9 @@ class TextCellPainter extends LeafRenderObjectWidget {
       BuildContext context, CellPainterRenderBox renderObject) {
     renderObject
       ..text = text
-      ..rowSpan = rowSpan
-      ..columnSpan = columnSpan
       ..painterCache = painterCache
-      ..textStyle = textStyle;
+      ..textStyle = textStyle
+      ..overflow = overflow;
   }
 }
 
@@ -44,15 +40,13 @@ class TextCellPainter extends LeafRenderObjectWidget {
 class CellPainterRenderBox extends RenderBox {
   CellPainterRenderBox(
       {required String text,
-      required int rowSpan,
-      required int columnSpan,
       required PainterCache renderCache,
-      required TextStyle? textStyle})
+      required TextStyle? textStyle,
+      TextOverflow? overflow})
       : _text = text,
-        _rowSpan = rowSpan,
-        _columnSpan = columnSpan,
         _painterCache = renderCache,
-        _textStyle = textStyle;
+        _textStyle = textStyle,
+        _overflow = overflow;
 
   PainterCache _painterCache;
 
@@ -69,29 +63,20 @@ class CellPainterRenderBox extends RenderBox {
     }
   }
 
+  TextOverflow? _overflow;
+
+  set overflow(TextOverflow? value) {
+    if (_overflow != value) {
+      _overflow = value;
+      markNeedsLayout();
+    }
+  }
+
   String _text;
 
   set text(String value) {
     if (_text != value) {
       _text = value;
-      markNeedsLayout();
-    }
-  }
-
-  int _rowSpan;
-
-  set rowSpan(int value) {
-    if (_rowSpan != value) {
-      _rowSpan = value;
-      markNeedsLayout();
-    }
-  }
-
-  int _columnSpan;
-
-  set columnSpan(int value) {
-    if (_columnSpan != value) {
-      _columnSpan = value;
       markNeedsLayout();
     }
   }
@@ -104,9 +89,42 @@ class CellPainterRenderBox extends RenderBox {
         width: constraints.maxWidth,
         textStyle: _textStyle,
         value: _text,
-        rowSpan: _rowSpan,
-        columnSpan: _columnSpan);
+        overflow: _overflow);
     size = Size(_textPainter.width, _textPainter.height);
+  }
+
+  // The default RenderBox intrinsics are 0, which would report a text cell
+  // as having no content height at all - measure it the same way
+  // performLayout does, so a row sizes correctly around its text cells.
+  @override
+  double computeMinIntrinsicHeight(double width) => _measureHeight(width);
+
+  @override
+  double computeMaxIntrinsicHeight(double width) => _measureHeight(width);
+
+  // The text width without wrapping, used by the column auto size.
+  @override
+  double computeMinIntrinsicWidth(double height) =>
+      _unconstrainedPainter().minIntrinsicWidth;
+
+  @override
+  double computeMaxIntrinsicWidth(double height) =>
+      _unconstrainedPainter().maxIntrinsicWidth;
+
+  TextPainter _unconstrainedPainter() => _painterCache.getTextPainter(
+      width: double.infinity,
+      textStyle: _textStyle,
+      value: _text,
+      overflow: _overflow);
+
+  double _measureHeight(double width) {
+    return _painterCache
+        .getTextPainter(
+            width: width,
+            textStyle: _textStyle,
+            value: _text,
+            overflow: _overflow)
+        .height;
   }
 
   @override

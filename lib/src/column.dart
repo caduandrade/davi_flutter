@@ -2,7 +2,6 @@ import 'dart:math' as math;
 
 import 'package:davi/davi.dart';
 import 'package:davi/src/cell_semantics_builder.dart';
-import 'package:davi/src/span_provider.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
@@ -17,6 +16,8 @@ class DaviColumn<DATA> extends ChangeNotifier {
       {dynamic id,
       double width = 100,
       double? grow,
+      this.initialAutoSize = false,
+      this.maxAutoSizeWidth,
       this.name,
       this.headerPadding,
       this.cellPadding,
@@ -29,12 +30,11 @@ class DaviColumn<DATA> extends ChangeNotifier {
       this.cellValue,
       this.cellIcon,
       this.cellWidget,
+      this.cellFocusTraversalEnabled = false,
       this.cellPainter,
       this.cellBarStyle,
       this.cellBarValue,
       this.cellListenable,
-      this.rowSpan = _defaultSpanProvider,
-      this.columnSpan = _defaultSpanProvider,
       this.cellValueStringify = _defaultCellValueStringify,
       this.cellBarValueStringify,
       this.leading,
@@ -53,6 +53,7 @@ class DaviColumn<DATA> extends ChangeNotifier {
         _sortPriority = math.max(1, sortPriority),
         _width = width,
         _grow = grow != null ? math.max(1, grow) : null,
+        _initialAutoSizePending = initialAutoSize,
         dataComparator = dataComparator ?? _defaultDataComparator {
     int count = 0;
     if (cellValue != null) count++;
@@ -65,6 +66,11 @@ class DaviColumn<DATA> extends ChangeNotifier {
         'Conflict detected: Only one of "cellValue", "cellIcon", "cellWidget", '
         '"cellPainter", or "cellBarValue" can be used at a time. '
         'Ensure that only one attribute is set to avoid this error.',
+      );
+    }
+    if (cellFocusTraversalEnabled && cellWidget == null) {
+      throw ArgumentError(
+        '"cellFocusTraversalEnabled" requires "cellWidget".',
       );
     }
   }
@@ -101,8 +107,11 @@ class DaviColumn<DATA> extends ChangeNotifier {
   /// This controls how the cell data is positioned within the cell area.
   final Alignment? cellAlignment;
 
-  /// Determines how the cell content overflows when the content is too large for the cell.
-  /// The value defines the behavior of the text when it exceeds the available space.
+  /// Determines how a [cellValue] text overflows when it's too large for the
+  /// cell's width. Only applies to [cellValue] - [cellWidget] is unaffected.
+  /// Defaults to `null`, which lets the text wrap onto as many lines as it
+  /// needs, growing the row to fit. Set this (e.g. [TextOverflow.ellipsis])
+  /// to keep the text on a single line instead.
   final TextOverflow? cellOverflow;
 
   /// A custom background builder for each cell in the column.
@@ -160,18 +169,22 @@ class DaviColumn<DATA> extends ChangeNotifier {
   final CellPainter<DATA>? cellPainter;
 
   /// Cell widget mapper for each row in that column.
+  ///
   final CellWidgetBuilder<DATA>? cellWidget;
+
+  /// Enables TAB and Shift+TAB traversal for focusable controls created by
+  /// [cellWidget].
+  ///
+  /// When enabled, traversal follows row/column order and automatically
+  /// scrolls vertically and horizontally to build and reveal offscreen cells.
+  /// Disabled controls are skipped. Defaults to `false`, avoiding the focus
+  /// bookkeeping cost for custom cells that contain no focusable controls.
+  final bool cellFocusTraversalEnabled;
 
   /// A builder function that provides a [Listenable] for a specific cell in this column.
   /// When the returned [Listenable] notifies listeners, the corresponding cell will be rebuilt.
   /// This allows dynamic updates of cell content based on external changes.
   final DaviCellListenableBuilder<DATA>? cellListenable;
-
-  /// Defines the row span.
-  final SpanProvider<DATA> rowSpan;
-
-  /// Defines the column span.
-  final SpanProvider<DATA> columnSpan;
 
   /// Function used to sort the column. If not defined, it can be created
   /// according to value mappings.
@@ -205,11 +218,48 @@ class DaviColumn<DATA> extends ChangeNotifier {
     }
   }
 
+  /// Whether the column width is adjusted once to fit its content, as soon
+  /// as there are rows to display.
+  ///
+  /// The width considers the header and only the cells of the rows visible
+  /// in the viewport at that moment, limited by [maxAutoSizeWidth]. Rows
+  /// outside the scroll area are not measured, so the cost doesn't depend
+  /// on the number of rows, but a longer value in one of them is not
+  /// considered. Rows added later (e.g. with infinite scroll) are not
+  /// considered either: after the initial auto size, the width no longer
+  /// follows the content and can be resized like any other.
+  /// Until then, [width] is used.
+  ///
+  /// Cells built with [cellPainter] or [cellBarValue] have no width of
+  /// their own, so only the header is considered for them.
+  ///
+  /// Only works with [ColumnWidthBehavior.scrollable]. The [grow] is
+  /// applied after the auto size, distributing the remaining space.
+  /// Setting the [width] before the auto size happens cancels it.
+  final bool initialAutoSize;
+
+  /// The maximum width that auto size can set, preventing a column with
+  /// long texts from taking up too much space.
+  ///
+  /// Applies to [initialAutoSize] and to the auto size requested by the
+  /// user (double click on the resize area of the header) or by
+  /// `autoSizeColumns` of [DaviModel] and [DaviController].
+  /// If `null`, there is no limit.
+  final double? maxAutoSizeWidth;
+
+  bool _initialAutoSizePending;
+  bool _autoSizeRequested = false;
+
+  void _notifyAutoSize() => notifyListeners();
+
   /// The width of the column. It is constrained to a minimum value of 16.
   /// The width can be updated, and listeners are notified if the value changes.
+  /// Setting it cancels a pending auto size.
   double get width => _width;
 
   set width(double value) {
+    _initialAutoSizePending = false;
+    _autoSizeRequested = false;
     value = math.max(16, value);
     if (_width != value) {
       _width = value;
@@ -259,8 +309,6 @@ SemanticsProperties _defaultSemanticsBuilder(SemanticsBuilderParams params) {
 /// Signature for sort column function.
 typedef DaviComparator<DATA> = int Function(
     dynamic cellValueA, dynamic cellValueB, DATA rowA, DATA rowB);
-
-int _defaultSpanProvider(SpanParams params) => 1;
 
 String _defaultCellValueStringify(dynamic value) => value.toString();
 
@@ -695,6 +743,33 @@ class DaviColumnHelper {
 
   static bool isLayoutPerformed({required DaviColumn column}) =>
       column._layoutPerformed;
+
+  static bool isInitialAutoSizePending({required DaviColumn column}) =>
+      column._initialAutoSizePending;
+
+  static bool isAutoSizeRequested({required DaviColumn column}) =>
+      column._autoSizeRequested;
+
+  static bool isAutoSizePending({required DaviColumn column}) =>
+      column._initialAutoSizePending || column._autoSizeRequested;
+
+  /// Requests the column to be auto sized in the next layout.
+  static void requestAutoSize({required DaviColumn column}) {
+    if (!column._autoSizeRequested) {
+      column._autoSizeRequested = true;
+      column._notifyAutoSize();
+    }
+  }
+
+  /// Applies the measured width, ending any pending auto size.
+  /// Always notifies, so the table is rebuilt even without width change.
+  static void applyAutoSize(
+      {required DaviColumn column, required double width}) {
+    column._initialAutoSizePending = false;
+    column._autoSizeRequested = false;
+    column._width = math.max(16, width);
+    column._notifyAutoSize();
+  }
 
   static void setSort(
       {required DaviColumn column,

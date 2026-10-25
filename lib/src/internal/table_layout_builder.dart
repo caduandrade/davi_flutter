@@ -15,12 +15,72 @@ import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
 @internal
-class TableLayoutBuilder<DATA> extends StatelessWidget {
+class TableLayoutBuilder<DATA> extends StatefulWidget {
   const TableLayoutBuilder(
       {super.key, required this.daviContext, required this.onDragScroll});
 
   final DaviContext<DATA> daviContext;
   final OnDragScroll onDragScroll;
+
+  @override
+  State<TableLayoutBuilder<DATA>> createState() =>
+      _TableLayoutBuilderState<DATA>();
+}
+
+class _TableLayoutBuilderState<DATA> extends State<TableLayoutBuilder<DATA>> {
+  DaviContext<DATA> get daviContext => widget.daviContext;
+  OnDragScroll get onDragScroll => widget.onDragScroll;
+
+  BoxConstraints? _lastConstraints;
+  DaviThemeData? _lastTheme;
+  TableLayoutSettings? _lastLayoutSettings;
+  bool _refreshScheduled = false;
+
+  @override
+  void initState() {
+    super.initState();
+    daviContext.rowExtentManager.addListener(_onRowExtentChanged);
+  }
+
+  @override
+  void didUpdateWidget(covariant TableLayoutBuilder<DATA> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.daviContext.rowExtentManager !=
+        daviContext.rowExtentManager) {
+      oldWidget.daviContext.rowExtentManager
+          .removeListener(_onRowExtentChanged);
+      daviContext.rowExtentManager.addListener(_onRowExtentChanged);
+    }
+  }
+
+  @override
+  void dispose() {
+    daviContext.rowExtentManager.removeListener(_onRowExtentChanged);
+    super.dispose();
+  }
+
+  void _onRowExtentChanged() {
+    if (_refreshScheduled) {
+      return;
+    }
+    _refreshScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _refreshScheduled = false;
+      if (!mounted || _lastLayoutSettings == null) {
+        return;
+      }
+      final next = _settings(_lastConstraints!, _lastTheme!);
+      final previous = _lastLayoutSettings!;
+      // Measurements update scroll extents directly. Rebuild the outer
+      // table only when scrollbar visibility or its own height changes.
+      if (next.hasVerticalScrollbar != previous.hasVerticalScrollbar ||
+          next.hasHorizontalScrollbar != previous.hasHorizontalScrollbar ||
+          next.height != previous.height) {
+        setState(() {});
+      }
+    });
+    WidgetsBinding.instance.ensureVisualUpdate();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,21 +89,19 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
 
   Widget _builder(BuildContext context, BoxConstraints constraints) {
     final DaviThemeData theme = DaviTheme.of(context);
+    final TableLayoutSettings layoutSettings = _settings(constraints, theme);
+    _lastConstraints = constraints;
+    _lastTheme = theme;
+    _lastLayoutSettings = layoutSettings;
 
-    TableLayoutSettings layoutSettings = TableLayoutSettings(
-        constraints: constraints,
-        model: daviContext.model,
-        theme: theme,
-        columnWidthBehavior: daviContext.columnWidthBehavior,
-        themeMetrics: daviContext.themeMetrics,
-        visibleRowsCount: daviContext.visibleRowsCount,
-        hasTrailingWidget: daviContext.trailingWidget != null);
-
-    if (daviContext.columnWidthBehavior == ColumnWidthBehavior.scrollable) {
+    // While an initial auto size is pending, grow is only displayed, not
+    // committed: it must distribute the space remaining after the auto size.
+    if (daviContext.columnWidthBehavior == ColumnWidthBehavior.scrollable &&
+        !daviContext.autoSizer.hasPendingInitial) {
       for (int columnIndex = 0;
-          columnIndex < daviContext.model.columnsLength;
+          columnIndex < daviContext.dataSource.columnsLength;
           columnIndex++) {
-        DaviColumn column = daviContext.model.columnAt(columnIndex);
+        DaviColumn column = daviContext.dataSource.columnAt(columnIndex);
         if (!DaviColumnHelper.isLayoutPerformed(column: column)) {
           ColumnMetrics columnMetrics =
               layoutSettings.columnsMetrics[columnIndex];
@@ -61,6 +119,7 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
           child: TableScrollbar(
               axis: Axis.vertical,
               contentSize: layoutSettings.contentHeight,
+              rowExtentManager: daviContext.rowExtentManager,
               scrollController: daviContext.scrollControllers.vertical,
               color: theme.scrollbar.verticalColor,
               borderColor: theme.scrollbar.verticalBorderColor,
@@ -122,7 +181,7 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
               maxHeight: constraints.maxHeight);
         })));
 
-    if (daviContext.model.hasSummary) {
+    if (daviContext.dataSource.hasSummary) {
       children.add(TableLayoutChild(
           id: LayoutChildId.summary,
           child: SummaryWidget(
@@ -135,6 +194,21 @@ class TableLayoutBuilder<DATA> extends StatelessWidget {
     }
 
     return TableLayout<DATA>(
-        layoutSettings: layoutSettings, theme: theme, children: children);
+        layoutSettings: layoutSettings,
+        theme: theme,
+        autoSizer: daviContext.autoSizer,
+        children: children);
   }
+
+  TableLayoutSettings _settings(
+          BoxConstraints constraints, DaviThemeData theme) =>
+      TableLayoutSettings(
+          constraints: constraints,
+          dataSource: daviContext.dataSource,
+          theme: theme,
+          columnWidthBehavior: daviContext.columnWidthBehavior,
+          themeMetrics: daviContext.themeMetrics,
+          visibleRowsCount: daviContext.visibleRowsCount,
+          rowExtentManager: daviContext.rowExtentManager,
+          hasTrailingWidget: daviContext.trailingWidget != null);
 }

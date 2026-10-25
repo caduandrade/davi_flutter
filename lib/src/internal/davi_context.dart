@@ -1,11 +1,13 @@
 import 'package:davi/src/column_width_behavior.dart';
+import 'package:davi/src/data_source.dart';
+import 'package:davi/src/internal/column_auto_sizer.dart';
 import 'package:davi/src/internal/column_notifier.dart';
 import 'package:davi/src/internal/hover_notifier.dart';
+import 'package:davi/src/internal/row_extent_manager.dart';
 import 'package:davi/src/internal/scroll_controllers.dart';
 import 'package:davi/src/internal/table_scrollbar.dart';
 import 'package:davi/src/internal/theme_metrics/theme_metrics.dart';
 import 'package:davi/src/last_visible_row_listener.dart';
-import 'package:davi/src/model.dart';
 import 'package:davi/src/row_callback_typedefs.dart';
 import 'package:davi/src/row_color.dart';
 import 'package:davi/src/row_cursor_builder.dart';
@@ -20,7 +22,7 @@ class DaviContext<DATA> {
       required this.hasHoverListener,
       required this.columnNotifier,
       required this.semanticsEnabled,
-      required this.model,
+      required this.dataSource,
       required this.onLastVisibleRow,
       required this.focusable,
       required this.focusNode,
@@ -37,13 +39,15 @@ class DaviContext<DATA> {
       required this.visibleRowsCount,
       required this.columnWidthBehavior,
       required this.themeMetrics,
+      required this.rowExtentManager,
+      required this.autoSizer,
       required this.scrollControllers});
 
   final HoverNotifier hoverNotifier;
   final bool hasHoverListener;
   final ColumnNotifier columnNotifier;
   final bool semanticsEnabled;
-  final DaviModel<DATA> model;
+  final DaviDataSource<DATA> dataSource;
   final bool focusable;
   final FocusNode focusNode;
   final Widget? trailingWidget;
@@ -60,6 +64,8 @@ class DaviContext<DATA> {
   final int? visibleRowsCount;
   final ColumnWidthBehavior columnWidthBehavior;
   final TableThemeMetrics themeMetrics;
+  final RowExtentManager rowExtentManager;
+  final ColumnAutoSizer autoSizer;
   final ScrollControllers scrollControllers;
 
   bool get hasCallback =>

@@ -1,3 +1,4 @@
+import 'package:davi/src/internal/column_auto_sizer.dart';
 import 'package:davi/src/internal/columns_layout_child.dart';
 import 'package:davi/src/internal/columns_layout_element.dart';
 import 'package:davi/src/internal/columns_layout_render_box.dart';
@@ -15,6 +16,7 @@ class ColumnsLayout extends MultiChildRenderObjectWidget {
       required this.scrollControllers,
       required this.columnDividerThickness,
       required this.columnDividerColor,
+      this.autoSizer,
       required List<ColumnsLayoutChild> super.children});
 
   final TableLayoutSettings layoutSettings;
@@ -22,13 +24,17 @@ class ColumnsLayout extends MultiChildRenderObjectWidget {
   final double columnDividerThickness;
   final Color? columnDividerColor;
 
+  /// Only given by the header, whose cells are measured for auto size.
+  final ColumnAutoSizer? autoSizer;
+
   @override
   RenderObject createRenderObject(BuildContext context) {
     return ColumnsLayoutRenderBox(
         layoutSettings: layoutSettings,
         scrollControllers: scrollControllers,
         columnDividerColor: columnDividerColor,
-        columnDividerThickness: columnDividerThickness);
+        columnDividerThickness: columnDividerThickness,
+        autoSizer: autoSizer);
   }
 
   @override
@@ -44,6 +50,7 @@ class ColumnsLayout extends MultiChildRenderObjectWidget {
       ..layoutSettings = layoutSettings
       ..scrollControllers = scrollControllers
       ..columnDividerColor = columnDividerColor
-      ..columnDividerThickness = columnDividerThickness;
+      ..columnDividerThickness = columnDividerThickness
+      ..autoSizer = autoSizer;
   }
 }

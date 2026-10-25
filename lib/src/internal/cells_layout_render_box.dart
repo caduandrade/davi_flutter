@@ -1,10 +1,14 @@
 import 'dart:math' as math;
 
 import 'package:davi/davi.dart';
+import 'package:davi/src/data_source.dart';
+import 'package:davi/src/internal/cell_widget_builder.dart';
 import 'package:davi/src/internal/cells_layout_parent_data.dart';
+import 'package:davi/src/internal/column_auto_sizer.dart';
 import 'package:davi/src/internal/column_metrics.dart';
 import 'package:davi/src/internal/divider_paint_manager.dart';
 import 'package:davi/src/internal/hover_notifier.dart';
+import 'package:davi/src/internal/row_extent_manager.dart';
 import 'package:davi/src/internal/scroll_controllers.dart';
 import 'package:davi/src/internal/viewport_state.dart';
 import 'package:flutter/foundation.dart';
@@ -18,8 +22,8 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
         RenderBoxContainerDefaultsMixin<RenderBox, CellsLayoutParentData>
     implements MouseTrackerAnnotation {
   CellsLayoutRenderBox(
-      {required double cellHeight,
-      required double rowHeight,
+      {required RowExtentManager rowExtentManager,
+      required ViewportState<DATA> viewportState,
       required double verticalOffset,
       required ScrollControllers scrollControllers,
       required List<ColumnMetrics> columnsMetrics,
@@ -39,10 +43,14 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
       required Color? dividerColor,
       required DaviRowColor<DATA>? rowColor,
       required DividerPaintManager dividerPaintManager,
-      required DaviModel<DATA> model})
-      : _model = model,
-        _cellHeight = cellHeight,
-        _rowHeight = rowHeight,
+      required DaviDataSource<DATA> dataSource,
+      required ColumnAutoSizer autoSizer})
+      : _dataSource = dataSource,
+        _autoSizer = autoSizer,
+        _autoSizerGeneration = autoSizer.generation,
+        _rowExtentManager = rowExtentManager,
+        _rowExtentGeneration = rowExtentManager.generation,
+        _viewportState = viewportState,
         _verticalOffset = verticalOffset,
         _scrollControllers = scrollControllers,
         _hoverNotifier = hoverNotifier,
@@ -65,14 +73,30 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
     _hoverNotifier.addListener(markNeedsPaint);
     _scrollControllers.leftPinnedHorizontal.addListener(markNeedsPaint);
     _scrollControllers.unpinnedHorizontal.addListener(markNeedsPaint);
+    // Relayout (re-measure visible rows' real content height) exactly when
+    // the visible row window actually changes topology - ViewportState only
+    // notifies then (see its `topologyUnchanged` early return), not on every
+    // scroll pixel.
+    _viewportState.addListener(markNeedsLayout);
   }
 
-  DaviModel<DATA> _model;
+  DaviDataSource<DATA> _dataSource;
 
-  set model(DaviModel<DATA> value) {
-    if (_model != value) {
-      _model = value;
+  set dataSource(DaviDataSource<DATA> value) {
+    if (_dataSource != value) {
+      _dataSource = value;
       markNeedsPaint();
+    }
+  }
+
+  ColumnAutoSizer _autoSizer;
+  int _autoSizerGeneration;
+
+  set autoSizer(ColumnAutoSizer value) {
+    if (_autoSizer != value || _autoSizerGeneration != value.generation) {
+      _autoSizer = value;
+      _autoSizerGeneration = value.generation;
+      markNeedsLayout();
     }
   }
 
@@ -140,20 +164,30 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
     }
   }
 
-  double _rowHeight;
+  RowExtentManager _rowExtentManager;
+  int _rowExtentGeneration;
 
-  set rowHeight(double value) {
-    if (_rowHeight != value) {
-      _rowHeight = value;
+  set rowExtentManager(RowExtentManager value) {
+    // The same instance is mutated in place (resize()/setHeight()) rather
+    // than replaced, so reference equality alone can't detect a content
+    // change - compare generations too, otherwise a mutation (e.g. a theme
+    // change resizing every row's estimate) would silently skip the
+    // relayout needed to re-measure and correct row heights.
+    if (_rowExtentManager != value ||
+        _rowExtentGeneration != value.generation) {
+      _rowExtentManager = value;
+      _rowExtentGeneration = value.generation;
       markNeedsLayout();
     }
   }
 
-  double _cellHeight;
+  ViewportState<DATA> _viewportState;
 
-  set cellHeight(double value) {
-    if (_cellHeight != value) {
-      _cellHeight = value;
+  set viewportState(ViewportState<DATA> value) {
+    if (_viewportState != value) {
+      _viewportState.removeListener(markNeedsLayout);
+      _viewportState = value;
+      _viewportState.addListener(markNeedsLayout);
       markNeedsLayout();
     }
   }
@@ -289,24 +323,79 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
     _hasLayoutErrors = false;
     _cells.clear();
     _trailing = null;
+    RenderBox? trailingBox;
+
+    // Measure pass: query each visible cell's real content height - the
+    // same intrinsic-height trick the header already uses (see
+    // ColumnsLayoutRenderBox._measureRowHeight) - before laying anything
+    // out, then resolve each row to the max across its cells. Rows without
+    // data (filler rows) are left at the seed estimate.
+    final Map<int, double> rowMaxIntrinsic = {};
     visitChildren((child) {
       final RenderBox renderBox = child as RenderBox;
       final CellsLayoutParentData childParentData = child._parentData();
       childParentData.offset = const Offset(0, 0);
       if (childParentData.isCell) {
-        renderBox.layout(
-            BoxConstraints.tightFor(width: size.width, height: size.height),
-            parentUsesSize: false);
         _cells.add(renderBox);
+        if (renderBox is RenderCustomSingleChild) {
+          final CellMapping mapping = renderBox.cellMapping;
+          final RenderBox? content = renderBox.child;
+          if (content != null &&
+              _rowRegionCache.get(mapping.rowIndex).hasData) {
+            final double columnWidth =
+                _columnsMetrics[mapping.columnIndex].width;
+            // Query the cell wrapper so Flutter tracks the intrinsic
+            // dependency through its relayout boundary as content changes.
+            final double measured =
+                renderBox.getMaxIntrinsicHeight(columnWidth);
+            final double current = rowMaxIntrinsic[mapping.rowIndex] ?? 0;
+            if (measured > current) {
+              rowMaxIntrinsic[mapping.rowIndex] = measured;
+            }
+            _autoSizer.measureCell(mapping.columnIndex, renderBox);
+          }
+        }
       } else {
-        // trailing
-        renderBox.layout(
-            BoxConstraints.tightFor(
-                width: constraints.maxWidth, height: _cellHeight),
-            parentUsesSize: false);
-        _trailing = renderBox;
+        trailingBox = renderBox;
       }
     });
+
+    rowMaxIntrinsic.forEach(_rowExtentManager.setHeight);
+
+    final RowRegion? trailingRegion = _rowRegionCache.trailingRegion;
+    if (trailingBox != null && trailingRegion != null) {
+      final double measured =
+          trailingBox!.getMaxIntrinsicHeight(constraints.maxWidth);
+      _rowExtentManager.setHeight(trailingRegion.index, measured);
+    }
+
+    // Bring row region bounds (backgrounds, dividers) in sync with any
+    // heights just corrected above, in this same layout pass rather than
+    // lagging a frame behind.
+    if (rowMaxIntrinsic.isNotEmpty || trailingBox != null) {
+      _viewportState.refreshRowRegions(_rowExtentManager);
+    }
+
+    // Positioning is manual (see RenderCustomSingleChild). Include the
+    // measured row height in each cell's constraints so Flutter relays out
+    // an otherwise unchanged cell when another column makes its row taller.
+    for (final RenderBox cell in _cells) {
+      final double height = cell is RenderCustomSingleChild
+          ? _rowExtentManager.heightOf(cell.cellMapping.rowIndex)
+          : size.height;
+      cell.layout(BoxConstraints.tightFor(width: size.width, height: height),
+          parentUsesSize: false);
+    }
+    if (trailingBox != null) {
+      final double trailingHeight = trailingRegion != null
+          ? _rowExtentManager.heightOf(trailingRegion.index)
+          : 0;
+      trailingBox!.layout(
+          BoxConstraints.tightFor(
+              width: constraints.maxWidth, height: trailingHeight),
+          parentUsesSize: false);
+      _trailing = trailingBox;
+    }
   }
 
   @override
@@ -338,7 +427,7 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
           color = _hoverBackground!(rowRegion.index) ?? color;
         }
         if (rowRegion.hasData && color == null && _rowColor != null) {
-          final DATA data = _model.rowAt(rowRegion.index);
+          final DATA data = _dataSource.rowAt(rowRegion.index);
           color = _rowColor!(RowColorParams(
               data: data,
               rowIndex: rowRegion.index,
@@ -412,13 +501,13 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
           double bottom = offset.dy;
           if (!start.edge) {
             RowRegion startRow = _rowRegionCache.get(start.index);
-            top += startRow.bounds.top + _cellHeight;
+            top += startRow.bounds.bottom;
           }
           if (end.edge) {
             bottom += constraints.maxHeight;
           } else {
             RowRegion endRow = _rowRegionCache.get(end.index);
-            bottom += endRow.bounds.top + _cellHeight;
+            bottom += endRow.bounds.bottom;
           }
           context.canvas
               .drawRect(Rect.fromLTRB(left, top, right, bottom), paint);
@@ -478,7 +567,7 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
                   right, offset.dx + _areaBounds[PinStatus.left]!.right);
             }
           }
-          double top = offset.dy + rowRegion.bounds.top + _cellHeight;
+          double top = offset.dy + rowRegion.bounds.bottom;
           context.canvas.drawRect(
               Rect.fromLTRB(left, top, right, top + _dividerThickness), paint);
         }
@@ -531,6 +620,7 @@ class CellsLayoutRenderBox<DATA> extends RenderBox
     _scrollControllers.leftPinnedHorizontal.removeListener(markNeedsPaint);
     _scrollControllers.unpinnedHorizontal.removeListener(markNeedsPaint);
     _hoverNotifier.removeListener(markNeedsPaint);
+    _viewportState.removeListener(markNeedsLayout);
     super.dispose();
   }
 }

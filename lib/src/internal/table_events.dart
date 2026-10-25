@@ -3,7 +3,6 @@ import 'dart:math' as math;
 import 'package:davi/davi.dart';
 import 'package:davi/src/internal/davi_context.dart';
 import 'package:davi/src/internal/table_layout_settings.dart';
-import 'package:davi/src/internal/theme_metrics/theme_metrics.dart';
 import 'package:davi/src/internal/viewport_state.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -47,13 +46,50 @@ class _TableEventsState<DATA> extends State<TableEvents<DATA>> {
   // left-pinned columns or the unpinned ones.
   ScrollController? _dragScrollController;
 
+  // The mouse's last known local position while it's over the table (null
+  // when it isn't). Vertical scrolling moves row content underneath a
+  // stationary mouse without generating a new PointerHoverEvent - Flutter
+  // only fires those on actual pointer movement - so the hovered row index
+  // would otherwise stay pinned to whatever row was under the mouse before
+  // the scroll, visibly sliding away from the cursor. Recomputing hover
+  // from this cached position whenever the vertical offset changes keeps it
+  // under the cursor instead.
+  Offset? _lastHoverPosition;
+
+  @override
+  void initState() {
+    super.initState();
+    verticalScroll.addListener(_onVerticalScroll);
+  }
+
+  @override
+  void didUpdateWidget(covariant TableEvents<DATA> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final ScrollController oldController =
+        oldWidget.daviContext.scrollControllers.vertical;
+    if (oldController != verticalScroll) {
+      oldController.removeListener(_onVerticalScroll);
+      verticalScroll.addListener(_onVerticalScroll);
+    }
+  }
+
+  @override
+  void dispose() {
+    verticalScroll.removeListener(_onVerticalScroll);
+    super.dispose();
+  }
+
+  void _onVerticalScroll() {
+    if (_lastHoverPosition != null) {
+      _updateHover(_lastHoverPosition);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final DaviThemeData theme = DaviTheme.of(context);
-
     Widget content = widget.child;
 
-    if (widget.daviContext.model.isRowsNotEmpty) {
+    if (widget.daviContext.dataSource.isRowsNotEmpty) {
       // Updates logical row status on hover
       content = MouseRegion(
           onEnter: _onEnter,
@@ -92,12 +128,9 @@ class _TableEventsState<DATA> extends State<TableEvents<DATA>> {
           child: content);
 
       if (widget.daviContext.focusable) {
-        final TableThemeMetrics themeMetrics = TableThemeMetrics(theme);
-
         content = Focus(
             focusNode: widget.daviContext.focusNode,
-            onKeyEvent: (node, event) =>
-                _handleKeyPress(node, event, themeMetrics.row.height),
+            onKeyEvent: _handleKeyPress,
             child: content);
       }
     }
@@ -108,14 +141,17 @@ class _TableEventsState<DATA> extends State<TableEvents<DATA>> {
       widget.daviContext.scrollControllers.vertical;
 
   void _onEnter(PointerEnterEvent event) {
+    _lastHoverPosition = event.localPosition;
     _updateHover(event.localPosition);
   }
 
   void _onHover(PointerHoverEvent event) {
+    _lastHoverPosition = event.localPosition;
     _updateHover(event.localPosition);
   }
 
   void _onExit(PointerExitEvent event) {
+    _lastHoverPosition = null;
     _updateHover(null);
   }
 
@@ -175,14 +211,14 @@ class _TableEventsState<DATA> extends State<TableEvents<DATA>> {
   }
 
   void _updateHover(Offset? position) {
-    if (widget.daviContext.model.isRowsNotEmpty) {
+    if (widget.daviContext.dataSource.isRowsNotEmpty) {
       int? rowIndex;
       if (position != null) {
         rowIndex = widget.rowRegions.boundsIndex(position);
       }
       DATA? data;
-      if (rowIndex != null && rowIndex < widget.daviContext.model.rowsLength) {
-        data = widget.daviContext.model.rowAt(rowIndex);
+      if (rowIndex != null && rowIndex < widget.daviContext.dataSource.rowsLength) {
+        data = widget.daviContext.dataSource.rowAt(rowIndex);
       }
       if (data != null) {
         widget.daviContext.hoverNotifier.cursor = _buildCursor(
@@ -215,8 +251,8 @@ class _TableEventsState<DATA> extends State<TableEvents<DATA>> {
     DATA? data;
     if (widget.daviContext.hoverNotifier.index != null) {
       if (widget.daviContext.hoverNotifier.index! <
-          widget.daviContext.model.rowsLength) {
-        data = widget.daviContext.model
+          widget.daviContext.dataSource.rowsLength) {
+        data = widget.daviContext.dataSource
             .rowAt(widget.daviContext.hoverNotifier.index!);
       }
     }
@@ -274,17 +310,22 @@ class _TableEventsState<DATA> extends State<TableEvents<DATA>> {
     return null;
   }
 
-  KeyEventResult _handleKeyPress(
-      FocusNode node, KeyEvent event, double rowHeight) {
+  KeyEventResult _handleKeyPress(FocusNode node, KeyEvent event) {
     if (event is KeyUpEvent) {
       if (verticalScroll.hasClients) {
         if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+          final double rowHeight = widget.layoutSettings.rowExtentManager
+              .extentOf(widget.layoutSettings.rowExtentManager
+                  .indexAtOffset(verticalScroll.position.pixels));
           double target = math.min(verticalScroll.position.pixels + rowHeight,
               verticalScroll.position.maxScrollExtent);
           verticalScroll.animateTo(target,
               duration: const Duration(milliseconds: 30), curve: Curves.ease);
           return KeyEventResult.handled;
         } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+          final double rowHeight = widget.layoutSettings.rowExtentManager
+              .extentOf(widget.layoutSettings.rowExtentManager
+                  .indexAtOffset(verticalScroll.position.pixels));
           double target =
               math.max(verticalScroll.position.pixels - rowHeight, 0);
           verticalScroll.animateTo(target,

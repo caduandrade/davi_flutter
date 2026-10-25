@@ -1,11 +1,8 @@
 import 'dart:collection';
-import 'dart:math' as math;
 
 import 'package:collection/collection.dart';
-import 'package:davi/src/cell_collision_behavior.dart';
 import 'package:davi/src/column.dart';
-import 'package:davi/src/max_span_behavior.dart';
-import 'package:davi/src/row_span_overflow_behavior.dart';
+import 'package:davi/src/data_source.dart';
 import 'package:davi/src/sort.dart';
 import 'package:davi/src/sort_callback_typedef.dart';
 import 'package:davi/src/sort_direction.dart';
@@ -15,25 +12,15 @@ import 'package:flutter/widgets.dart';
 /// The [Davi] model.
 ///
 /// The type [DATA] represents the data of each row.
-class DaviModel<DATA> extends ChangeNotifier {
+class DaviModel<DATA> extends ChangeNotifier implements DaviDataSource<DATA> {
   DaviModel(
       {List<DATA> rows = const [],
       List<DaviColumn<DATA>> columns = const [],
       this.ignoreDataComparators = false,
       this.multiSortEnabled = false,
       SortingMode sortingMode = SortingMode.interactive,
-      this.onSort,
-      int maxColumnSpan = 10,
-      int maxRowSpan = 15,
-      CellCollisionBehavior collisionBehavior = CellCollisionBehavior.ignore,
-      RowSpanOverflowBehavior rowSpanOverflowBehavior =
-          RowSpanOverflowBehavior.cap,
-      this.maxSpanBehavior = MaxSpanBehavior.throwException})
-      : maxRowSpan = math.max(maxRowSpan, 1),
-        maxColumnSpan = math.max(maxColumnSpan, 1),
-        _sortingMode = sortingMode,
-        _collisionBehavior = collisionBehavior,
-        _rowSpanOverflowBehavior = rowSpanOverflowBehavior {
+      this.onSort})
+      : _sortingMode = sortingMode {
     _originalRows = List.from(rows);
     _addColumns(columns, false);
     _updateRows(notify: false);
@@ -49,26 +36,13 @@ class DaviModel<DATA> extends ChangeNotifier {
   /// The event that will be triggered before each sorting.
   OnSortCallback<DATA>? onSort;
 
+  @override
   final bool multiSortEnabled;
 
   bool _hasSummary = false;
 
+  @override
   bool get hasSummary => _hasSummary;
-
-  CellCollisionBehavior _collisionBehavior;
-
-  /// Determines the behavior when a cell collision occurs in the grid.
-  ///
-  /// This property uses [CellCollisionBehavior] to define how collisions
-  /// are handled, such as ignoring the colliding cell, logging a warning,
-  /// allowing overlap, or throwing an exception.
-  CellCollisionBehavior get collisionBehavior => _collisionBehavior;
-  set collisionBehavior(CellCollisionBehavior value) {
-    if (_collisionBehavior != value) {
-      _collisionBehavior = value;
-      notifyListeners();
-    }
-  }
 
   /// Gets the sorted columns.
   List<DaviColumn<DATA>> get sortedColumns {
@@ -79,6 +53,7 @@ class DaviModel<DATA> extends ChangeNotifier {
   }
 
   /// The list of sorts. The list is sorted by priority.
+  @override
   List<DaviSort> get sortList {
     List<DaviSort> list = [];
     for (DaviColumn<DATA> column in sortedColumns) {
@@ -93,6 +68,7 @@ class DaviModel<DATA> extends ChangeNotifier {
 
   /// Specifies the sorting mode for the table: interactive, always sorted, or disabled.
   SortingMode _sortingMode;
+  @override
   SortingMode get sortingMode => _sortingMode;
   set sortingMode(SortingMode value) {
     if (_sortingMode != value) {
@@ -113,49 +89,22 @@ class DaviModel<DATA> extends ChangeNotifier {
 
   bool get isOriginalRowsNotEmpty => _originalRows.isNotEmpty;
 
+  @override
   int get rowsLength => _sortableRows.length;
 
+  @override
   bool get isRowsEmpty => _sortableRows.isEmpty;
 
+  @override
   bool get isRowsNotEmpty => _sortableRows.isNotEmpty;
 
+  @override
   int get columnsLength => _columns.length;
 
+  @override
   bool get isColumnsEmpty => _columns.isEmpty;
 
   bool get isColumnsNotEmpty => _columns.isNotEmpty;
-
-  /// The maximum number of rows a single cell can span.
-  ///
-  /// If a cell's `rowSpan` exceeds this value, the behavior will depend on
-  /// [maxSpanBehavior]. See [MaxSpanBehavior] for available options and details.
-  ///
-  /// Adjust this value to control the performance and usability of the grid.
-  final int maxRowSpan;
-
-  /// The maximum number of columns a single cell can span.
-  ///
-  /// If a cell's `columnSpan` exceeds this value, the behavior will depend on
-  /// [maxSpanBehavior]. See [MaxSpanBehavior] for available options and details.
-  ///
-  /// Adjust this value to accommodate wider spans when necessary.
-  final int maxColumnSpan;
-
-  /// Determines how to handle spans that exceed [maxRowSpan] or [maxColumnSpan].
-  ///
-  /// Refer to [MaxSpanBehavior] for details on the available policies.
-  final MaxSpanBehavior maxSpanBehavior;
-
-  /// Defines the behavior when a cell's rowSpan exceeds the available number of rows in the table.
-  RowSpanOverflowBehavior _rowSpanOverflowBehavior;
-  RowSpanOverflowBehavior get rowSpanOverflowBehavior =>
-      _rowSpanOverflowBehavior;
-  set rowSpanOverflowBehavior(RowSpanOverflowBehavior value) {
-    if (_rowSpanOverflowBehavior != value) {
-      _rowSpanOverflowBehavior = value;
-      notifyListeners();
-    }
-  }
 
   /// Indicates whether the model is sorted.
   ///
@@ -167,6 +116,7 @@ class DaviModel<DATA> extends ChangeNotifier {
           : false;
 
   /// Indicates whether the model is sorted by multiple columns.
+  @override
   bool get isMultiSorted {
     int count = 0;
     for (DaviColumn column in _columns) {
@@ -180,6 +130,7 @@ class DaviModel<DATA> extends ChangeNotifier {
     return false;
   }
 
+  @override
   DATA rowAt(int index) => _sortableRows[index];
 
   void addRow(DATA row) {
@@ -224,6 +175,7 @@ class DaviModel<DATA> extends ChangeNotifier {
     notifyListeners();
   }
 
+  @override
   DaviColumn<DATA> columnAt(int index) => _columns[index];
 
   /// Gets a column given an [id]. If [id] is `NULL`, no columns are returned.
@@ -294,6 +246,21 @@ class DaviModel<DATA> extends ChangeNotifier {
     }
   }
 
+  /// Adjusts the width of the resizable columns to fit their content: the
+  /// header and only the cells of the rows visible in the viewport at the
+  /// moment (rows outside the scroll area are not measured). The width is
+  /// limited by [DaviColumn.maxAutoSizeWidth].
+  ///
+  /// It has the same effect as double clicking the resize area of each
+  /// column header. Only works with [ColumnWidthBehavior.scrollable].
+  void autoSizeColumns() {
+    for (DaviColumn<DATA> column in _columns) {
+      if (column.resizable) {
+        DaviColumnHelper.requestAutoSize(column: column);
+      }
+    }
+  }
+
   /// Remove all columns.
   void removeColumns() {
     _columns.clear();
@@ -349,6 +316,7 @@ class DaviModel<DATA> extends ChangeNotifier {
   ///
   /// If multi sorting is disabled, only the first one in the list will be used.
   /// Not sortable columns will be ignored.
+  @override
   void sort(List<DaviSort> newSortList) {
     if (sortingMode == SortingMode.disabled) {
       return;
