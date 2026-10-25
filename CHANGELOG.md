@@ -1,5 +1,6 @@
 ## 5.0.1
 
+* Remove the unused `axis_layout` dependency.
 * Bugfix
   * Fix coordinate conversion for header and summary cells to account for column positions and horizontal scrolling.
   * `CellThemeData.overrideInputDecoration` now overrides only `inputDecorationTheme`, preserving all other properties of the inherited application theme.
