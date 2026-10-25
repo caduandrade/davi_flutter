@@ -8,7 +8,8 @@ class _Row {
 }
 
 class _ThemeChanger extends StatefulWidget {
-  const _ThemeChanger({super.key, required this.model, required this.controller});
+  const _ThemeChanger(
+      {super.key, required this.model, required this.controller});
   final DaviModel<_Row> model;
   final ScrollController controller;
 
@@ -31,8 +32,7 @@ class _ThemeChangerState extends State<_ThemeChanger> {
                 height: 300,
                 child: DaviTheme(
                     data: DaviThemeData(
-                        row: RowThemeData(
-                            dividerThickness: _dividerThickness)),
+                        row: RowThemeData(dividerThickness: _dividerThickness)),
                     child: Davi<_Row>(widget.model,
                         verticalScrollController: widget.controller)))));
   }
@@ -53,8 +53,7 @@ void main() {
           // paints through a raw TextPainter, not a Text widget) so
           // find.text can actually locate rendered rows in this test.
           DaviColumn<_Row>(
-              name: 'Name',
-              cellWidget: (params) => Text(params.data.name)),
+              name: 'Name', cellWidget: (params) => Text(params.data.name)),
         ]);
 
     final GlobalKey<_ThemeChangerState> changerKey =

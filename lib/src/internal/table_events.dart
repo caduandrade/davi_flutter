@@ -217,7 +217,8 @@ class _TableEventsState<DATA> extends State<TableEvents<DATA>> {
         rowIndex = widget.rowRegions.boundsIndex(position);
       }
       DATA? data;
-      if (rowIndex != null && rowIndex < widget.daviContext.dataSource.rowsLength) {
+      if (rowIndex != null &&
+          rowIndex < widget.daviContext.dataSource.rowsLength) {
         data = widget.daviContext.dataSource.rowAt(rowIndex);
       }
       if (data != null) {

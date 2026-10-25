@@ -32,8 +32,8 @@ void main() {
         home: Scaffold(
             body: SizedBox(
                 height: 300,
-                child: Davi<_Row>(model,
-                    verticalScrollController: controller)))));
+                child:
+                    Davi<_Row>(model, verticalScrollController: controller)))));
     await tester.pump();
 
     // Jump straight to whatever the CURRENT (likely still estimate-inflated)

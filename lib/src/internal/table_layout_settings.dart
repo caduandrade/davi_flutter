@@ -190,10 +190,7 @@ class TableLayoutSettings {
                       : 0)));
     } else {
       // unbounded height
-      cellsBounds = Rect.fromLTWH(
-          0,
-          headerBounds.height,
-          contentAreaWidth,
+      cellsBounds = Rect.fromLTWH(0, headerBounds.height, contentAreaWidth,
           rowExtentManager.heightUpTo(visibleRowsCount!));
     }
 
@@ -369,7 +366,8 @@ class TableLayoutSettings {
   // A cache-sizing heuristic only (see TableContentState._updatePainterCacheSize)
   // - real per-row height is looked up from RowExtentManager elsewhere.
   int get maxVisibleRows => (cellsBounds.height /
-          (themeMetrics.row.estimatedHeight + themeMetrics.row.dividerThickness))
+          (themeMetrics.row.estimatedHeight +
+              themeMetrics.row.dividerThickness))
       .ceil();
 
   @override

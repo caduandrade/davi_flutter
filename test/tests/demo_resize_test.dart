@@ -87,7 +87,11 @@ void main() {
     await tester.tap(find.text('Few rows'));
     await _settle(tester);
     expect(
-        tester.widget<TableContent>(_tableFinder).daviContext.dataSource.rowsLength,
+        tester
+            .widget<TableContent>(_tableFinder)
+            .daviContext
+            .dataSource
+            .rowsLength,
         5);
     final scrollbarStates = <bool>{};
     for (final size in [

@@ -100,7 +100,6 @@ class DividerPaintManager {
       horizontalVertices.stopAll();
     }
   }
-
 }
 
 /// Represents each point between row or column dividers in the grid,

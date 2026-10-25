@@ -26,7 +26,8 @@ class SummaryWidget<DATA> extends StatelessWidget {
     for (int columnIndex = 0;
         columnIndex < daviContext.dataSource.columnsLength;
         columnIndex++) {
-      final DaviColumn<DATA> column = daviContext.dataSource.columnAt(columnIndex);
+      final DaviColumn<DATA> column =
+          daviContext.dataSource.columnAt(columnIndex);
       if (column.summary != null) {
         Widget summaryCell = ClipRect(child: column.summary!(context));
         if (theme.summary.padding != null) {

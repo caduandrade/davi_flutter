@@ -115,8 +115,8 @@ class _HomePageState extends State<HomePage> {
           cellPadding: const EdgeInsets.all(4),
           name: 'Stock',
           cellBarValue: (params) => params.data.stockStatus,
-          cellBarValueStringify:
-              (params) => '${params.data.stock}/${params.data.stockLimit}',
+          cellBarValueStringify: (params) =>
+              '${params.data.stock}/${params.data.stockLimit}',
           cellBarStyle: CellBarStyle(
             barBackground: Colors.transparent,
             barForeground: (value) {

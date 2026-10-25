@@ -19,7 +19,8 @@ const String _longText = 'A sentence that wraps onto a few lines.';
 /// scroll_shrink_correction_cellvalue_test.dart.
 List<double> _renderedCellHeights(WidgetTester tester) {
   final List<MapEntry<double, double>> entries = [];
-  for (final Element element in tester.elementList(find.byType(TextCellPainter))) {
+  for (final Element element
+      in tester.elementList(find.byType(TextCellPainter))) {
     final RenderBox box = element.renderObject as RenderBox;
     if (!box.attached || !box.hasSize) continue;
     entries.add(MapEntry(box.localToGlobal(Offset.zero).dy, box.size.height));
@@ -29,8 +30,7 @@ List<double> _renderedCellHeights(WidgetTester tester) {
 }
 
 Widget _buildTable(DaviModel<_Row> model) => MaterialApp(
-    home:
-        Scaffold(body: SizedBox(height: 400, child: Davi<_Row>(model))));
+    home: Scaffold(body: SizedBox(height: 400, child: Davi<_Row>(model))));
 
 void main() {
   testWidgets(

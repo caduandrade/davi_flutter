@@ -48,8 +48,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(horizontalController.offset, 0);
 
-    final TestGesture gesture = await tester.startGesture(
-        _bodyPoint(tester),
+    final TestGesture gesture = await tester.startGesture(_bodyPoint(tester),
         kind: PointerDeviceKind.mouse);
     await tester.pump(const Duration(milliseconds: 20));
     await gesture.moveBy(const Offset(-120, 0));
@@ -75,8 +74,7 @@ void main() {
                         horizontalController)))));
     await tester.pumpAndSettle();
 
-    final TestGesture gesture = await tester.startGesture(
-        _bodyPoint(tester),
+    final TestGesture gesture = await tester.startGesture(_bodyPoint(tester),
         kind: PointerDeviceKind.touch);
     await tester.pump(const Duration(milliseconds: 20));
     await gesture.moveBy(const Offset(-120, 0));

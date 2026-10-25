@@ -75,6 +75,7 @@ void main() {
     // Scrolled to the very end: the row now under the cursor must be a much
     // later row than before - not still the early row that was there prior
     // to the scroll (the bug: hover stayed pinned to the old row index).
-    expect(rowIndex(tappedAfterScroll!), greaterThan(rowIndex(tappedBeforeScroll!) + 15));
+    expect(rowIndex(tappedAfterScroll!),
+        greaterThan(rowIndex(tappedBeforeScroll!) + 15));
   });
 }

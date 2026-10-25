@@ -5,20 +5,17 @@ void main() {
   group('RowExtentManager - uniform height (ported RowRange scenarios)', () {
     RowExtentManager build() {
       final manager = RowExtentManager();
-      manager.resize(
-          rowsLength: 100, estimatedHeight: 10, dividerThickness: 0);
+      manager.resize(rowsLength: 100, estimatedHeight: 10, dividerThickness: 0);
       return manager;
     }
 
     test('Zero height', () {
       final manager = build();
-      expect(
-          manager.visibleRowCount(scrollOffset: 0, availableHeight: 0), 0);
+      expect(manager.visibleRowCount(scrollOffset: 0, availableHeight: 0), 0);
     });
     test('Negative height', () {
       final manager = build();
-      expect(
-          manager.visibleRowCount(scrollOffset: 0, availableHeight: -10), 0);
+      expect(manager.visibleRowCount(scrollOffset: 0, availableHeight: -10), 0);
     });
     test('Scenario 1', () {
       final manager = build();
@@ -38,44 +35,37 @@ void main() {
     test('Scenario 4', () {
       final manager = build();
       expect(manager.indexAtOffset(10), 1);
-      expect(
-          manager.visibleRowCount(scrollOffset: 10, availableHeight: 30), 3);
+      expect(manager.visibleRowCount(scrollOffset: 10, availableHeight: 30), 3);
     });
     test('Scenario 5', () {
       final manager = build();
       expect(manager.indexAtOffset(15), 1);
-      expect(
-          manager.visibleRowCount(scrollOffset: 15, availableHeight: 30), 4);
+      expect(manager.visibleRowCount(scrollOffset: 15, availableHeight: 30), 4);
     });
     test('Scenario 6', () {
       final manager = build();
       expect(manager.indexAtOffset(20), 2);
-      expect(
-          manager.visibleRowCount(scrollOffset: 20, availableHeight: 30), 3);
+      expect(manager.visibleRowCount(scrollOffset: 20, availableHeight: 30), 3);
     });
     test('Scenario 7', () {
       final manager = build();
       expect(manager.indexAtOffset(21), 2);
-      expect(
-          manager.visibleRowCount(scrollOffset: 21, availableHeight: 30), 4);
+      expect(manager.visibleRowCount(scrollOffset: 21, availableHeight: 30), 4);
     });
     test('Scenario 8', () {
       final manager = build();
       expect(manager.indexAtOffset(51), 5);
-      expect(
-          manager.visibleRowCount(scrollOffset: 51, availableHeight: 30), 4);
+      expect(manager.visibleRowCount(scrollOffset: 51, availableHeight: 30), 4);
     });
     test('Scenario 9', () {
       final manager = build();
       expect(manager.indexAtOffset(59), 5);
-      expect(
-          manager.visibleRowCount(scrollOffset: 59, availableHeight: 30), 4);
+      expect(manager.visibleRowCount(scrollOffset: 59, availableHeight: 30), 4);
     });
     test('Scenario 10', () {
       final manager = build();
       expect(manager.indexAtOffset(60), 6);
-      expect(
-          manager.visibleRowCount(scrollOffset: 60, availableHeight: 30), 3);
+      expect(manager.visibleRowCount(scrollOffset: 60, availableHeight: 30), 3);
     });
   });
 
@@ -133,18 +123,15 @@ void main() {
 
       // Row 0 (0-10), row 1 (10-110): a 50px viewport starting at 0 only
       // needs rows 0 and 1.
-      expect(
-          manager.visibleRowCount(scrollOffset: 0, availableHeight: 50), 2);
+      expect(manager.visibleRowCount(scrollOffset: 0, availableHeight: 50), 2);
     });
   });
 
   group('RowExtentManager - viewportRowCount (conservative, position-stable)',
       () {
-    test('matches the old fixed rowHeight formula: ceil(h/rowHeight) + 1',
-        () {
+    test('matches the old fixed rowHeight formula: ceil(h/rowHeight) + 1', () {
       final manager = RowExtentManager();
-      manager.resize(
-          rowsLength: 20, estimatedHeight: 40, dividerThickness: 10);
+      manager.resize(rowsLength: 20, estimatedHeight: 40, dividerThickness: 10);
       // 200 / 50 = 4 exactly -> +1 cushion row = 5.
       expect(
           manager.viewportRowCount(scrollOffset: 0, availableHeight: 200), 5);
@@ -152,8 +139,7 @@ void main() {
 
     test('stays the same for any scroll offset within the first row', () {
       final manager = RowExtentManager();
-      manager.resize(
-          rowsLength: 20, estimatedHeight: 40, dividerThickness: 10);
+      manager.resize(rowsLength: 20, estimatedHeight: 40, dividerThickness: 10);
       final int atZero =
           manager.viewportRowCount(scrollOffset: 0, availableHeight: 200);
       final int mid =
@@ -166,8 +152,7 @@ void main() {
 
     test('changes once the first row actually changes', () {
       final manager = RowExtentManager();
-      manager.resize(
-          rowsLength: 20, estimatedHeight: 40, dividerThickness: 10);
+      manager.resize(rowsLength: 20, estimatedHeight: 40, dividerThickness: 10);
       // Make row 1 much taller so starting from it (instead of row 0) needs
       // fewer rows to cover the same viewport height.
       manager.setHeight(1, 190);
@@ -199,8 +184,7 @@ void main() {
 
       // 2 real rows cover 20px; a 45px viewport needs 3 filler rows beyond
       // that (10px each) to be fully covered.
-      expect(
-          manager.visibleRowCount(scrollOffset: 0, availableHeight: 45), 5);
+      expect(manager.visibleRowCount(scrollOffset: 0, availableHeight: 45), 5);
     });
   });
 
@@ -220,8 +204,7 @@ void main() {
       expect(manager.offsetOf(2), 210); // 50 + 150 + 10
     });
 
-    test('a measured height matching the old seed exactly is still kept',
-        () {
+    test('a measured height matching the old seed exactly is still kept', () {
       final manager = RowExtentManager();
       manager.resize(rowsLength: 2, estimatedHeight: 20, dividerThickness: 0);
       // Real content happens to measure to exactly the seed estimate.

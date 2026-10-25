@@ -53,8 +53,10 @@ class _HomePageState extends State<HomePage> {
     Random random = Random();
     List<Data> rows = [];
     for (int i = 1; i < 200; i++) {
-      String stringValue =
-          random.nextInt(0xFFFFFF).toRadixString(16).toUpperCase();
+      String stringValue = random
+          .nextInt(0xFFFFFF)
+          .toRadixString(16)
+          .toUpperCase();
       int intValue = random.nextInt(99);
       double bar = random.nextDouble();
       rows.add(Data(stringValue: stringValue, intValue: intValue, bar: bar));
@@ -77,19 +79,14 @@ class _HomePageState extends State<HomePage> {
         DaviColumn(
           name: 'Int 2',
           cellValue: (params) => params.data.intValue,
-          cellBackground:
-              (params) => params.data.intValue == 10 ? Colors.green : null,
+          cellBackground: (params) =>
+              params.data.intValue == 10 ? Colors.green : null,
         ),
         DaviColumn(
           name: 'Widget',
-          cellWidget:
-              (params) =>
-                  params.rowIndex == 10
-                      ? Container(
-                        color: Colors.white,
-                        child: const Placeholder(),
-                      )
-                      : null,
+          cellWidget: (params) => params.rowIndex == 10
+              ? Container(color: Colors.white, child: const Placeholder())
+              : null,
         ),
         DaviColumn(name: 'Bar', cellBarValue: (params) => params.data.bar),
         DaviColumn(
@@ -97,8 +94,8 @@ class _HomePageState extends State<HomePage> {
           sortable: false,
           cellWidget: _buildField,
           //cellListenable: (d,i)=>d,
-          cellBackground:
-              (params) => params.data.valid ? null : Colors.red[800],
+          cellBackground: (params) =>
+              params.data.valid ? null : Colors.red[800],
         ),
       ],
       multiSortEnabled: true,
@@ -109,8 +106,8 @@ class _HomePageState extends State<HomePage> {
     return TextFormField(
       key: params.localKey,
       initialValue: params.data.editable,
-      onChanged:
-          (value) => _onFieldChange(value, params.data, params.rebuildCallback),
+      onChanged: (value) =>
+          _onFieldChange(value, params.data, params.rebuildCallback),
     );
   }
 

@@ -20,8 +20,8 @@ void main() {
 
     await tester.pumpWidget(MaterialApp(
         home: Scaffold(
-            body: SizedBox(
-                width: 300, height: 300, child: Davi<_Row>(model)))));
+            body:
+                SizedBox(width: 300, height: 300, child: Davi<_Row>(model)))));
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
     expect(find.text('row 0'), findsOneWidget);

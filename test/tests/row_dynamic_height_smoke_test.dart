@@ -58,12 +58,13 @@ void main() {
 
   testWidgets('renders without crashing with plain text cells',
       (WidgetTester tester) async {
-    await tester.pumpWidget(_buildTable(
-        rows: [_Row('a'), _Row('b'), _Row('c')],
-        columns: [
-          DaviColumn<_Row>(
-              name: 'Name', cellValue: (params) => params.data.name),
-        ]));
+    await tester.pumpWidget(_buildTable(rows: [
+      _Row('a'),
+      _Row('b'),
+      _Row('c')
+    ], columns: [
+      DaviColumn<_Row>(name: 'Name', cellValue: (params) => params.data.name),
+    ]));
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
   });
@@ -71,18 +72,18 @@ void main() {
   testWidgets('a row grows to fit a tall cellWidget instead of clipping it',
       (WidgetTester tester) async {
     const Key tallKey = Key('tall-cell');
-    await tester.pumpWidget(_buildTable(
-        rows: [_Row('a'), _Row('b'), _Row('c')],
-        columns: [
-          DaviColumn<_Row>(
-              name: 'Content',
-              cellWidget: (params) => params.rowIndex == 1
-                  ? SizedBox(
-                      key: tallKey,
-                      height: 150,
-                      child: Text(params.data.name))
-                  : Text(params.data.name)),
-        ]));
+    await tester.pumpWidget(_buildTable(rows: [
+      _Row('a'),
+      _Row('b'),
+      _Row('c')
+    ], columns: [
+      DaviColumn<_Row>(
+          name: 'Content',
+          cellWidget: (params) => params.rowIndex == 1
+              ? SizedBox(
+                  key: tallKey, height: 150, child: Text(params.data.name))
+              : Text(params.data.name)),
+    ]));
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
 
@@ -97,29 +98,30 @@ void main() {
       (WidgetTester tester) async {
     const Key tallKey = Key('tall-cell');
     const Key shortKey = Key('short-0');
-    await tester.pumpWidget(_buildTable(
-        rows: [_Row('a'), _Row('b'), _Row('c')],
-        columns: [
-          DaviColumn<_Row>(
-              name: 'Content',
-              cellWidget: (params) {
-                if (params.rowIndex == 1) {
-                  return SizedBox(
-                      key: tallKey, height: 150, child: const SizedBox());
-                }
-                return SizedBox(
-                    key: ValueKey('short-${params.rowIndex}'),
-                    child: Text(params.data.name));
-              }),
-        ]));
+    await tester.pumpWidget(_buildTable(rows: [
+      _Row('a'),
+      _Row('b'),
+      _Row('c')
+    ], columns: [
+      DaviColumn<_Row>(
+          name: 'Content',
+          cellWidget: (params) {
+            if (params.rowIndex == 1) {
+              return SizedBox(
+                  key: tallKey, height: 150, child: const SizedBox());
+            }
+            return SizedBox(
+                key: ValueKey('short-${params.rowIndex}'),
+                child: Text(params.data.name));
+          }),
+    ]));
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
 
     final double tallRowTop = tester.getTopLeft(find.byKey(tallKey)).dy;
     final double tallRowBottom = tester.getBottomLeft(find.byKey(tallKey)).dy;
     final double shortRowTop = tester.getTopLeft(find.byKey(shortKey)).dy;
-    final double shortRowBottom =
-        tester.getBottomLeft(find.byKey(shortKey)).dy;
+    final double shortRowBottom = tester.getBottomLeft(find.byKey(shortKey)).dy;
 
     // The short row (row 0) must be much shorter than the tall row (row 1).
     expect(tallRowBottom - tallRowTop, 150);
@@ -128,17 +130,18 @@ void main() {
 
   testWidgets('sorting after measuring a tall row does not crash',
       (WidgetTester tester) async {
-    final DaviModel<_Row> model = DaviModel<_Row>(
-        rows: [_Row('a'), _Row('b'), _Row('c')],
-        columns: [
-          DaviColumn<_Row>(
-              name: 'Name',
-              dataComparator: (a, b, rowA, rowB) =>
-                  rowA.name.compareTo(rowB.name),
-              cellWidget: (params) => params.rowIndex == 1
-                  ? const SizedBox(height: 150)
-                  : Text(params.data.name)),
-        ]);
+    final DaviModel<_Row> model = DaviModel<_Row>(rows: [
+      _Row('a'),
+      _Row('b'),
+      _Row('c')
+    ], columns: [
+      DaviColumn<_Row>(
+          name: 'Name',
+          dataComparator: (a, b, rowA, rowB) => rowA.name.compareTo(rowB.name),
+          cellWidget: (params) => params.rowIndex == 1
+              ? const SizedBox(height: 150)
+              : Text(params.data.name)),
+    ]);
     await tester.pumpWidget(MaterialApp(
         home: Scaffold(body: SizedBox(height: 400, child: Davi<_Row>(model)))));
     await tester.pumpAndSettle();

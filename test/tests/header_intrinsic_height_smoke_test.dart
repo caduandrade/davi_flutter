@@ -18,15 +18,15 @@ Widget _buildTable({
       home: Scaffold(
           body: SizedBox(
               height: height,
-              child: DaviTheme(
-                  data: theme, child: Davi<_Row>(model)))));
+              child: DaviTheme(data: theme, child: Davi<_Row>(model)))));
 }
 
 void main() {
   testWidgets('default resizable columns render without crashing',
       (WidgetTester tester) async {
     await tester.pumpWidget(_buildTable(columns: [
-      DaviColumn<_Row>(name: 'Name', cellValue: (r) => r.data.name, resizable: true),
+      DaviColumn<_Row>(
+          name: 'Name', cellValue: (r) => r.data.name, resizable: true),
     ], theme: const DaviThemeData()));
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
@@ -38,7 +38,8 @@ void main() {
         headerCell: HeaderCellThemeData(
             textStyle: TextStyle(fontSize: 40, fontWeight: FontWeight.bold)));
     await tester.pumpWidget(_buildTable(columns: [
-      DaviColumn<_Row>(name: 'Name', cellValue: (r) => r.data.name, resizable: true),
+      DaviColumn<_Row>(
+          name: 'Name', cellValue: (r) => r.data.name, resizable: true),
     ], theme: theme));
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
@@ -65,8 +66,7 @@ void main() {
           name: 'Name',
           cellValue: (r) => r.data.name,
           resizable: true,
-          headerBuilder: (params) =>
-              Text('Custom: ${params.column.name}')),
+          headerBuilder: (params) => Text('Custom: ${params.column.name}')),
     ], theme: const DaviThemeData()));
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
@@ -111,8 +111,8 @@ void main() {
           width: 300,
           cellValue: (r) => r.data.name,
           resizable: true,
-          headerBuilder: (params) =>
-              Text(params.column.name ?? '', style: const TextStyle(fontSize: 29))),
+          headerBuilder: (params) => Text(params.column.name ?? '',
+              style: const TextStyle(fontSize: 29))),
     ], theme: const DaviThemeData()));
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
@@ -124,7 +124,8 @@ void main() {
     expect(textSize.height, lessThan(60));
   });
 
-  testWidgets('header with summary and both scrollbars renders without crashing',
+  testWidgets(
+      'header with summary and both scrollbars renders without crashing',
       (WidgetTester tester) async {
     final DaviModel<_Row> model = DaviModel<_Row>(
         rows: List.generate(50, (i) => _Row('row $i')),

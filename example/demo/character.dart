@@ -422,8 +422,9 @@ class Character {
     );
     int mana = level + random.nextInt(500);
     int life = level + random.nextInt(5000);
-    double? gold =
-        life % 3 == 0 ? null : random.nextInt(500000) * random.nextDouble();
+    double? gold = life % 3 == 0
+        ? null
+        : random.nextInt(500000) * random.nextDouble();
 
     Set<Skill> uniqueSkills = {};
     int skillsCount = random.nextInt(4);

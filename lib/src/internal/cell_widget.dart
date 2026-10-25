@@ -144,7 +144,8 @@ class CellWidgetState<DATA> extends State<CellWidget<DATA>> {
           height: theme.row.estimatedHeight,
           child: CustomPaint(
               painter: _CustomPainter<DATA>(
-                  data: widget.data, cellPainting: widget.column.cellPainter!)));
+                  data: widget.data,
+                  cellPainting: widget.column.cellPainter!)));
     } else if (widget.column.cellBarValue != null) {
       final BarValueMapperParams<DATA> params =
           BarValueMapperParams(data: widget.data, rowIndex: widget.rowIndex);
@@ -153,20 +154,21 @@ class CellWidgetState<DATA> extends State<CellWidget<DATA>> {
         child = SizedBox(
             width: widget.columnMetrics.width,
             height: theme.row.estimatedHeight,
-            child: CustomPaint(painter: _BarPainter(
-                value: barValue,
-                text: widget.column.cellBarValueStringify != null
-                    ? widget.column.cellBarValueStringify!(params)
-                    : null,
-                painterCache: widget.painterCache,
-                barBackground: widget.column.cellBarStyle?.barBackground ??
-                    theme.cell.barStyle.barBackground,
-                barForeground: widget.column.cellBarStyle?.barForeground ??
-                    theme.cell.barStyle.barForeground,
-                textSize: widget.column.cellBarStyle?.textSize ??
-                    theme.cell.barStyle.textSize,
-                textColor: widget.column.cellBarStyle?.textColor ??
-                    theme.cell.barStyle.textColor)));
+            child: CustomPaint(
+                painter: _BarPainter(
+                    value: barValue,
+                    text: widget.column.cellBarValueStringify != null
+                        ? widget.column.cellBarValueStringify!(params)
+                        : null,
+                    painterCache: widget.painterCache,
+                    barBackground: widget.column.cellBarStyle?.barBackground ??
+                        theme.cell.barStyle.barBackground,
+                    barForeground: widget.column.cellBarStyle?.barForeground ??
+                        theme.cell.barStyle.barForeground,
+                    textSize: widget.column.cellBarStyle?.textSize ??
+                        theme.cell.barStyle.textSize,
+                    textColor: widget.column.cellBarStyle?.textColor ??
+                        theme.cell.barStyle.textColor)));
       }
     } else if (widget.column.cellWidget != null) {
       final WidgetBuilderParams<DATA> params = WidgetBuilderParams(

@@ -39,8 +39,7 @@ class _ThemeChangerState extends State<_ThemeChanger> {
                 height: 400,
                 child: DaviTheme(
                     data: DaviThemeData(
-                        row: RowThemeData(
-                            dividerThickness: _dividerThickness)),
+                        row: RowThemeData(dividerThickness: _dividerThickness)),
                     child: Davi<_Row>(widget.model)))));
   }
 }
@@ -55,18 +54,20 @@ void main() {
       (WidgetTester tester) async {
     const Key tallKey = Key('row1-cell');
     final _RowHeightHolder holder = _RowHeightHolder();
-    final DaviModel<_Row> model = DaviModel<_Row>(
-        rows: [_Row('a'), _Row('b'), _Row('c')],
-        columns: [
-          DaviColumn<_Row>(
-              name: 'Content',
-              cellWidget: (params) => params.rowIndex == 1
-                  ? SizedBox(
-                      key: tallKey,
-                      height: holder.row1Height,
-                      child: Container(color: Colors.red))
-                  : Text(params.data.name)),
-        ]);
+    final DaviModel<_Row> model = DaviModel<_Row>(rows: [
+      _Row('a'),
+      _Row('b'),
+      _Row('c')
+    ], columns: [
+      DaviColumn<_Row>(
+          name: 'Content',
+          cellWidget: (params) => params.rowIndex == 1
+              ? SizedBox(
+                  key: tallKey,
+                  height: holder.row1Height,
+                  child: Container(color: Colors.red))
+              : Text(params.data.name)),
+    ]);
 
     final GlobalKey<_ThemeChangerState> changerKey =
         GlobalKey<_ThemeChangerState>();

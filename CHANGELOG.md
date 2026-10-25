@@ -1,3 +1,7 @@
+## 5.0.2
+
+* Code formatting only; no functional changes.
+
 ## 5.0.1
 
 * Remove the unused `axis_layout` dependency.

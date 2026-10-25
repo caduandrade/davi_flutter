@@ -49,8 +49,9 @@ class TableContentState<DATA> extends State<TableContent<DATA>> {
     _focusTraversal = CellFocusTraversalPolicy(
         rowCount: () => widget.daviContext.dataSource.rowsLength,
         columnCount: () => widget.daviContext.dataSource.columnsLength,
-        hasWidgets: (column) =>
-            widget.daviContext.dataSource.columnAt(column).cellFocusTraversalEnabled,
+        hasWidgets: (column) => widget.daviContext.dataSource
+            .columnAt(column)
+            .cellFocusTraversalEnabled,
         reveal: _revealCell);
     widget.daviContext.dataSource.addListener(_focusTraversal.cancel);
     _updatePainterCacheSize();

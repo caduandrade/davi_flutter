@@ -45,8 +45,8 @@ void main() {
           home: Scaffold(
               body: SizedBox(
                   height: 200,
-                  child: Davi<_Row>.builder(
-                      controller: controller, rows: rows))));
+                  child:
+                      Davi<_Row>.builder(controller: controller, rows: rows))));
     }
 
     await tester.pumpWidget(buildWithRows([_Row('Alice')]));
@@ -62,8 +62,8 @@ void main() {
   testWidgets(
       'Davi.builder with a null onSort never changes row order and reports no sort',
       (WidgetTester tester) async {
-    final DaviColumn<_Row> nameColumn = DaviColumn<_Row>(
-        name: 'Name', cellValue: (params) => params.data.name);
+    final DaviColumn<_Row> nameColumn =
+        DaviColumn<_Row>(name: 'Name', cellValue: (params) => params.data.name);
     final DaviController<_Row> controller =
         DaviController<_Row>(columns: [nameColumn]);
 
@@ -87,8 +87,8 @@ void main() {
   testWidgets(
       'Davi.builder with onSort requests a sort and updates the visual sort state',
       (WidgetTester tester) async {
-    final DaviColumn<_Row> nameColumn = DaviColumn<_Row>(
-        name: 'Name', cellValue: (params) => params.data.name);
+    final DaviColumn<_Row> nameColumn =
+        DaviColumn<_Row>(name: 'Name', cellValue: (params) => params.data.name);
     final DaviController<_Row> controller =
         DaviController<_Row>(columns: [nameColumn]);
     List<DaviColumn<_Row>>? requestedSort;

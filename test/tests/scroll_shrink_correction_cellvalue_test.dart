@@ -9,7 +9,8 @@ class _Row {
 }
 
 class _ThemeChanger extends StatefulWidget {
-  const _ThemeChanger({super.key, required this.model, required this.controller});
+  const _ThemeChanger(
+      {super.key, required this.model, required this.controller});
   final DaviModel<_Row> model;
   final ScrollController controller;
 
@@ -73,9 +74,13 @@ void main() {
         rows: List.generate(298, (i) => _Row('row $i')),
         columns: [
           DaviColumn<_Row>(
-              name: 'Name', width: 100, cellValue: (params) => params.data.name),
+              name: 'Name',
+              width: 100,
+              cellValue: (params) => params.data.name),
           DaviColumn<_Row>(
-              name: 'Extra', width: 100, cellValue: (params) => 'x${params.rowIndex}'),
+              name: 'Extra',
+              width: 100,
+              cellValue: (params) => 'x${params.rowIndex}'),
         ]);
 
     final GlobalKey<_ThemeChangerState> changerKey =

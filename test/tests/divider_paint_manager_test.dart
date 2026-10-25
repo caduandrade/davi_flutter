@@ -24,8 +24,7 @@ void main() {
           vertex: segments.first.end, edge: true, index: -1, stop: false);
     });
 
-    test('addStopsForEntireRow suppresses that row\'s horizontal segments',
-        () {
+    test('addStopsForEntireRow suppresses that row\'s horizontal segments', () {
       DividerPaintManager manager = DividerPaintManager();
       manager.reset(firstRowIndex: 0, lastRowIndex: 2, columnsLength: 3);
 

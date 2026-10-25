@@ -9,8 +9,7 @@ class _Row {
 }
 
 void main() {
-  testWidgets(
-      'default theme does not leave cell text with a null/white color',
+  testWidgets('default theme does not leave cell text with a null/white color',
       (WidgetTester tester) async {
     final DaviModel<_Row> model = DaviModel<_Row>(rows: [
       _Row('Alice')
@@ -18,8 +17,7 @@ void main() {
       DaviColumn<_Row>(name: 'Name', cellValue: (params) => params.data.name),
     ]);
     await tester.pumpWidget(MaterialApp(
-        home: Scaffold(
-            body: SizedBox(height: 200, child: Davi<_Row>(model)))));
+        home: Scaffold(body: SizedBox(height: 200, child: Davi<_Row>(model)))));
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
 
@@ -41,8 +39,7 @@ void main() {
           cellTextStyle: (params) => const TextStyle(color: Colors.red)),
     ]);
     await tester.pumpWidget(MaterialApp(
-        home: Scaffold(
-            body: SizedBox(height: 200, child: Davi<_Row>(model)))));
+        home: Scaffold(body: SizedBox(height: 200, child: Davi<_Row>(model)))));
     await tester.pumpAndSettle();
 
     final TextCellPainter painter =
