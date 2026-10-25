@@ -1,6 +1,7 @@
 ## 5.0.1
 
 * Bugfix
+  * Fix coordinate conversion for header and summary cells to account for column positions and horizontal scrolling.
   * `CellThemeData.overrideInputDecoration` now overrides only `inputDecorationTheme`, preserving all other properties of the inherited application theme.
 
 ## 5.0.0

@@ -221,6 +221,19 @@ class ColumnsLayoutRenderBox extends RenderBox
     }
   }
 
+  // Header and summary cells are positioned during painting. Coordinate
+  // conversion must include the same column position and horizontal scroll.
+  @override
+  void applyPaintTransform(RenderObject child, Matrix4 transform) {
+    assert(child.parent == this);
+    final ColumnsLayoutParentData parentData = child._parentData();
+    final ColumnMetrics columnMetrics =
+        _layoutSettings.columnsMetrics[parentData.index!];
+    final double scrollOffset =
+        _scrollControllers.getOffset(columnMetrics.pinStatus);
+    transform.translateByDouble(columnMetrics.offset - scrollOffset, 0, 0, 1);
+  }
+
   @override
   bool hitTestChildren(BoxHitTestResult result, {required Offset position}) {
     RenderBox? child = firstChild;
